@@ -20,7 +20,9 @@ import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
 import { DataSlide } from './camposSubscription/camposSuscription';
+import { MetodoDePago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
+import { ApiMercantilService } from '../../services/ApiMercantil';
 
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
@@ -55,6 +57,7 @@ export class FormComponent implements OnInit, OnDestroy {
   public firstFormFibex: FormGroup;
   public secondFormFibex: FormGroup;
   public thirdFormFibex: FormGroup;
+  public fourthFormFibex: FormGroup;
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
   public cambio_act: number = 0;
@@ -94,9 +97,10 @@ export class FormComponent implements OnInit, OnDestroy {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] = [];
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no 
-
+  public MetodoPago = true;
   AllService: any = []
   ListService: any = []
+  PagoMetodosHTML = MetodoDePago;
 
 
   constructor(
@@ -111,7 +115,8 @@ export class FormComponent implements OnInit, OnDestroy {
     private _Consultas: ConsultasService,
     private miceService: MiscelaneosService,
     private _Cloudinary : CloudynariService,
-    private _UploadPHP : UploadPHPService
+    private _UploadPHP : UploadPHPService,
+    private _ApiMercantil: ApiMercantilService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
       this.bankList = banks;
@@ -134,6 +139,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   MyInit() {
+   // this._ApiMercantil.ConsultaPagoMovil("Holamundo");
     this.firstFormFibex = this.fb.group({
       name: ['', [Validators.required]],
       dni: ['', [Validators.required, Validators.minLength(6)]],
@@ -141,7 +147,9 @@ export class FormComponent implements OnInit, OnDestroy {
       bank: ['', [Validators.required]],
       nroContrato: ['', [Validators.required]],
       date: ['', [Validators.required]],
-      amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]]
+      amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      tipopago: ['',[Validators.required]],
+      idpago: ['']
     }, { validator: isNegativeNumber });
     this.secondFormFibex = this.fb.group({
       voucher: ['', [Validators.required]],
@@ -152,6 +160,11 @@ export class FormComponent implements OnInit, OnDestroy {
     this.thirdFormFibex = this.fb.group({
       img: ['', [Validators.required]],
       note: ['']
+    });
+
+    this.fourthFormFibex = this.fb.group({
+      tipopago: ['',[Validators.required]],
+      idpago: ['']
     });
 
     this.name?.disable();

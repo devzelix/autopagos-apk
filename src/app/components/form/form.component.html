@@ -71,7 +71,17 @@
   
                 -->
               </mat-form-field>
-              <p style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>
+
+              <mat-form-field *ngIf="MetodoPago" appearance="outline">
+                <mat-label>Tipo de pago</mat-label>
+                <mat-select formControlName="tipopago">
+                  <mat-option *ngFor="let option of PagoMetodosHTML" [value]="option.idpago">
+                    {{option.tipopago}}
+                  </mat-option> 
+                </mat-select>
+              </mat-form-field>
+
+              <p *ngIf="!MetodoPago" style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>
               <mat-form-field appearance="outline">
                 <mat-label>Banco Receptor (FIBEX)</mat-label>
                 <mat-select formControlName="bank">

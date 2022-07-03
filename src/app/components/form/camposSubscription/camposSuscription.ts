@@ -130,6 +130,7 @@ export let DataSlide = [
     }
   ]
 
+export let MetodoDePago = [{idpago:1,tipopago:"Débito"},{idpago:2,tipopago:"Crédito"},{idpago:3,tipopago:"Pago Móvil"}]
 
   /*
   DataSlide = [

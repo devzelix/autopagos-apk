@@ -11,5 +11,8 @@ export const environment = {
   ApiKey: "445792464983284",
   CloudName:"soluciones-sms",
   urlPHPapi : 'http://127.0.0.1:8000/',
-  PHPUpload: false
+  PHPUpload: false,
+  ApiMercantil:'http://localhost:8194/',//'https://apimercantil.thomas-talk.me/'
+  TokenApiMercantil:'FCP*F4--3fGGPOK474512RGG**',
+  KeyEncrypt: '11454GGHfbJr8pLq00YuIOp1'
 };

@@ -14,6 +14,7 @@ import { MaterialModule } from './material.module';
 
 import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
+import { SeguridadDatos } from './services/bcryptjs';
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
@@ -43,7 +44,8 @@ const routes: Routes = [
     RouterModule.forRoot(routes)     
   ],
   providers: [
-    NegativeAmountPipe
+    NegativeAmountPipe,
+    SeguridadDatos
   ],
   bootstrap: [AppComponent]
 })
