@@ -1,0 +1,34 @@
+.image-pay {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+
+.desc-img-serial {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .desc-img {
+        word-wrap: break-word;
+        color: $back-ground-fibex;
+        font-weight: 800;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    .img-serial {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+    .serial-example {
+        width: 100%;
+    }
+    .icon-zoom-in {
+        margin-top: 8px;
+    }
+}

@@ -1,0 +1,24 @@
+.nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: whitesmoke;
+    -webkit-box-shadow: 0px 10px 8px -8px #000000; 
+    box-shadow: 0px 10px 8px -8px #000000;
+    @include break('small') {
+        justify-content: center;
+        flex-direction: column;
+    }
+}
+
+.picture-fibex {
+    margin-top: 10px;
+}
+
+.tasa-day {
+    color: $back-ground-fibex;
+    font-weight: $font-popins-600-w;
+    @include break('small') {
+        margin-bottom: 18px;
+    }
+}

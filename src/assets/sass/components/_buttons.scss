@@ -1,0 +1,87 @@
+.button-link {
+    width: 100%;
+    text-decoration: none;
+    color: $back-ground-fibex;
+    height: 65px;
+    padding-top: 16px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 10px 8px -8px #000000; 
+    box-shadow: 0px 10px 8px -8px #000000;
+    text-transform: uppercase;
+    @include break('x-small') {
+    }
+    @include break('small') {
+        font-size: 15px;
+    }
+}
+
+.button-link__bold {
+    font-weight: $font-popins-600-w;
+}
+
+.button__primary {
+    background-color: $green;
+}
+
+.button__secondary {
+    background-color: $grayish-blue;
+}
+
+.button-material-next {
+    background-color: $back-ground-fibex;
+    color: whitesmoke;
+}
+
+.button-material-back {
+    background-color: whitesmoke;
+    margin-left: 20px !important;
+    color: $back-ground-fibex;
+    @include break('small') {
+        margin-left: 0px !important;
+    }
+}
+
+.button-material-upload {
+    background-color: $back-ground-fibex;
+    color: whitesmoke;
+} 
+
+.btn-width-100 {
+    width: 100%;
+}
+
+.btn-width-50 {
+    width: 50%;
+}
+
+.btn-width-70 {
+    width: 70%;
+    @include break('small') {
+        width: 100%;
+        margin-bottom: 12px !important;
+    }
+}
+
+.btn-width-30 {
+    width: 30%;
+    @include break('small') {
+        width: 100%;
+    }
+}
+
+.btn-flex-center {
+    display: flex;
+    justify-content: center;
+    @include break('small') {
+        flex-direction: column;
+    }
+}
+
+.desc-user {
+    display: flex;
+    justify-content: space-around;
+    @include break('small') {
+        justify-content: center;
+        flex-direction: column;
+    }
+}

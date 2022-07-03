@@ -1,0 +1,16 @@
+
+<cdk-virtual-scroll-viewport itemSize="50" class="example-viewport">
+  <h2 style="text-align:center ;">Detalle de pago</h2>
+  <div *cdkVirtualFor="let item of ListComprobant | keyvalue">
+        <mat-form-field *ngIf="item.key !='Comprobante' && item.key !='Fecha'" appearance="fill">
+            <mat-label>{{item.key}}</mat-label>
+            <input matInput readonly ngModel="{{item.value}}">
+        </mat-form-field>
+        <mat-form-field *ngIf="item.key =='Fecha'" appearance="fill">
+            <mat-label>{{item.key}}</mat-label>
+            <input matInput readonly ngModel="{{item.value }}">
+        </mat-form-field>
+        <img  class="imgC" *ngIf="item.key == 'Comprobante'" [src]="item.value"/>
+  </div>
+  <button class="button-material-next btn-width-100" mat-raised-button style="align-content: center;" (click)="ClosDialog()">Cerrar</button>
+</cdk-virtual-scroll-viewport>

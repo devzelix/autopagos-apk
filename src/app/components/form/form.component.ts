@@ -1,0 +1,1251 @@
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDatepickerInput } from '@angular/material/datepicker';
+import { ImageComponent } from '../image/image.component';
+import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
+
+import { RegisterPayService } from '../../services/register-pay.service';
+import { UplaodImageService } from '../../services/uplaod-image.service';
+import { TasaService } from '../../services/tasa.service';
+import { DataBankService } from '../../services/data-bank.service';
+import { UploadPHPService } from '../../services/UploadPHP.service';
+import { isNegativeNumber } from '../../validators/customValidatorAmount';
+import { ConsultasService } from '../../services/consultas.service';
+import { CloudynariService } from '../../services/cloudDinary.service';
+import { nanoid } from 'nanoid'
+import { BankList } from '../../interfaces/bankList';
+import { BanksDays } from '../../interfaces/banksDays';
+import { Contratos } from '../../interfaces/contratos';
+import { DataSlide } from './camposSubscription/camposSuscription';
+import { MiscelaneosService } from '../../utils/miscelaneos.service';
+
+import { MatStepper } from '@angular/material/stepper';
+import Swal from 'sweetalert2';
+import { filter } from 'rxjs';
+import { ThisReceiver } from '@angular/compiler';
+import { environment } from 'src/environments/environment';
+
+
+export interface DialogData {
+  animal: string;
+  name: string;
+}
+
+@Component({
+  selector: 'app-form',
+  templateUrl: './form.component.html',
+  styleUrls: ['./form.style.css']
+})
+export class FormComponent implements OnInit, OnDestroy {
+  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('picker') date_: MatDatepickerInput<Date>;
+
+
+  animal: string;
+  name2: string;
+  fecha: string  ='sssssssssssssss';
+  displayedColumns: string[] = ['Comprobante', 'Status', 'buttons'];
+
+  private idUnicoClient: any = nanoid(10);
+  public bankList: BankList[] = [];
+  public formFibex: FormGroup;
+  public firstFormFibex: FormGroup;
+  public secondFormFibex: FormGroup;
+  public thirdFormFibex: FormGroup;
+  public listContratos: Contratos[] = [];
+  public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
+  public cambio_act: number = 0;
+  public lastAmount: string = '';
+  public banco: string = '';
+  public BancoSelect: any //con esta variable se todos los datos del banco que seleccione el cliente
+  public imageUrl: string = '';
+  public imageUploaded: boolean = false;
+  public idContrato: string = '';
+  public paquete: /* any = [] */string = '';
+  public regexEmail: RegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  public regexUrl: RegExp = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm;
+  public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
+  public payReported: boolean = false;
+  public playDuplicated: boolean = false;
+  public dniConsulted: boolean = false;
+  public nameClient: string = '';
+  public saldoUSD: string = '';
+  public saldoBs: string = '';
+  public subscription: string = '';
+  public ComprobantesPago: any = [];
+  public monto_pend_conciliar = 0;
+  public Contar = 0;
+  DisableReg: boolean = false;
+  public lastDni: string = '';
+  public saldoText: string = '';
+  public dateToDay: Date = new Date();
+  public banksFiltered: BankList[] = [];
+  public counterErrors: number = 0;
+  public showMessageErrorUpload: boolean = false;
+  private temp2: any
+  public dateInvalid: boolean = false;
+  public sendingPay: boolean = false;
+  public invalidAmount: boolean = false;
+  public uploadingImg: boolean = false;
+  public tasaCambio: string = '';
+  public errorDate: boolean = false;
+  public daysFeriados: BanksDays[] = [];
+  ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no 
+
+  AllService: any = []
+  ListService: any = []
+
+
+  constructor(
+    private registerPayService: RegisterPayService,
+    private fb: FormBuilder,
+    private uplaodImageService: UplaodImageService,
+    public dialog: MatDialog,
+    private route: ActivatedRoute,
+    private tasaService: TasaService,
+    private dataBankService: DataBankService,
+    private _snackBar: MatSnackBar,
+    private _Consultas: ConsultasService,
+    private miceService: MiscelaneosService,
+    private _Cloudinary : CloudynariService,
+    private _UploadPHP : UploadPHPService
+  ) {
+    this.dataBankService.bankList.subscribe((banks) => {
+      this.bankList = banks;
+      this.banksFiltered = [...this.bankList];
+      this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba')
+    });
+    //console.log(this.banksFiltered);
+    /* this.registerPayService.getNewBankList().subscribe((res) => {
+      console.log(res);
+    }) */
+    /*
+    this.registerPayService.getBancosList()
+    .subscribe((res) => {
+      // Si la carga de bancos falla no es posible registrar el pago... 
+      // Es importante tener servidor de backup para esto Imaginando que SAE plus este caido debemos registrar pagos encolados.
+      this.bankList = res.data.ConsultaBancos.Bancos
+    });
+    */
+
+  }
+
+  MyInit() {
+    this.firstFormFibex = this.fb.group({
+      name: ['', [Validators.required]],
+      dni: ['', [Validators.required, Validators.minLength(6)]],
+      email: ['', [Validators.required, Validators.pattern(this.regexEmail)]],
+      bank: ['', [Validators.required]],
+      nroContrato: ['', [Validators.required]],
+      date: ['', [Validators.required]],
+      amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]]
+    }, { validator: isNegativeNumber });
+    this.secondFormFibex = this.fb.group({
+      voucher: ['', [Validators.required]],
+      nameTitular: [''],
+      dniTitular: [''],
+      emailTitular: [''],
+    });
+    this.thirdFormFibex = this.fb.group({
+      img: ['', [Validators.required]],
+      note: ['']
+    });
+
+    this.name?.disable();
+  }
+
+  deleteDuplicated(array: any[], key: string) {
+    let list: any[] = [];
+    array.forEach((items: any) => {
+      const objExists = list.find((obj: any) => obj[key] === items[key]);
+      if ( objExists === undefined ) {
+        list.push(items);
+      }
+    })
+    return list;
+  }
+
+  handleSuccess(e: any) {
+    console.log("ReCaptcha", e);
+  }
+
+  handleReset(e: any) {
+    console.log("ReCaptcha", e);
+  }
+
+  handleExpire(e: any) {
+    console.log("ReCaptcha", e);
+  }
+
+  handleError(e: any) {
+    console.log("ReCaptcha", e);
+  }
+
+  handleLoad(e: any) {
+    console.log("ReCaptcha", e);
+  }
+
+
+
+
+  ngOnInit(): void {
+
+    this.MyInit();
+    this.route.queryParams
+      .pipe(
+        filter((param) => param['dni'])
+      )
+      .subscribe((res) => {
+        if (res['dni']) {
+          //Esto es solo cuando se resiva la cedula
+          this.searchServices(res['dni'], true);
+          this.searchInfoEquipos(res['dni']);
+          this.SendOption(0, 0, res['dni']);
+
+        }
+      });
+    this.dateOfPay();
+    this.amountInvalid();
+    this.getDaysFeriados();
+  }
+  ngOnDestroy(): void {
+
+  }
+
+  SendOption(page: number, option: any, value: any) {
+    let temp = value
+    //Anticlon y evitar valores vacios
+    if (value != "" && temp != this.temp2 && value !=undefined) {
+      if (page == 0 && option == 5) {
+        value = value.toLocaleString('en-GB')
+      }
+
+      this.temp2 = temp;
+      DataSlide[page].Data[option].Data = value;
+      let Data = DataSlide[page].Data[option];
+      try {
+        this._Consultas.Send(Data.Option, Data.Data, Data.id, "", this.idUnicoClient);
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
+  get name() { return this.firstFormFibex.get('name'); }
+  get dni() { return this.firstFormFibex.get('dni'); }
+  get email() { return this.firstFormFibex.get('email'); }
+  get nroContrato() { return this.firstFormFibex.get('nroContrato'); }
+  get bank() { return this.firstFormFibex.get('bank'); }
+  get amount() { return this.firstFormFibex.get('amount'); }
+  get date() { return this.firstFormFibex.get('date'); }
+
+  get voucher() { return this.secondFormFibex.get('voucher'); }
+  get nameTitular() { return this.secondFormFibex.get('nameTitular'); }
+  get dniTitular() { return this.secondFormFibex.get('dniTitular'); }
+  get emailTitular() { return this.secondFormFibex.get('emailTitular'); }
+
+  get note() { return this.thirdFormFibex.get('note'); }
+  get img() { return this.thirdFormFibex.get('img'); }
+
+  ClearCedula(Cedula: any) {
+    if (Cedula) {
+      var regex = /(\d+)/g;
+      const CedulaLimpia = Cedula.match(regex)
+      return CedulaLimpia.join("")
+    }
+  }
+
+  uploadImagePayment($event: any) {
+    this.uploadingImg = true;
+    let reader = new FileReader();
+    reader.readAsDataURL($event.target.files[0]);
+    reader.onload = (_event) => {
+      let imageBase64: any = reader.result
+      const fileList: FileList = $event.target.files;
+      if (fileList.length > 0) {
+        const file = fileList[0];
+        if (!this.uplaodImageService.verifyFileSize(file.size)) {
+          this.uploadingImg = false;
+          return;
+        }
+        // this.alertFindDni('Subiendo comprobante de pago', 'Porfavor espere');
+        // this.closeAlert();
+        this.uplaodImageService.getUrlImageBase64({ dataFileBase64: imageBase64 }).subscribe(
+          (res) => {
+            this.uploadingImg = false;
+            if (res.status === 500 || res.status === 400) {
+              //this.countErrorUploadImage(imageBase64);
+              return;
+            }
+
+            imageBase64 = '';
+            this.imageUrl = res.url;
+            this.SendOption(2, 0, res.url);
+            //this.img?.patchValue(res.url);
+            this.imageUploaded = true;
+          }, (err) => {
+            this.uploadingImg = false;
+           // this.countErrorUploadImage(imageBase64);
+            console.error('error registro pago', err);
+            // console.error(err);
+          });
+      }
+    }
+  }
+
+  uploadImagePayment2($event: any) {
+    this.uploadingImg = true;
+    let reader = new FileReader();
+    reader.readAsDataURL($event.target.files[0]);
+    reader.onload = (_event) => {
+      let imageBase64: any = reader.result
+      const fileList: FileList = $event.target.files;
+      if (fileList.length > 0) {
+        const file = fileList[0];
+        if (!this.uplaodImageService.verifyFileSize(file.size)) {
+          this.uploadingImg = false;
+          return;
+        }
+        var dt = new Date();
+        let year  = dt.getFullYear();
+        let month = (dt.getMonth() + 1).toString().padStart(2, "0");
+        let day   = dt.getDate().toString().padStart(2, "0");
+        let Hour = dt.getHours().toString();
+        let Minute = dt.getMinutes().toString();
+        let Second = dt.getSeconds().toString();
+        let Nombre = this.name?.value.replace(/ /g,'_');
+        let NameCloud = Nombre+'-'+this.nroContrato?.value+'-'+day+'-'+month+'-'+year+'-'+Hour+Minute+Second
+        //Paso el file en base64 y el nombre que se le asignara
+        this._Cloudinary.UploadImagenCloudynari2(imageBase64,NameCloud)
+        .then((response:any)=>{
+          if(response.hasOwnProperty('error')){
+           // this.uploadingImg = false;
+            //this.openSnackBar('Error: '+response.error.message);
+            this.countErrorUploadImage(imageBase64,NameCloud)
+            return;
+          }
+          this.uploadingImg = false;
+          imageBase64 = '';
+          this.imageUrl = response.secure_url;
+          this.SendOption(2, 0, response.url);
+          //this.img?.patchValue(res.url);
+          this.imageUploaded = true;
+        })
+        .catch((error:any)=>{
+          console.error(error);
+          this.countErrorUploadImage(imageBase64,NameCloud)
+        })
+      }
+    }
+  }
+
+  ValidateLastReferencia(NroRef: any) {
+    //Busco en mi memoria de comprobante luego llamo al de API por si acaso
+    const INDEX = this.ComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+
+    if (INDEX != -1) {
+      this.secondFormFibex = this.fb.group({
+        voucher: ['', [Validators.required]]
+      });
+      this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+    } else {
+      this.VerifyRefencia(NroRef)
+    }
+
+  }
+
+  DetailModal(data: any) {
+
+  }
+
+  VerifyRefencia(NroRef?: any) {
+    try {
+
+      if (NroRef || this.voucher?.value) {
+
+        this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).subscribe((ResDeposito: any) => {
+          if ((ResDeposito.success === "true") || ResDeposito.success === true) {
+
+            this.secondFormFibex = this.fb.group({
+              voucher: ['', [Validators.required]],
+            });
+
+            this.ExitRef = false
+
+            this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+          } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
+            if (!NroRef) { this.NextMatStepper() }
+          }
+
+        })
+
+      } else {
+        this.ExitRef = false
+      }
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  ValidateReferenciaLast(Data: any) {
+    Data.forEach((element: any, index: any) => {
+      this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia).subscribe((ResDeposito: any) => {
+        if ((ResDeposito.success === "true") || ResDeposito.success === true) {
+          element.Status = ResDeposito.data[0].estatus_deposito;
+        } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
+          element.Status = "SIN PROCESAR";
+        }
+      })
+      if (index == Data.length - 1) {
+        this.ComprobantesPago = Data
+      }
+    });
+
+    // this.ComprobantesPago
+  }
+
+  NextMatStepper() {
+    this.stepper.next();
+  }
+
+  savePayment() {
+    this.DisableReg = true
+    if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid) {
+      if (!this.regexUrl.test(this.imageUrl)) {
+        this.invalidForm('La imagen de pago es requerida');
+        this.closeAlert();
+        this.DisableReg = false
+        return;
+      }
+      this.invalidForm('Existen campos requeridos que no fueron llenados correctamente');
+      this.closeAlert();
+      this.DisableReg = false
+      return;
+    }
+    let contractInfo = this.listContratos.find((info) => {
+      if (this.nroContrato) {
+        return this.nroContrato.value === info.contrato;
+      }
+      return {};
+    })
+    var saldo = "0";
+    // console.log(this.banco.toLowerCase())
+    // console.log(this.banco.toLowerCase().indexOf('mercantil'))
+    if (this.BancoNacional(this.banco) && contractInfo?.saldo != undefined) {
+      saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
+    } else {
+      if (contractInfo?.saldo != undefined) {
+        saldo = parseFloat(contractInfo?.saldo).toFixed(2)
+      }
+    }
+
+
+
+    // console.log(this.date?.value)
+    var dt = new Date(this.date?.value);
+    let year  = dt.getFullYear();
+    let month = (dt.getMonth() + 1).toString().padStart(2, "0");
+    let day   = dt.getDate().toString().padStart(2, "0");
+    let date = year + "/" + month + "/" + day;
+    /**
+     *    
+     */
+    
+      //console.log("Banco que seleccione ")
+    //console.log(this.banco)
+    /*console.log(
+      {
+        ...this.firstFormFibex.value,
+        ...this.secondFormFibex.value,
+        ...this.thirdFormFibex.value,
+        img: this.imageUrl,
+        name: contractInfo?.cliente,
+        amount: this.amount?.value,
+        date,
+        id_Cuba: this.BancoSelect.id_cuba
+      }
+    )*/
+    this.sendingPay = true;
+    this.registerPayService.registerPayClient({
+      ...this.firstFormFibex.value,
+      ...this.secondFormFibex.value,
+      ...this.thirdFormFibex.value,
+      img: this.imageUrl,
+      name: contractInfo?.cliente,
+      amount: this.amount?.value,
+      date,
+      id_Cuba: this.BancoSelect.id_cuba
+    })
+      .subscribe((res: any) => {
+        this.SendOption(3, 0, true);
+        // console.log("----------------------");
+        //  console.log(res);
+        //console.log("----------------------");
+
+        this.DisableReg = false
+        if (res) {
+          // console.log(res);
+          this.sendingPay = false;
+          if (res.data.ReportePago_Falla && res.data.ReportePago_Falla.length > 0) {
+            try {
+              const index = res.data.ReportePago_Falla.findIndex((duplicado: any) => duplicado.to == "duplicado");
+
+              if (index > 0) {
+                this.playDuplicated = true;
+                this.payReported = false;
+              } else {
+                this.payReported = true;
+                this.playDuplicated = false;
+              }
+            } catch (error) {
+              this.payReported = true;
+            }
+            this.ScrollUp()
+            this.Contar = 10;
+            this.Contador()
+
+          } else {
+            // console.log("-----2222222-------");
+          }
+        }
+      });
+  }
+
+  ScrollUp(Eventd?: any) {
+    window.scroll(0, 0);
+  }
+
+
+  public removeValidators(form: FormGroup) {
+
+  }
+
+  ResetForm() {
+
+    this.nameClient = '';
+    this.imageUrl = '';
+    this.imageUploaded = false
+    this.DisableReg = false
+    this.cambio_act = 0;
+    this.MyInit()
+    this.ScrollUp()
+
+    // this.firstFormFibex.removeValidators(Validators.required);
+
+    this.firstFormFibex.patchValue({
+      name: '',
+      dni: '',
+      email: '',
+      bank: '',
+      nroContrato: '',
+      date: '',
+      amount: ''
+    });
+    Object.keys(this.firstFormFibex.controls).forEach((key) => {
+      const control = this.firstFormFibex.controls[key];
+      control.setErrors(null);
+    });
+    /*
+      this.firstFormFibex.clearValidators();
+      this.firstFormFibex.markAsPristine();
+      this.firstFormFibex.markAsUntouched();
+      this.secondFormFibex.reset({
+
+      });
+      this.thirdFormFibex.reset({
+
+      });
+    */
+
+  }
+  Contador() {
+    this.Contar--
+    if (this.Contar <= 0) {
+      window.location.reload();
+      /*this.stepper.selectedIndex = 0;      
+      this.payReported  = false;
+      this.playDuplicated  = false;
+      this.ResetForm();*/
+    } else {
+      setTimeout(() => this.Contador(), 1000);
+    }
+
+  }
+
+
+  CambiarFocusEnter(s?: any) {
+    // Aqui debo lograr sacar el focus o disparar el evento blur para que puedan buscar con enter
+  }
+
+
+  get disbaleButtonIfAmountIsInvalid(): boolean {
+    return parseFloat(this.firstFormFibex.get('amount')?.value) < 0;
+  }
+
+  get disbaleButtonIfAmountIs0(): boolean {
+    return this.firstFormFibex.get('amount')?.value.length === 0
+  }
+
+  get disbaleButtonIfDateIsInvalid(): boolean {
+    return this.dateInvalid;
+  }
+
+  get disableBtnAmountInvalid(): boolean {
+    return this.invalidAmount;
+  }
+
+  get disableLengthContrato() {
+    return this.nroContrato?.value.length === 0;
+  }
+
+  searchServices(dni: any, fromParmas?: boolean) {
+    if (dni.value) {
+      dni.value = this.ClearCedula(dni.value);
+    }
+    this.banksFiltered = [...this.bankList];
+    let dni_: string = '';
+    if (!fromParmas) {
+      dni_ = dni.value;
+    } else if (fromParmas) {
+      dni_ = dni;
+    }
+
+    if (dni_ === this.lastDni) {
+      return;
+    }
+
+
+
+    this.lastDni = dni_;
+    this.dniConsulted = false;
+    if (dni_.length >= 6) {
+      this.alertFindDni('Buscando información del cliente', 'Por favor espere...');
+      this.registerPayService.getSaldoByDni(dni_)
+        .subscribe((res) => {
+          this.closeAlert();
+          try {
+            if (res.length > 0) {
+              this.listContratos = [];
+              this.ComprobantesPago = [];
+              this.SendOption(0, 0, dni.value);
+              res.forEach((dataContrato: any) => {
+                console.log(dataContrato.status_contrato)
+                if (dataContrato.status_contrato != "ANULADO" && dataContrato.status_contrato != "RETIRADO" ) {
+                  this.listContratos.push({
+                    id_contrato: dataContrato.id_contrato,
+                    contrato: dataContrato.nro_contrato,
+                    saldo: dataContrato.saldo,
+                    cliente: dataContrato.cliente,
+                    monto_pend_conciliar: dataContrato.monto_pend_conciliar,
+                    subscription: dataContrato.suscripcion,
+                    franquicia: dataContrato.franquicia,
+                    status_contrato: dataContrato.status_contrato,
+                  });
+                  this.cambio_act = dataContrato.cambio_act;
+                }                
+              });
+              if (this.listContratos.length == 0) {
+                this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
+              }
+              /* EMITIR TASA DEL DÍA */
+              console.log(this.listContratos)
+              this.tasaService.tasa.next(this.cambio_act.toString());
+              this.tasaCambio = this.cambio_act.toString();
+              // this.filterContracts();
+              if (this.listContratos.length === 0) {
+                this.dni?.setValue('')
+                return;
+              };
+              this.idContrato = this.listContratos[0].id_contrato;
+              this.nameClient = this.listContratos[0].cliente;
+              this.name?.setValue(res[0].cliente);
+              this.nroContrato?.setValue(this.listContratos[0].contrato);
+              this.SendOption(0, 3, this.listContratos[0].contrato);
+              this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+              this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              this.dni?.setValue(dni_);
+              this.searchInfoEquipos(dni_);
+
+
+              /*Esto se hacer por si el usuario preciomente selecciona un banco */
+              if (this.BancoNacional(this.banco)) {
+                if (!Number.isNaN(parseFloat(this.listContratos[0].saldo))) {
+                  // Convertir en una función para que no se repita
+                  this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
+
+                  this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                  // console.log(parseInt(this.listContratos[0].saldo) <= 0)
+                  this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                  this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
+                  this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+                } else {
+                  this.amount?.setValue(0);
+                  this.lastAmount = '0';
+                }
+              } else {
+                //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
+                this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
+                this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+              }
+              try {
+                // this.SendOption(0,0,dni.value);
+                this.SendOption(0, 6, this.nameClient);
+                this.SendOption(0, 7, this.monto_pend_conciliar);
+                this.SendOption(0, 8, this.saldoBs);
+                this.SendOption(0, 9, this.saldoUSD);
+              } catch (error) {
+                console.error(error);
+              }
+              if (this.listContratos.length === 1) {
+                this.listContratos.find((cliente) => {
+                  this.verifySaldo(cliente.saldo);
+                });
+              }
+
+             
+              //Busco su numeros de comprobantes
+              this.registerPayService.getComprobantClient2(dni_)
+                .then((comprobante: any) => {
+                 // console.log("Me llego el comprobante");
+                 // console.log(comprobante)
+                  if (comprobante.length > 0) {
+
+                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                    let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
+                    temp = temp.slice(0, 5);
+                    this.ValidateReferenciaLast(temp)
+                  }
+                })
+                .catch((error: any) => console.error(error));
+            } else {
+              this.nameClient = '';
+              this.saldoUSD = '';
+              this.saldoBs = '';
+              this.lastAmount = '';
+              this.dniConsulted = true;
+              this.patchValueAllForm();
+              this.alertFindDni('Debe colocar una cédula valida', 'Por favor espere...');
+              setTimeout(() => this.closeAlert(), 1000);
+              this.banksFiltered = [...this.bankList];
+              this.listContratos = [];
+              this.banksFiltered = [...this.bankList];
+            }
+          } catch (error) {
+            this.nameClient = '';
+            this.saldoUSD = '';
+            this.saldoBs = '';
+            this.dniConsulted = true;
+            this.name?.setValue('');
+            this.alertFindDni('Disculpe intente de nuevo', '');
+            setTimeout(() => this.closeAlert(), 1000);
+          }
+
+        })
+    } else {
+      // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
+      // Se quedan los valores anteriores de la consulta anterior
+      this.nameClient = '';
+      this.saldoUSD = '';
+      this.saldoBs = '';
+      this.dniConsulted = true;
+      this.name?.setValue('');
+      this.alertFindDni('Disculpe intente de nuevo', '');
+      setTimeout(() => this.closeAlert(), 1000);
+    }
+
+
+  }
+
+  SearchServiceClient(Contrato: any) {
+    try {
+      this.AllService = []
+      this.registerPayService.GetListService(Contrato).subscribe((ResService: any) => {
+
+        if (ResService.data.info.length > 0) {
+          for (let index = 0; index < ResService.data.info.length; index++) {
+            this.AllService.push(ResService.data.info[index].nombre_servicio)
+          }
+
+          this.paquete = this.AllService
+        } else {
+          this.selectInfoEquipos(Contrato)
+        }
+
+      }, (err) => {
+        this.selectInfoEquipos(Contrato)
+        console.error(err)
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  searchInfoEquipos(dni: string) {
+    this.paquetesContratos = [];
+    // console.log(dni);
+    this.registerPayService.infoEquiposClientes(dni)
+      .subscribe((res: any[]) => {
+        // console.log(res);
+        this.paquetesContratos = res.map((infoPaquete: any) => {
+          return {
+            id_contrato: infoPaquete.id_contrato,
+            paquete: infoPaquete.paquetes
+          }
+        });
+        if (this.paquetesContratos.length === 0) {
+          // this.paquete = '';
+          this.SearchServiceClient(this.idContrato)
+          return;
+        }
+        this.SearchServiceClient(this.paquetesContratos[0].id_contrato)
+      });
+  }
+
+  selectInfoEquipos(id_contrato: string) {
+    // console.log(id_contrato);
+    this.paquete = ''
+    let paquete = this.paquetesContratos.find((index) => {
+      // console.log(index);
+      return index.id_contrato === id_contrato
+    })?.paquete;
+    // console.log(paquete, '-------------------------------------------------paquete');
+    if (paquete !== undefined) {
+      this.paquete = paquete;
+    }
+  }
+
+  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string }) {
+    //this.validateIfAmountIsNegativer(contrato.saldo);
+    this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
+    this.verifySaldo(contrato.saldo);
+    this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
+    this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
+    this.idContrato = contrato.id_contrato;
+    this.subscription = parseFloat(contrato.subscription).toFixed(2);
+    this.SearchServiceClient(this.idContrato)
+    // this.selectInfoEquipos(this.idContrato);
+    this.bankSelected(this.banco);
+  }
+
+
+  BancoNacional(StrBanco: string) {
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE')) return false
+    else return true
+  }
+
+  bankSelected(bank: any) {
+    // console.log("bank select");
+    // console.log(bank);
+    this.BancoSelect = bank
+    this.banco = bank.Banco + bank.referencia_cuenta;
+    if (this.BancoNacional(this.banco)) {
+      
+      if (!Number.isNaN ( Math.round(parseFloat(this.lastAmount)))) {
+        this.validateIfAmountIsNegativer(this.lastAmount, true);
+      }
+    } else {
+      this.validateIfAmountIsNegativer(this.lastAmount);
+    }
+  }
+
+  alertFindDni(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      timer: 5000,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+  }
+
+
+  alertDniAmount(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      icon: 'success',
+      timer: 5000
+    })
+  }
+
+  invalidForm(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'error',
+      timer: 4000
+    })
+  }
+
+  warningSimpleForm(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'warning',
+      timer: 4000
+    })
+  }
+
+  warnignForm(text: string, html: string, next: number, use?: boolean) {
+    Swal.fire({
+      title: text,
+      html: html,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#00184E',
+      cancelButtonColor: '#f44336',
+      cancelButtonText: 'Editar monto',
+      confirmButtonText: 'Seguir adelante'
+    }).then((result) => {
+      if (result.isConfirmed && !use) {
+        console.log(!this.disbaleButtonIfAmountIsInvalid, !this.disbaleButtonIfAmountIs0,  this.firstFormFibex.invalid, this.disbaleButtonIfDateIsInvalid )
+        if ( !this.disbaleButtonIfAmountIsInvalid && 
+          !this.disbaleButtonIfAmountIs0 && 
+          this.firstFormFibex.valid &&
+          !this.disbaleButtonIfDateIsInvalid &&
+          !this.invalidAmount ) {
+            this.stepper.selectedIndex = next;
+        }
+      }
+    })
+  }
+
+  closeAlert() {
+    setTimeout(() => {
+      Swal.close();
+    }, 2500)
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(ImageComponent, {
+      width: '300px',
+      data: this.imageUrl,
+    });
+
+    dialogRef.afterClosed().subscribe((deleteImage: boolean) => {
+      if (deleteImage) {
+        this.img?.setValue('');
+        this.imageUrl = '';
+        this.imageUploaded = false;
+      }
+    });
+  }
+
+  openDialogCmprobante(dataC: any): void {
+    // console.log(dataC);
+    const dialogRef = this.dialog.open(DialogDetailComprobantesComponent, {
+      width: '300px',
+      data: dataC,
+    });
+
+    dialogRef.afterClosed().subscribe((dataC2: boolean) => {
+      // console.log(dataC2);
+    });
+  }
+
+  verifySaldo(saldo: string) {
+    if (parseFloat(saldo) <= 0) {
+      this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: ' + (parseFloat(saldo) * -1).toFixed(2) + ' REGISTO PAGO ADELANTADO');
+      setTimeout(() => {
+        // this.ResetForm();
+      }, 1500)
+      // this.nameClient = '';
+    }
+  }
+
+  deleteImagePay() {
+    this.img?.setValue('');
+    this.imageUrl = '';
+    this.imageUploaded = false;
+    this.SendOption(2, 0, "deleteimage");
+  }
+
+  validateIfAmountIsNegativer(amount: string, national?: boolean) {
+    // console.log("ValidarIfAomuntIsNegativer");
+    if (national) {
+      if (parseInt(amount) <= 0) {
+        this.amount?.setValue('');
+        this.saldoText = 'SALDO A FAVOR';
+      } else if (parseInt(amount) > 0) {
+        this.saldoText = 'SALDO';
+        this.amount?.setValue('');
+        this.SendOption(0, 4, this.amount?.value)
+      }
+      return;
+    }
+
+    if (parseInt(amount) <= 0) {
+      this.amount?.setValue('');
+      this.saldoText = 'SALDO A FAVOR';
+    } else if (parseInt(amount) > 0) {
+      this.saldoText = 'SALDO';
+      this.amount?.setValue(''); 
+    }
+
+  }
+
+  resetStepper() {
+    this.stepper.selectedIndex = 0;
+  }
+
+  nextStep(index: number, verifyAmount?: boolean) {
+    console.log(this.nroContrato?.value);
+    if( this.nroContrato?.value.length === 0 ){
+      this.invalidForm('Debes seleccionar un contrato para avanzar', '');
+      return;
+    }
+    if (verifyAmount) {
+
+      if (!this.BancoNacional('')) {
+        if (Number(this.amount?.value) > Number(this.saldoUSD)) {
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está segura que sea continuar?', index);
+          return;
+        }
+      } else {
+        if (Number(this.amount?.value) > Number(this.saldoBs)) {
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está segura que sea continuar?', index);
+          return;
+        }
+      }
+    }
+
+    this.stepper.selectedIndex = index;
+  }
+
+  filterBankByFranquicia(franquicia: string) {
+    if (franquicia === 'FIBEX ARAGUA') {
+      this.banksFiltered = this.bankList.filter((bank) => {
+        return bank.Franquicia.includes(franquicia);
+      });
+      return;
+    }
+
+    this.banksFiltered = this.bankList.filter((bank) => {
+      return bank.Franquicia.includes('FIBEX-all');
+    });
+
+  }
+
+  openSnackBar(msg: string) {
+    this._snackBar.open(msg, 'OK', {
+      duration: 5000
+    });
+  }
+
+  countErrorUploadImage(filebase64:any,NameFile:string) {
+    if (this.counterErrors >= 2) {
+      if(this.counterErrors >= 5){
+        if(this.counterErrors === 8 || !environment.PHPUpload){
+          this.showMessageErrorUpload = true;
+          this.counterErrors = 0;
+          this.openSnackBar('Error al subir la imagen, intente más tarde');
+          this.uploadingImg = false;
+          //this.img?.removeValidators(Validators.required);
+          return;
+        }
+        if(environment.PHPUpload){
+          this._UploadPHP.uploadFilePHP(filebase64,NameFile)
+          .then((response:any)=>{
+            if(response.error){
+             // this.uploadingImg = false;
+              //this.openSnackBar('Error: '+response.error.message);
+              this.openSnackBar('Error al subir la imagen, intente nuevamente');
+              this.counterErrors++;
+              return;
+            }
+            this.uploadingImg = false;
+            filebase64 = '';
+            this.imageUrl = response.url; 
+            this.SendOption(2, 0, response.url);
+            //this.img?.patchValue(res.url);
+            this.imageUploaded = true;
+          })
+          .catch((error:any)=>{
+            this.openSnackBar('Error al subir la imagen, intente nuevamente');
+            console.error(error);
+            this.counterErrors++;
+          })
+          return;
+        }
+      }
+      
+      this.uplaodImageService.getUrlImageBase64({ dataFileBase64: filebase64 }).subscribe(
+      (res) => {
+      this.uploadingImg = false;
+      if (res.status === 500 || res.status === 400) {
+        this.openSnackBar('Error al subir la imagen, intente nuevamente');
+        this.counterErrors++;
+        this.img?.setValue('');
+        return;
+      }
+
+      filebase64 = '';
+      this.imageUrl = res.url;
+      this.SendOption(2, 0, res.url);
+      //this.img?.patchValue(res.url);
+      this.imageUploaded = true;
+    }, (err) => {
+      this.uploadingImg = false;
+      //this.countErrorUploadImage(imageBase64);
+      console.error('error registro pago', err);
+      this.openSnackBar('Error al subir la imagen, intente nuevamente');
+      this.counterErrors++;
+      this.img?.setValue('');
+      // console.error(err);
+    });
+    }else{
+      this.img?.setValue('');
+      this.openSnackBar('Error al subir la imagen, intente nuevamente');
+      this.counterErrors++;
+      this.uploadingImg = false;
+    }
+    
+  }
+
+  patchValueAllForm() {
+    this.firstFormFibex.patchValue({
+      name: '',
+      dni: '',
+      email: '',
+      bank: '',
+      nroContrato: '',
+      date: '',
+      amount: ''
+    });
+    this.secondFormFibex.patchValue({
+      voucher: '',
+      nameTitular: '',
+      dniTitular: '',
+      emailTitular: '',
+    })
+    this.thirdFormFibex.patchValue({
+      img: '',
+      note: ''
+    })
+  }
+
+  imageNotUploaded() {
+    this.ScrollUp()
+    if ( this.showMessageErrorUpload ) {
+      return;
+    }
+    if( this.img?.invalid && this.img?.value == '' && !this.regexUrl.test(this.imageUrl)) {
+      this.invalidForm('La imagen de pago es requerida');
+      this.closeAlert();
+    }
+  }
+
+  incorrectBankAndAmount(value: string) {
+    if ( this.invalidAmount ) return;
+    this.SendOption(0,4,this.amount?.value)
+    let saldousd = Number(this.saldoUSD) - Number( value);
+    let saldobs = Number(this.saldoBs) - Number( value);
+    if (saldousd < 0) saldousd = saldousd * (-1);
+    if (saldobs < 0) saldobs = saldobs * (-1);
+    if (this.BancoNacional('') && saldousd < saldobs) {
+      this.warnignForm( `Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`, 
+                        `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
+    }
+    if (!this.BancoNacional('') && saldousd > saldobs) {
+      this.warnignForm( `Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`, 
+                        `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
+    }
+  }
+
+  dateOfPay() {
+    this.date?.valueChanges.subscribe({
+      next: (value) => {
+        console.log(new Date(value).toISOString())
+        if ( value ) {
+          let date  = new Date(value).getTime()
+          const { days } = this.miceService.timeDifference(new Date().getTime(), date);
+          if ( days > 91 ) {
+            // console.log(this.fecha);
+            this.invalidForm('No puede reportar un pago de hace 3 meses o más', 'Por favor diríjase a una oficina comercial');
+            this.firstFormFibex.get('date')?.setValue('');
+            this.dateInvalid = true;
+            this.errorDate = !this.errorDate;
+            //this.date_.value  = '';
+            return;
+          }
+          this.dateInvalid = false;
+          let feriadoDay = this.daysFeriados.find((days) => days.fecha === new Date(value).toISOString());
+          if ( feriadoDay !== undefined) {
+            let month = feriadoDay.mes.charAt(0).toUpperCase() + feriadoDay.mes.slice(1);
+            this.warningSimpleForm(`El día ${feriadoDay.diasemana.toLowerCase()} ${feriadoDay.dia} de ${month} es feriado nacional`,`
+            ¿Esta seguro que su pago cae en la fecha que usted indica?
+            `);
+          }
+        }
+      }
+    })
+  }
+
+  amountInvalid() {
+    this.amount?.valueChanges.subscribe({
+      next: (value) => {
+        if (this.BancoNacional('')) {
+          if ( Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio))  > Number(this.subscription) * 3 ) {
+            this.invalidAmount = true;
+            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`,``);
+            this.amount?.setValue('');
+            return;
+          }
+        }
+        if (!this.BancoNacional('') ) {
+          if ( Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3 ) {
+            this.invalidAmount = true;
+            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`,``);
+            this.amount?.setValue('');
+            return;
+          }
+        }
+        if( Number(value) > 0 ) {
+         //  this.incorrectBankAndAmount(value);
+        }
+        this.invalidAmount = false;
+      }
+    })
+  }
+
+
+
+  filterContracts() {
+    let contractsNull = this.listContratos.map((contract) => {
+      if ( contract.status_contrato === 'ANULADO' ) {
+        return contract.contrato;
+      }
+      return '';
+    })
+    let numbersContracts: string = ''
+    if (contractsNull.length > 0) {
+      contractsNull = contractsNull.filter(contracts => contracts != '');
+      numbersContracts= contractsNull.join('\n');
+    }
+    this.listContratos = this.listContratos.filter((contract) => contract.status_contrato !== 'ANULADO');
+    if ( this.listContratos.length === 0 ) {
+      this.saldoBs = '';
+      this.saldoUSD = '';
+      this.subscription = '';
+      this.nameClient = ''
+    }
+    //this.invalidForm('Usted posee contratos anulados '+numbersContracts, 'Por favor diríjase a una oficina comercial');
+  }
+
+  getDaysFeriados() {
+    this._Consultas.getDaysFeriados().subscribe((res) => {
+      //console.log(res)
+      this.daysFeriados = res;
+    });
+  }
+
+}
+
+
