@@ -22,7 +22,62 @@
         <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
       </div>
      
-      <mat-stepper [linear]="true" #stepper [ngStyle]="{'visibility':!payReported && !playDuplicated ? 'visible' : 'hidden'}">
+      <mat-stepper [linear]="true" #stepper>
+
+        <mat-step *ngIf="AppFibex"  [stepControl]="fourthFormFibex">
+          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}            
+              </h4> 
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4> 
+            </div>
+            <div>
+              <h4 class="name-client">
+                 Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div>
+              <!--
+              <p class="name-client" *ngIf="monto_pend_conciliar > 0">
+                Monto por Conciliar:{{monto_pend_conciliar | currency:'USD':true:'1.2-2'}}
+              </p>-->
+              
+          </div>
+          <form [formGroup]="fourthFormFibex">
+            <ng-template matStepLabel>Tipo de pago</ng-template>
+            <div class="form-login__item">
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de pago</mat-label>
+                <mat-select formControlName="tipopago">
+                  <mat-option *ngFor="let option of PagoMetodosHTML" [value]="option.idpago">
+                    {{option.tipopago}}
+                  </mat-option> 
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Banco Receptor (FIBEX)</mat-label>
+                <mat-select formControlName="bank">
+                  <mat-option *ngFor="let bank of PagoMercantilBCO" [value]="bank.Banco">
+                    {{bank.Banco}} ** {{bank.referencia_cuenta }}
+                  </mat-option>
+                </mat-select>
+                  <mat-error>El banco es obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+              <button class="button-material-next btn-width-100" mat-raised-button type="button" matStepperNext><!--matStepperNext-->
+                Siguiente
+              </button>              
+            </div>
+          </form>
+        </mat-step>
+        <div *ngIf="BancoPago !='BANCO MERCANTIL'">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
@@ -72,16 +127,7 @@
                 -->
               </mat-form-field>
 
-              <mat-form-field *ngIf="MetodoPago" appearance="outline">
-                <mat-label>Tipo de pago</mat-label>
-                <mat-select formControlName="tipopago">
-                  <mat-option *ngFor="let option of PagoMetodosHTML" [value]="option.idpago">
-                    {{option.tipopago}}
-                  </mat-option> 
-                </mat-select>
-              </mat-form-field>
-
-              <p *ngIf="!MetodoPago" style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>
+              <p style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>
               <mat-form-field appearance="outline">
                 <mat-label>Banco Receptor (FIBEX)</mat-label>
                 <mat-select formControlName="bank">
@@ -300,6 +346,7 @@
             </div>
           </form>
         </mat-step>
+
         <mat-step>
           <ng-template matStepLabel>Confirmación</ng-template>
           <div class="spinner-pay"  *ngIf="sendingPay" >
@@ -368,6 +415,44 @@
             <button class="button-material-next btn-width-70" mat-raised-button (click)="savePayment()" [disabled]="DisableReg || showMessageErrorUpload">Reportar pago</button>
             <button class="button-material-back btn-width-30" mat-raised-button (click)="resetStepper()">Editar datos</button>
           </div>
+        </mat-step>
+        </div>
+        <mat-step *ngIf="BancoPago =='BANCO MERCANTIL'" [stepControl]="PgMovilForm">
+          <form [formGroup]="PgMovilForm">
+            <div  class="form-login__item">
+              <ng-template matStepLabel>Pago Móvil</ng-template>
+              <mat-form-field appearance="outline">
+                <mat-label>Cédula/RIF del Responsable del pago</mat-label>
+                <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+                <mat-error 
+                    *ngIf="PgMovilForm.get('c_i')?.hasError('minlength')">
+                  La cédula debe contener al menos 6 carácteres
+                </mat-error>
+                <mat-error 
+                    *ngIf="PgMovilForm.get('c_i')?.hasError('required')">
+                  La cédula es requerida
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Número de comprobante</mat-label>
+                <input matInput  formControlName="referencia" required #inputVouche>
+                <mat-error *ngIf="PgMovilForm.get('referencia')?.hasError('required')">Número de comprobante es requerido</mat-error>  
+              </mat-form-field>
+           </div>
+          </form>
+          <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+            <button 
+            [disabled]="PgMovilForm.get('referencia')?.hasError('required') || PgMovilForm.get('c_i')?.hasError('required')"
+            class="button-material-next btn-width-70" mat-raised-button type="button" 
+            (click)="ComprobarPgoMovil()">
+              Confirmar pago
+            </button>
+            <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button" matStepperPrevious>
+              Regresar
+            </button>
+          </div>
+
         </mat-step>
       </mat-stepper>
     </div>

@@ -58,6 +58,7 @@ export class FormComponent implements OnInit, OnDestroy {
   public secondFormFibex: FormGroup;
   public thirdFormFibex: FormGroup;
   public fourthFormFibex: FormGroup;
+  public PgMovilForm: FormGroup;
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
   public cambio_act: number = 0;
@@ -97,11 +98,13 @@ export class FormComponent implements OnInit, OnDestroy {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] = [];
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no 
-  public MetodoPago = true;
   AllService: any = []
   ListService: any = []
   PagoMetodosHTML = MetodoDePago;
-
+  PagoMercantilBCO:any =[];
+  tipo_pago: any;
+  AppFibex: boolean = false;
+  BancoPago: any;
 
   constructor(
     private registerPayService: RegisterPayService,
@@ -122,6 +125,8 @@ export class FormComponent implements OnInit, OnDestroy {
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba')
+      this.PagoMercantilBCO = this.banksFiltered.filter((Bco:any)=>Bco.id_cuba=='CUBA2365AA4737A57695')
+      this.PagoMercantilBCO.push({Banco:'Otros',referencia_cuenta:'0000'});
     });
     //console.log(this.banksFiltered);
     /* this.registerPayService.getNewBankList().subscribe((res) => {
@@ -148,7 +153,6 @@ export class FormComponent implements OnInit, OnDestroy {
       nroContrato: ['', [Validators.required]],
       date: ['', [Validators.required]],
       amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-      tipopago: ['',[Validators.required]],
       idpago: ['']
     }, { validator: isNegativeNumber });
     this.secondFormFibex = this.fb.group({
@@ -164,10 +168,22 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.fourthFormFibex = this.fb.group({
       tipopago: ['',[Validators.required]],
-      idpago: ['']
+      bank: ['',[Validators.required]]
+    });
+
+    this.PgMovilForm = this.fb.group({
+      c_i: ['',[Validators.required,Validators.minLength(6)]],
+      referencia: ['',[Validators.required]]
     });
 
     this.name?.disable();
+
+    this.fourthFormFibex.valueChanges.subscribe((x: any) => {
+      this.tipo_pago = x.tipopago;
+      this.BancoPago = x.bank
+      console.log(x)
+     // this.TipoPromocion()
+    })
   }
 
   deleteDuplicated(array: any[], key: string) {
@@ -214,6 +230,7 @@ export class FormComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res['dni']) {
           //Esto es solo cuando se resiva la cedula
+          this.AppFibex = !this.AppFibex;
           this.searchServices(res['dni'], true);
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
@@ -263,12 +280,34 @@ export class FormComponent implements OnInit, OnDestroy {
   get note() { return this.thirdFormFibex.get('note'); }
   get img() { return this.thirdFormFibex.get('img'); }
 
+  get tipopago() { return this.fourthFormFibex.get('tipopago'); }
+
+  get c_ipm() { return this.PgMovilForm.get('c_i'); }
+  get referenciapm() { return this.PgMovilForm.get('referencia'); }
+
   ClearCedula(Cedula: any) {
     if (Cedula) {
       var regex = /(\d+)/g;
       const CedulaLimpia = Cedula.match(regex)
       return CedulaLimpia.join("")
     }
+  }
+
+  ComprobarPgoMovil(){
+    this.alertFindDni('Comprobando pago', 'Por favor espere...');
+    console.log("esta es la referencia");
+    console.log(this.referenciapm?.value);
+    this._ApiMercantil.ConsultaPagoMovilxReferencia(this.referenciapm?.value)
+    .then((resp:any)=>{
+      if(resp.hasOwnProperty('error_list')){
+        this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
+        this.closeAlert()
+      }else{
+        this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+        this.closeAlert()
+      }
+    })
+    .catch((error:any)=>console.error(error))
   }
 
   uploadImagePayment($event: any) {
@@ -642,6 +681,8 @@ export class FormComponent implements OnInit, OnDestroy {
           this.closeAlert();
           try {
             if (res.length > 0) {
+              console.log("banksFiltered");
+              console.log(this.banksFiltered);
               this.listContratos = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni.value);
