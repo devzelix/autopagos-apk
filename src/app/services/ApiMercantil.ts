@@ -146,9 +146,9 @@ export class ApiMercantilService implements  OnInit {
             "lng": -122.0842499,
             "ipaddress": "10.0.0.1",
             "browser_agent": "Chrome 18.1.3",
-            "payment_reference": Datos
+            "payment_reference":"6460003485"
         }
-        // "6460003485"
+        // 
         //
        // this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
       //  .then((resp:any)=>{

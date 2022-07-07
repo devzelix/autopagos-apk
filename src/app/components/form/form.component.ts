@@ -172,9 +172,12 @@ export class FormComponent implements OnInit, OnDestroy {
     });
 
     this.PgMovilForm = this.fb.group({
+      prec_i:['',[Validators.required]],
       c_i: ['',[Validators.required,Validators.minLength(6)]],
-      referencia: ['',[Validators.required]]
-    });
+      referencia: ['',[Validators.required]],
+      datepgmovil:['', [Validators.required]],
+      cantidad:['', [Validators.required,Validators.pattern(this.regexAmount)]],
+    },{ validator: isNegativeNumber });
 
     this.name?.disable();
 
@@ -282,8 +285,11 @@ export class FormComponent implements OnInit, OnDestroy {
 
   get tipopago() { return this.fourthFormFibex.get('tipopago'); }
 
-  get c_ipm() { return this.PgMovilForm.get('c_i'); }
+  get c_iPagMovil() { return this.PgMovilForm.get('c_i'); }
   get referenciapm() { return this.PgMovilForm.get('referencia'); }
+  get datepgmovil() { return this.PgMovilForm.get('datepgmovil'); }
+  get cantidad() { return this.PgMovilForm.get('cantidad'); }
+  get prec_i() { return this.PgMovilForm.get('prec_i'); }
 
   ClearCedula(Cedula: any) {
     if (Cedula) {
@@ -303,7 +309,24 @@ export class FormComponent implements OnInit, OnDestroy {
         this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
         this.closeAlert()
       }else{
-        this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+        let ResBanco = resp.transaction_list[0];
+        console.log(ResBanco)
+        if(ResBanco.trx_status=="approved"){
+          let C_IPAGO=this.prec_i?.value+this.c_iPagMovil?.value
+          console.log(`${ResBanco.customer_id}==${C_IPAGO}`);
+          if(ResBanco.customer_id=="V18367443"){
+            console.log("Cedula correcta");
+            let FechaPago = new Date(ResBanco.processing_date);
+            let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
+           // console.log(this.datepgmovil?.value);
+           //console.log(`${FechaPago}==${this.datepgmovil?.value.toISOString()}`);
+            if(ResBanco.processing_date=="2022-06-12 12:16:45 VET"){
+              console.log("fecha correcta");
+            }
+          }
+          this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+        }
+        
         this.closeAlert()
       }
     })
