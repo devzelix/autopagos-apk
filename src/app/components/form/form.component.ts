@@ -183,7 +183,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.fourthFormFibex.valueChanges.subscribe((x: any) => {
       this.tipo_pago = x.tipopago;
-      this.BancoPago = 'BANCO MERCANTIL'//x.bank
+      this.BancoPago = x.bank//'BANCO MERCANTIL'//
       
       console.log(x)
      // this.TipoPromocion()
