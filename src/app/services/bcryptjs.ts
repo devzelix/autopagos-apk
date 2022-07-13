@@ -10,6 +10,10 @@ export class SeguridadDatos {
         return crypto.AES.encrypt(str, key.trim()).toString();
     }
 
+    Desencrypt(key:string,str:any){
+        return crypto.AES.decrypt(str, key.trim()).toString();
+    }
+
     //Generos el hash de la clave propocinada por el banco
 /*HashSHA256(input_str:string){
         try {
@@ -30,6 +34,27 @@ export class SeguridadDatos {
                     var Tamano= Object.keys(Datos);
                     if(typeof valueKey !="number"){
                         const Encrypt = this.encrypt(Key,valueKey); //Encripto
+                        Datos[keyOriginal] = Encrypt;    
+                    }
+                    if(index == Tamano.length-1){
+                        resolve(Datos)
+                    }
+                })  
+            } catch (error) {
+                reject(error);
+            }
+        })
+        
+
+    }
+
+    DesEncrypDataHash(Key:string,Datos:any){
+        return new Promise((resolve,reject)=>{
+            try {
+                Object.entries(Datos).forEach(([keyOriginal, valueKey],index:number) => {
+                    var Tamano= Object.keys(Datos);
+                    if(typeof valueKey !="number"){
+                        const Encrypt = this.Desencrypt(Key,valueKey); //Encripto
                         Datos[keyOriginal] = Encrypt;    
                     }
                     if(index == Tamano.length-1){

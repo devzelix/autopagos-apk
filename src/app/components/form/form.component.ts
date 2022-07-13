@@ -168,7 +168,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.fourthFormFibex = this.fb.group({
       tipopago: ['',[Validators.required]],
-      bank: ['',[Validators.required]]
+      bank: ['']
     });
 
     this.PgMovilForm = this.fb.group({
@@ -183,7 +183,8 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.fourthFormFibex.valueChanges.subscribe((x: any) => {
       this.tipo_pago = x.tipopago;
-      this.BancoPago = x.bank
+      this.BancoPago = 'BANCO MERCANTIL'//x.bank
+      
       console.log(x)
      // this.TipoPromocion()
     })
@@ -308,7 +309,9 @@ export class FormComponent implements OnInit, OnDestroy {
       if(resp.hasOwnProperty('error_list')){
         this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
         this.closeAlert()
-      }else{
+      }else if(resp.hasOwnProperty('transaction_list')){
+        console.log("respbanco");
+        console.log(resp)
         let ResBanco = resp.transaction_list[0];
         console.log(ResBanco)
         if(ResBanco.trx_status=="approved"){
@@ -316,10 +319,11 @@ export class FormComponent implements OnInit, OnDestroy {
           console.log(`${ResBanco.customer_id}==${C_IPAGO}`);
           if(ResBanco.customer_id=="V18367443"){
             console.log("Cedula correcta");
-            let FechaPago = new Date(ResBanco.processing_date);
+            let FechaBanco = ResBanco.processing_date.substring(0,9)
+            let FechaPago = new Date(FechaBanco);
             let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
            // console.log(this.datepgmovil?.value);
-           //console.log(`${FechaPago}==${this.datepgmovil?.value.toISOString()}`);
+            console.log(`${FechaPago}==${this.datepgmovil?.value.toISOString()}`);
             if(ResBanco.processing_date=="2022-06-12 12:16:45 VET"){
               console.log("fecha correcta");
             }
@@ -327,6 +331,9 @@ export class FormComponent implements OnInit, OnDestroy {
           this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
         }
         
+        this.closeAlert()
+      }else{
+        this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');
         this.closeAlert()
       }
     })

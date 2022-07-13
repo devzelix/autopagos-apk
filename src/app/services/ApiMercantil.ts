@@ -150,21 +150,25 @@ export class ApiMercantilService implements  OnInit {
         }
         // 
         //
-       // this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-      //  .then((resp:any)=>{
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+        .then((resp:any)=>{
+          console.log("Data Encriptada");
+          console.log(resp);
+          this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,Datos)
+          .then((resp:any)=>{console.log("Data Desencriptada"); console.log(resp);})
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    //console.log("respondio");
-                    //console.log(data)
+                    console.log("respondio");
+                    console.log(data)
                     resolve(data)
                 },
                 error: error => {
-                    //console.error('There was an error!', error);
+                    console.error('There was an error!', error);
                     reject(error)
                 }
             })
-      //  })
-      //  .catch((error:any)=>console.error(error));
+        })
+        .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
