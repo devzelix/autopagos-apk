@@ -302,33 +302,36 @@ export class FormComponent implements OnInit, OnDestroy {
 
   ComprobarPgoMovil(){
     this.alertFindDni('Comprobando pago', 'Por favor espere...');
-    console.log("esta es la referencia");
-    console.log(this.referenciapm?.value);
     this._ApiMercantil.ConsultaPagoMovilxReferencia(this.referenciapm?.value)
     .then((resp:any)=>{
       if(resp.hasOwnProperty('error_list')){
         this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
         this.closeAlert()
       }else if(resp.hasOwnProperty('transaction_list')){
-        console.log("respbanco");
-        console.log(resp)
         let ResBanco = resp.transaction_list[0];
         console.log(ResBanco)
         if(ResBanco.trx_status=="approved"){
           let C_IPAGO=this.prec_i?.value+this.c_iPagMovil?.value
-          console.log(`${ResBanco.customer_id}==${C_IPAGO}`);
-          if(ResBanco.customer_id=="V18367443"){
-            console.log("Cedula correcta");
-            let FechaBanco = ResBanco.processing_date.substring(0,9)
+          if(ResBanco.customer_id==C_IPAGO){ //V18367443
+            let FechaBanco = ResBanco.processing_date.substring(0,10)
+            FechaBanco = FechaBanco.replace(/-/g,',')
             let FechaPago = new Date(FechaBanco);
-            let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
+            //let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
            // console.log(this.datepgmovil?.value);
-            console.log(`${FechaPago}==${this.datepgmovil?.value.toISOString()}`);
-            if(ResBanco.processing_date=="2022-06-12 12:16:45 VET"){
-              console.log("fecha correcta");
+            console.log(`${ FechaPago.getDay()}==${this.datepgmovil?.value.getDay()}`);
+            if(FechaPago.getDay()==this.datepgmovil?.value.getDay()&&
+                FechaPago.getMonth()==this.datepgmovil?.value.getMonth()&&
+                FechaPago.getFullYear()== this.datepgmovil?.value.getFullYear())
+            {
+              this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+            }else{
+              this.alertFindDni('Fecha incorrecta!','corrigala');
             }
+          }else{
+            this.alertFindDni('La cédula ingresada no es correcta','Por favor validé que coloco los datos correctos');
           }
-          this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+        }else{
+          this.alertFindDni('El banco no aprobo su transacción','Retifique con su agente bancario');
         }
         
         this.closeAlert()
