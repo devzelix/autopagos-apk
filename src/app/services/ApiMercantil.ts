@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment as env } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { SeguridadDatos } from './bcryptjs'
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -284,6 +285,20 @@ export class ApiMercantilService implements  OnInit {
 
   ErrorRegJSON(Registro:any){
     this.RegPagosFallidos.push(Registro);
+  }
+
+  GetAddress(){
+    return new Promise((resolve,reject)=>{
+      this.http.get("http://api.ipify.org/?format=json").subscribe({
+      next: data => {
+          resolve(data)
+      },
+      error: error => {
+          reject(error);
+      }
+      })
+    })
+    
   }
   
 

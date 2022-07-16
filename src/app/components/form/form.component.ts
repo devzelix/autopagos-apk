@@ -238,7 +238,9 @@ export class FormComponent implements OnInit, OnDestroy {
           this.searchServices(res['dni'], true);
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
-
+          this._ApiMercantil.GetAddress()
+          .then((resp:any)=>console.log(resp))
+          .catch((error:any)=>console.log(error));
         }
       });
     this.dateOfPay();
