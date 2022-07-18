@@ -23,6 +23,7 @@ import { DataSlide } from './camposSubscription/camposSuscription';
 import { MetodoDePago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
+import { TypeBrowserService } from '../../services/TypeBrowser';
 
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
@@ -105,6 +106,8 @@ export class FormComponent implements OnInit, OnDestroy {
   tipo_pago: any;
   AppFibex: boolean = false;
   BancoPago: any;
+  private TypeNavegador: string ="";
+  private IpAddress:any ="";
 
   constructor(
     private registerPayService: RegisterPayService,
@@ -119,7 +122,8 @@ export class FormComponent implements OnInit, OnDestroy {
     private miceService: MiscelaneosService,
     private _Cloudinary : CloudynariService,
     private _UploadPHP : UploadPHPService,
-    private _ApiMercantil: ApiMercantilService
+    private _ApiMercantil: ApiMercantilService,
+    private _TypeBrowserService: TypeBrowserService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
       this.bankList = banks;
@@ -239,8 +243,9 @@ export class FormComponent implements OnInit, OnDestroy {
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
           this._ApiMercantil.GetAddress()
-          .then((resp:any)=>console.log(resp))
+          .then((resp:any)=>this.IpAddress = resp)
           .catch((error:any)=>console.log(error));
+          this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
         }
       });
     this.dateOfPay();
@@ -303,8 +308,13 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ComprobarPgoMovil(){
+    let DatosUserAgent = {
+      Browser:this.TypeNavegador,
+      AddresIp:this.IpAddress.ip,
+      Date: this.datepgmovil?.value.toISOString()
+    }
     this.alertFindDni('Comprobando pago', 'Por favor espere...');
-    this._ApiMercantil.ConsultaPagoMovilxReferencia(this.referenciapm?.value)
+    this._ApiMercantil.ConsultaPagoMovilxReferencia(this.referenciapm?.value,DatosUserAgent)
     .then((resp:any)=>{
       if(resp.hasOwnProperty('error_list')){
         this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
@@ -342,7 +352,7 @@ export class FormComponent implements OnInit, OnDestroy {
         this.closeAlert()
       }
     })
-    .catch((error:any)=>console.error(error))
+    .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
 
   uploadImagePayment($event: any) {

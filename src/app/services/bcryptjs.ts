@@ -4,14 +4,36 @@ import { environment } from "src/environments/environment";
 export class SeguridadDatos {
     private algorithmkeyBank = 'sha256';
     private algorithmData = 'aes-128-ecb';
+   // encrypted: any = "";
+    decrypted: string = "";
 
     //Encripta la los datos
     encrypt(key:string,str:any){
         return crypto.AES.encrypt(str, key.trim()).toString();
     }
 
+    encrypt2(key:string,str:any){
+        let _key = crypto.enc.Utf8.parse(key);   
+        let encrypted = crypto.AES.encrypt(
+            JSON.stringify(str), _key, {
+                mode: crypto.mode.ECB,
+                padding: crypto.pad.Pkcs7
+            });
+        return encrypted.toString()
+    }
+    //Desencriptar data
     Desencrypt(key:string,str:any){
         return crypto.AES.decrypt(str, key.trim()).toString();
+    }
+
+    Desencrypt2(key:string,str:any){
+        let _key = crypto.enc.Utf8.parse(key);
+        this.decrypted = crypto.AES.decrypt(
+            str, _key, {
+            mode: crypto.mode.ECB,
+            padding: crypto.pad.Pkcs7
+          }).toString(crypto.enc.Utf8);
+        return this.decrypted
     }
 
     //Generos el hash de la clave propocinada por el banco
@@ -33,7 +55,7 @@ export class SeguridadDatos {
                 Object.entries(Datos).forEach(([keyOriginal, valueKey],index:number) => {
                     var Tamano= Object.keys(Datos);
                     if(typeof valueKey !="number"){
-                        const Encrypt = this.encrypt(Key,valueKey); //Encripto
+                        const Encrypt = this.encrypt2(Key,valueKey); //Encripto
                         Datos[keyOriginal] = Encrypt;    
                     }
                     if(index == Tamano.length-1){
@@ -43,9 +65,7 @@ export class SeguridadDatos {
             } catch (error) {
                 reject(error);
             }
-        })
-        
-
+        })    
     }
 
     DesEncrypDataHash(Key:string,Datos:any){
@@ -54,7 +74,7 @@ export class SeguridadDatos {
                 Object.entries(Datos).forEach(([keyOriginal, valueKey],index:number) => {
                     var Tamano= Object.keys(Datos);
                     if(typeof valueKey !="number"){
-                        const Encrypt = this.Desencrypt(Key,valueKey); //Encripto
+                        const Encrypt = this.Desencrypt2(Key,valueKey); //Encripto
                         Datos[keyOriginal] = Encrypt;    
                     }
                     if(index == Tamano.length-1){

@@ -135,27 +135,32 @@ export class ApiMercantilService implements  OnInit {
     })
   }
 
-  ConsultaPagoMovilxReferencia(Datos:any){
+  ConsultaPagoMovilxReferencia(Datos:any,Agent:any){
     return new Promise((resolve,reject)=>{
       try {
+        
+        Agent.Date = Agent.Date.split('T')[0];
+        Agent.Date = Agent.Date.replace(/-/g,'/')
+
         Datos ={
-            "procesing_date":"2022/06/12",
-            "manufacturer": "Samsung",
-            "model": "S9",
-            "os_version": "Oreo 9.1",
-            "lat": 37.4224764,
-            "lng": -122.0842499,
-            "ipaddress": "10.0.0.1",
-            "browser_agent": "Chrome 18.1.3",
-            "payment_reference":"6460003485"
+            "procesing_date":"2022/06/12", //Reemplazar por lo que coloque el usuario
+            "ipaddress": Agent.AddresIp,
+            "browser_agent": Agent.Browser,
+            "payment_reference":"6460003485" //Reemplazar por lo que coloque el usuario
         }
-        // 
-        //
+        /*  
+          "manufacturer": "Samsung",
+          "model": "S9",
+          "os_version": "Oreo 9.1",
+          "lat": 37.4224764,
+          "lng": -122.0842499
+        */
       //  this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
       //  .then((resp:any)=>{
+      //    console.log(resp);
           //console.log("Data Encriptada");
           //console.log(resp);
-        //  this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,Datos)
+          //this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,Datos)
          // .then((resp:any)=>{console.log("Data Desencriptada"); console.log(resp);})
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
@@ -168,8 +173,8 @@ export class ApiMercantilService implements  OnInit {
                     reject(error)
                 }
             })
-      //  })
-      //  .catch((error:any)=>console.error(error));
+     //   })
+     //   .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
