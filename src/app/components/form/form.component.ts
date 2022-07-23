@@ -19,8 +19,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide } from './camposSubscription/camposSuscription';
-import { MetodoDePago } from './camposSubscription/camposSuscription';
+import { DataSlide, MetodoDePago,TypeAccount, Month, Ano } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -30,6 +29,7 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { ThisReceiver } from '@angular/compiler';
 import { environment } from 'src/environments/environment';
+import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 
 
 export interface DialogData {
@@ -60,6 +60,8 @@ export class FormComponent implements OnInit, OnDestroy {
   public thirdFormFibex: FormGroup;
   public fourthFormFibex: FormGroup;
   public PgMovilForm: FormGroup;
+  public PgMovilRegForm: FormGroup;
+  public DebitoCredito: FormGroup;
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
   public cambio_act: number = 0;
@@ -103,11 +105,20 @@ export class FormComponent implements OnInit, OnDestroy {
   ListService: any = []
   PagoMetodosHTML = MetodoDePago;
   PagoMercantilBCO:any =[];
+  ConsultarPagoMovilboolean: boolean = false;
+  RegistrarPagoMovilboolean: boolean = false;
+  DebitoCreditoboolean: boolean = false;
   tipo_pago: any;
   AppFibex: boolean = false;
   BancoPago: any;
+  private PaymenMethod: string ="";
   private TypeNavegador: string ="";
   private IpAddress:any ="";
+  public TypeAcountDC: any[]=TypeAccount;
+  public Creditoboolaean:boolean = false;
+  public Debitoboolean: boolean = false;
+  public Months = Month;
+  public Anos = Ano;
 
   constructor(
     private registerPayService: RegisterPayService,
@@ -159,6 +170,7 @@ export class FormComponent implements OnInit, OnDestroy {
       amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       idpago: ['']
     }, { validator: isNegativeNumber });
+
     this.secondFormFibex = this.fb.group({
       voucher: ['', [Validators.required]],
       nameTitular: [''],
@@ -172,7 +184,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
     this.fourthFormFibex = this.fb.group({
       tipopago: ['',[Validators.required]],
-      bank: ['']
+      bank: ['',[Validators.required]]
     });
 
     this.PgMovilForm = this.fb.group({
@@ -183,14 +195,61 @@ export class FormComponent implements OnInit, OnDestroy {
       cantidad:['', [Validators.required,Validators.pattern(this.regexAmount)]],
     },{ validator: isNegativeNumber });
 
+    this.PgMovilRegForm = this.fb.group({
+      tlforigin:['584126584242',[Validators.required]],
+      pref_ci: ['',[Validators.required]],
+      c_i: ['',[Validators.required,Validators.minLength(6)]],
+      tlfdestin: ['',[Validators.required]],
+      auth:['', [Validators.required]],
+      amountPm:['', [Validators.required,Validators.pattern(this.regexAmount)]],
+    },{ validator: isNegativeNumber });
+
+    this.DebitoCredito = this.fb.group({
+      ccv:['',[Validators.required]],
+      pref_ci: ['',[Validators.required]],
+      c_i: ['',[Validators.required,Validators.minLength(6)]],
+      typeCuenta: ['',[Validators.required]],
+      Ncard:['',[Validators.required]],
+      Clavetlfonica:['', [Validators.required]],
+      fvncmtoMes:['', [Validators.required]],
+      fvncmtoAno:['', [Validators.required]],
+      cantidad:['', [Validators.required,Validators.pattern(this.regexAmount)]],
+    },{ validator: isNegativeNumber });
+
     this.name?.disable();
 
-    this.fourthFormFibex.valueChanges.subscribe((x: any) => {
-      this.tipo_pago = x.tipopago;
-      this.BancoPago = x.bank//'BANCO MERCANTIL'//
-      
-      console.log(x)
-     // this.TipoPromocion()
+    this.fourthFormFibex.controls['tipopago'].valueChanges.subscribe((x: any) => {
+      this.tipo_pago = x;
+        this.ConsultarPagoMovilboolean = false;
+        this.RegistrarPagoMovilboolean = false;
+        this.DebitoCreditoboolean = false;
+        this.Debitoboolean =false;
+        this.Creditoboolaean = false;
+
+        if(x==0){
+          this.DebitoCreditoboolean=!this.DebitoCreditoboolean
+          this.PaymenMethod = "tdd";
+          this.Debitoboolean = !this.Debitoboolean
+        }
+        
+        if(x==1){
+          this.DebitoCreditoboolean=!this.DebitoCreditoboolean;
+          this.PaymenMethod = "tdc";
+          this.DebitoCredito.get('Clavetlfonica')?.setValidators([]);
+          this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
+          this.Creditoboolaean = !this.Creditoboolaean
+        }
+
+        if(x==3){this.ConsultarPagoMovilboolean=!this.ConsultarPagoMovilboolean}
+
+        if(x==2){
+          this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
+          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+        }
+    })
+
+    this.fourthFormFibex.controls['bank'].valueChanges.subscribe((x: any) => {
+      this.BancoPago = x//'BANCO MERCANTIL'//
     })
   }
 
@@ -229,7 +288,6 @@ export class FormComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-
     this.MyInit();
     this.route.queryParams
       .pipe(
@@ -252,6 +310,7 @@ export class FormComponent implements OnInit, OnDestroy {
     this.amountInvalid();
     this.getDaysFeriados();
   }
+
   ngOnDestroy(): void {
 
   }
@@ -299,6 +358,23 @@ export class FormComponent implements OnInit, OnDestroy {
   get cantidad() { return this.PgMovilForm.get('cantidad'); }
   get prec_i() { return this.PgMovilForm.get('prec_i'); }
 
+  get tlforigin() { return this.PgMovilRegForm.get('tlforigin'); }
+  get c_iRegPgoMvil() { return this.PgMovilRegForm.get('c_i'); }
+  get pref_ci() { return this.PgMovilRegForm.get('pref_ci'); }
+  get tlfdestin() { return this.PgMovilRegForm.get('tlfdestin'); }
+  get auth() { return this.PgMovilRegForm.get('auth'); }
+  get amountPm() { return this.PgMovilRegForm.get('amountPm'); }
+
+  get ccv() { return this.DebitoCredito.get('ccv'); }
+  get typeCuenta() { return this.DebitoCredito.get('typeCuenta'); }
+  get pref_ciDC() { return this.DebitoCredito.get('pref_ci'); }
+  get Ncard() { return this.DebitoCredito.get('Ncard'); }
+  get fvncmtoMes() { return this.DebitoCredito.get('fvncmtoMes'); }
+  get fvncmtoAno() { return this.DebitoCredito.get('fvncmtoAno'); }
+  get cantidadDC() { return this.DebitoCredito.get('cantidad'); }
+  get c_iDC() { return this.DebitoCredito.get('c_i'); }
+  get Clavetlfonica() { return this.DebitoCredito.get('Clavetlfonica'); }
+
   ClearCedula(Cedula: any) {
     if (Cedula) {
       var regex = /(\d+)/g;
@@ -308,13 +384,15 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ComprobarPgoMovil(){
+    //Solo para consultar por referencias de pago Moviles
     let DatosUserAgent = {
       Browser:this.TypeNavegador,
       AddresIp:this.IpAddress.ip,
-      Date: this.datepgmovil?.value.toISOString()
+      Date: this.datepgmovil?.value.toISOString(),
+      Reference:this.referenciapm?.value
     }
     this.alertFindDni('Comprobando pago', 'Por favor espere...');
-    this._ApiMercantil.ConsultaPagoMovilxReferencia(this.referenciapm?.value,DatosUserAgent)
+    this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
     .then((resp:any)=>{
       if(resp.hasOwnProperty('error_list')){
         this.alertFindDni('No se encuentra dicho pago','Intente nuevamente!');
@@ -335,7 +413,12 @@ export class FormComponent implements OnInit, OnDestroy {
                 FechaPago.getMonth()==this.datepgmovil?.value.getMonth()&&
                 FechaPago.getFullYear()== this.datepgmovil?.value.getFullYear())
             {
-              this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+              if(this.cantidad?.value == ResBanco.amount){
+                this.alertFindDni('Pago aceptado exitosamente','Todo ok :)');
+              }else{
+                this.alertFindDni('El monto ingresado es incorrecto!','Por favor verifique');
+              }
+              
             }else{
               this.alertFindDni('Fecha incorrecta!','corrigala');
             }
@@ -348,12 +431,131 @@ export class FormComponent implements OnInit, OnDestroy {
         
         this.closeAlert()
       }else{
-        this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');
+        //console.log(resp);
+        if(resp.status.description){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!'); }
+        //if(resp.error.description){this.alertFindDni(`${resp.error.description}`,''); }
+        
         this.closeAlert()
       }
     })
     .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
+
+  RegistrarPgoMovil(){
+    //Para realizar pago Móviles
+    let FechaHoy= new Date();
+    let invoice = this.nroContrato?.value+FechaHoy.getDay()+FechaHoy.getMonth()+FechaHoy.getFullYear()+FechaHoy.getHours()+FechaHoy.getMinutes(); //Máximo 25 caracteres
+    let DatosUserAgent = {
+      Browser:this.TypeNavegador,
+      AddresIp:this.IpAddress.ip,
+      tlforigin: this.tlforigin?.value,
+      c_i:this.pref_ci?.value+this.c_iRegPgoMvil?.value,
+      tlfdestin: this.tlfdestin?.value.toString(),
+      auth: this.auth?.value,
+      cantidad: this.amountPm?.value,
+      invoice: invoice //Máximo 25 caracteres
+    }
+    this.alertFindDni('Registrando pago', 'Por favor espere...');
+    this._ApiMercantil.C2PCompra(DatosUserAgent)
+    .then((resp:any)=>{
+      if(resp.hasOwnProperty('error_list')){
+       // this.alertFindDni(`${resp.error_list[0].description}`,'');
+        this.invalidForm(`${resp.error_list[0].description}`)
+      }else if(resp.hasOwnProperty('transaction_c2p_response')){
+        if(resp.transaction_c2p_response.trx_status=="approved"){
+          this.alertexit("Pago aprobado","Validamos su pago el mismo ya fue procesado")
+        }
+      }else{
+        if(resp.status.description){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!'); }
+        //if(resp.error.description){this.alertFindDni(`${resp.error.description}`,''); }
+        this.closeAlert()
+      }
+    })
+    .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+  }
+
+  ClaveAuthPgoMovil(){
+    //Clave de Autorización Pgo Móvil
+    this.ButtonGetAuthMercantil();
+    let DatosUserAgent = {
+
+    }
+    this.alertFindDni('Enviando clave de autorización', 'Por favor espere...');
+    this._ApiMercantil.C2PClave(DatosUserAgent)
+    .then((resp:any)=>{
+      if(resp.hasOwnProperty('error_list')){
+        this.alertFindDni(`${resp.error_list[0].description}`,'');
+      }else if(resp.hasOwnProperty('scp_info')){
+        this.ButtonGetAuthMercantil();
+      }else{
+        console.log(resp);
+        if(resp.status.description){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!'); }
+        //if(resp.error.description){this.alertFindDni(`${resp.error.description}`,''); }
+        this.closeAlert()
+      }
+      
+    })
+    .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+  }
+
+  PagoDebito(){
+    //Clave de Autorización Pgo Móvil
+    let FechaHoy= new Date();
+    let invoice = this.nroContrato?.value+FechaHoy.getDay()+FechaHoy.getMonth()+FechaHoy.getFullYear(); //Maximo 12 caracteres
+    console.log("NCard");
+    console.log(this.Ncard?.value);
+    let DatosUserAgent = {
+      Browser:this.TypeNavegador,
+      AddresIp:this.IpAddress.ip,
+      ccv: this.ccv?.value.toString(),
+      typeCuenta:this.typeCuenta?.value,
+      Ncard: this.Ncard?.value,
+      vencmto: this.fvncmtoAno?.value+'/'+this.fvncmtoMes?.value,
+      cantidadDC: this.cantidadDC?.value,
+      c_iDC: this.pref_ciDC?.value+this.c_iDC?.value,
+      Clavetlfonica: this.Clavetlfonica?.value.toString(),
+      invoice: invoice, //Maximo 12 caracteres
+      PaymenMethod: this.PaymenMethod
+    }
+    this.alertFindDni('Autorizando su pago', 'Por favor espere...');
+    this._ApiMercantil.GetAuthTDD(DatosUserAgent)
+    .then((resp:any)=>{
+      console.log(resp);
+      if(resp.hasOwnProperty('error_list')){
+        this.alertFindDni(`${resp.error_list[0].description}`,'');
+      }else if(resp.hasOwnProperty('authentication_info')){
+        if(resp.authentication_info.trx_status=="approved"){
+          this._ApiMercantil.CompraTDD(DatosUserAgent)
+          .then((resp:any)=>{
+            if(resp.hasOwnProperty('error_list')){
+              this.alertFindDni(`${resp.error_list[0].description}`,'');
+            }else if(resp.hasOwnProperty('transaction_response')){
+              if(resp.transaction_response.trx_status=="approved"){
+                this.alertexit("Pago realizado exitosamente")
+              }
+            }else{
+              if(resp.hasOwnProperty('status')){
+                this.invalidForm(`${resp.status.description}`);
+              }
+            }
+            console.log(resp);
+          })
+          .catch((error:any)=>{
+            console.log(error);
+          })
+        }
+      }else{
+        console.log(resp);
+        if(resp.status.description){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!'); }
+        //if(resp.error.description){this.alertFindDni(`${resp.error.description}`,''); }
+        this.closeAlert()
+      }
+      
+    })
+    .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+  }
+
+
 
   uploadImagePayment($event: any) {
     this.uploadingImg = true;
@@ -659,6 +861,7 @@ export class FormComponent implements OnInit, OnDestroy {
     */
 
   }
+
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
@@ -673,11 +876,9 @@ export class FormComponent implements OnInit, OnDestroy {
 
   }
 
-
   CambiarFocusEnter(s?: any) {
     // Aqui debo lograr sacar el focus o disparar el evento blur para que puedan buscar con enter
   }
-
 
   get disbaleButtonIfAmountIsInvalid(): boolean {
     return parseFloat(this.firstFormFibex.get('amount')?.value) < 0;
@@ -932,7 +1133,6 @@ export class FormComponent implements OnInit, OnDestroy {
     this.bankSelected(this.banco);
   }
 
-
   BancoNacional(StrBanco: string) {
     if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE')) return false
     else return true
@@ -964,6 +1164,27 @@ export class FormComponent implements OnInit, OnDestroy {
     })
   }
 
+  ButtonGetAuthMercantil() {
+    Swal.fire({
+      title: 'Clave de autorización',
+      text:"Enviado vía sms",
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      showLoaderOnConfirm: true,
+      preConfirm: (authClave) => {
+       this.PgMovilRegForm.controls['auth'].setValue(authClave);
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.RegistrarPgoMovil();
+      }
+    })
+  }
 
   alertDniAmount(title: string, message: string) {
     Swal.fire({
@@ -992,6 +1213,14 @@ export class FormComponent implements OnInit, OnDestroy {
     })
   }
 
+  warningSimpleFormMercantil(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'warning'
+    })
+  }
+
   warnignForm(text: string, html: string, next: number, use?: boolean) {
     Swal.fire({
       title: text,
@@ -1014,6 +1243,14 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       }
     })
+  }
+
+  alertexit(text: string, optionalText: string = ''){
+    Swal.fire(
+      text,
+      optionalText,
+      'success'
+    )
   }
 
   closeAlert() {

@@ -130,7 +130,10 @@ export let DataSlide = [
     }
   ]
 
-export let MetodoDePago = [{idpago:3,tipopago:"Pago Móvil"},{idpago:0,tipopago:"Otros"}]
+export let MetodoDePago = [{idpago:0,tipopago:"Débito"},{idpago:1,tipopago:"Crédito"},{idpago:2,tipopago:"Realizar Pago Móvil"},{idpago:3,tipopago:"Reportar Pago Móvil"}]
+export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
+export let Month = [{month:"01"},{month:"02"},{month:"03"},{month:"04"},{month:"05"},{month:"06"},{month:"07"},{month:"08"},{month:"09"},{month:"10"},{month:"11"},{month:"12"}]
+export let Ano = [{ano:"2018"},{ano:"2019"},{ano:"2020"},{ano:"2021"},{ano:"2022"},{ano:"2023"},{ano:"2024"},{ano:"2025"},{ano:"2026"},{ano:"2027"},{ano:"2028"},{ano:"2029"},{ano:"2030"},{ano:"2031"},{ano:"2032"}]
 //{idpago:1,tipopago:"Débito"},{idpago:2,tipopago:"Crédito"},
 
   /*
