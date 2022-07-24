@@ -130,112 +130,12 @@ export let DataSlide = [
     }
   ]
 
-export let MetodoDePago = [{idpago:0,tipopago:"Débito"},{idpago:1,tipopago:"Crédito"},{idpago:2,tipopago:"Realizar Pago Móvil"},{idpago:3,tipopago:"Reportar Pago Móvil"}]
-export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
-export let Month = [{month:"01"},{month:"02"},{month:"03"},{month:"04"},{month:"05"},{month:"06"},{month:"07"},{month:"08"},{month:"09"},{month:"10"},{month:"11"},{month:"12"}]
-export let Ano = [{ano:"2018"},{ano:"2019"},{ano:"2020"},{ano:"2021"},{ano:"2022"},{ano:"2023"},{ano:"2024"},{ano:"2025"},{ano:"2026"},{ano:"2027"},{ano:"2028"},{ano:"2029"},{ano:"2030"},{ano:"2031"},{ano:"2032"}]
-//{idpago:1,tipopago:"Débito"},{idpago:2,tipopago:"Crédito"},
+export let MetodoDePago = [{idpago:0,tipopago:"Débito (Mercantil)"},{idpago:1,tipopago:"Crédito (Visa o Mastercard)"},{idpago:2,tipopago:"Realizar Pago Móvil"},{idpago:3,tipopago:"Reportar Pago Móvil"},{idpago:4,tipopago:"Otro"}]
 
-  /*
-  DataSlide = [
-    {
-      "Data": [
-        {
-          Title: "Cedula",
-          id: 0,
-          Option: "pg1-1",
-          Data: "",
-          Act: "1"
-        },
-        {
-          Title: "Bancos",
-          id: 1,
-          Option: "pg1-2",
-          Data: "",
-          Act: "1"
-        },
-        {
-          Title: "Email",
-          id: 2,
-          Option: "pg1-3",
-          Data: "",
-          Act: "1"
-        },
-        {
-          Title: "Abonado",
-          id: 3,
-          Option: "pg1-4",
-          Data: "",
-          Act: "1"
-        },
-        {
-          Title: "Monto pagado",
-          id: 4,
-          Option: "pg1-5",
-          Data: "",
-          Act: "1"
-        },
-        {
-          Title: "Fecha del pago",
-          id: 5,
-          Option: "pg1-6",
-          Data: "",
-          Act: "1"
-        }
-      ]
-    },
-    {
-      "Data": [
-        {
-          Title: "Nombre titular cuenta",
-          id: 6,
-          Option: "pg2-1",
-          Data: "",
-          Act: "2"
-        },
-        {
-          Title: "Email titular cuenta",
-          id: 7,
-          Option: "pg2-2",
-          Data: "",
-          Act: "2"
-        },
-        {
-          Title: "Nro. Comprobante",
-          id: 8,
-          Option: "pg2-3",
-          Data: "",
-          Act: "2"
-        }
-      ]
-    },
-    {
-      "Data": [
-        {
-          Title: "Imagen galeria",
-          id: 9,
-          Option: "pg3-1",
-          Data: "",
-          Act: "3"
-        },
-        {
-          Title: "Notas",
-          id: 10,
-          Option: "pg3-2",
-          Data: "",
-          Act: "3"
-        },
-      ]
-    },
-    {
-      "Data": [
-        {
-          Title: "Reportar pago",
-          id: 11,
-          Option: "pg4-1",
-          Data: "",
-          Act: "4"
-        }
-      ]
-    }
-  ]*/
+export let MetodoDePago2 = [{idpago:0,tipopago:"Débito",image:'assets/images/Tarjeta_Mercantil.jpg', alt:'Débito'},{idpago:1,tipopago:"Crédito",image:'assets/images/visa_master.jpg', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/c2p2.jpg', alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:4,tipopago:"Otro",image:'assets/images/otros.jpg', alt:'Otros'}]
+
+export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
+
+export let Month = [{month:"01"},{month:"02"},{month:"03"},{month:"04"},{month:"05"},{month:"06"},{month:"07"},{month:"08"},{month:"09"},{month:"10"},{month:"11"},{month:"12"}]
+
+export let Ano = [{ano:"2018"},{ano:"2019"},{ano:"2020"},{ano:"2021"},{ano:"2022"},{ano:"2023"},{ano:"2024"},{ano:"2025"},{ano:"2026"},{ano:"2027"},{ano:"2028"},{ano:"2029"},{ano:"2030"},{ano:"2031"},{ano:"2032"}]

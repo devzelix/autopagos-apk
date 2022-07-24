@@ -8,3 +8,33 @@
       background-color: rgba(35, 77, 167, 0.54);
       color: #fff;
   }
+
+  .Prefc_i{
+    width: 70px;
+  }
+
+  .Prefc_i2{
+    width: 100px;
+  }
+
+  .example-card {
+    max-width: 200px;
+    margin: 10px;
+  }
+
+  .TitlePerson{
+    font-size: 14px !important;
+  }
+  
+  .example-header-image {
+    background-size: cover;
+  }
+  .cardflex{
+    display: flex;
+  }
+
+  @media screen and (max-width: 795px) {
+    .cardflex{
+        display: block;
+    }
+}
