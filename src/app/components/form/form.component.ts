@@ -500,7 +500,8 @@ export class FormComponent implements OnInit, OnDestroy {
       Browser:this.TypeNavegador,
       AddresIp:this.IpAddress.ip,
       Date: this.datepgmovil?.value.toISOString(),
-      Reference:this.referenciapm?.value
+      Reference:this.referenciapm?.value,
+      Name: this.name?.value
     }
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
@@ -585,13 +586,16 @@ export class FormComponent implements OnInit, OnDestroy {
     }
 
   }
-  //No se usa
- /* ClaveAuthPgoMovil(){
-    //Clave de Autorización Pgo Móvil
-    this.ButtonGetAuthMercantil();
-    let DatosUserAgent = {
 
+  ClaveAuthPgoMovil(){
+    //Clave de Autorización Pgo Móvil
+    let DatosUserAgent = {
+      browser_agent:this.TypeNavegador,
+      ipaddress:this.IpAddress.ip,
+      destination_id:this.pref_ci?.value+this.c_iRegPgoMvil?.value,
+      destination_mobile_number: this.tlfdestin?.value.toString(),
     }
+
     this.alertFindDni('Enviando clave de autorización', 'Por favor espere...');
     this._ApiMercantil.C2PClave(DatosUserAgent)
     .then((resp:any)=>{
@@ -607,14 +611,13 @@ export class FormComponent implements OnInit, OnDestroy {
       
     })
     .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
-  }*/
+  }
 
   PagoDebito(){
+    console.log("Este es el nombre del usuario :"+this.name?.value);
     //Clave de Autorización Pgo Móvil
     let FechaHoy= new Date();
-    let invoice = this.nroContrato?.value+FechaHoy.getDay()+FechaHoy.getMonth()+FechaHoy.getFullYear(); //Maximo 12 caracteres
-    console.log("NCard");
-    console.log(this.Ncard?.value);
+    let invoice = this.nroContrato?.value+FechaHoy.getMonth()+FechaHoy.getFullYear()+FechaHoy.getSeconds(); //Maximo 12 caracteres
     let DatosUserAgent = {
       Browser:this.TypeNavegador,
       AddresIp:this.IpAddress.ip,
@@ -626,20 +629,23 @@ export class FormComponent implements OnInit, OnDestroy {
       c_iDC: this.pref_ciDC?.value+this.c_iDC?.value,
       Clavetlfonica: this.Clavetlfonica?.value.toString(),
       invoice: invoice, //Maximo 12 caracteres
-      PaymenMethod: this.PaymenMethod
+      PaymenMethod: this.PaymenMethod,
+      Name: this.name?.value || ""
     }
-    this.alertFindDni('Autorizando su pago', 'Por favor espere...');
+    this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
+    //Primero debo autorizar el pago
     this._ApiMercantil.GetAuthTDD(DatosUserAgent)
     .then((resp:any)=>{
       console.log(resp);
       if(resp.hasOwnProperty('error_list')){
-        this.alertFindDni(`${resp.error_list[0].description}`,'');
+        this.invalidForm(`${resp.error_list[0].description}`,'');
       }else if(resp.hasOwnProperty('authentication_info')){
         if(resp.authentication_info.trx_status=="approved"){
+          //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
           this._ApiMercantil.CompraTDD(DatosUserAgent)
           .then((resp:any)=>{
             if(resp.hasOwnProperty('error_list')){
-              this.alertFindDni(`${resp.error_list[0].description}`,'');
+              this.invalidForm(`${resp.error_list[0].description}`,'');
             }else if(resp.hasOwnProperty('transaction_response')){
               if(resp.transaction_response.trx_status=="approved"){
                 this.alertexit("Pago realizado exitosamente");
@@ -659,7 +665,7 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       }else{
         console.log(resp);
-        if(resp.hasOwnProperty('status')){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');}
+        if(resp.hasOwnProperty('status')){this.invalidForm(`${resp.status.description}`,'Contacte a un asesor!');}
         this.invalidForm(`Error intente mas tarde!`);
       }
       
@@ -1290,6 +1296,7 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ButtonGetAuthMercantil() {
+
     Swal.fire({
       title: 'Clave de autorización',
       text:"Enviado vía sms",

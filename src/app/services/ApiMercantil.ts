@@ -146,7 +146,8 @@ export class ApiMercantilService implements  OnInit {
             "procesing_date":Agent.Date, //Reemplazar por lo que coloque el usuario
             "ipaddress": Agent.AddresIp,
             "browser_agent": Agent.Browser,
-            "payment_reference": Agent.Reference
+            "payment_reference": Agent.Reference,
+            "Name": Agent.Name
         }
         /*  
           "manufacturer": "Samsung",
@@ -196,8 +197,8 @@ export class ApiMercantilService implements  OnInit {
             "payment_reference": "6460003485",
             "invoice_number": "20092411046"
         }
-        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-        .then((resp:any)=>{
+       // this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       // .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFacturaReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
                     console.log("respondio");
@@ -207,8 +208,8 @@ export class ApiMercantilService implements  OnInit {
                     console.error('There was an error!', error);
                 }
             })
-        })
-        .catch((error:any)=>console.error(error));
+      //  })
+      //  .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -277,17 +278,6 @@ export class ApiMercantilService implements  OnInit {
   C2PClave(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
-        Datos ={
-            "destination_mobile_number":"584241513063",
-            "manufacturer": "Samsung",
-            "model": "S9",
-            "os_version": "Oreo 9.1",
-            "lat": 37.4224764,
-            "lng": -122.0842499,
-            "ipaddress": "10.0.0.1",
-            "browser_agent": "Chrome 18.1.3",
-            "destination_id": "V18367443",
-        }
         //this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        // .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}c2pClave/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
@@ -311,6 +301,7 @@ export class ApiMercantilService implements  OnInit {
   GetAuthTDD(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
+        
         Datos ={
           "ipaddress": Datos.AddresIp,
           "browser_agent": Datos.Browser,
@@ -327,6 +318,7 @@ export class ApiMercantilService implements  OnInit {
                 },
                 error: error => {
                     console.error('There was an error!', error);
+                    reject(error);
                 }
             })
      //   })
@@ -351,7 +343,8 @@ export class ApiMercantilService implements  OnInit {
           "expiration_date": Datos.vencmto,
           "amount": Datos.cantidadDC,
           "payment_method": Datos.PaymenMethod,
-          "account_type": Datos.typeCuenta
+          "account_type": Datos.typeCuenta,
+          "Name": Datos.Name
         }
         console.log("CompraTDD");
         console.log(Datos);
