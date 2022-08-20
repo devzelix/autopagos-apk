@@ -503,47 +503,54 @@ export class FormComponent implements OnInit, OnDestroy {
       Reference:this.referenciapm?.value,
       Name: this.name?.value
     }
+    console.log("DatosUserAgent");
+    console.log(DatosUserAgent);
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
     .then((resp:any)=>{
-      if(resp.hasOwnProperty('error_list')){
-        this.invalidForm('No se encuentra dicho pago','Intente nuevamente!');
-      }else if(resp.hasOwnProperty('transaction_list')){
-        let ResBanco = resp.transaction_list[0];
-        console.log(ResBanco)
-        if(ResBanco.trx_status=="approved"){
-          let C_IPAGO=this.prec_i?.value+this.c_iPagMovil?.value
-          if(ResBanco.customer_id==C_IPAGO){ //V18367443
-            let FechaBanco = ResBanco.processing_date.substring(0,10)
-            FechaBanco = FechaBanco.replace(/-/g,',')
-            let FechaPago = new Date(FechaBanco);
-            //let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
-           // console.log(this.datepgmovil?.value);
-            if(FechaPago.getDay()==this.datepgmovil?.value.getDay()&&
-                FechaPago.getMonth()==this.datepgmovil?.value.getMonth()&&
-                FechaPago.getFullYear()== this.datepgmovil?.value.getFullYear())
-            {
-              if(this.cantidad?.value == ResBanco.amount){
-                this.alertexit('Pago aceptado exitosamente','Todo ok');
-                this.Contar = 5;
-                this.Contador();
+      if(resp.hasOwnProperty('registrado')){
+        this.alertexit('El pago ya fue registrado anteriormente','Todo ok');
+      }else{
+        if(resp.hasOwnProperty('error_list')){
+          this.invalidForm('No se encuentra dicho pago','Intente nuevamente!');
+        }else if(resp.hasOwnProperty('transaction_list')){
+          let ResBanco = resp.transaction_list[0];
+          console.log(ResBanco)
+          if(ResBanco.trx_status=="approved"){
+            let C_IPAGO=this.prec_i?.value+this.c_iPagMovil?.value
+            if(ResBanco.customer_id==C_IPAGO){ //V18367443
+              let FechaBanco = ResBanco.processing_date.substring(0,10)
+              FechaBanco = FechaBanco.replace(/-/g,',')
+              let FechaPago = new Date(FechaBanco);
+              //let FechaPagoComparar = FechaPago.getDay()+FechaPago.getMonth()+FechaPago.getFullYear();
+             // console.log(this.datepgmovil?.value);
+              if(FechaPago.getDay()==this.datepgmovil?.value.getDay()&&
+                  FechaPago.getMonth()==this.datepgmovil?.value.getMonth()&&
+                  FechaPago.getFullYear()== this.datepgmovil?.value.getFullYear())
+              {
+                if(this.cantidad?.value == ResBanco.amount){
+                  this.alertexit('Pago aceptado exitosamente','Todo ok');
+                  this.Contar = 5;
+                  this.Contador();
+                }else{
+                  this.invalidForm('El monto ingresado es incorrecto!','Por favor verifique');
+                }
+                
               }else{
-                this.invalidForm('El monto ingresado es incorrecto!','Por favor verifique');
+                this.invalidForm('Fecha incorrecta!','corrigala');
               }
-              
             }else{
-              this.invalidForm('Fecha incorrecta!','corrigala');
+              this.invalidForm('La cédula ingresada no es correcta','Por favor validé que coloco los datos correctos');
             }
           }else{
-            this.invalidForm('La cédula ingresada no es correcta','Por favor validé que coloco los datos correctos');
+            this.invalidForm('El banco no aprobo su transacción','Retifique con su agente bancario');
           }
         }else{
-          this.invalidForm('El banco no aprobo su transacción','Retifique con su agente bancario');
+          if(resp.hasOwnProperty('status')){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');}
+          this.invalidForm(`Error intente mas tarde!`);
         }
-      }else{
-        if(resp.hasOwnProperty('status')){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');}
-        this.invalidForm(`Error intente mas tarde!`);
       }
+      
     })
     .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
@@ -985,7 +992,7 @@ export class FormComponent implements OnInit, OnDestroy {
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
-      window.location.reload();
+     // window.location.reload();
       /*this.stepper.selectedIndex = 0;      
       this.payReported  = false;
       this.playDuplicated  = false;
