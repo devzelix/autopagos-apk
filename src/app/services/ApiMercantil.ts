@@ -4,6 +4,7 @@ import { environment as env } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { SeguridadDatos } from './bcryptjs'
 import { Observable } from 'rxjs';
+import { resolve } from 'dns';
 
 
 @Injectable({
@@ -249,7 +250,8 @@ export class ApiMercantilService implements  OnInit {
         "invoice_number":Datos.invoice,
         "trx_type":"compra",
         "payment_method":"c2p",
-        "amount":Datos.cantidad
+        "amount":Datos.cantidad,
+        "Name": Datos.Name
       }
 
       console.log("Datos C2p");
@@ -280,6 +282,8 @@ export class ApiMercantilService implements  OnInit {
       try {
         //this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        // .then((resp:any)=>{
+         console.log("Datos a enviar");
+         console.log(Datos);
             this.http.post<any>(`${this.URLAPIMERCANTIL}c2pClave/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
                     console.log("respondio");
@@ -374,15 +378,32 @@ export class ApiMercantilService implements  OnInit {
 
   GetAddress(){
     return new Promise((resolve,reject)=>{
-      this.http.get("http://api.ipify.org/?format=json").subscribe({
-      next: data => {
-          resolve(data)
-      },
-      error: error => {
-          reject(error);
-      }
-      })
+    console.log("GetAddress");
+    const WebUrl= "https://crm.thomas-talk.me/ip/";
+    fetch(WebUrl, {
+      method: "GET",
     })
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error:any)=>{
+        reject(error)
+      })
+
+    })
+  //   return new Promise((resolve,reject)=>{
+  //     this.http.get("https://crm.thomas-talk.me/ip/").subscribe({
+  //     next: data => {
+  //       console.log("IP")
+  //       console.log(data);
+  //       console.log(typeof data);
+  //         resolve(data)
+  //     },
+  //     error: error => {
+  //         reject(error);
+  //     }
+  //     })
+  //  })
     
   }
   

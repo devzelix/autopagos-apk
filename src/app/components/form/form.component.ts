@@ -309,8 +309,9 @@ export class FormComponent implements OnInit, OnDestroy {
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
           this._ApiMercantil.GetAddress()
-          .then((resp:any)=>this.IpAddress = resp)
+          .then((resp:any)=>this.IpAddress = {ip:resp})
           .catch((error:any)=>console.log(error));
+         // this.IpAddress={ip:'192.168.1.7'}
           this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
         }
       });
@@ -530,8 +531,9 @@ export class FormComponent implements OnInit, OnDestroy {
               {
                 if(this.cantidad?.value == ResBanco.amount){
                   this.alertexit('Pago aceptado exitosamente','Todo ok');
-                  this.Contar = 5;
-                  this.Contador();
+                  this.PgMovilForm.reset();
+                  //this.Contar = 5;
+                  //this.Contador();
                 }else{
                   this.invalidForm('El monto ingresado es incorrecto!','Por favor verifique');
                 }
@@ -568,19 +570,22 @@ export class FormComponent implements OnInit, OnDestroy {
         tlfdestin: this.tlfdestin?.value.toString(),
         auth: this.auth?.value,
         cantidad: this.amountPm?.value,
-        invoice: invoice //Máximo 25 caracteres
+        invoice: invoice, //Máximo 25 caracteres
+        Name: this.name?.value
       }
       this.alertFindDniMercantil('Registrando pago', 'Por favor espere...');
       this._ApiMercantil.C2PCompra(DatosUserAgent)
       .then((resp:any)=>{
+        this.closeAlert2();
         if(resp.hasOwnProperty('error_list')){
          // this.alertFindDni(`${resp.error_list[0].description}`,'');
           this.invalidForm(`${resp.error_list[0].description}`)
         }else if(resp.hasOwnProperty('transaction_c2p_response')){
           if(resp.transaction_c2p_response.trx_status=="approved"){
-            this.alertexit("Pago aprobado","Validamos su pago el mismo ya fue procesado");
-            this.Contar = 5;
-            this.Contador();
+            this.alertexit("Pago aprobado","Validamos su pago el mismo ya fue procesado su número de referencia: "+resp.transaction_c2p_response.payment_reference);
+            this.Contar = 30;
+            this.PgMovilRegForm.reset();
+            //this.Contador();
           }
         }else{
           if(resp.hasOwnProperty('status')){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');}
@@ -637,7 +642,7 @@ export class FormComponent implements OnInit, OnDestroy {
       Clavetlfonica: this.Clavetlfonica?.value.toString(),
       invoice: invoice, //Maximo 12 caracteres
       PaymenMethod: this.PaymenMethod,
-      Name: this.name?.value || ""
+      Name: this.name?.value
     }
     this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
     //Primero debo autorizar el pago
@@ -992,7 +997,7 @@ export class FormComponent implements OnInit, OnDestroy {
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
-     // window.location.reload();
+      window.location.reload();
       /*this.stepper.selectedIndex = 0;      
       this.payReported  = false;
       this.playDuplicated  = false;
@@ -1396,6 +1401,10 @@ export class FormComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       Swal.close();
     }, 2500)
+  }
+
+  closeAlert2() {
+      Swal.close();
   }
 
   openDialog(): void {
