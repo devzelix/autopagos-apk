@@ -4,7 +4,6 @@ import { environment as env } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { SeguridadDatos } from './bcryptjs'
 import { Observable } from 'rxjs';
-import { resolve } from 'dns';
 
 
 @Injectable({
@@ -384,6 +383,8 @@ export class ApiMercantilService implements  OnInit {
       method: "GET",
     })
       .then((response) => {
+        console.log("response");
+        console.log(response);
         resolve(response);
       })
       .catch((error:any)=>{
