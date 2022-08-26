@@ -59,6 +59,7 @@
               </span>
             </div>
         </mat-step>
+        
         <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
