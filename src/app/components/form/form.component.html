@@ -565,11 +565,11 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Código de seguridad de tarjeta (CCV)</mat-label>
+              <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
               <input  type="number" matInput required formControlName="ccv" NumbersOnly="true" placeholder="Ejemplo: 123">
               <mat-error 
                   *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
-                El número ccv es requerido
+                El número cvv es requerido
               </mat-error>
             </mat-form-field>
           </div>

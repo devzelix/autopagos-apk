@@ -311,7 +311,7 @@ export class FormComponent implements OnInit, OnDestroy {
           this._ApiMercantil.GetAddress()
           .then((resp:any)=>this.IpAddress = {ip:resp})
           .catch((error:any)=>console.log(error));
-         // this.IpAddress={ip:'192.168.1.7'}
+          //this.IpAddress={ip:'192.168.1.7'}
           this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
         }
       });
