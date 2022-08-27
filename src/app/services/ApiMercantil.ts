@@ -4,6 +4,7 @@ import { environment as env } from '../../environments/environment';
 import { catchError, map } from 'rxjs/operators';
 import { SeguridadDatos } from './bcryptjs'
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment.prod';
 
 
 @Injectable({
@@ -378,18 +379,30 @@ export class ApiMercantilService implements  OnInit {
   GetAddress(){
     return new Promise((resolve,reject)=>{
     console.log("GetAddress");
-    const WebUrl= "https://crm.thomas-talk.me/ip/";
-    fetch(WebUrl, {
-      method: "GET",
-    })
-      .then((response) => {
-        console.log("response");
-        console.log(response);
-        resolve(response);
-      })
-      .catch((error:any)=>{
-        reject(error)
-      })
+    const WebUrl= environment.ApiMercantil+'Whatismyip/'+environment.TokenApiMercantil;
+
+    this.http.get<any>(WebUrl).subscribe({
+      next: data => {
+          console.log("respondio");
+          console.log(data)
+          resolve(data)
+      },
+      error: error => {
+          console.error('There was an error!', error);
+          reject(error)
+      }
+  })
+    // fetch(WebUrl, {
+    //   method: "GET",
+    // })
+    //   .then((response) => {
+    //     console.log("response");
+    //     console.log(response);
+    //     resolve(response);
+    //   })
+    //   .catch((error:any)=>{
+    //     reject(error)
+    //   })
 
     })
   //   return new Promise((resolve,reject)=>{

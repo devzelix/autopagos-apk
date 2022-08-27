@@ -309,7 +309,7 @@ export class FormComponent implements OnInit, OnDestroy {
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
           this._ApiMercantil.GetAddress()
-          .then((resp:any)=>this.IpAddress = {ip:resp})
+          .then((resp:any)=>this.IpAddress = resp)
           .catch((error:any)=>console.log(error));
           //this.IpAddress={ip:'192.168.1.7'}
           this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
@@ -497,6 +497,8 @@ export class FormComponent implements OnInit, OnDestroy {
 
   ComprobarPgoMovil(){
     //Solo para consultar por referencias de pago Moviles
+    console.log("ComprobarPAgoMovil");
+    console.log(this.IpAddress.ip)
     let DatosUserAgent = {
       Browser:this.TypeNavegador,
       AddresIp:this.IpAddress.ip,
