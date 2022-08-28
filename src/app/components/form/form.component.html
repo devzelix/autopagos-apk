@@ -24,6 +24,17 @@
      
       <mat-stepper [linear]="true" #stepper>
 
+        <mat-step *ngIf="!AppFibex" >
+            <ng-template matStepLabel>Cliente</ng-template>
+            <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
+              <mat-form-field appearance="outline">
+                <mat-label>Cédula/RIF del Cliente</mat-label>
+                <input  type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni)">
+                <mat-icon matSuffix (click)="searchServices(inputDni, false)" style="cursor: pointer">search</mat-icon>
+              </mat-form-field>
+            </div>
+        </mat-step>
+
         <mat-step *ngIf="AppFibex" >
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
@@ -60,7 +71,7 @@
             </div>
         </mat-step>
         
-        <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean">
+        <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
@@ -101,13 +112,6 @@
                     *ngIf="firstFormFibex.get('dni')?.hasError('required')">
                    La cédula requerida
                 </mat-error>
-                <!--
-                  <mat-error 
-                    *ngIf="formFibex.get('dni')?.hasError('maxlength')">
-                      La cédula debe contener máximo 15 carácteres
-                  </mat-error>
-  
-                -->
               </mat-form-field>
 
               <p style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>

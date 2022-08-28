@@ -103,7 +103,7 @@ export class FormComponent implements OnInit, OnDestroy {
   public daysFeriados: BanksDays[] = [];
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no 
   AllService: any = []
-  ListService: any = []
+  ListService: any = [] 
   PagoMetodosHTML = MetodoDePago;
   PagoMetodosHTML2= MetodoDePago2;
   //sPagoMercantilBCO:any =[];
@@ -112,6 +112,7 @@ export class FormComponent implements OnInit, OnDestroy {
   DebitoCreditoboolean: boolean = false;
   tipo_pago: any;
   AppFibex: boolean = false;
+  ClienteFibex: boolean = false;
   BancoPago: any;
   private PaymenMethod: string ="";
   private TypeNavegador: string ="";
@@ -1094,6 +1095,9 @@ export class FormComponent implements OnInit, OnDestroy {
                 this.dni?.setValue('')
                 return;
               };
+              //Muestra los tipos de pago
+              this.AppFibex = true;
+              this.ClienteFibex = true;
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
               this.name?.setValue(res[0].cliente);
