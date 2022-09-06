@@ -56,7 +56,7 @@
           </div>
             <ng-template matStepLabel>Tipo de pago</ng-template>
             <div class="cardflex">
-              <span *ngFor="let option of PagoMetodosHTML2">
+              <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
                 <mat-card *ngIf="!option.omitir"   class="example-card">
                   <mat-card-header>
                     <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
@@ -67,7 +67,7 @@
                     <button mat-button *ngIf="option.tipopago =='Pago Móvil'" (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR</button>
                   </mat-card-actions>
               </mat-card>
-              </span>
+            </div>
             </div>
         </mat-step>
         
@@ -528,7 +528,7 @@
           <ng-template matStepLabel>Datos de pago</ng-template>
           <form [formGroup]="DebitoCredito">
             <div>
-              <mat-label>Cédula de identidad</mat-label><br>
+              <mat-label>Cédula del titular</mat-label><br>
               <mat-form-field appearance="outline" class="Prefc_i">
                 <mat-select formControlName="pref_ci">
                   <mat-option value="V">V</mat-option>

@@ -27,9 +27,7 @@ import { TypeBrowserService } from '../../services/TypeBrowser';
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
-import { ThisReceiver } from '@angular/compiler';
 import { environment } from 'src/environments/environment';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 
 
 export interface DialogData {
@@ -298,6 +296,9 @@ export class FormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.MyInit();
+    this._ApiMercantil.GetAddress()
+    .then((resp:any)=>this.IpAddress = resp)
+    .catch((error:any)=>console.log(error));
     this.route.queryParams
       .pipe(
         filter((param) => param['dni'])
@@ -309,9 +310,6 @@ export class FormComponent implements OnInit, OnDestroy {
           this.searchServices(res['dni'], true);
           this.searchInfoEquipos(res['dni']);
           this.SendOption(0, 0, res['dni']);
-          this._ApiMercantil.GetAddress()
-          .then((resp:any)=>this.IpAddress = resp)
-          .catch((error:any)=>console.log(error));
           //this.IpAddress={ip:'192.168.1.7'}
           this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
         }
@@ -403,36 +401,6 @@ export class FormComponent implements OnInit, OnDestroy {
     this.Creditoboolaean = false;
 
     if(x==2 || x==3){
-      console.log("Entre")
-     /* const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'btn btn-success',
-          cancelButton: 'btn btn-danger'
-        },
-        buttonsStyling: false
-      })
-      
-      swalWithBootstrapButtons.fire({
-        title: 'Operación de Pago Móvil',
-        text: "Que deseas hacer?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Reportar',
-        cancelButtonText: 'Realizar',
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.ConsultarPagoMovilboolean=!this.ConsultarPagoMovilboolean;
-          this.TypeForm = this.PgMovilForm;
-          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, seleccione la opción de otro`);
-        } else if (
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          this.TypeForm = this.PgMovilRegForm;
-          this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
-          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
-        }
-      })*/
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: 'mat-button button-material-back',
@@ -482,18 +450,6 @@ export class FormComponent implements OnInit, OnDestroy {
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Creditoboolaean = !this.Creditoboolaean
     }
-
-   /* if(x==3){
-      this.ConsultarPagoMovilboolean=!this.ConsultarPagoMovilboolean;
-      this.TypeForm = this.PgMovilForm;
-      this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, seleccione la opción de otro`);
-    }
-
-    if(x==2){
-      this.TypeForm = this.PgMovilRegForm;
-      this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
-      this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
-    }*/
   }
 
   ComprobarPgoMovil(){
