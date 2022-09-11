@@ -52,6 +52,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
+
   public formFibex: FormGroup;
   public firstFormFibex: FormGroup;
   public secondFormFibex: FormGroup;
@@ -61,6 +62,8 @@ export class FormComponent implements OnInit, OnDestroy {
   public PgMovilRegForm: FormGroup;
   public DebitoCredito: FormGroup;
   public TypeForm : FormGroup;
+  CriptomonedaForm: FormGroup;
+
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
   public cambio_act: number = 0;
@@ -108,6 +111,7 @@ export class FormComponent implements OnInit, OnDestroy {
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
   DebitoCreditoboolean: boolean = false;
+  Criptomoneda: boolean = false;
   tipo_pago: any;
   AppFibex: boolean = false;
   ClienteFibex: boolean = false;
@@ -120,6 +124,7 @@ export class FormComponent implements OnInit, OnDestroy {
   public Debitoboolean: boolean = false;
   public Months = Month;
   public Anos = Ano;
+  
 
   constructor(
     private registerPayService: RegisterPayService,
@@ -138,29 +143,16 @@ export class FormComponent implements OnInit, OnDestroy {
     private _TypeBrowserService: TypeBrowserService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
+
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
-      this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba')
-     // this.PagoMercantilBCO = this.banksFiltered.filter((Bco:any)=>Bco.id_cuba=='CUBA2365AA4737A57695')
-     // this.PagoMercantilBCO.push({Banco:'Otros',referencia_cuenta:'0000'});
-    });
-    //console.log(this.banksFiltered);
-    /* this.registerPayService.getNewBankList().subscribe((res) => {
-      console.log(res);
-    }) */
-    /*
-    this.registerPayService.getBancosList()
-    .subscribe((res) => {
-      // Si la carga de bancos falla no es posible registrar el pago... 
-      // Es importante tener servidor de backup para esto Imaginando que SAE plus este caido debemos registrar pagos encolados.
-      this.bankList = res.data.ConsultaBancos.Bancos
-    });
-    */
+      this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
 
+    });
   }
 
   MyInit() {
-   // this._ApiMercantil.ConsultaPagoMovil("Holamundo");
+
     this.firstFormFibex = this.fb.group({
       name: ['', [Validators.required]],
       dni: ['', [Validators.required, Validators.minLength(6)]],
@@ -178,14 +170,11 @@ export class FormComponent implements OnInit, OnDestroy {
       dniTitular: [''],
       emailTitular: [''],
     });
+
     this.thirdFormFibex = this.fb.group({
       img: ['', [Validators.required]],
       note: ['']
     });
-
-  /*  this.fourthFormFibex = this.fb.group({
-      tipopago: ['']
-    });*/
 
     this.PgMovilForm = this.fb.group({
       prec_i:['',[Validators.required]],
@@ -216,48 +205,14 @@ export class FormComponent implements OnInit, OnDestroy {
       cantidad:['', [Validators.required,Validators.pattern(this.regexAmount)]],
     },{ validator: isNegativeNumber });
 
+    this.CriptomonedaForm = this.fb.group({
+      Referencia_Cripto:['',[Validators.required]],
+      Monto_Cripto: [``,[Validators.required]],
+      c_i_Cripto: ['',[Validators.required,Validators.minLength(6)]],
+      Pref_ci_Cripto: ['',[Validators.required]]
+    });
+
     this.name?.disable();
-
-  /*  this.fourthFormFibex.controls['tipopago'].valueChanges.subscribe((x: any) => {
-        this.tipo_pago = x;
-        this.ConsultarPagoMovilboolean = false;
-        this.RegistrarPagoMovilboolean = false;
-        this.DebitoCreditoboolean = false;
-        this.Debitoboolean =false;
-        this.Creditoboolaean = false;
-
-        if(x==0){
-          this.DebitoCreditoboolean=!this.DebitoCreditoboolean
-          this.PaymenMethod = "tdd";
-          this.Debitoboolean = !this.Debitoboolean
-        }
-        
-        if(x==1){
-          this.DebitoCreditoboolean=!this.DebitoCreditoboolean;
-          this.PaymenMethod = "tdc";
-          this.DebitoCredito.get('Clavetlfonica')?.setValidators([]);
-          this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
-          this.DebitoCredito.get('typeCuenta')?.setValidators([]);
-          this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
-          this.Creditoboolaean = !this.Creditoboolaean
-        }
-
-        if(x==3){
-          this.ConsultarPagoMovilboolean=!this.ConsultarPagoMovilboolean;
-          this.TypeForm = this.PgMovilForm;
-          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, seleccione la opción de otro`);
-        }
-
-        if(x==2){
-          this.TypeForm = this.PgMovilRegForm;
-          this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
-          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
-        }
-    })*/
-
-   /* this.fourthFormFibex.controls['bank'].valueChanges.subscribe((x: any) => {
-      this.BancoPago = x//'BANCO MERCANTIL'//
-    })*/
   }
 
   deleteDuplicated(array: any[], key: string) {
@@ -290,9 +245,6 @@ export class FormComponent implements OnInit, OnDestroy {
   handleLoad(e: any) {
     console.log("ReCaptcha", e);
   }
-
-
-
 
   ngOnInit(): void {
     this.MyInit();
@@ -382,6 +334,19 @@ export class FormComponent implements OnInit, OnDestroy {
   get cantidadDC() { return this.DebitoCredito.get('cantidad'); }
   get c_iDC() { return this.DebitoCredito.get('c_i'); }
   get Clavetlfonica() { return this.DebitoCredito.get('Clavetlfonica'); }
+  /*
+  Referencia_Cripto:['',[Validators.required]],
+      Monto_Cripto: [``,[Validators.required]],
+      c_i_Cripto: ['',[Validators.required,Validators.minLength(6)]],
+      Pref_ci_Cripto:
+  */
+
+  get Referencia_Cripto() { return this.CriptomonedaForm.get('Referencia_Cripto'); }
+  get Monto_Cripto() { return this.CriptomonedaForm.get('Monto_Cripto'); }
+  get c_i_Cripto() { return this.CriptomonedaForm.get('c_i_Cripto'); }
+  get Pref_ci_Cripto() { return this.CriptomonedaForm.get('Pref_ci_Cripto'); }
+
+
 
   ClearCedula(Cedula: any) {
     if (Cedula) {
@@ -399,7 +364,9 @@ export class FormComponent implements OnInit, OnDestroy {
     this.DebitoCreditoboolean = false;
     this.Debitoboolean =false;
     this.Creditoboolaean = false;
+    this.Criptomoneda = false;
 
+    //Pago Movil
     if(x==2 || x==3){
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -434,13 +401,14 @@ export class FormComponent implements OnInit, OnDestroy {
         }
       })
     }
+    //Débito
     if(x==0){
       this.DebitoCreditoboolean=!this.DebitoCreditoboolean
       this.PaymenMethod = "tdd";
       this.Debitoboolean = !this.Debitoboolean
       this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Otro"`);
     }
-    
+    //Crédito
     if(x==1){
       this.DebitoCreditoboolean=!this.DebitoCreditoboolean;
       this.PaymenMethod = "tdc";
@@ -449,6 +417,35 @@ export class FormComponent implements OnInit, OnDestroy {
       this.DebitoCredito.get('typeCuenta')?.setValidators([]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Creditoboolaean = !this.Creditoboolaean
+    }
+    //Criptomoneda
+    if(x==5){
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'mat-button button-material-back',
+          cancelButton: 'mat-button button-material-next'
+        },
+        buttonsStyling: false
+      })
+
+      swalWithBootstrapButtons.fire({
+        title: 'Datos de Wallet para pagar',
+        //text: `Wallet: 4534LGFDKLM4534543FSD Monto USDT: 40,001001`,
+        html:
+        'Wallet: <b>4534LGFDKLM4534543FSD</b><br> ' +
+        `Monto USDT: ${this.saldoUSD}1001`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'REPORTAR',
+        cancelButtonText: 'CERRAR',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.Criptomoneda = !this.Criptomoneda;
+          this.Monto_Cripto?.setValue(this.saldoUSD+'1001')
+          this.NextMatStepper();
+        }
+      })
     }
   }
 
@@ -1660,8 +1657,6 @@ export class FormComponent implements OnInit, OnDestroy {
       }
     })
   }
-
-
 
   filterContracts() {
     let contractsNull = this.listContratos.map((contract) => {
