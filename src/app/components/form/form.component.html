@@ -2,9 +2,6 @@
 
       <div class="form-login__offer">
 
-        <p>
-
-        </p>
           <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
             <p>
               Registre su pago
@@ -32,12 +29,12 @@
                 <input  type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni)">
                 <mat-icon matSuffix (click)="searchServices(inputDni, false)" style="cursor: pointer">search</mat-icon>
               </mat-form-field>
-            </div>
+            </div> 
         </mat-step>
         <!--/ Fin de Menú ppal -->
 
         <!-- Menú de métodos de pago -->
-        <mat-step *ngIf="AppFibex" >
+        <mat-step *ngIf="AppFibex" class="CardPpal" > 
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
               <h4 class="name-client">
@@ -54,10 +51,10 @@
               <h4 class="name-client">
                 Subscripción: {{subscription}} USD
               </h4>
-            </div>
+            </div> 
           </div>
             <ng-template matStepLabel>Tipo de pago</ng-template>
-            <div class="cardflex">
+            <div class="cardflex"> 
               <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
                 <mat-card *ngIf="!option.omitir"   class="example-card">
                   <mat-card-header>
@@ -68,8 +65,8 @@
                     <button mat-button *ngIf="option.tipopago !='Pago Móvil' && option.tipopago !='Criptomoneda'" (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100" matStepperNext>SELECCIONAR</button>
                     <button mat-button *ngIf="option.tipopago =='Pago Móvil' || option.tipopago =='Criptomoneda'" (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR</button>
                   </mat-card-actions>
-                </mat-card>
-              </div>
+                </mat-card> 
+              </div> 
               <!-- <div class="coincoinx-widget"
                id="coincoinx-widget"
                data-monto="10"

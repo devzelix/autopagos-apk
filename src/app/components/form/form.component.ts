@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
@@ -40,7 +40,7 @@ export interface DialogData {
   templateUrl: './form.component.html',
   styleUrls: ['./form.style.css']
 })
-export class FormComponent implements OnInit, OnDestroy {
+export class FormComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -52,7 +52,7 @@ export class FormComponent implements OnInit, OnDestroy {
 
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
-
+  
   public formFibex: FormGroup;
   public firstFormFibex: FormGroup;
   public secondFormFibex: FormGroup;
@@ -140,7 +140,8 @@ export class FormComponent implements OnInit, OnDestroy {
     private _Cloudinary : CloudynariService,
     private _UploadPHP : UploadPHPService,
     private _ApiMercantil: ApiMercantilService,
-    private _TypeBrowserService: TypeBrowserService
+    private _TypeBrowserService: TypeBrowserService,
+    public router: Router
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
 
@@ -269,10 +270,7 @@ export class FormComponent implements OnInit, OnDestroy {
     this.dateOfPay();
     this.amountInvalid();
     this.getDaysFeriados();
-  }
-
-  ngOnDestroy(): void {
-
+    
   }
 
   SendOption(page: number, option: any, value: any) {
@@ -420,7 +418,7 @@ export class FormComponent implements OnInit, OnDestroy {
     }
     //Criptomoneda
     if(x==5){
-      const swalWithBootstrapButtons = Swal.mixin({
+      /*const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: 'mat-button button-material-back',
           cancelButton: 'mat-button button-material-next'
@@ -445,7 +443,8 @@ export class FormComponent implements OnInit, OnDestroy {
           this.Monto_Cripto?.setValue(this.saldoUSD+'1001')
           this.NextMatStepper();
         }
-      })
+      })*/
+      this.router.navigate(['coinx']);
     }
   }
 
@@ -1060,7 +1059,9 @@ export class FormComponent implements OnInit, OnDestroy {
               this.filterBankByFranquicia(this.listContratos[0].franquicia);
               this.dni?.setValue(dni_);
               this.searchInfoEquipos(dni_);
-
+              //Guardo en el localstorage para usarlo en otro componente
+              localStorage.setItem("Name",this.nameClient);
+              
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
@@ -1084,6 +1085,10 @@ export class FormComponent implements OnInit, OnDestroy {
                 this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
                 this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
               }
+
+              //Guardo en el localstorage para usarlo en otro componente
+              localStorage.setItem("Monto",this.saldoUSD);
+
               try {
                 // this.SendOption(0,0,dni.value);
                 this.SendOption(0, 6, this.nameClient);
