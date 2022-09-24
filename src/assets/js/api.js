@@ -619,7 +619,7 @@ function cargar(Inicio) {
 
     var div_pie = document.createElement("div");
     div_pie.id="pie_widget_coincoinx";
-    div_pie.innerHTML = "By CoincoinX";
+    div_pie.innerHTML = "Integrado con CoincoinX";
 
     div_contenedor.appendChild(div_encabezado);
     div_contenedor.appendChild(div_cuerpo);
