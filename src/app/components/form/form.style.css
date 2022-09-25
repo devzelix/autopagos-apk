@@ -9,6 +9,10 @@
       color: #fff;
   }
 
+  .textinvalido{
+    color:red;
+  }
+
   .Prefc_i{
     width: 70px;
   }

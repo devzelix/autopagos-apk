@@ -8,8 +8,9 @@ export const environment = {
   token: 's1e1/c1r2e-2t.2a3r*3i4a',
   lic:'584120202020@c.us',
   upload_preset: "itenw8im",
-  ApiKey: "445792464983284",
-  CloudName:"soluciones-sms",
+  ApiKey: "167871278349249",
+  CloudName:"thomasv9",
+  ApiSecret: "7I5iUVfNCJlWI8zS6E1vUSXM4oI",
   urlPHPapi : 'http://127.0.0.1:8000/',
   PHPUpload: false,
   ApiMercantil:'http://localhost:8090/',//'https://backendmercantil.thomas-talk.me/ http://localhost:8194/'

@@ -17,7 +17,7 @@ export class RegisterPayService {
     private http: HttpClient,
   ) { }
 
-  registerPayClient(infoClient: RegisterPay): Observable<any> {
+  /* registerPayClient(infoClient: RegisterPay): Observable<any> {
     infoClient.note = infoClient.note+'-Recibo:'+infoClient.img
     return this.http.get(`${this.URLGRAPH}?query={ReportePago_Falla(
         token:"${env.token}"
@@ -51,6 +51,62 @@ export class RegisterPayService {
         return res;
       }
       ));
+  } */
+
+  registerPayClient(infoClient: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
+
+        const DataQuery = {
+          query: `
+          query{
+            ReportePago_Falla(
+              token:"${env.token}"
+              Data:{
+                Nombre:"${infoClient.name}"
+                Cedula:"${infoClient.dni}"
+                Email:"${infoClient.email}"
+                Motivo:"Pago"
+                Fecha:"${infoClient.date}"
+                Nota:"${infoClient.note}"
+                Imagen:"${infoClient.img}"
+                Banco:"${infoClient.bank}"
+                id_Cuba:"${infoClient.id_Cuba}"
+                Monto:"${infoClient.amount}"
+                comprobante:"${infoClient.voucher}"
+                NombreTitular:"${infoClient.nameTitular || ""}"
+                CedulaTitula:"${infoClient.dniTitular || ""}"
+                EmailTitular:"${infoClient.emailTitular || ""}"
+                Tipo:"Pago"      
+              }
+              lic:"${env.lic}"
+            ){
+              to
+            }
+          }`,
+        }
+
+        this.http.post(this.URLGRAPH, DataQuery).subscribe((Response: any) => {
+          resolve(Response)
+        }, (error) => {
+          reject(error)
+        })
+
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  GetDataClient(Cedula: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      this.http.get(`${env.urlBackThomas}find-any-info/thomas_cobertura/tmClientes/identidad/${Cedula}`).subscribe((ResClient: any) => {
+        resolve(ResClient)
+      }, err => {
+        reject(err)
+      })
+    })
   }
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
@@ -106,6 +162,16 @@ export class RegisterPayService {
         map((res: any) => {
           let jsonres = JSON.parse(res);
           return jsonres.data.info;
+        })
+      );
+  }
+
+  getTypeClient(dni: string) {
+    return this.http.get(`${this.URLAPITHOMAS}GetTypeClient/${dni}`,
+    )
+      .pipe(
+        map((res: any) => {
+          return res;
         })
       );
   }
@@ -169,6 +235,44 @@ export class RegisterPayService {
         }, (error) => {
           reject(error);
         });
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  SendWaNotif(Content: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+
+        let Phones = ['584143771155', '584129503127', '584142788259', '584145958585', '584141967028']
+
+        for (let index = 0; index < Phones.length; index++) {
+
+          const DataWa = {
+            "lic": env.lic,
+            "Mensaje": Content,
+            "Phone": Phones[index],
+            "Archivos": [
+              {
+                "filename": "",
+                "path": ""
+              }
+            ]
+          }
+
+          this.http.post(env.urlThomasApi + `SendWhats`, DataWa).subscribe((response: any) => {
+
+          }, (error) => {
+            reject(error);
+          });
+
+          if (index === Phones.length - 1) {
+            resolve(true)
+          }
+
+        }
+
       } catch (error) {
         reject(error)
       }
