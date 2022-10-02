@@ -729,7 +729,7 @@ export class FormComponent implements OnInit {
       this.indexof = this.validFormats.indexOf(this.extn.toLowerCase());
 
       if (this.indexof != -1) {
-        this.ValidRetentionImgExtension = true;
+        this.ValidExtension = true;
         if (fileList.length > 0) {
           const file = fileList[0];
           if (!this.uplaodImageService.verifyFileSize(file.size)) {
@@ -772,7 +772,7 @@ export class FormComponent implements OnInit {
             })
         }
       } else {
-        this.ValidRetentionImgExtension = false;
+        this.ValidExtension = false;
         this.uploadingImg = false;
       }
     }
@@ -861,7 +861,7 @@ export class FormComponent implements OnInit {
       this.retentionImgIndexof = this.validFormats.indexOf(this.retentionImgExtn.toLowerCase());
 
       if (this.retentionImgIndexof != -1) {
-        this.ValidExtension = true;
+        this.ValidRetentionImgExtension = true;
         if (fileList.length > 0) {
           const file = fileList[0];
           if (!this.uplaodImageService.verifyFileSize(file.size)) {
@@ -904,7 +904,7 @@ export class FormComponent implements OnInit {
             })
         }
       } else {
-        this.ValidExtension = false;
+        this.ValidRetentionImgExtension = false;
         this.uploadingRetentionImg = false;
       }
     }
@@ -1142,9 +1142,10 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean, ppal?:boolean) {
+  searchServices(dni: any, fromParmas?: boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
+    // console.log(dni.value)
     let dni_: string = '';
 
     if (!fromParmas) {
@@ -1157,9 +1158,6 @@ export class FormComponent implements OnInit {
       dni_ = this.ClearCedula(dni_);
     }
     this.banksFiltered = [...this.bankList];
-    
-
-    
 
     if (dni_ === this.lastDni) {
       return;
@@ -1169,6 +1167,7 @@ export class FormComponent implements OnInit {
     if (dni_.length >= 6) {
       this.alertFindDni('Buscando información del cliente', 'Por favor espere...');
       this.registerPayService.getTypeClient(dni_).subscribe((result: any) => {
+        // console.log(result)
         if (result.length>0 && result[0].TipoCliente != "NATURAL") {
           this.possibleWithholdingAgent = true
         }
@@ -1180,15 +1179,12 @@ export class FormComponent implements OnInit {
           this.closeAlert();
           try {
             if (res.length > 0) {
-              if(ppal){
-                this.AppFibex = !this.AppFibex;
-              }
-              
               this.listContratos = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni_);
               res.forEach((dataContrato: any) => {
-                if (dataContrato.status_contrato != "ANULADO" || dataContrato.status_contrato != "RETIRADO") {
+                var ValidOno =this.ValidStatusContrato(dataContrato.status_contrato);
+                if (ValidOno) {
                   this.listContratos.push({
                     id_contrato: dataContrato.id_contrato,
                     contrato: dataContrato.nro_contrato,
@@ -1206,8 +1202,6 @@ export class FormComponent implements OnInit {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
               }
-                
-              
               /* EMITIR TASA DEL DÍA */
               this.tasaService.tasa.next(this.cambio_act.toString());
               this.tasaCambio = this.cambio_act.toString();
@@ -1226,7 +1220,7 @@ export class FormComponent implements OnInit {
               this.filterBankByFranquicia(this.listContratos[0].franquicia);
               this.dni?.setValue(dni_);
               this.searchInfoEquipos(dni_);
-             
+
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
@@ -1321,6 +1315,11 @@ export class FormComponent implements OnInit {
     }
 
 
+  }
+
+  ValidStatusContrato(Status:string){
+      var ContratosAccept = ['ACTIVO','POR CORTAR','POR INSTALAR','CORTADO','SUSPENDIDO'];
+      return ContratosAccept.includes(Status);
   } 
 
   SearchDataClient(Cedula: any) {

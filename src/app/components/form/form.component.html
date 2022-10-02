@@ -26,7 +26,7 @@
 
       <mat-stepper [linear]="true" #stepper>
         <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
-        <mat-step *ngIf="!AppFibex" >
+        <mat-step *ngIf="!AppFibex">
             <ng-template matStepLabel>Cliente</ng-template>
             <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
               <mat-form-field appearance="outline">
@@ -339,7 +339,7 @@
                 <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                 Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
               </p>
-              <p *ngIf="!ValidRetentionImgExtension" class=" message-error-upload textinvalido">
+              <p *ngIf="!ValidExtension" class=" message-error-upload textinvalido">
                 <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                 Formato inválido solo se acepta: jpg, png, jpeg y pdf.
               </p>
@@ -353,8 +353,12 @@
               </div>
               <button class="btn-uplaod-image button-material-upload" mat-raised-button (click)="uploadFile.click()"
                 *ngIf="!imageUploaded && !showMessageErrorUpload">
-                Subir imagen de la galería
+                Click aquí para subir imagen
               </button>
+              <br>
+              <div *ngIf="imageUrl == '' && !uploadingImg" class="image-pay" (click)="uploadFile.click()">
+                <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
+              </div>
               <div class="spinner-pay" *ngIf="uploadingImg">
                 <mat-spinner></mat-spinner>
               </div>
@@ -387,7 +391,7 @@
                     <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                     Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
                   </p>
-                  <p *ngIf="!ValidExtension" class=" message-error-upload textinvalido">
+                  <p *ngIf="!ValidRetentionImgExtension" class=" message-error-upload textinvalido">
                     <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                     Formato inválido solo se acepta: jpg, png, jpeg y pdf.
                   </p>
@@ -403,6 +407,10 @@
                     *ngIf="!retentionimageUploaded && !showMessageErrorUpload">
                     Subir imagen de la galería del comprobante de retención de impuestos.
                   </button>
+                  <br>
+                  <div *ngIf="retentionImageUrl == '' && !uploadingRetentionImg" class="image-pay" (click)="uploadFile.click()">
+                    <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
+                  </div>
                   <div class="spinner-pay" *ngIf="uploadingRetentionImg">
                     <mat-spinner></mat-spinner>
                   </div>

@@ -1,7 +1,6 @@
-console.log("init");
+
 function cargar(Inicio) {
-    if(Inicio != undefined || Inicio != null){
-        console.log("cargar");
+    if(Inicio != undefined && Inicio != null && Inicio != ""){
     Number.prototype.formatMoney = function (c, d, t) {
         var n = this,
             c = isNaN(c = Math.abs(c)) ? 2 : c,
@@ -35,16 +34,16 @@ function cargar(Inicio) {
     var listitem = document.getElementById("coincoinx-widget").getAttribute("data-listitem");
     var volumeSerial = document.getElementById("coincoinx-widget").getAttribute("data-volumeSerial");
 
-    console.log(monto);
-    console.log(lang);
-    console.log(moneda);
-    console.log(idwidget);
-    console.log(apikey);
-    console.log(direccion);
-    console.log(descripcion);
-    console.log(idorden);
-    console.log(listitem)
-    console.log(volumeSerial);
+    // console.log(monto);
+    // console.log(lang);
+    // console.log(moneda);
+    // console.log(idwidget);
+    // console.log(apikey);
+    // console.log(direccion);
+    // console.log(descripcion);
+    // console.log(idorden);
+    // console.log(listitem)
+    // console.log(volumeSerial);
 
     var payType = 1;
 
@@ -465,7 +464,7 @@ function cargar(Inicio) {
                 vericaAhora = 1;
 
                 var data = "{'IdWidget':'" + idwidget + "',  'IdOrden': '" + idorden + "', 'AmountOrder':'" + document.getElementById("coincoinx-widget").getAttribute("data-amount-final") + "', 'CurrencyOrder':'" + document.getElementById("coincoinx-widget").getAttribute("data-currency-final") + "'}";
-                console.log(data);
+                //console.log(data);
                 xhr4 = new XMLHttpRequest();
                
                 xhr4.open('POST', sitio2 +"Check", true);
@@ -474,7 +473,7 @@ function cargar(Inicio) {
                    
                     var datos = JSON.parse(this.response);
 
-                    console.log(datos.amount);
+                    //console.log(datos.amount);
 
                     var data4 = datos.amount;
 
@@ -827,8 +826,6 @@ function cargar(Inicio) {
 
     
     document.getElementById("tablinks-coincoinx-default").click();
-    }else{
-        console.log("no debe iniciar aun")
     }
     
 }
