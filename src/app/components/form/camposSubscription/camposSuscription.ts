@@ -132,7 +132,7 @@ export let DataSlide = [
 
 export let MetodoDePago = [{idpago:0,tipopago:"Débito (Mercantil)"},{idpago:1,tipopago:"Crédito (Visa o Mastercard)"},{idpago:2,tipopago:"Realizar Pago Móvil"},{idpago:3,tipopago:"Reportar Pago Móvil"},{idpago:4,tipopago:"Otro"}]
 
-export let MetodoDePago2 = [{idpago:0,tipopago:"Débito",image:'assets/images/Tarjeta_Mercantil.jpg', alt:'Débito'},{idpago:1,tipopago:"Crédito",image:'assets/images/visa_master.jpg', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/c2p2.jpg', alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:4,tipopago:"Otro",image:'assets/images/otros.jpg', alt:'Otros'}]
+export let MetodoDePago2 = [{idpago:0,tipopago:"Débito Mercantil",image:'assets/images/Tarjeta_Mercantil.jpg', alt:'Débito Mercantil'},{idpago:1,tipopago:"Crédito",image:'assets/images/visa_master.jpg', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/c2p2.jpg', alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:5,tipopago:"Criptomoneda",omitir:false,image:'assets/images/Coincoinx.png',},{idpago:4,tipopago:"Transferencia",image:'assets/images/otros.jpg', alt:'Otros'}]
 
 export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
 

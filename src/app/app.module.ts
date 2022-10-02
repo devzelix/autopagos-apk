@@ -15,10 +15,12 @@ import { MaterialModule } from './material.module';
 import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 import { SeguridadDatos } from './services/bcryptjs';
+import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
   {  path: 'serial', component: SerialComponent },
+  { path: 'coinx', component: CoincoinxComponent },
   { path: '',   redirectTo: '/pay', pathMatch: 'full' }
 ]
 
@@ -32,7 +34,8 @@ const routes: Routes = [
     ImageComponent,
     NavComponent,
     NegativeAmountPipe,
-    DialogDetailComprobantesComponent
+    DialogDetailComprobantesComponent,
+    CoincoinxComponent
   ],
   imports: [
     BrowserModule,    

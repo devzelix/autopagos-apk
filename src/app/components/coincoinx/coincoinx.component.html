@@ -1,0 +1,51 @@
+<div class="form-login " id="form-offer">
+    <div class="form-login__offer">
+        <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
+            <p>
+              Registre su pago
+            </p>
+            <p>
+              Servicio de Internet
+            </p>
+          </span>
+          <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span>
+
+    </div>
+       
+  
+    
+
+  <div  class="form-login__group" >
+
+    <!-- <mat-spinner *ngIf="Loading"></mat-spinner> -->
+
+    <div *ngIf="Error"> 
+        <h4 style="color: red;">
+            Ha sucedido un error reincie la página o intentelo más tarde. Disculpe las molestia
+        </h4>
+    </div>
+    
+        <div *ngIf="!Error" class="coincoinx-widget"
+                id="coincoinx-widget"  
+                data-monto=""  
+                data-lang = "ES" 
+                EN-ES 
+                data-moneda="USDT"  
+                data-idwidget=""  
+                data-apikey=""
+                data-direccion=""
+                data-descripcion="Pago" 
+                data-idorden="325"  
+                data-listitem=""
+                volumeSerial=""> 
+        </div>
+            <!-- NjM3OTk2MjcxMDY1NTI1NTM3OnRob21hc3RhbGsubWVAZ21haWwuY29t -->
+    <button class="button-material-back btn-width-100" routerLink="/pay"  style="margin-top: 10px;" (click)="Clear()" mat-raised-button>
+        Regresar
+    </button>
+  </div>
+
+</div>
+
+
+

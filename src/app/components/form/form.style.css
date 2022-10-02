@@ -9,6 +9,10 @@
       color: #fff;
   }
 
+  .textinvalido{
+    color:red;
+  }
+
   .Prefc_i{
     width: 70px;
   }
@@ -38,7 +42,14 @@
   @media screen and (max-width: 795px) {
     .cardflex{
         display: block;
-        align-items: center;
-        justify-content: center;
+        /* align-items: center;
+        justify-content: center; */
+        width: 100%;
+        height: 100%;
     }
+     .unicard{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    } 
 }
