@@ -1142,10 +1142,9 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean) {
+  searchServices(dni: any, fromParmas?: boolean, ppal?:boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
-    // console.log(dni.value)
     let dni_: string = '';
 
     if (!fromParmas) {
@@ -1158,6 +1157,9 @@ export class FormComponent implements OnInit {
       dni_ = this.ClearCedula(dni_);
     }
     this.banksFiltered = [...this.bankList];
+    
+
+    
 
     if (dni_ === this.lastDni) {
       return;
@@ -1167,7 +1169,6 @@ export class FormComponent implements OnInit {
     if (dni_.length >= 6) {
       this.alertFindDni('Buscando información del cliente', 'Por favor espere...');
       this.registerPayService.getTypeClient(dni_).subscribe((result: any) => {
-        // console.log(result)
         if (result.length>0 && result[0].TipoCliente != "NATURAL") {
           this.possibleWithholdingAgent = true
         }
@@ -1179,6 +1180,10 @@ export class FormComponent implements OnInit {
           this.closeAlert();
           try {
             if (res.length > 0) {
+              if(ppal){
+                this.AppFibex = !this.AppFibex;
+              }
+              
               this.listContratos = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni_);
@@ -1202,6 +1207,8 @@ export class FormComponent implements OnInit {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
               }
+                
+              
               /* EMITIR TASA DEL DÍA */
               this.tasaService.tasa.next(this.cambio_act.toString());
               this.tasaCambio = this.cambio_act.toString();
@@ -1210,6 +1217,7 @@ export class FormComponent implements OnInit {
                 this.dni?.setValue('')
                 return;
               };
+              
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
               this.name?.setValue(res[0].cliente);
@@ -1221,6 +1229,9 @@ export class FormComponent implements OnInit {
               this.dni?.setValue(dni_);
               this.searchInfoEquipos(dni_);
 
+              
+              
+             
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
@@ -1244,6 +1255,10 @@ export class FormComponent implements OnInit {
                 this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
                 this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
               }
+
+              //Esto lo uso para el CoinCoinx NO BORRAR
+              localStorage.setItem("Name",this.nameClient);
+              localStorage.setItem("Monto",this.saldoUSD);
               try {
                 // this.SendOption(0,0,dni.value);
                 this.SendOption(0, 6, this.nameClient);
@@ -1315,12 +1330,12 @@ export class FormComponent implements OnInit {
     }
 
 
-  }
+  } 
 
   ValidStatusContrato(Status:string){
-      var ContratosAccept = ['ACTIVO','POR CORTAR','POR INSTALAR','CORTADO','SUSPENDIDO'];
-      return ContratosAccept.includes(Status);
-  } 
+    var ContratosAccept = ['ACTIVO','POR CORTAR','POR INSTALAR','CORTADO','SUSPENDIDO'];
+    return ContratosAccept.includes(Status);
+}
 
   SearchDataClient(Cedula: any) {
     try {
