@@ -94,6 +94,7 @@ export class FormComponent implements OnInit {
   public regexEmail: RegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   public regexUrl: RegExp = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm;
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
+  public regexCCV: RegExp = /^\d*$/;
   public payReported: boolean = false;
   public playDuplicated: boolean = false;
   public dniConsulted: boolean = false;
@@ -222,7 +223,7 @@ export class FormComponent implements OnInit {
     },{ validator: isNegativeNumber });
 
     this.DebitoCredito = this.fb.group({
-      ccv:['',[Validators.required]],
+      ccv:['',[Validators.required, Validators.pattern(this.regexCCV)]],
       pref_ci: ['',[Validators.required]],
       c_i: ['',[Validators.required,Validators.minLength(6)]],
       typeCuenta: ['',[Validators.required]],
@@ -279,6 +280,7 @@ export class FormComponent implements OnInit {
     this._ApiMercantil.GetAddress()
     .then((resp:any)=>this.IpAddress = resp)
     .catch((error:any)=>console.log(error));
+    this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
     this.route.queryParams
       .pipe(
         filter((param) => param['dni'])
@@ -291,7 +293,7 @@ export class FormComponent implements OnInit {
           //this.searchInfoEquipos(res['dni']);
           //this.SendOption(0, 0, res['dni']);
           //this.IpAddress={ip:'192.168.1.7'}
-          this.TypeNavegador =this._TypeBrowserService.detectBrowserVersion();
+          
         }
       });
     this.dateOfPay();
@@ -442,7 +444,7 @@ export class FormComponent implements OnInit {
       this.DebitoCreditoboolean=!this.DebitoCreditoboolean
       this.PaymenMethod = "tdd";
       this.Debitoboolean = !this.Debitoboolean
-      this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Otro"`);
+      this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencias"`);
     }
     //Crédito
     if(x==1){
@@ -637,45 +639,69 @@ export class FormComponent implements OnInit {
       PaymenMethod: this.PaymenMethod,
       Name: this.name?.value
     }
-    this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
-    //Primero debo autorizar el pago
-    this._ApiMercantil.GetAuthTDD(DatosUserAgent)
-    .then((resp:any)=>{
-      console.log(resp);
-      if(resp.hasOwnProperty('error_list')){
-        this.invalidForm(`${resp.error_list[0].description}`,'');
-      }else if(resp.hasOwnProperty('authentication_info')){
-        if(resp.authentication_info.trx_status=="approved"){
-          //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
-          this._ApiMercantil.CompraTDD(DatosUserAgent)
-          .then((resp:any)=>{
-            if(resp.hasOwnProperty('error_list')){
-              this.invalidForm(`${resp.error_list[0].description}`,'');
-            }else if(resp.hasOwnProperty('transaction_response')){
-              if(resp.transaction_response.trx_status=="approved"){
-                this.alertexit("Pago realizado exitosamente");
-                this.Contar = 5;
-                this.Contador();
-              }
-            }else{
-              if(resp.hasOwnProperty('status')){
-                this.invalidForm(`${resp.status.description}`);
-              }
-            }
-            console.log(resp);
-          })
-          .catch((error:any)=>{
-            console.log(error);
-          })
-        }
-      }else{
+    //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
+    if(!this.Creditoboolaean){
+      this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
+      //Primero debo autorizar el pago
+      this._ApiMercantil.GetAuthTDD(DatosUserAgent)
+      .then((resp:any)=>{
         console.log(resp);
-        if(resp.hasOwnProperty('status')){this.invalidForm(`${resp.status.description}`,'Contacte a un asesor!');}
-        this.invalidForm(`Error intente mas tarde!`);
-      }
-      
-    })
-    .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+        if(resp.hasOwnProperty('error_list')){
+          this.invalidForm(`${resp.error_list[0].description}`,'');
+        }else if(resp.hasOwnProperty('authentication_info')){
+          if(resp.authentication_info.trx_status=="approved"){
+            //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
+            this._ApiMercantil.CompraTDD(DatosUserAgent)
+            .then((resp:any)=>{
+              if(resp.hasOwnProperty('error_list')){
+                this.invalidForm(`${resp.error_list[0].description}`,'');
+              }else if(resp.hasOwnProperty('transaction_response')){
+                if(resp.transaction_response.trx_status=="approved"){
+                  this.alertexit("Pago realizado exitosamente");
+                  this.Contar = 5;
+                  this.Contador();
+                }
+              }else{
+                if(resp.hasOwnProperty('status')){
+                  this.invalidForm(`${resp.status.description}`);
+                }
+              }
+              console.log(resp);
+            })
+            .catch((error:any)=>{
+              console.log(error);
+            })
+          }
+        }else{
+          console.log(resp);
+          if(resp.hasOwnProperty('status')){this.invalidForm(`${resp.status.description}`,'Contacte a un asesor!');}
+          this.invalidForm(`Error intente mas tarde!`);
+        }
+        
+      })
+      .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+    }else{
+      //Credito
+      this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
+      this._ApiMercantil.CompraTDD(DatosUserAgent)
+        .then((resp:any)=>{
+          if(resp.hasOwnProperty('error_list')){
+            this.invalidForm(`${resp.error_list[0].description}`,'');
+          }else if(resp.hasOwnProperty('transaction_response')){
+            if(resp.transaction_response.trx_status=="approved"){
+              this.alertexit("Pago realizado exitosamente");
+              this.Contar = 5;
+              this.Contador();
+            }
+          }else{
+            if(resp.hasOwnProperty('status')){
+              this.invalidForm(`${resp.status.description}`);
+            }
+          }
+          console.log(resp);
+        })
+    }
+
   }
 
   uploadImagePayment($event: any) {

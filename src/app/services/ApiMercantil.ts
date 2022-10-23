@@ -1,10 +1,8 @@
 import { Injectable, NgZone, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment as env } from '../../environments/environment';
-import { catchError, map } from 'rxjs/operators';
 import { SeguridadDatos } from './bcryptjs'
-import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import axios from 'axios';
 
 
 @Injectable({
@@ -379,8 +377,8 @@ export class ApiMercantilService implements  OnInit {
   GetAddress(){
     return new Promise((resolve,reject)=>{
     console.log("GetAddress");
-    const WebUrl= environment.ApiMercantil+'Whatismyip/'+environment.TokenApiMercantil;
-
+    const WebUrl= this.URLAPIMERCANTIL+'Whatismyip/'+this.TOKENAPIMERCANTIL;
+   // const WebUrl='https://crm.thomas-talk.me/ip/'
     this.http.get<any>(WebUrl).subscribe({
       next: data => {
           console.log("respondio");
@@ -392,6 +390,19 @@ export class ApiMercantilService implements  OnInit {
           reject(error)
       }
   })
+
+      // axios({
+      //   url: WebUrl,
+      //   method: 'GET',
+      // })
+      //   .then((res: any) => {
+      //    // const Data = res.data.data.GetOptionsApp
+      //      console.log(res)
+
+      //   })
+      //   .catch((err: any) => console.log(err))
+
+
     // fetch(WebUrl, {
     //   method: "GET",
     // })
