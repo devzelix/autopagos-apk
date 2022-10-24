@@ -28,6 +28,7 @@ export class CoincoinxComponent implements OnInit {
     this._CoinxServices.TokenWidget()
     .then((resp:any)=>{
       if(resp!=undefined && resp){
+        console.log(resp);
         //Coloco los valores en los atributos del html
         document.getElementById("coincoinx-widget")?.setAttribute('data-apikey',resp.CoincoinXToken);
         document.getElementById("coincoinx-widget")?.setAttribute('data-idwidget',this.WidgetID);

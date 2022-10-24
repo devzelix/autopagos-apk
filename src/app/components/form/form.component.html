@@ -662,7 +662,7 @@
                 </mat-error>
               </mat-form-field>
             </div>
-
+            <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
             <div  class="form-login__item">
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Tipo de cuenta</mat-label>
@@ -685,14 +685,17 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
-              <input  type="number" matInput required formControlName="ccv" NumbersOnly="true" placeholder="Ejemplo: 123">
+              <input  type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
               <mat-error
                   *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
                 El número cvv es requerido
               </mat-error>
+              <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')">
+                Escriba el CVV con solo números ejemplo: 123
+              </mat-error>
             </mat-form-field>
           </div>
-
+          
           <div>
             <mat-label>Fecha de Vencimiento</mat-label><br>
             <mat-form-field appearance="outline" class="Prefc_i">
@@ -734,6 +737,7 @@
           </div>
 
           </form>
+          <!-- /Form Para Debito o Credito  -->
           <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button
             [disabled]="!DebitoCredito.valid"
