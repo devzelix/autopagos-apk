@@ -72,19 +72,6 @@
                   </mat-card-actions>
                 </mat-card> 
               </div> 
-              <!-- <div class="coincoinx-widget"
-               id="coincoinx-widget"
-               data-monto="10"
-               data-lang = "ES"
-               EN-ES
-               data-moneda="USDT"
-               data-idwidget="undefined"
-               data-apikey="undefined"
-               data-direccion=""
-               data-descripcion="Donación"
-               data-idorden="325"  data-listitem=""></div >
-               <script type="text/javascript" src="https://new.coincoinx.com/widget/api.js"></script>
-               <script type="text/javascript" src="https://new.coincoinx.com/widget/apiinit.js">  </script>    -->
             </div>
 
 
@@ -519,11 +506,29 @@
 
          <!-- Pago Móvil -->
         <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                 Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div> 
+          </div>
 
           <form *ngIf="ConsultarPagoMovilboolean" [formGroup]="PgMovilForm">
             <mat-label>Cédula de identidad</mat-label><br>
             <mat-form-field appearance="outline" class="Prefc_i">
-              <mat-select formControlName="prec_i">
+              <mat-select formControlName="prec_i" >
                 <mat-option value="V">V</mat-option>
                 <mat-option value="E">E</mat-option>
               </mat-select>
@@ -640,106 +645,183 @@
 
          <!-- Crédito o Débito -->
         <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
-          <ng-template matStepLabel>Datos de pago</ng-template>
-          <form [formGroup]="DebitoCredito">
-            <div>
-              <mat-label>Cédula del titular</mat-label><br>
-              <mat-form-field appearance="outline" class="Prefc_i">
-                <mat-select formControlName="pref_ci">
-                  <mat-option value="V">V</mat-option>
-                  <mat-option value="E">E</mat-option>
-                </mat-select>
-              </mat-form-field>
+          <div *ngIf="!ReciboPay">
+            <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+              <div>
+                <h4 class="name-client">
+                  {{nameClient}}
+                </h4>
+                <h4 class="name-client">
+                  {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+                </h4>
+              </div>
+              <div>
+                <h4 class="name-client">
+                   Servicio: {{ paquete }}
+                </h4>
+                <h4 class="name-client">
+                  Subscripción: {{subscription}} USD
+                </h4>
+              </div> 
+            </div>
+            <ng-template matStepLabel>Datos de pago</ng-template>
+            <form [formGroup]="DebitoCredito">
+              <div>
+                <mat-label>Cédula del titular</mat-label><br>
+                <mat-form-field appearance="outline" class="Prefc_i">
+                  <mat-select formControlName="pref_ci">
+                    <mat-option value="V">V</mat-option>
+                    <mat-option value="E">E</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+                  <mat-error
+                      *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')">
+                    La cédula debe contener al menos 6 carácteres
+                  </mat-error>
+                  <mat-error
+                      *ngIf="DebitoCredito.get('c_i')?.hasError('required')">
+                    La cédula es requerida
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
+              <div  class="form-login__item">
+                <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
+                  <mat-label>Tipo de cuenta</mat-label>
+                  <mat-select formControlName="typeCuenta">
+                    <mat-option *ngFor="let bank of TypeAcountDC" [value]="bank.type">
+                      {{bank.cuenta}}
+                    </mat-option>
+                  </mat-select>
+                    <mat-error>La cuenta es obligatoria</mat-error>
+                </mat-form-field>
+  
               <mat-form-field appearance="outline">
-                <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+                <mat-label>Nro. de tarjeta</mat-label>
+                <input  matInput required formControlName="Ncard" NumbersOnly="true">
                 <mat-error
-                    *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')">
-                  La cédula debe contener al menos 6 carácteres
+                    *ngIf="DebitoCredito.get('Ncard')?.hasError('required')">
+                  El número de tarjeta es requerido
                 </mat-error>
+              </mat-form-field>
+  
+              <mat-form-field appearance="outline">
+                <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
+                <input  type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
                 <mat-error
-                    *ngIf="DebitoCredito.get('c_i')?.hasError('required')">
-                  La cédula es requerida
+                    *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
+                  El número cvv es requerido
+                </mat-error>
+                <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')">
+                  Escriba el CVV con solo números ejemplo: 123
                 </mat-error>
               </mat-form-field>
             </div>
-            <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
-            <div  class="form-login__item">
-              <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
-                <mat-label>Tipo de cuenta</mat-label>
-                <mat-select formControlName="typeCuenta">
-                  <mat-option *ngFor="let bank of TypeAcountDC" [value]="bank.type">
-                    {{bank.cuenta}}
+            
+            <div>
+              <mat-label>Fecha de Vencimiento</mat-label><br>
+              <mat-form-field appearance="outline" class="Prefc_i">
+                <mat-select formControlName="fvncmtoMes">
+                  <mat-option *ngFor="let option of Months" [value]="option.month">
+                    {{option.month}}
                   </mat-option>
                 </mat-select>
-                  <mat-error>La cuenta es obligatoria</mat-error>
               </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Nro. de tarjeta</mat-label>
-              <input  matInput required formControlName="Ncard" NumbersOnly="true">
-              <mat-error
-                  *ngIf="DebitoCredito.get('Ncard')?.hasError('required')">
-                El número de tarjeta es requerido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
-              <input  type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
-              <mat-error
-                  *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
-                El número cvv es requerido
-              </mat-error>
-              <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')">
-                Escriba el CVV con solo números ejemplo: 123
-              </mat-error>
-            </mat-form-field>
+  
+              <mat-form-field appearance="outline"class="Prefc_i2">
+                <mat-select formControlName="fvncmtoAno">
+                  <mat-option *ngFor="let option of Anos" [value]="option.ano">
+                    {{option.ano}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+  
+            <div  class="form-login__item">
+              <mat-form-field appearance="outline">
+                <mat-label>Cantidad a pagar
+                    <strong><span>En Bolivares</span></strong>
+                </mat-label>
+                <input matInput formControlName="cantidad" required #inputAmount>
+                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales separado por punto, ejemplo: 125.00</mat-error>
+                <mat-error *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El monto no puede ser negativo</mat-error>
+              </mat-form-field>
+  
+              <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
+                <mat-label>Clave telefónica</mat-label>
+                <input  type="number" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
+                <mat-error
+                    *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
+                  El número de tarjeta es requerido
+                </mat-error>
+              </mat-form-field>
+            </div>
+            </form>
           </div>
-          
-          <div>
-            <mat-label>Fecha de Vencimiento</mat-label><br>
-            <mat-form-field appearance="outline" class="Prefc_i">
-              <mat-select formControlName="fvncmtoMes">
-                <mat-option *ngFor="let option of Months" [value]="option.month">
-                  {{option.month}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+          <div *ngIf="ReciboPay">
+            <div class="card-pay">
+              <div class="invoice-box">
+                <table cellpadding="0" cellspacing="0">
+                  <tr class="top">
+                    <td colspan="2">
+                      <table>
+                        <tr>
+                          <td class="title">
+                            <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                              style="width: 60%; max-width: 300px" />
+                          </td>
+    
+                          <td>
+                            Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
 
-            <mat-form-field appearance="outline"class="Prefc_i2">
-              <mat-select formControlName="fvncmtoAno">
-                <mat-option *ngFor="let option of Anos" [value]="option.ano">
-                  {{option.ano}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+                  <tr class="information">
+                    <td colspan="2">
+                      <table>
+                        <tr>
+                          <td>
+                            Servicio: {{ paquete }}<br />
+                            Subscripción: {{subscription}} USD <br />
+                            Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
+                            <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
+                          </td>
+    
+                          <td>
+                            {{nameClient}}<br />
+                            DNI/RIF {{dni?.value}}<br />
+                            <!-- {{email?.value}} -->
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+    
+                  <tr class="heading">
+                    <td>Usted reporto un pago de</td>
+    
+                    <td>Monto #</td>
+                  </tr>
+    
+                  <tr class="details">
+                    <td>{{paquete}}</td>
+    
+                    <td>{{cantidadDC?.value}}</td>
+                  </tr>
 
-          <div  class="form-login__item">
-            <mat-form-field appearance="outline">
-              <mat-label>Cantidad a pagar
-                  <strong><span>En Bolivares</span></strong>
-              </mat-label>
-              <input matInput formControlName="cantidad" required #inputAmount>
-              <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-              <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales separado por punto, ejemplo: 125.00</mat-error>
-              <mat-error *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El monto no puede ser negativo</mat-error>
-            </mat-form-field>
-
-            <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
-              <mat-label>Clave telefónica</mat-label>
-              <input  type="number" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
-              <mat-error
-                  *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
-                El número de tarjeta es requerido
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          </form>
+                </table>
+              </div>
+            </div>
+          </div> 
           <!-- /Form Para Debito o Credito  -->
           <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <button
+            <button *ngIf="!ReciboPay"
             [disabled]="!DebitoCredito.valid"
             class="button-material-next btn-width-70" mat-raised-button type="button" (click)="PagoDebito()">
               Pagar
@@ -754,6 +836,24 @@
 
         <!-- Criptomoneda -->
         <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
+          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                 Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div> 
+          </div>
           <ng-template matStepLabel>Datos de pago</ng-template>
           <form [formGroup]="CriptomonedaForm">
             <div>

@@ -50,6 +50,7 @@ const routes: Routes = [
     NegativeAmountPipe,
     SeguridadDatos
   ],
+  exports:[MaterialModule],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

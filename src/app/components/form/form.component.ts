@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
+
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 
@@ -53,7 +54,6 @@ export class FormComponent implements OnInit {
 
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
-  
   public formFibex: FormGroup;
   public firstFormFibex: FormGroup;
   public secondFormFibex: FormGroup;
@@ -146,7 +146,7 @@ export class FormComponent implements OnInit {
   public Debitoboolean: boolean = false;
   public Months = Month;
   public Anos = Ano;
-  
+  public ReciboPay: boolean = false;
   
 
   constructor(
@@ -426,7 +426,10 @@ export class FormComponent implements OnInit {
         if (result.isConfirmed) {
           this.ConsultarPagoMovilboolean=!this.ConsultarPagoMovilboolean;
           this.TypeForm = this.PgMovilForm;
-          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, regrese y seleccione la opción de "Otro"`);
+          this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
+          this.PgMovilForm.get('prec_i')?.setValue('V');
+          this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
+          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, regrese y seleccione la opción de "Transferencias"`);
           this.NextMatStepper();
         } else if (
           /* Read more about handling dismissals below */
@@ -434,6 +437,9 @@ export class FormComponent implements OnInit {
         ) {
           this.TypeForm = this.PgMovilRegForm;
           this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
+          this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+          this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+          this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
           this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
           this.NextMatStepper();
         }
@@ -443,13 +449,20 @@ export class FormComponent implements OnInit {
     if(x==0){
       this.DebitoCreditoboolean=!this.DebitoCreditoboolean
       this.PaymenMethod = "tdd";
-      this.Debitoboolean = !this.Debitoboolean
+      this.Debitoboolean = !this.Debitoboolean;
+      this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
+      this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
+      this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
+      this.DebitoCredito.get('pref_ci')?.setValue('V');
       this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencias"`);
     }
     //Crédito
     if(x==1){
       this.DebitoCreditoboolean=!this.DebitoCreditoboolean;
       this.PaymenMethod = "tdc";
+      this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
+      this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
+      this.DebitoCredito.get('pref_ci')?.setValue('V');
       this.DebitoCredito.get('Clavetlfonica')?.setValidators([]);
       this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([]);
@@ -658,8 +671,7 @@ export class FormComponent implements OnInit {
               }else if(resp.hasOwnProperty('transaction_response')){
                 if(resp.transaction_response.trx_status=="approved"){
                   this.alertexit("Pago realizado exitosamente");
-                  this.Contar = 5;
-                  this.Contador();
+                  this.ReciboPay = true;
                 }
               }else{
                 if(resp.hasOwnProperty('status')){
@@ -1128,6 +1140,7 @@ export class FormComponent implements OnInit {
 
   ResetFormCD(){
     this.DebitoCredito.reset();
+    this.ReciboPay = false;
   }
 
   Contador() {
