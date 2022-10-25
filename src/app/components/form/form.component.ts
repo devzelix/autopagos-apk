@@ -1020,6 +1020,7 @@ export class FormComponent implements OnInit {
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO") {
+      DataForRegister.IdContrato = ContratoActual.id_contrato
 
       this.registerPayService.registerPayClient(DataForRegister)
         .then((res: any) => {

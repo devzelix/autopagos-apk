@@ -74,6 +74,7 @@ export class RegisterPayService {
                 Banco:"${infoClient.bank}"
                 id_Cuba:"${infoClient.id_Cuba}"
                 Monto:"${infoClient.amount}"
+                IdContrato:"${infoClient.IdContrato}"
                 comprobante:"${infoClient.voucher}"
                 NombreTitular:"${infoClient.nameTitular || ""}"
                 CedulaTitula:"${infoClient.dniTitular || ""}"
@@ -89,6 +90,29 @@ export class RegisterPayService {
 
         this.http.post(this.URLGRAPH, DataQuery).subscribe((Response: any) => {
           resolve(Response)
+
+          if (!Response.data.ReportePago_Falla[0].to.includes("DUPLICADO") || !Response.data.ReportePago_Falla[0].to.includes("CEDULA_ERRONEA") || !Response.data.ReportePago_Falla[0].to.includes("Error registrando")) {
+            const DataParaConciliar = {
+              Cedula: infoClient.dni,
+              IdContrato: infoClient.IdContrato,
+              Monto: infoClient.amount,
+              Referencia: infoClient.voucher,
+              Nombre: infoClient.name,
+              Email: infoClient.email,
+              Motivo: "Pago",
+              Fecha: infoClient.date,
+              Nota: infoClient.note,
+              Imagen: infoClient.img,
+              Banco: infoClient.bank,
+              id_Cuba: infoClient.id_Cuba,
+              comprobante: infoClient.voucher,
+              NombreTitular: infoClient.nameTitular || "",
+              CedulaTitula: infoClient.dniTitular || "",
+              EmailTitular: infoClient.emailTitular || "",
+              Tipo: "Pago"
+            }
+            //this.SendDataConciliar(DataParaConciliar)
+          }
         }, (error) => {
           reject(error)
         })
@@ -108,6 +132,20 @@ export class RegisterPayService {
       })
     })
   }
+
+  /* SendDataConciliar(Data: any) {
+    try {
+
+      this.http.post(`${env.urlmercantil}RegPay/${env.TokenApiMercantil}`, Data).subscribe((ResClient: any) => {
+        //data recibida 
+      }, err => {
+        console.error(err)
+      })
+
+    } catch (error) {
+      console.error(error)
+    }
+  } */
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
     return this.http.get(`${this.URLAPITHOMAS}ConciliacionPago/${nroContrato}/${Referencia}/${env.lic}`)
