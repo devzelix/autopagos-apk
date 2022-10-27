@@ -120,9 +120,9 @@ export class FormComponent implements OnInit {
   public tasaCambio: string = '';
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] = [];
-  ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no 
+  ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
-  ListService: any = [] 
+  ListService: any = []
   LenthgInvalidDnI: boolean = false;
   AllDataClient: any = []
   enableBtn: Boolean = false
@@ -147,7 +147,7 @@ export class FormComponent implements OnInit {
   public Months = Month;
   public Anos = Ano;
   public ReciboPay: boolean = false;
-  
+
 
   constructor(
     private registerPayService: RegisterPayService,
@@ -293,13 +293,13 @@ export class FormComponent implements OnInit {
           //this.searchInfoEquipos(res['dni']);
           //this.SendOption(0, 0, res['dni']);
           //this.IpAddress={ip:'192.168.1.7'}
-          
+
         }
       });
     this.dateOfPay();
     this.amountInvalid();
     this.getDaysFeriados();
-    
+
   }
 
   SendOption(page: number, option: any, value: any) {
@@ -413,7 +413,7 @@ export class FormComponent implements OnInit {
         },
         buttonsStyling: false
       })
-      
+
       swalWithBootstrapButtons.fire({
         title: 'Operación de Pago Móvil',
         text: "Que deseas hacer?",
@@ -436,7 +436,7 @@ export class FormComponent implements OnInit {
           result.dismiss === Swal.DismissReason.cancel
         ) {
           this.TypeForm = this.PgMovilRegForm;
-          this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean; 
+          this.RegistrarPagoMovilboolean=!this.RegistrarPagoMovilboolean;
           this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
           this.PgMovilRegForm.get('pref_ci')?.setValue('V');
           this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
@@ -545,7 +545,7 @@ export class FormComponent implements OnInit {
                 }else{
                   this.invalidForm('El monto ingresado es incorrecto!','Por favor verifique');
                 }
-                
+
               }else{
                 this.invalidForm('Fecha incorrecta!','corrigala');
               }
@@ -560,7 +560,7 @@ export class FormComponent implements OnInit {
           this.invalidForm(`Error intente mas tarde!`);
         }
       }
-      
+
     })
     .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
@@ -628,7 +628,7 @@ export class FormComponent implements OnInit {
         if(resp.hasOwnProperty('status')){this.alertFindDni(`${resp.status.description}`,'Contacte a un asesor!');}
         this.invalidForm(`Error intente mas tarde!`);
       }
-      
+
     })
     .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
@@ -650,7 +650,9 @@ export class FormComponent implements OnInit {
       Clavetlfonica: this.Clavetlfonica?.value.toString(),
       invoice: invoice, //Maximo 12 caracteres
       PaymenMethod: this.PaymenMethod,
-      Name: this.name?.value
+      Name: this.name?.value,
+      Abonado: this.nroContrato?.value,
+      idContrato: this.idContrato
     }
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if(!this.Creditoboolaean){
@@ -689,7 +691,7 @@ export class FormComponent implements OnInit {
           if(resp.hasOwnProperty('status')){this.invalidForm(`${resp.status.description}`,'Contacte a un asesor!');}
           this.invalidForm(`Error intente mas tarde!`);
         }
-        
+
       })
       .catch((error:any)=>console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
     }else{
@@ -799,7 +801,7 @@ export class FormComponent implements OnInit {
               this.imageUrl = response.secure_url;
               // console.log(this.imageUrl)
 
-              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase(); 
+              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
               this.SendOption(2, 0, response.url);
               //this.img?.patchValue(res.url);
               this.imageUploaded = true;
@@ -931,7 +933,7 @@ export class FormComponent implements OnInit {
               this.retentionImageUrl = response.secure_url;
               // console.log(this.retentionImageUrl)
 
-              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase(); 
+              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
               this.SendOption(2, 0, response.url);
               //this.img?.patchValue(res.url);
               this.retentionimageUploaded = true;
@@ -975,7 +977,7 @@ export class FormComponent implements OnInit {
       return {};
     })
     var saldo = "0";
-    
+
     if (this.BancoNacional(this.banco) && contractInfo?.saldo != undefined) {
       saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
     } else {
@@ -990,7 +992,7 @@ export class FormComponent implements OnInit {
     let day = dt.getDate().toString().padStart(2, "0");
     let date = year + "/" + month + "/" + day;
     /**
-     *    
+     *
      */
 
     /*console.log(.
@@ -1026,7 +1028,7 @@ export class FormComponent implements OnInit {
         .then((res: any) => {
           this.DisableReg = false
           if (res) {
-            
+
             this.sendingPay = false;
             if (res.data.ReportePago_Falla && res.data.ReportePago_Falla.length > 0) {
               try {
@@ -1148,7 +1150,7 @@ export class FormComponent implements OnInit {
     this.Contar--
     if (this.Contar <= 0) {
       window.location.reload();
-      /*this.stepper.selectedIndex = 0;      
+      /*this.stepper.selectedIndex = 0;
       this.payReported  = false;
       this.playDuplicated  = false;
       this.ResetForm();*/
@@ -1182,7 +1184,7 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean, ppal?:boolean) {
+  searchServices(dni: any, fromParmas?: boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1197,9 +1199,9 @@ export class FormComponent implements OnInit {
       dni_ = this.ClearCedula(dni_);
     }
     this.banksFiltered = [...this.bankList];
-    
 
-    
+
+
 
     if (dni_ === this.lastDni) {
       return;
@@ -1220,10 +1222,7 @@ export class FormComponent implements OnInit {
           this.closeAlert();
           try {
             if (res.length > 0) {
-              if(ppal){
-                this.AppFibex = !this.AppFibex;
-              }
-              
+
               this.listContratos = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni_);
@@ -1247,8 +1246,8 @@ export class FormComponent implements OnInit {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
               }
-                
-              
+
+
               /* EMITIR TASA DEL DÍA */
               this.tasaService.tasa.next(this.cambio_act.toString());
               this.tasaCambio = this.cambio_act.toString();
@@ -1257,7 +1256,7 @@ export class FormComponent implements OnInit {
                 this.dni?.setValue('')
                 return;
               };
-              
+
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
               this.name?.setValue(res[0].cliente);
@@ -1269,9 +1268,9 @@ export class FormComponent implements OnInit {
               this.dni?.setValue(dni_);
               this.searchInfoEquipos(dni_);
 
-              
-              
-             
+
+
+
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
@@ -1280,7 +1279,7 @@ export class FormComponent implements OnInit {
                   this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
 
                   this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
-                  
+
                   this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
                   this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
                   this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
@@ -1318,7 +1317,7 @@ export class FormComponent implements OnInit {
               //Busco su numeros de comprobantes
               this.registerPayService.getComprobantClient2(dni_)
                 .then((comprobante: any) => {
-        
+
                   if (comprobante.length > 0) {
 
                     //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
@@ -1370,7 +1369,11 @@ export class FormComponent implements OnInit {
     }
 
 
-  } 
+  }
+
+  lengthContrat(){
+    this.AppFibex = !this.AppFibex
+  }
 
   ValidStatusContrato(Status:string){
     var ContratosAccept = ['ACTIVO','POR CORTAR','POR INSTALAR','CORTADO','SUSPENDIDO'];
@@ -1502,7 +1505,7 @@ export class FormComponent implements OnInit {
     }
   }
 
-  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string }) {
+  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string },ppal?:boolean) {
     //this.validateIfAmountIsNegativer(contrato.saldo);
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
@@ -1513,6 +1516,9 @@ export class FormComponent implements OnInit {
     this.SearchServiceClient(this.idContrato)
     // this.selectInfoEquipos(this.idContrato);
     this.bankSelected(this.banco);
+    if(ppal){
+      this.AppFibex = !this.AppFibex;
+    }
   }
 
   BancoNacional(StrBanco: string) {
@@ -1526,7 +1532,7 @@ export class FormComponent implements OnInit {
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
     if (this.BancoNacional(this.banco)) {
-      
+
       if (!Number.isNaN ( Math.round(parseFloat(this.lastAmount)))) {
         this.validateIfAmountIsNegativer(this.lastAmount, true);
       }
@@ -1628,8 +1634,8 @@ export class FormComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed && !use) {
         console.log(!this.disbaleButtonIfAmountIsInvalid, !this.disbaleButtonIfAmountIs0,  this.firstFormFibex.invalid, this.disbaleButtonIfDateIsInvalid )
-        if ( !this.disbaleButtonIfAmountIsInvalid && 
-          !this.disbaleButtonIfAmountIs0 && 
+        if ( !this.disbaleButtonIfAmountIsInvalid &&
+          !this.disbaleButtonIfAmountIs0 &&
           this.firstFormFibex.valid &&
           !this.disbaleButtonIfDateIsInvalid &&
           !this.invalidAmount ) {
@@ -1728,7 +1734,7 @@ export class FormComponent implements OnInit {
       this.saldoText = 'SALDO A FAVOR';
     } else if (parseInt(amount) > 0) {
       this.saldoText = 'SALDO';
-      this.amount?.setValue(''); 
+      this.amount?.setValue('');
     }
 
   }
@@ -1956,7 +1962,7 @@ export class FormComponent implements OnInit {
           let date = new Date(value).getTime()
           const { days } = this.miceService.timeDifference(new Date().getTime(), date);
           if (days > 91) {
-            
+
             this.invalidForm('No puede reportar un pago de hace 3 meses o más', 'Por favor diríjase a una oficina comercial');
             this.firstFormFibex.get('date')?.setValue('');
             this.dateInvalid = true;

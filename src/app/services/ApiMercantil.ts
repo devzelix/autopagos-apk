@@ -27,7 +27,7 @@ export class ApiMercantilService implements  OnInit {
    }
 
    ngOnInit(): void {
-    
+
   }
 
   ConsultaPagoMovil(Datos:any){
@@ -137,7 +137,7 @@ export class ApiMercantilService implements  OnInit {
   ConsultaPagoMovilxReferencia(Agent:any){
     return new Promise((resolve,reject)=>{
       try {
-        
+
         Agent.Date = Agent.Date.split('T')[0];
         Agent.Date = Agent.Date.replace(/-/g,'/')
         console.log(Agent.Date)
@@ -148,7 +148,7 @@ export class ApiMercantilService implements  OnInit {
             "payment_reference": Agent.Reference,
             "Name": Agent.Name
         }
-        /*  
+        /*
           "manufacturer": "Samsung",
           "model": "S9",
           "os_version": "Oreo 9.1",
@@ -303,7 +303,7 @@ export class ApiMercantilService implements  OnInit {
   GetAuthTDD(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
-        
+
         Datos ={
           "ipaddress": Datos.AddresIp,
           "browser_agent": Datos.Browser,
@@ -346,12 +346,14 @@ export class ApiMercantilService implements  OnInit {
           "amount": Datos.cantidadDC,
           "payment_method": Datos.PaymenMethod,
           "account_type": Datos.typeCuenta,
-          "Name": Datos.Name
+          "Name": Datos.Name,
+          "abonado": Datos.Abonado,
+          "idcontrato": Datos.idContrato
         }
         console.log("CompraTDD");
         console.log(Datos);
-        //this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-       // .then((resp:any)=>{
+      //   this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+      //  .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
                     console.log("respondio");
@@ -362,8 +364,8 @@ export class ApiMercantilService implements  OnInit {
                     console.error('There was an error!', error);
                 }
             })
-     //   })
-     //  .catch((error:any)=>console.error(error));
+      //  })
+      // .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -429,9 +431,9 @@ export class ApiMercantilService implements  OnInit {
   //     }
   //     })
   //  })
-    
+
   }
-  
+
 
 
 
