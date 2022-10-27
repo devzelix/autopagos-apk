@@ -510,7 +510,9 @@ export class FormComponent implements OnInit {
       AddresIp:this.IpAddress.ip,
       Date: this.datepgmovil?.value.toISOString(),
       Reference:this.referenciapm?.value,
-      Name: this.name?.value
+      Name: this.name?.value,
+      Abonado: this.nroContrato?.value,
+      idContrato: this.idContrato
     }
     console.log("DatosUserAgent");
     console.log(DatosUserAgent);
@@ -579,7 +581,9 @@ export class FormComponent implements OnInit {
         auth: this.auth?.value,
         cantidad: this.amountPm?.value,
         invoice: invoice, //Máximo 25 caracteres
-        Name: this.name?.value
+        Name: this.name?.value,
+        Abonado: this.nroContrato?.value,
+        idContrato: this.idContrato
       }
       this.alertFindDniMercantil('Registrando pago', 'Por favor espere...');
       this._ApiMercantil.C2PCompra(DatosUserAgent)

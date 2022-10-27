@@ -146,7 +146,10 @@ export class ApiMercantilService implements  OnInit {
             "ipaddress": Agent.AddresIp,
             "browser_agent": Agent.Browser,
             "payment_reference": Agent.Reference,
-            "Name": Agent.Name
+            "Name": Agent.Name,
+            "abonado": Agent.Abonado,
+            "idcontrato": Agent.idContrato
+            
         }
         /*
           "manufacturer": "Samsung",
@@ -249,7 +252,9 @@ export class ApiMercantilService implements  OnInit {
         "trx_type":"compra",
         "payment_method":"c2p",
         "amount":Datos.cantidad,
-        "Name": Datos.Name
+        "Name": Datos.Name,
+        "abonado": Datos.Abonado,
+        "idcontrato": Datos.idContrato
       }
 
       console.log("Datos C2p");
