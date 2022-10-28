@@ -111,7 +111,7 @@ export class RegisterPayService {
               EmailTitular: infoClient.emailTitular || "",
               Tipo: "Pago"
             }
-            this.SendDataConciliar(DataParaConciliar)
+            //this.SendDataConciliar(DataParaConciliar)
           }
         }, (error) => {
           reject(error)
@@ -133,7 +133,7 @@ export class RegisterPayService {
     })
   }
 
-  SendDataConciliar(Data: any) {
+  /* SendDataConciliar(Data: any) {
     try {
 
       this.http.post(`${env.ApiMercantil}RegPay/${env.TokenApiMercantil}`, Data).subscribe((ResClient: any) => {
@@ -145,7 +145,7 @@ export class RegisterPayService {
     } catch (error) {
       console.error(error)
     }
-  }
+  } */
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
     return this.http.get(`${this.URLAPITHOMAS}ConciliacionPago/${nroContrato}/${Referencia}/${env.lic}`)
