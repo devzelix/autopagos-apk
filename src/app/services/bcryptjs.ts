@@ -13,13 +13,15 @@ export class SeguridadDatos {
     }
 
     encrypt2(key:string,str:any){
-        let _key = crypto.enc.Utf8.parse(key);   
-        let encrypted = crypto.AES.encrypt(
-            JSON.stringify(str), _key, {
-                mode: crypto.mode.ECB,
-                padding: crypto.pad.Pkcs7
-            });
-        return encrypted.toString()
+      let _key = crypto.enc.Utf8.parse(key);
+      //let _iv = CryptoJS.enc.Utf8.parse(this.tokenFromUI);
+      let encrypted = crypto.AES.encrypt(JSON.stringify(str), _key, {
+        keySize: 16,
+        //    iv: _iv,
+        mode: crypto.mode.ECB,
+        padding: crypto.pad.Pkcs7,
+      });
+      return encrypted.toString();
     }
     //Desencriptar data
     Desencrypt(key:string,str:any){
@@ -27,13 +29,17 @@ export class SeguridadDatos {
     }
 
     Desencrypt2(key:string,str:any){
-        let _key = crypto.enc.Utf8.parse(key);
-        this.decrypted = crypto.AES.decrypt(
-            str, _key, {
-            mode: crypto.mode.ECB,
-            padding: crypto.pad.Pkcs7
-          }).toString(crypto.enc.Utf8);
-        return this.decrypted
+      let _key = crypto.enc.Utf8.parse(key);
+      //   let _iv = CryptoJS.enc.Utf8.parse(this.tokenFromUI);
+
+      this.decrypted = crypto.AES.decrypt(str, _key, {
+        keySize: 16,
+        //      iv: _iv,
+        mode: crypto.mode.ECB,
+        padding: crypto.pad.Pkcs7,
+      }).toString(crypto.enc.Utf8);
+
+      return this.decrypted;
     }
 
     //Generos el hash de la clave propocinada por el banco
@@ -56,16 +62,16 @@ export class SeguridadDatos {
                     var Tamano= Object.keys(Datos);
                     if(typeof valueKey !="number"){
                         const Encrypt = this.encrypt2(Key,valueKey); //Encripto
-                        Datos[keyOriginal] = Encrypt;    
+                        Datos[keyOriginal] = Encrypt;
                     }
                     if(index == Tamano.length-1){
                         resolve(Datos)
                     }
-                })  
+                })
             } catch (error) {
                 reject(error);
             }
-        })    
+        })
     }
 
     DesEncrypDataHash(Key:string,Datos:any){
@@ -75,17 +81,17 @@ export class SeguridadDatos {
                     var Tamano= Object.keys(Datos);
                     if(typeof valueKey !="number"){
                         const Encrypt = this.Desencrypt2(Key,valueKey); //Encripto
-                        Datos[keyOriginal] = Encrypt;    
+                        Datos[keyOriginal] = Encrypt;
                     }
                     if(index == Tamano.length-1){
                         resolve(Datos)
                     }
-                })  
+                })
             } catch (error) {
                 reject(error);
             }
         })
-        
+
 
     }
 }

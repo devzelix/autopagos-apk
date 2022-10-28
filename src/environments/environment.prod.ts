@@ -16,7 +16,7 @@ export const environment = {
   ApiMercantil:'https://backendmercantil.thomas-talk.me/',//'https://backendmercantil.thomas-talk.me/' 'http://localhost:8194/'
   TokenApiMercantil:'FCP*F4--3fGGPOK474512RGG**',
   urlmercantil:"Apimercantil.thomas-talk.me/",
-  KeyEncrypt: '11454GGHfbJr8pLq00YuIOp1',
+  KeyEncrypt: 'AstJuTnDhyUKyRee',
   WidgetID: 'BB611338173A55DC52494CF79D86A6CD',
   DireccionWidget: '14iE4zL57wjWtdnABwi5uiw8c73L9er597',
   ApiTokenWidget :'CD6D80FC1E4168AAB045C3A80BD0B410'

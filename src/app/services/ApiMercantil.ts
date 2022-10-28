@@ -68,6 +68,44 @@ export class ApiMercantilService implements  OnInit {
     })
   }
 
+  Test(){
+    let Datos ={
+        "destination_mobile_number":"584241513063",
+        "origin_mobile_number":"584126584242",
+        "payment_reference":"6460003485",
+        "trx_date":"2022/06/12",
+        "amount":10000,
+        "manufacturer": "Samsung",
+        "model": "S9",
+        "os_version": "Oreo 9.1",
+        "lat": 37.4224764,
+        "lng": -122.0842499,
+        "ipaddress": "10.0.0.1",
+        "browser_agent": "Chrome 18.1.3"
+    }
+    this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+        .then((resp:any)=>{
+          console.log("lo que voy a enviar");
+          console.log(resp);
+         /* this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,resp)
+          .then((resp2:any)=>{
+            console.log("Desencripto")
+            console.log(resp2);
+            })*/
+            this.http.post<any>(`${this.URLAPIMERCANTIL}Test`, resp).subscribe({
+                next: data => {
+                    console.log("respondio");
+                    console.log(data)
+                },
+                error: error => {
+                    console.error('There was an error!', error);
+                    this.ErrorRegJSON(Datos)
+                }
+            })
+        })
+        .catch((error:any)=>console.error(error));
+  }
+
   ConsultaPagoMovilxFecha(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
@@ -149,7 +187,7 @@ export class ApiMercantilService implements  OnInit {
             "Name": Agent.Name,
             "abonado": Agent.Abonado,
             "idcontrato": Agent.idContrato
-            
+
         }
         /*
           "manufacturer": "Samsung",
