@@ -1,106 +1,110 @@
 <form class="form-login" id="form-offer">
 
-      <div class="form-login__offer">
+  <div class="form-login__offer">
 
-          <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
-            <p>
-              Registre su pago
-            </p>
-            <p>
-              Servicio de Internet
-            </p>
+    <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
+      <p>
+        Registre su pago
+      </p>
+      <p>
+        Servicio de Internet
+      </p>
+    </span>
+    <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span>
+  </div>
+
+  <div class="form-login__group">
+    <div>
+      <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
+        su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
+      <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">No es
+        posible registrar su pago porque se cuenta está ANULADA o RETIRADA ({{ Contar }})</h3>
+      <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No
+        es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
+      <h3 class="message-warning" *ngIf="ErrorRegistrando">{{MessageErrorRegistrado}} ({{ Contar }})</h3>
+    </div>
+
+    <mat-stepper [linear]="true" #stepper>
+      <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
+      <mat-step *ngIf="!AppFibex">
+        <ng-template matStepLabel>Cliente</ng-template>
+        <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
+          <mat-form-field appearance="outline">
+            <mat-label>Cédula/RIF del Cliente</mat-label>
+            <input type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni,false)">
+            <mat-icon matSuffix (click)="searchServices(inputDni,false)" style="cursor: pointer">search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
+            <mat-label>Abonado</mat-label>
+            <mat-select>
+              <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
+                (click)="contractSelected(contrato,true)" required>
+                {{contrato.contrato}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <span *ngIf="listContratos.length==1">
+            <button class="button-material-next btn-width-100" (click)="lengthContrat()" mat-raised-button
+              type="button">
+              Siguiente
+            </button>
           </span>
-          <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span>
-      </div>
-
-    <div class="form-login__group" >
-      <div>
-        <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
-          su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
-        <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">No es
-          posible registrar su pago porque se cuenta está ANULADA o RETIRADA ({{ Contar }})</h3>
-        <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No
-          es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
-        <h3 class="message-warning" *ngIf="ErrorRegistrando">{{MessageErrorRegistrado}} ({{ Contar }})</h3>
-      </div>
-
-      <mat-stepper [linear]="true" #stepper>
-        <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
-        <mat-step *ngIf="!AppFibex">
-            <ng-template matStepLabel>Cliente</ng-template>
-            <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-              <mat-form-field appearance="outline">
-                <mat-label>Cédula/RIF del Cliente</mat-label>
-                <input  type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni,false)">
-                <mat-icon matSuffix (click)="searchServices(inputDni,false)" style="cursor: pointer">search</mat-icon>
-              </mat-form-field>
-
-              <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
-                <mat-label>Abonado</mat-label>
-                <mat-select>
-                  <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
-                    (click)="contractSelected(contrato,true)" required>
-                    {{contrato.contrato}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <span *ngIf="listContratos.length==1">
-                <button class="button-material-next btn-width-100" (click)="lengthContrat()" mat-raised-button
-                type="button">
-                  Siguiente
-                </button>
-              </span>
 
 
-            </div>
-        </mat-step>
+        </div>
+      </mat-step>
 
 
-        <!--/ Fin de Menú ppal -->
+      <!--/ Fin de Menú ppal -->
 
-        <!-- Menú de métodos de pago -->
-        <mat-step *ngIf="AppFibex" class="CardPpal" >
-          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
-            <div>
-              <h4 class="name-client">
-                {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-              </h4>
-            </div>
-            <div>
-              <h4 class="name-client">
-                 Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Subscripción: {{subscription}} USD
-              </h4>
-            </div>
+      <!-- Menú de métodos de pago -->
+      <mat-step *ngIf="AppFibex" class="CardPpal">
+        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+          <div>
+            <h4 class="name-client">
+              {{nameClient}}
+            </h4>
+            <h4 class="name-client">
+              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+            </h4>
           </div>
-            <ng-template matStepLabel>Tipo de pago</ng-template>
-            <div class="cardflex">
-              <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
-                <mat-card *ngIf="!option.omitir"   class="example-card">
-                  <mat-card-header>
-                    <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
-                  </mat-card-header>
-                  <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
-                  <mat-card-actions>
-                    <button mat-button *ngIf="option.tipopago !='Pago Móvil' && option.tipopago !='Criptomoneda'" (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100" matStepperNext>SELECCIONAR</button>
-                    <button mat-button *ngIf="option.tipopago =='Pago Móvil' || option.tipopago =='Criptomoneda'" (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR</button>
-                  </mat-card-actions>
-                </mat-card>
-              </div>
-            </div>
+          <div>
+            <h4 class="name-client">
+              Servicio: {{ paquete }}
+            </h4>
+            <h4 class="name-client">
+              Subscripción: {{subscription}} USD
+            </h4>
+          </div>
+        </div>
+        <ng-template matStepLabel>Tipo de pago</ng-template>
+        <div class="cardflex">
+          <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
+            <mat-card *ngIf="!option.omitir" class="example-card">
+              <mat-card-header>
+                <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
+              </mat-card-header>
+              <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
+              <mat-card-actions>
+                <button mat-button *ngIf="option.tipopago !='Pago Móvil' && option.tipopago !='Criptomoneda'"
+                  (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
+                  matStepperNext>SELECCIONAR</button>
+                <button mat-button *ngIf="option.tipopago =='Pago Móvil' || option.tipopago =='Criptomoneda'"
+                  (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR</button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
 
 
-        </mat-step>
-         <!-- / Fin de métodos de pago -->
+      </mat-step>
+      <!-- / Fin de métodos de pago -->
 
-         <!-- Transferencias -->
-        <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda">
+      <!-- Transferencias -->
+      <div
+        *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
@@ -113,7 +117,7 @@
             </div>
             <div>
               <h4 class="name-client">
-                 Servicio: {{ paquete }}
+                Servicio: {{ paquete }}
               </h4>
               <h4 class="name-client">
                 Subscripción: {{subscription}} USD
@@ -163,7 +167,8 @@
                 </mat-select>
                 <mat-error *ngIf="firstFormFibex.get('nroContrato')?.hasError('required')">El número de abonado es
                   requerido</mat-error>
-                <mat-error *ngIf="dniConsulted && listContratos.length === 0">No exite abonado, verifique el documento de
+                <mat-error *ngIf="dniConsulted && listContratos.length === 0">No exite abonado, verifique el documento
+                  de
                   identidad</mat-error>
               </mat-form-field>
 
@@ -259,14 +264,16 @@
               <p>Es el número de referencia del BANCO</p>
               <mat-form-field appearance="outline">
                 <mat-label>Número de comprobante</mat-label>
-                <input matInput formControlName="voucher" required #inputVouche (blur)="SendOption(1,2,inputVouche.value)"
-                  (blur)="ValidateLastReferencia(inputVouche.value)">
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es requerido
+                <input matInput formControlName="voucher" required #inputVouche
+                  (blur)="SendOption(1,2,inputVouche.value)" (blur)="ValidateLastReferencia(inputVouche.value)">
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es
+                  requerido
                 </mat-error>
               </mat-form-field>
 
               <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos realizados</h3><br>
-              <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago" class="mat-elevation-z8">
+              <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago"
+                class="mat-elevation-z8">
 
                 <!--- Note that these columns can be defined in any order.
                           The actual rendered columns are set as a property on the row definition" -->
@@ -307,7 +314,7 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
               <button class="button-material-next btn-width-70" (click)="VerifyRefencia()" mat-raised-button
-                type="button" [disabled]="this.secondFormFibex.invalid" >
+                type="button" [disabled]="this.secondFormFibex.invalid">
                 <!--matStepperNext-->
                 Siguiente
               </button>
@@ -333,8 +340,8 @@
                 <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                 Formato inválido solo se acepta: jpg, png, jpeg y pdf.
               </p>
-              <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button *ngIf="imageUploaded"
-              (click)="deleteImagePay()">
+              <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button
+                *ngIf="imageUploaded" (click)="deleteImagePay()">
                 Eliminar comprobante
               </button>
               <div *ngIf="imageUrl != ''" class="image-pay">
@@ -361,7 +368,8 @@
               </mat-form-field>
               <div class="btn-flex-center">
                 <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button
-                  matStepperNext [disabled]="uploadingImg || showMessageErrorUpload || this.thirdFormFibex.invalid" type="button">
+                  matStepperNext [disabled]="uploadingImg || showMessageErrorUpload || this.thirdFormFibex.invalid"
+                  type="button">
                   Siguiente
                 </button>
                 <button class="button-material-back btn-width-30 " mat-raised-button matStepperPrevious
@@ -375,140 +383,286 @@
         <ng-container *ngIf="possibleWithholdingAgent && selectedRetentionOption == 2">
           <mat-step [stepControl]="fourthFormFibex">
             <form [formGroup]="fourthFormFibex">
-            <ng-template matStepLabel>Retención</ng-template>
+              <ng-template matStepLabel>Retención</ng-template>
               <div class="form-login__item">
-                  <p *ngIf="showMessageErrorUpload" class="message-error-upload">
-                    <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
-                    Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
-                  </p>
-                  <p *ngIf="!ValidRetentionImgExtension" class=" message-error-upload textinvalido">
-                    <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
-                    Formato inválido solo se acepta: jpg, png, jpeg y pdf.
-                  </p>
-                  <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button *ngIf="retentionimageUploaded"
-                    (click)="deleteRetentionImagePay()">
-                    Eliminar imagen del comprobante de retención de impuestos.
-                  </button>
-                  <div *ngIf="retentionImageUrl != ''" class="image-pay">
-                    <img *ngIf="extn!='pdf'" [src]="retentionImageUrl" width="200px">
-                    <img *ngIf="extn=='pdf'" src="assets/images/PDF_file.png" width="100px">
-                  </div>
-                  <button class="btn-uplaod-image button-material-upload" mat-raised-button (click)="uploadFile.click()"
-                    *ngIf="!retentionimageUploaded && !showMessageErrorUpload">
-                    Subir imagen de la galería del comprobante de retención de impuestos.
-                  </button>
-                  <br>
-                  <div *ngIf="retentionImageUrl == '' && !uploadingRetentionImg" class="image-pay" (click)="uploadFile.click()">
-                    <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
-                  </div>
-                  <div class="spinner-pay" *ngIf="uploadingRetentionImg">
-                    <mat-spinner></mat-spinner>
-                  </div>
-                  <input hidden #uploadFile type="file" formControlName="retentionImg" (change)="uploadRetentionImagePayment2($event)"
-                    accept="image/*" #inputIMG (blur)="SendOption(2,0,inputIMG.value)">
-                  <!-- <mat-error *ngIf="fourthFormFibex.get('retentionImg')?.hasError('required')">La imagen es requerida</mat-error> -->
-                  <mat-form-field appearance="outline">
-                    <mat-label>Monto de retención</mat-label>
-                    <input matInput formControlName="retentionAmount" #inputNote (blur)="considerWithholdingAmount()">
-                    <mat-error *ngIf="retentionAmount?.hasError('required')">Monto requerido</mat-error>
+                <p *ngIf="showMessageErrorUpload" class="message-error-upload">
+                  <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
+                  Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
+                </p>
+                <p *ngIf="!ValidRetentionImgExtension" class=" message-error-upload textinvalido">
+                  <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
+                  Formato inválido solo se acepta: jpg, png, jpeg y pdf.
+                </p>
+                <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button
+                  *ngIf="retentionimageUploaded" (click)="deleteRetentionImagePay()">
+                  Eliminar imagen del comprobante de retención de impuestos.
+                </button>
+                <div *ngIf="retentionImageUrl != ''" class="image-pay">
+                  <img *ngIf="extn!='pdf'" [src]="retentionImageUrl" width="200px">
+                  <img *ngIf="extn=='pdf'" src="assets/images/PDF_file.png" width="100px">
+                </div>
+                <button class="btn-uplaod-image button-material-upload" mat-raised-button (click)="uploadFile.click()"
+                  *ngIf="!retentionimageUploaded && !showMessageErrorUpload">
+                  Subir imagen de la galería del comprobante de retención de impuestos.
+                </button>
+                <br>
+                <div *ngIf="retentionImageUrl == '' && !uploadingRetentionImg" class="image-pay"
+                  (click)="uploadFile.click()">
+                  <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
+                </div>
+                <div class="spinner-pay" *ngIf="uploadingRetentionImg">
+                  <mat-spinner></mat-spinner>
+                </div>
+                <input hidden #uploadFile type="file" formControlName="retentionImg"
+                  (change)="uploadRetentionImagePayment2($event)" accept="image/*" #inputIMG
+                  (blur)="SendOption(2,0,inputIMG.value)">
+                <!-- <mat-error *ngIf="fourthFormFibex.get('retentionImg')?.hasError('required')">La imagen es requerida</mat-error> -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Monto de retención</mat-label>
+                  <input matInput formControlName="retentionAmount" #inputNote (blur)="considerWithholdingAmount()">
+                  <mat-error *ngIf="retentionAmount?.hasError('required')">Monto requerido</mat-error>
                   <mat-error *ngIf="retentionAmount?.hasError('pattern')">Escriba el monto seguido dos
                     decimales separado por punto, ejemplo: 125.00</mat-error>
-                  <mat-error
-                    *ngIf="firstFormFibex.hasError('isNegative') && retentionAmount?.hasError('required')">El
+                  <mat-error *ngIf="firstFormFibex.hasError('isNegative') && retentionAmount?.hasError('required')">El
                     monto no puede ser negativo</mat-error>
-                  </mat-form-field>
-                  <div class="btn-flex-center">
-                    <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button (click)="nextStepWithRetention(5, true)"
-                      [disabled]="uploadingRetentionImg || showMessageErrorUpload || this.fourthFormFibex.invalid" type="button">
-                      Siguiente
-                    </button>
-                    <button class="button-material-back btn-width-30 " mat-raised-button matStepperPrevious
-                      [disabled]="uploadingRetentionImg">Regresar</button>
+                </mat-form-field>
+                <div class="btn-flex-center">
+                  <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button
+                    (click)="nextStepWithRetention(5, true)"
+                    [disabled]="uploadingRetentionImg || showMessageErrorUpload || this.fourthFormFibex.invalid"
+                    type="button">
+                    Siguiente
+                  </button>
+                  <button class="button-material-back btn-width-30 " mat-raised-button matStepperPrevious
+                    [disabled]="uploadingRetentionImg">Regresar</button>
 
-                  </div>
                 </div>
-              </form>
-              </mat-step>
-          </ng-container>
-
-          <mat-step>
-            <ng-template matStepLabel>Confirmación</ng-template>
-            <div class="spinner-pay" *ngIf="sendingPay">
-              <mat-spinner></mat-spinner>
-            </div>
-            <div class="card-pay">
-              <div class="invoice-box">
-                <table cellpadding="0" cellspacing="0">
-                  <tr class="top">
-                    <td colspan="2">
-                      <table>
-                        <tr>
-                          <td class="title">
-                            <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
-                              style="width: 60%; max-width: 300px" />
-                          </td>
-
-                          <td>
-                            Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-
-                  <tr class="information">
-                    <td colspan="2">
-                      <table>
-                        <tr>
-                          <td>
-                            Servicio: {{ paquete }}<br />
-                            Subscripción: {{subscription}} USD <br />
-                            Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
-                            <strong>Banco receptor: {{bank?.value}}</strong>
-                          </td>
-
-                          <td>
-                            {{nameClient}}<br />
-                            DNI/RIF {{dni?.value}}<br />
-                            {{email?.value}}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-
-                  <tr class="heading">
-                    <td>Usted va reportar un pago de</td>
-
-                    <td>Monto #</td>
-                  </tr>
-
-                  <tr class="details">
-                    <td>{{paquete}}</td>
-
-                    <td>{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
-                  </tr>
-
-                  <tr class="total">
-                    <td></td>
-
-                    <td>Total: {{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
-                  </tr>
-                </table>
               </div>
-            </div>
-            <div class="btn-flex-center">
-              <button class="button-material-next btn-width-70" mat-raised-button (click)="savePayment()"
-                [disabled]="DisableReg || showMessageErrorUpload">Reportar pago</button>
-              <button class="button-material-back btn-width-30" mat-raised-button (click)="resetStepper()">Editar
-                datos</button>
-            </div>
+            </form>
           </mat-step>
-        </div>
-         <!-- / Fin de Transferencias -->
+        </ng-container>
 
-         <!-- Pago Móvil -->
-        <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+        <mat-step>
+          <ng-template matStepLabel>Confirmación</ng-template>
+          <div class="spinner-pay" *ngIf="sendingPay">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div class="card-pay">
+            <div class="invoice-box">
+              <table cellpadding="0" cellspacing="0">
+                <tr class="top">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td class="title">
+                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                            style="width: 60%; max-width: 300px" />
+                        </td>
+
+                        <td>
+                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr class="information">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td>
+                          Servicio: {{ paquete }}<br />
+                          Subscripción: {{subscription}} USD <br />
+                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
+                          <strong>Banco receptor: {{bank?.value}}</strong>
+                        </td>
+
+                        <td>
+                          {{nameClient}}<br />
+                          DNI/RIF {{dni?.value}}<br />
+                          {{email?.value}}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr class="heading">
+                  <td>Usted va reportar un pago de</td>
+
+                  <td>Monto #</td>
+                </tr>
+
+                <tr class="details">
+                  <td>{{paquete}}</td>
+
+                  <td>{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                </tr>
+
+                <tr class="total">
+                  <td></td>
+
+                  <td>Total: {{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="btn-flex-center">
+            <button class="button-material-next btn-width-70" mat-raised-button (click)="savePayment()"
+              [disabled]="DisableReg || showMessageErrorUpload">Reportar pago</button>
+            <button class="button-material-back btn-width-30" mat-raised-button (click)="resetStepper()">Editar
+              datos</button>
+          </div>
+        </mat-step>
+      </div>
+      <!-- / Fin de Transferencias -->
+
+      <!-- Pago Móvil -->
+      <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+          <div>
+            <h4 class="name-client">
+              {{nameClient}}
+            </h4>
+            <h4 class="name-client">
+              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+            </h4>
+          </div>
+          <div>
+            <h4 class="name-client">
+              Servicio: {{ paquete }}
+            </h4>
+            <h4 class="name-client">
+              Subscripción: {{subscription}} USD
+            </h4>
+          </div>
+        </div>
+
+        <form *ngIf="ConsultarPagoMovilboolean" [formGroup]="PgMovilForm">
+          <mat-label>Cédula de identidad</mat-label><br>
+          <mat-form-field appearance="outline" class="Prefc_i">
+            <mat-select formControlName="prec_i">
+              <mat-option value="V">V</mat-option>
+              <mat-option value="E">E</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+            <mat-error *ngIf="PgMovilForm.get('c_i')?.hasError('minlength')">
+              La cédula debe contener al menos 6 carácteres
+            </mat-error>
+            <mat-error *ngIf="PgMovilForm.get('c_i')?.hasError('required')">
+              La cédula es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-login__item">
+            <ng-template matStepLabel>Pago Móvil</ng-template>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Número de comprobante</mat-label>
+              <input matInput formControlName="referencia" required #inputVouche>
+              <mat-error *ngIf="PgMovilForm.get('referencia')?.hasError('required')">Número de comprobante es requerido
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha del pago</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="datepgmovil" [max]="dateToDay" #inputDate>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="PgMovilForm.get('datepgmovil')?.hasError('required')">La fecha del pago es requerida
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Monto Pagado
+                <strong><span>En Bolivares</span></strong>
+              </mat-label>
+              <input matInput formControlName="cantidad" required #inputAmount>
+              <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+              <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
+                separado por punto, ejemplo: 125.00</mat-error>
+              <mat-error
+                *ngIf="PgMovilForm.hasError('isNegative') && PgMovilForm.get('cantidad')?.hasError('required')">El monto
+                no puede ser negativo</mat-error>
+            </mat-form-field>
+
+
+          </div>
+        </form>
+
+        <form *ngIf="RegistrarPagoMovilboolean" [formGroup]="PgMovilRegForm">
+          <mat-label>Cédula de identidad</mat-label><br>
+          <mat-form-field appearance="outline" class="Prefc_i">
+            <mat-select formControlName="pref_ci">
+              <mat-option value="V">V</mat-option>
+              <mat-option value="E">E</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+            <mat-error *ngIf="PgMovilRegForm.get('c_i')?.hasError('minlength')">
+              La cédula debe contener al menos 6 carácteres
+            </mat-error>
+            <mat-error *ngIf="PgMovilRegForm.get('c_i')?.hasError('required')">
+              La cédula es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-login__item">
+            <ng-template matStepLabel>Pago Móvil</ng-template>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="tlfdestin" required type="number" placeholder="Ejemplo: 584121234567">
+              <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cantidad a pagar
+                <strong><span>En Bolivares</span></strong>
+              </mat-label>
+              <input matInput formControlName="amountPm" required #inputAmount>
+              <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
+              <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
+                decimales separado por punto, ejemplo: 125.00</mat-error>
+              <mat-error
+                *ngIf="PgMovilRegForm.hasError('isNegative') && PgMovilRegForm.get('amountPm')?.hasError('required')">El
+                monto no puede ser negativo</mat-error>
+            </mat-form-field>
+            <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+              <button [disabled]="!PgMovilRegForm.valid" class="button-material-next btn-width-70" mat-raised-button
+                type="button" (click)="ClaveAuthPgoMovil()">
+                Solicitar pin de autorización
+              </button>
+              <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button
+                type="button" matStepperPrevious>
+                Regresar
+              </button>
+            </div>
+
+          </div>
+        </form>
+
+        <div *ngIf="ConsultarPagoMovilboolean" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+          <button [disabled]="!PgMovilForm.valid" class="button-material-next btn-width-70" mat-raised-button
+            type="button" (click)="ComprobarPgoMovil()">
+            Procesar orden
+          </button>
+          <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button"
+            matStepperPrevious>
+            Regresar
+          </button>
+        </div>
+      </mat-step>
+      <!-- / Fin de Pago Móvil -->
+
+      <!-- Crédito o Débito -->
+      <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
+        <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
             <div>
               <h4 class="name-client">
@@ -520,201 +674,57 @@
             </div>
             <div>
               <h4 class="name-client">
-                 Servicio: {{ paquete }}
+                Servicio: {{ paquete }}
               </h4>
               <h4 class="name-client">
                 Subscripción: {{subscription}} USD
               </h4>
             </div>
           </div>
-
-          <form *ngIf="ConsultarPagoMovilboolean" [formGroup]="PgMovilForm">
-            <mat-label>Cédula de identidad</mat-label><br>
-            <mat-form-field appearance="outline" class="Prefc_i">
-              <mat-select formControlName="prec_i" >
-                <mat-option value="V">V</mat-option>
-                <mat-option value="E">E</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
-              <mat-error
-                  *ngIf="PgMovilForm.get('c_i')?.hasError('minlength')">
-                La cédula debe contener al menos 6 carácteres
-              </mat-error>
-              <mat-error
-                  *ngIf="PgMovilForm.get('c_i')?.hasError('required')">
-                La cédula es requerida
-              </mat-error>
-            </mat-form-field>
-
-            <div  class="form-login__item">
-              <ng-template matStepLabel>Pago Móvil</ng-template>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Número de comprobante</mat-label>
-                <input matInput  formControlName="referencia" required #inputVouche>
-                <mat-error *ngIf="PgMovilForm.get('referencia')?.hasError('required')">Número de comprobante es requerido</mat-error>
+          <ng-template matStepLabel>Datos de pago</ng-template>
+          <form [formGroup]="DebitoCredito">
+            <div>
+              <mat-label>Cédula del titular</mat-label><br>
+              <mat-form-field appearance="outline" class="Prefc_i">
+                <mat-select formControlName="pref_ci">
+                  <mat-option value="V">V</mat-option>
+                  <mat-option value="E">E</mat-option>
+                </mat-select>
               </mat-form-field>
-
               <mat-form-field appearance="outline">
-                <mat-label>Fecha del pago</mat-label>
-                <input matInput [matDatepicker]="picker"  formControlName="datepgmovil"  [max]="dateToDay" #inputDate>
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="PgMovilForm.get('datepgmovil')?.hasError('required')">La fecha del pago es requerida</mat-error>
+                <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+                <mat-error *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')">
+                  La cédula debe contener al menos 6 carácteres
+                </mat-error>
+                <mat-error *ngIf="DebitoCredito.get('c_i')?.hasError('required')">
+                  La cédula es requerida
+                </mat-error>
               </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Monto Pagado
-                    <strong><span>En Bolivares</span></strong>
-                </mat-label>
-                <input matInput formControlName="cantidad" required #inputAmount>
-                <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales separado por punto, ejemplo: 125.00</mat-error>
-                <mat-error *ngIf="PgMovilForm.hasError('isNegative') && PgMovilForm.get('cantidad')?.hasError('required')">El monto no puede ser negativo</mat-error>
-              </mat-form-field>
-
-
-           </div>
-          </form>
-
-          <form *ngIf="RegistrarPagoMovilboolean" [formGroup]="PgMovilRegForm">
-            <mat-label>Cédula de identidad</mat-label><br>
-            <mat-form-field appearance="outline" class="Prefc_i">
-              <mat-select formControlName="pref_ci">
-                <mat-option value="V">V</mat-option>
-                <mat-option value="E">E</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
-              <mat-error
-                  *ngIf="PgMovilRegForm.get('c_i')?.hasError('minlength')">
-                La cédula debe contener al menos 6 carácteres
-              </mat-error>
-              <mat-error
-                  *ngIf="PgMovilRegForm.get('c_i')?.hasError('required')">
-                La cédula es requerida
-              </mat-error>
-            </mat-form-field>
-
-            <div  class="form-login__item">
-              <ng-template matStepLabel>Pago Móvil</ng-template>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Teléfono</mat-label>
-                <input matInput  formControlName="tlfdestin" required type="number" placeholder="Ejemplo: 584121234567">
-                <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Cantidad a pagar
-                    <strong><span>En Bolivares</span></strong>
-                </mat-label>
-                <input matInput formControlName="amountPm" required #inputAmount>
-                <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos decimales separado por punto, ejemplo: 125.00</mat-error>
-                <mat-error *ngIf="PgMovilRegForm.hasError('isNegative') && PgMovilRegForm.get('amountPm')?.hasError('required')">El monto no puede ser negativo</mat-error>
-              </mat-form-field>
-              <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-                <button
-                [disabled]="!PgMovilRegForm.valid"
-                class="button-material-next btn-width-70" mat-raised-button type="button"
-                (click)="ClaveAuthPgoMovil()">
-                  Solicitar pin de autorización
-                </button>
-                <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button" matStepperPrevious>
-                  Regresar
-                </button>
-              </div>
-
-           </div>
-          </form>
-
-          <div  *ngIf="ConsultarPagoMovilboolean" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <button
-            [disabled]="!PgMovilForm.valid"
-            class="button-material-next btn-width-70" mat-raised-button type="button"
-            (click)="ComprobarPgoMovil()">
-              Procesar orden
-            </button>
-            <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button" matStepperPrevious>
-              Regresar
-            </button>
-          </div>
-        </mat-step>
-         <!-- / Fin de Pago Móvil -->
-
-         <!-- Crédito o Débito -->
-        <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
-          <div *ngIf="!ReciboPay">
-            <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
-              <div>
-                <h4 class="name-client">
-                  {{nameClient}}
-                </h4>
-                <h4 class="name-client">
-                  {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-                </h4>
-              </div>
-              <div>
-                <h4 class="name-client">
-                   Servicio: {{ paquete }}
-                </h4>
-                <h4 class="name-client">
-                  Subscripción: {{subscription}} USD
-                </h4>
-              </div>
             </div>
-            <ng-template matStepLabel>Datos de pago</ng-template>
-            <form [formGroup]="DebitoCredito">
-              <div>
-                <mat-label>Cédula del titular</mat-label><br>
-                <mat-form-field appearance="outline" class="Prefc_i">
-                  <mat-select formControlName="pref_ci">
-                    <mat-option value="V">V</mat-option>
-                    <mat-option value="E">E</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field appearance="outline">
-                  <input  type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
-                  <mat-error
-                      *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')">
-                    La cédula debe contener al menos 6 carácteres
-                  </mat-error>
-                  <mat-error
-                      *ngIf="DebitoCredito.get('c_i')?.hasError('required')">
-                    La cédula es requerida
-                  </mat-error>
-                </mat-form-field>
-              </div>
-              <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
-              <div  class="form-login__item">
-                <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
-                  <mat-label>Tipo de cuenta</mat-label>
-                  <mat-select formControlName="typeCuenta">
-                    <mat-option *ngFor="let bank of TypeAcountDC" [value]="bank.type">
-                      {{bank.cuenta}}
-                    </mat-option>
-                  </mat-select>
-                    <mat-error>La cuenta es obligatoria</mat-error>
-                </mat-form-field>
+            <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
+            <div class="form-login__item">
+              <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
+                <mat-label>Tipo de cuenta</mat-label>
+                <mat-select formControlName="typeCuenta">
+                  <mat-option *ngFor="let bank of TypeAcountDC" [value]="bank.type">
+                    {{bank.cuenta}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>La cuenta es obligatoria</mat-error>
+              </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Nro. de tarjeta</mat-label>
-                <input  matInput required formControlName="Ncard" NumbersOnly="true">
-                <mat-error
-                    *ngIf="DebitoCredito.get('Ncard')?.hasError('required')">
+                <input matInput required formControlName="Ncard" NumbersOnly="true">
+                <mat-error *ngIf="DebitoCredito.get('Ncard')?.hasError('required')">
                   El número de tarjeta es requerido
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
-                <input  type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
-                <mat-error
-                    *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
+                <input type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
+                <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
                   El número cvv es requerido
                 </mat-error>
                 <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')">
@@ -733,7 +743,7 @@
                 </mat-select>
               </mat-form-field>
 
-              <mat-form-field appearance="outline"class="Prefc_i2">
+              <mat-form-field appearance="outline" class="Prefc_i2">
                 <mat-select formControlName="fvncmtoAno">
                   <mat-option *ngFor="let option of Anos" [value]="option.ano">
                     {{option.ano}}
@@ -742,147 +752,147 @@
               </mat-form-field>
             </div>
 
-            <div  class="form-login__item">
+            <div class="form-login__item">
               <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar
-                    <strong><span>En Bolivares</span></strong>
+                  <strong><span>En Bolivares</span></strong>
                 </mat-label>
                 <input matInput formControlName="cantidad" required #inputAmount>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales separado por punto, ejemplo: 125.00</mat-error>
-                <mat-error *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El monto no puede ser negativo</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
+                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                <mat-error
+                  *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El
+                  monto no puede ser negativo</mat-error>
               </mat-form-field>
 
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Clave telefónica</mat-label>
-                <input  type="number" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
-                <mat-error
-                    *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
+                <input type="number" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
+                <mat-error *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
                   El número de tarjeta es requerido
                 </mat-error>
               </mat-form-field>
             </div>
-            </form>
-          </div>
-          <div *ngIf="ReciboPay">
-            <div class="card-pay">
-              <div class="invoice-box">
-                <table cellpadding="0" cellspacing="0">
-                  <tr class="top">
-                    <td colspan="2">
-                      <table>
-                        <tr>
-                          <td class="title">
-                            <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
-                              style="width: 60%; max-width: 300px" />
-                          </td>
+          </form>
+        </div>
+        <div *ngIf="ReciboPay">
+          <div class="card-pay">
+            <div class="invoice-box">
+              <table cellpadding="0" cellspacing="0">
+                <tr class="top">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td class="title">
+                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                            style="width: 60%; max-width: 300px" />
+                        </td>
 
-                          <td>
-                            Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+                        <td>
+                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 
-                  <tr class="information">
-                    <td colspan="2">
-                      <table>
-                        <tr>
-                          <td>
-                            Servicio: {{ paquete }}<br />
-                            Subscripción: {{subscription}} USD <br />
-                            Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
-                            <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
-                          </td>
+                <tr class="information">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td>
+                          Servicio: {{ paquete }}<br />
+                          Subscripción: {{subscription}} USD <br />
+                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
+                          <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
+                        </td>
 
-                          <td>
-                            {{nameClient}}<br />
-                            DNI/RIF {{dni?.value}}<br />
-                            <!-- {{email?.value}} -->
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+                        <td>
+                          {{nameClient}}<br />
+                          DNI/RIF {{dni?.value}}<br />
+                          <!-- {{email?.value}} -->
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 
-                  <tr class="heading">
-                    <td>Usted reporto un pago de</td>
+                <tr class="heading">
+                  <td>Usted reporto un pago de</td>
 
-                    <td>Monto #</td>
-                  </tr>
+                  <td>Monto #</td>
+                </tr>
 
-                  <tr class="details">
-                    <td>{{paquete}}</td>
+                <tr class="details">
+                  <td>{{paquete}}</td>
 
-                    <td>{{cantidadDC?.value}}</td>
-                  </tr>
+                  <td>{{cantidadDC?.value}}</td>
+                </tr>
 
-                </table>
-              </div>
+              </table>
             </div>
           </div>
-          <!-- /Form Para Debito o Credito  -->
-          <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <button *ngIf="!ReciboPay"
-            [disabled]="!DebitoCredito.valid"
-            class="button-material-next btn-width-70" mat-raised-button type="button" (click)="PagoDebito()">
-              Pagar
-            </button>
-            <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button type="button" matStepperPrevious>
-              Regresar
-            </button>
+        </div>
+        <!-- /Form Para Debito o Credito  -->
+        <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+          <button *ngIf="!ReciboPay" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
+            mat-raised-button type="button" (click)="PagoDebito()">
+            Pagar
+          </button>
+          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
+            type="button" matStepperPrevious>
+            Regresar
+          </button>
+        </div>
+
+      </mat-step>
+      <!-- / Fin de Crédito o Débito -->
+
+      <!-- Criptomoneda -->
+      <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
+        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+          <div>
+            <h4 class="name-client">
+              {{nameClient}}
+            </h4>
+            <h4 class="name-client">
+              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+            </h4>
+          </div>
+          <div>
+            <h4 class="name-client">
+              Servicio: {{ paquete }}
+            </h4>
+            <h4 class="name-client">
+              Subscripción: {{subscription}} USD
+            </h4>
+          </div>
+        </div>
+        <ng-template matStepLabel>Datos de pago</ng-template>
+        <form [formGroup]="CriptomonedaForm">
+          <div>
+            <mat-label>Cédula del titular</mat-label><br>
+
+            <mat-form-field appearance="outline" class="Prefc_i">
+              <mat-select formControlName="Pref_ci_Cripto">
+                <mat-option value="V">V</mat-option>
+                <mat-option value="E">E</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <input type="number" matInput required formControlName="c_i_Cripto" NumbersOnly="true" #inputDni>
+              <mat-error *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('minlength')">
+                La cédula debe contener al menos 6 carácteres
+              </mat-error>
+              <mat-error *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('required')">
+                La cédula es requerida
+              </mat-error>
+            </mat-form-field>
           </div>
 
-        </mat-step>
-        <!-- / Fin de Crédito o Débito -->
-
-        <!-- Criptomoneda -->
-        <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
-          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
-            <div>
-              <h4 class="name-client">
-                {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-              </h4>
-            </div>
-            <div>
-              <h4 class="name-client">
-                 Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Subscripción: {{subscription}} USD
-              </h4>
-            </div>
-          </div>
-          <ng-template matStepLabel>Datos de pago</ng-template>
-          <form [formGroup]="CriptomonedaForm">
-            <div>
-              <mat-label>Cédula del titular</mat-label><br>
-
-              <mat-form-field appearance="outline" class="Prefc_i">
-                <mat-select formControlName="Pref_ci_Cripto">
-                  <mat-option value="V">V</mat-option>
-                  <mat-option value="E">E</mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <input  type="number" matInput required formControlName="c_i_Cripto" NumbersOnly="true" #inputDni>
-                <mat-error
-                    *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('minlength')">
-                  La cédula debe contener al menos 6 carácteres
-                </mat-error>
-                <mat-error
-                    *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('required')">
-                  La cédula es requerida
-                </mat-error>
-              </mat-form-field>
-            </div>
-
-          <div  class="form-login__item">
+          <div class="form-login__item">
             <mat-form-field appearance="outline">
               <mat-label>Cantidad a pagar </mat-label>
               <input matInput formControlName="Monto_Cripto" required readonly>
@@ -890,30 +900,29 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Nro. Referencia</mat-label>
-              <input  type="text" matInput formControlName="Referencia_Cripto" NumbersOnly="true" #inputDni>
-              <mat-error
-                  *ngIf="CriptomonedaForm.get('Referencia_Cripto')?.hasError('required')">
+              <input type="text" matInput formControlName="Referencia_Cripto" NumbersOnly="true" #inputDni>
+              <mat-error *ngIf="CriptomonedaForm.get('Referencia_Cripto')?.hasError('required')">
                 El número de referencia es requerido
               </mat-error>
             </mat-form-field>
           </div>
 
-          </form>
-          <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <button
-            [disabled]="!CriptomonedaForm.valid"
-            class="button-material-next btn-width-70" mat-raised-button type="button">
-              Reportar
-            </button>
-            <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button type="button" matStepperPrevious>
-              Regresar
-            </button>
-          </div>
+        </form>
+        <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+          <button [disabled]="!CriptomonedaForm.valid" class="button-material-next btn-width-70" mat-raised-button
+            type="button">
+            Reportar
+          </button>
+          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
+            type="button" matStepperPrevious>
+            Regresar
+          </button>
+        </div>
 
-        </mat-step>
-        <!-- / Fin de Criptomoneda -->
-      </mat-stepper>
-    </div>
+      </mat-step>
+      <!-- / Fin de Criptomoneda -->
+    </mat-stepper>
+  </div>
 
 
 
