@@ -26,9 +26,7 @@ export class ApiMercantilService implements  OnInit {
     this.title = '';
    }
 
-   ngOnInit(): void {
-
-  }
+   ngOnInit(): void { }
 
   ConsultaPagoMovil(Datos:any){
     return new Promise((resolve,reject)=>{
@@ -85,13 +83,6 @@ export class ApiMercantilService implements  OnInit {
     }
     this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
         .then((resp:any)=>{
-          console.log("lo que voy a enviar");
-          console.log(resp);
-         /* this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,resp)
-          .then((resp2:any)=>{
-            console.log("Desencripto")
-            console.log(resp2);
-            })*/
             this.http.post<any>(`${this.URLAPIMERCANTIL}Test`, resp).subscribe({
                 next: data => {
                     console.log("respondio");
@@ -175,35 +166,20 @@ export class ApiMercantilService implements  OnInit {
   ConsultaPagoMovilxReferencia(Agent:any){
     return new Promise((resolve,reject)=>{
       try {
-
         Agent.Date = Agent.Date.split('T')[0];
         Agent.Date = Agent.Date.replace(/-/g,'/')
-        console.log(Agent.Date)
         let Datos ={
-            "procesing_date":Agent.Date, //Reemplazar por lo que coloque el usuario
+            "procesing_date":Agent.Date,
             "ipaddress": Agent.AddresIp,
             "browser_agent": Agent.Browser,
             "payment_reference": Agent.Reference,
             "Name": Agent.Name,
             "abonado": Agent.Abonado,
             "idcontrato": Agent.idContrato
-
         }
-        /*
-          "manufacturer": "Samsung",
-          "model": "S9",
-          "os_version": "Oreo 9.1",
-          "lat": 37.4224764,
-          "lng": -122.0842499
-        */
-      //  this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-      //  .then((resp:any)=>{
-      //    console.log(resp);
-          //console.log("Data Encriptada");
-          //console.log(resp);
-          //this._EncrypD.DesEncrypDataHash(env.KeyEncrypt,Datos)
-         // .then((resp:any)=>{console.log("Data Desencriptada"); console.log(resp);})
-            this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
+       this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
+            this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxReferencia/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     console.log("respondio");
                     console.log(data)
@@ -214,8 +190,8 @@ export class ApiMercantilService implements  OnInit {
                     reject(error)
                 }
             })
-     //   })
-     //   .catch((error:any)=>console.error(error));
+       })
+       .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -237,8 +213,8 @@ export class ApiMercantilService implements  OnInit {
             "payment_reference": "6460003485",
             "invoice_number": "20092411046"
         }
-       // this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-       // .then((resp:any)=>{
+       this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFacturaReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
                     console.log("respondio");
@@ -248,8 +224,8 @@ export class ApiMercantilService implements  OnInit {
                     console.error('There was an error!', error);
                 }
             })
-      //  })
-      //  .catch((error:any)=>console.error(error));
+       })
+       .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -259,24 +235,6 @@ export class ApiMercantilService implements  OnInit {
   C2PCompra(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
-       /* let DatosC2P ={
-            "manufacturer": "Samsung",
-            "model": "S9",
-            "os_version": "Oreo 9.1",
-            "lat": 37.4224764,
-            "lng": -122.0842499,
-            "ipaddress": "10.0.0.1",
-            "browser_agent": "Chrome 18.1.3",
-            "destination_mobile_number":"584241513063",
-            "origin_mobile_number":"584126584242",
-            "destination_id": "V18367443",
-            "twofactor_auth": "00001111",
-            "destination_bank_id":105,
-            "invoice_number":"20092411049",
-            "trx_type":"compra",
-            "payment_method":"c2p",
-            "amount":2000
-        }*/
 
       let DatosC2P = {
         "ipaddress": Datos.AddresIp,
@@ -295,11 +253,9 @@ export class ApiMercantilService implements  OnInit {
         "idcontrato": Datos.idContrato
       }
 
-      console.log("Datos C2p");
-      console.log(DatosC2P);
-      //  this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-      //  .then((resp:any)=>{
-            this.http.post<any>(`${this.URLAPIMERCANTIL}c2p/${this.TOKENAPIMERCANTIL}`, DatosC2P).subscribe({
+       this._EncrypD.EncrypDataHash(env.KeyEncrypt,DatosC2P)
+       .then((resp:any)=>{
+            this.http.post<any>(`${this.URLAPIMERCANTIL}c2p/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     console.log("respondio");
                     console.log(data)
@@ -310,8 +266,8 @@ export class ApiMercantilService implements  OnInit {
                     reject(error);
                 }
             })
-     //   })
-     //   .catch((error:any)=>console.error(error));
+       })
+       .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -321,11 +277,11 @@ export class ApiMercantilService implements  OnInit {
   C2PClave(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
-        //this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-       // .then((resp:any)=>{
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
          console.log("Datos a enviar");
          console.log(Datos);
-            this.http.post<any>(`${this.URLAPIMERCANTIL}c2pClave/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
+            this.http.post<any>(`${this.URLAPIMERCANTIL}c2pClave/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     console.log("respondio");
                     console.log(data)
@@ -335,8 +291,8 @@ export class ApiMercantilService implements  OnInit {
                     console.error('There was an error!', error);
                 }
             })
-     //   })
-     //  .catch((error:any)=>console.error(error));
+       })
+      .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -353,11 +309,12 @@ export class ApiMercantilService implements  OnInit {
           "card_number":Datos.Ncard,
           "customer_id":Datos.c_iDC
         }
-        console.log("GetAuthTDD");
-        console.log(Datos);
-        //this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-       // .then((resp:any)=>{
-            this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
+
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
+        console.log("voy a enviar esto");
+        console.log(resp);
+            this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     resolve(data);
                 },
@@ -366,8 +323,8 @@ export class ApiMercantilService implements  OnInit {
                     reject(error);
                 }
             })
-     //   })
-     //  .catch((error:any)=>console.error(error));
+       })
+      .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -393,11 +350,10 @@ export class ApiMercantilService implements  OnInit {
           "abonado": Datos.Abonado,
           "idcontrato": Datos.idContrato
         }
-        console.log("CompraTDD");
-        console.log(Datos);
-      //   this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
-      //  .then((resp:any)=>{
-            this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
+
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
+            this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     console.log("respondio");
                     console.log(data)
@@ -407,8 +363,8 @@ export class ApiMercantilService implements  OnInit {
                     console.error('There was an error!', error);
                 }
             })
-      //  })
-      // .catch((error:any)=>console.error(error));
+       })
+      .catch((error:any)=>console.error(error));
       } catch (error) {
         reject(error);
       }
@@ -421,64 +377,17 @@ export class ApiMercantilService implements  OnInit {
 
   GetAddress(){
     return new Promise((resolve,reject)=>{
-    console.log("GetAddress");
     const WebUrl= this.URLAPIMERCANTIL+'Whatismyip/'+this.TOKENAPIMERCANTIL;
-   // const WebUrl='https://crm.thomas-talk.me/ip/'
-    this.http.get<any>(WebUrl).subscribe({
-      next: data => {
-          console.log("respondio");
-          console.log(data)
-          resolve(data)
-      },
-      error: error => {
-          console.error('There was an error!', error);
-          reject(error)
-      }
-  })
-
-      // axios({
-      //   url: WebUrl,
-      //   method: 'GET',
-      // })
-      //   .then((res: any) => {
-      //    // const Data = res.data.data.GetOptionsApp
-      //      console.log(res)
-
-      //   })
-      //   .catch((err: any) => console.log(err))
-
-
-    // fetch(WebUrl, {
-    //   method: "GET",
-    // })
-    //   .then((response) => {
-    //     console.log("response");
-    //     console.log(response);
-    //     resolve(response);
-    //   })
-    //   .catch((error:any)=>{
-    //     reject(error)
-    //   })
-
+     this.http.get<any>(WebUrl).subscribe({
+        next: data => {
+            resolve(data)
+        },
+        error: error => {
+            console.error('There was an error!', error);
+            reject(error)
+        }
+     })
     })
-  //   return new Promise((resolve,reject)=>{
-  //     this.http.get("https://crm.thomas-talk.me/ip/").subscribe({
-  //     next: data => {
-  //       console.log("IP")
-  //       console.log(data);
-  //       console.log(typeof data);
-  //         resolve(data)
-  //     },
-  //     error: error => {
-  //         reject(error);
-  //     }
-  //     })
-  //  })
 
   }
-
-
-
-
-
 }
