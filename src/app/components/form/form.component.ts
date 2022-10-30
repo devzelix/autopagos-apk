@@ -298,6 +298,7 @@ export class FormComponent implements OnInit {
       });
     this.dateOfPay();
     this.amountInvalid();
+    this.amountInvalidCreditoDebitoPagoMovil();
     this.getDaysFeriados();
 
   }
@@ -676,6 +677,7 @@ export class FormComponent implements OnInit {
                   } else if (resp.hasOwnProperty('transaction_response')) {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
+                      invoice ="";
                       this.ReciboPay = true;
                     }
                   } else {
@@ -692,11 +694,13 @@ export class FormComponent implements OnInit {
           } else {
             console.log(resp);
             if (resp.hasOwnProperty('status')) { this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); }
-            this.invalidForm(`Error intente mas tarde!`);
+            this.invalidForm(`Error intente más tarde!`);
           }
 
         })
-        .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+        .catch((error: any) => {
+          this.invalidForm(`Error por favor intente más tarde!`);
+        }) //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
       //Credito
       this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
@@ -1600,8 +1604,7 @@ export class FormComponent implements OnInit {
     Swal.fire({
       title: text,
       html: optionalText,
-      icon: 'error',
-      timer: 4000
+      icon: 'error'
     })
   }
 
@@ -2009,6 +2012,38 @@ export class FormComponent implements OnInit {
         this.invalidAmount = false;
       }
     })
+  }
+
+  amountInvalidCreditoDebitoPagoMovil() {
+    this.cantidadDC?.valueChanges.subscribe({
+      next: (value) => {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+            this.cantidadDC?.setValue('');
+            return;
+          }
+      }
+    });
+
+    this.cantidad?.valueChanges.subscribe({
+      next: (value) => {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+            this.cantidad?.setValue('');
+            return;
+          }
+      }
+    });
+
+    this.amountPm?.valueChanges.subscribe({
+      next: (value) => {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+            this.amountPm?.setValue('');
+            return;
+          }
+      }
+    });
   }
 
   filterContracts() {

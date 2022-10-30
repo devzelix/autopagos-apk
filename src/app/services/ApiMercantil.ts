@@ -380,7 +380,8 @@ export class ApiMercantilService implements  OnInit {
     const WebUrl= this.URLAPIMERCANTIL+'Whatismyip/'+this.TOKENAPIMERCANTIL;
      this.http.get<any>(WebUrl).subscribe({
         next: data => {
-            resolve(data)
+            resolve(data);
+            
         },
         error: error => {
             console.error('There was an error!', error);

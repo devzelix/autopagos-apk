@@ -768,7 +768,7 @@
 
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Clave telefónica</mat-label>
-                <input type="number" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
+                <input type="password" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
                 <mat-error *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
                   El número de tarjeta es requerido
                 </mat-error>
