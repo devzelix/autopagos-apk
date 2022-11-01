@@ -697,7 +697,7 @@ export class FormComponent implements OnInit {
     console.log("Este es el nombre del usuario :" + this.name?.value);
     //Clave de Autorización Pgo Móvil
     let FechaHoy = new Date();
-    let invoice = this.nroContrato?.value + FechaHoy.getMonth() + FechaHoy.getFullYear() + FechaHoy.getSeconds(); //Maximo 12 caracteres
+    let invoice = this.nroContrato?.value + FechaHoy.getFullYear() + FechaHoy.getSeconds() + Math.floor(Math.random() * 10); //Maximo 12 caracteres
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
