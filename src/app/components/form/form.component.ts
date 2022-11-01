@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
+import { ThisReceiver } from '@angular/compiler';
 
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
@@ -24,12 +25,16 @@ import { DataSlide, MetodoDePago, TypeAccount, Month, Ano, MetodoDePago2 } from 
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-import { ThisReceiver } from '@angular/compiler';
+//import { NgHcaptchaService } from 'ng-hcaptcha';
+
 
 import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+
+
 
 
 export interface DialogData {
@@ -54,11 +59,11 @@ export class FormComponent implements OnInit {
 
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
-  public formFibex: FormGroup;
-  public firstFormFibex: FormGroup;
-  public secondFormFibex: FormGroup;
-  public thirdFormFibex: FormGroup;
-  fourthFormFibex: FormGroup;
+  public formFibex: UntypedFormGroup;
+  public firstFormFibex: UntypedFormGroup;
+  public secondFormFibex: UntypedFormGroup;
+  public thirdFormFibex: UntypedFormGroup;
+  public fourthFormFibex: UntypedFormGroup;
   public PgMovilForm: FormGroup;
   public PgMovilRegForm: FormGroup;
   public DebitoCredito: FormGroup;
@@ -148,10 +153,15 @@ export class FormComponent implements OnInit {
   public Anos = Ano;
   public ReciboPay: boolean = false;
 
+  // Variables de hcaptcha
+  /*public hcaptchaForm: FormGroup
+  public verifyDNI: boolean = false
+  public captchaControl: boolean | undefined = true*/
+
 
   constructor(
     private registerPayService: RegisterPayService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private uplaodImageService: UplaodImageService,
     public dialog: MatDialog,
     private route: ActivatedRoute,
@@ -164,7 +174,8 @@ export class FormComponent implements OnInit {
     private _UploadPHP: UploadPHPService,
     private _ApiMercantil: ApiMercantilService,
     private _TypeBrowserService: TypeBrowserService,
-    public router: Router
+    public router: Router,
+    //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
 
@@ -276,6 +287,7 @@ export class FormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
     this._ApiMercantil.GetAddress()
       .then((resp: any) => this.IpAddress = resp)
@@ -302,6 +314,48 @@ export class FormComponent implements OnInit {
     this.getDaysFeriados();
 
   }
+  // FORMGROUP DEL CAPTCHA
+  /*hcaptchaFormGroup = () => {
+    return this.fb.group({
+      hcaptcha: new FormControl(
+        { value: null, disabled: false },
+        { validators: [Validators.required] }
+      ),
+    });
+  }*/
+
+      // FORMGROUP DEL CAPTCHA
+ /* hcaptchaFormGroup = () => {
+    return this.fb.group({
+      hcaptcha: new FormControl(
+        { value: null, disabled: false },
+        { validators: [Validators.required] }
+      ),
+    });
+  }*/
+  // FUNCIONES CONTROL DEL CAPTCHA
+  /*DNIvalidation = (inputDni) => {
+    const dni_ = inputDni.value
+    if (dni_.length >= 1 && dni_.length < 6) {
+      this.dni.reset()
+      this.hcaptcha.reset()
+      this.nameClient = '';
+      this.saldoUSD = '';
+      this.saldoBs = '';
+      this.dniConsulted = true;
+      this.lastDni = "";
+      this.name?.setValue('');
+      this.alertFindDni('La cédula debe ser mínimo 6 carácteres', '');
+      setTimeout(() => this.closeAlert(), 1000);
+    }
+  }
+  captchaSubControl = () => {
+    this.hcaptcha.valueChanges.subscribe(data => {
+      this.hcaptcha.valid ? this.captchaControl = false : this.captchaControl = true
+      this.dni.markAsTouched();
+      this.dni.updateValueAndValidity()
+    });
+  }*/
 
   SendOption(page: number, option: any, value: any) {
     let temp = value
@@ -321,6 +375,8 @@ export class FormComponent implements OnInit {
       }
     }
   }
+
+  //get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
 
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
@@ -827,7 +883,7 @@ export class FormComponent implements OnInit {
 
   ValidateLastReferencia(NroRef: any) {
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-    const INDEX = this.ComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
 
     if (INDEX != -1) {
       this.secondFormFibex = this.fb.group({
@@ -906,7 +962,6 @@ export class FormComponent implements OnInit {
       this.retentionImgExtn = fileList[0].name.split(".").pop();
       //Valido si es aceptado la extenxion
       this.retentionImgIndexof = this.validFormats.indexOf(this.retentionImgExtn.toLowerCase());
-
       if (this.retentionImgIndexof != -1) {
         this.ValidRetentionImgExtension = true;
         if (fileList.length > 0) {
@@ -915,7 +970,6 @@ export class FormComponent implements OnInit {
             this.uploadingRetentionImg = false;
             return;
           }
-
           var dt = new Date();
           let year = dt.getFullYear();
           let month = (dt.getMonth() + 1).toString().padStart(2, "0");
@@ -936,10 +990,8 @@ export class FormComponent implements OnInit {
               }
               this.uploadingRetentionImg = false;
               imageBase64 = '';
-
               this.retentionImageUrl = response.secure_url;
               // console.log(this.retentionImageUrl)
-
               //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
               this.SendOption(2, 0, response.url);
               //this.img?.patchValue(res.url);
@@ -959,14 +1011,14 @@ export class FormComponent implements OnInit {
 
   savePayment() {
     this.DisableReg = true
-    if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && this.possibleWithholdingAgent)) {
+    if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && (this.possibleWithholdingAgent && this.selectedRetentionOption == 2))) {
       if (!this.regexUrl.test(this.imageUrl)) {
         this.invalidForm('La imagen de pago es requerida');
         this.closeAlert();
         this.DisableReg = false
         return;
       }
-      if (!this.regexUrl.test(this.retentionImageUrl) && !!this.possibleWithholdingAgent) {
+      if (!this.regexUrl.test(this.retentionImageUrl) && this.possibleWithholdingAgent && this.selectedRetentionOption == 2) {
         this.invalidForm('La imagen de pago del comprobante por ser agente de retención es requerida');
         this.closeAlert();
         this.DisableReg = false
@@ -1019,16 +1071,16 @@ export class FormComponent implements OnInit {
       ...this.firstFormFibex.value,
       ...this.secondFormFibex.value,
       ...this.thirdFormFibex.value,
-      img: this.imageUrl + this.retentionImageUrl + this.retentionAmount?.value,
+      img: this.selectedRetentionOption == 2 ? this.imageUrl + '- Retención:' + this.retentionImageUrl + '- Monto:' + this.retentionAmount?.value : this.imageUrl,
       name: contractInfo?.cliente,
-      amount: String(this.totalAmount),
+      amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
       date,
       id_Cuba: this.BancoSelect.id_cuba
     }
 
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
-    if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO") {
+    if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
       DataForRegister.IdContrato = ContratoActual.id_contrato
 
       this.registerPayService.registerPayClient(DataForRegister)
@@ -1105,7 +1157,7 @@ export class FormComponent implements OnInit {
   }
 
 
-  public removeValidators(form: FormGroup) {
+  public removeValidators(form: UntypedFormGroup) {
 
   }
 
@@ -1176,7 +1228,9 @@ export class FormComponent implements OnInit {
   }
 
   get disbaleButtonIfAmountIs0(): boolean {
-    return this.firstFormFibex.get('amount')?.value.length === 0
+    if (this.firstFormFibex.get('amount')?.value) {
+      return this.firstFormFibex.get('amount')?.value.length === 0;
+    } else { return false }
   }
 
   get disbaleButtonIfDateIsInvalid(): boolean {
@@ -1232,6 +1286,7 @@ export class FormComponent implements OnInit {
 
               this.listContratos = [];
               this.ComprobantesPago = [];
+              //this.verifyDNI = true;
               this.SendOption(0, 0, dni_);
               res.forEach((dataContrato: any) => {
                 var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
@@ -1336,6 +1391,7 @@ export class FormComponent implements OnInit {
                 })
                 .catch((error: any) => console.error(error));
             } else {
+              //this.hcaptcha.reset()
               this.nameClient = '';
               this.saldoUSD = '';
               this.saldoBs = '';
@@ -1343,6 +1399,7 @@ export class FormComponent implements OnInit {
               this.dniConsulted = true;
               this.patchValueAllForm();
               this.alertFindDni('Debe colocar una cédula valida', 'Por favor espere...');
+              //this.verifyDNI = false;
               this.lastDni = "";
               setTimeout(() => this.closeAlert(), 1000);
               this.banksFiltered = [...this.bankList];
@@ -1364,6 +1421,7 @@ export class FormComponent implements OnInit {
     } else {
       // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
       // Se quedan los valores anteriores de la consulta anterior
+      //this.hcaptcha.reset()
       this.dni?.setValue('')
       this.nameClient = '';
       this.saldoUSD = '';
@@ -1637,7 +1695,7 @@ export class FormComponent implements OnInit {
       confirmButtonText: 'Seguir adelante'
     }).then((result) => {
       if (result.isConfirmed && !use) {
-        console.log(!this.disbaleButtonIfAmountIsInvalid, !this.disbaleButtonIfAmountIs0, this.firstFormFibex.invalid, this.disbaleButtonIfDateIsInvalid)
+        //console.log(!this.disbaleButtonIfAmountIsInvalid, !this.disbaleButtonIfAmountIs0, this.firstFormFibex.invalid, this.disbaleButtonIfDateIsInvalid)
         if (!this.disbaleButtonIfAmountIsInvalid &&
           !this.disbaleButtonIfAmountIs0 &&
           this.firstFormFibex.valid &&
@@ -1757,12 +1815,12 @@ export class FormComponent implements OnInit {
 
       if (!this.BancoNacional('')) {
         if (Number(this.amount?.value) > Number(this.saldoUSD)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está segura que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
           return;
         }
       } else {
         if (Number(this.amount?.value) > Number(this.saldoBs)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está segura que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
           return;
         }
       }
@@ -1804,6 +1862,20 @@ export class FormComponent implements OnInit {
     this.retentionImageUrl = '';
     this.retentionimageUploaded = false;
     this.considerWithholdingAmount();
+
+    if (this.selectedRetentionOption == 1) {
+      //Quito el required pq el usuario no decide subir la retencion
+      this.fourthFormFibex.get('retentionImg')?.clearValidators();
+      this.fourthFormFibex.get('retentionAmount')?.clearValidators();
+      this.fourthFormFibex.get('retentionImg')?.updateValueAndValidity();
+      this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
+    } else {
+      //Campo requerido de imagen de retencion
+      this.fourthFormFibex.get('retentionImg')?.setValidators([Validators.required]);
+      this.fourthFormFibex.get('retentionAmount')?.setValidators([Validators.required]);
+      this.fourthFormFibex.get('retentionImg')?.updateValueAndValidity();
+      this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
+    }
   }
 
   filterBankByFranquicia(franquicia: string) {
@@ -1935,6 +2007,14 @@ export class FormComponent implements OnInit {
   }
 
   incorrectBankAndAmount(value: string) {
+
+    if (this.amount?.value === 0) {
+      this.amount.reset()
+      this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0")
+      this.enableBtn = true;
+      return
+    } else { this.enableBtn = false }
+
     if (this.invalidAmount) return;
     this.SendOption(0, 4, this.amount?.value)
     let saldousd = Number(this.saldoUSD) - Number(value);
@@ -1957,6 +2037,8 @@ export class FormComponent implements OnInit {
       this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
+
+    this.totalAmount = Number(this.amount?.value);
   }
 
   dateOfPay() {
