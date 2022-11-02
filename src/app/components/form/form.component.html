@@ -34,7 +34,9 @@
             <input type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni,false)">
             <mat-icon matSuffix (click)="searchServices(inputDni,false)" style="cursor: pointer">search</mat-icon>
           </mat-form-field>
-
+          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su nro. de abonado</h3>
+          <br/>
+          <br/>
           <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
             <mat-label>Abonado</mat-label>
             <mat-select>
@@ -161,7 +163,7 @@
                 <mat-label>Abonado</mat-label>
                 <mat-select formControlName="nroContrato">
                   <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
-                    (click)="contractSelected(contrato)" (blur)="SendOption(0,3,contrato.contrato)" required>
+                    (click)="contractSelected(contrato,false)" (blur)="SendOption(0,3,contrato.contrato)" required>
                     {{contrato.contrato}}
                   </mat-option>
                 </mat-select>
@@ -519,7 +521,7 @@
       <!-- / Fin de Transferencias -->
 
       <!-- Pago Móvil -->
-      <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+      <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
         <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
           <div>
             <h4 class="name-client">
@@ -657,7 +659,7 @@
             Regresar
           </button>
         </div>
-      </mat-step>
+      </mat-step> -->
       <!-- / Fin de Pago Móvil -->
 
       <!-- Crédito o Débito -->
@@ -776,7 +778,8 @@
             </div>
           </form>
         </div>
-        <div *ngIf="ReciboPay">
+        <!-- *ngIf="ReciboPay" -->
+        <div *ngIf="ReciboPay" >
           <div class="card-pay">
             <div class="invoice-box">
               <table cellpadding="0" cellspacing="0">
@@ -850,7 +853,7 @@
       <!-- / Fin de Crédito o Débito -->
 
       <!-- Criptomoneda -->
-      <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
+      <!-- <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
         <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
           <div>
             <h4 class="name-client">
@@ -919,7 +922,7 @@
           </button>
         </div>
 
-      </mat-step>
+      </mat-step> -->
       <!-- / Fin de Criptomoneda -->
     </mat-stepper>
   </div>
