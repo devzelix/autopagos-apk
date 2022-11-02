@@ -21,7 +21,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, MetodoDePago, TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscription/camposSuscription';
+import { DataSlide,TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -132,7 +132,6 @@ export class FormComponent implements OnInit {
   AllDataClient: any = []
   enableBtn: Boolean = false
   totalAmount: number = 0;
-  PagoMetodosHTML = MetodoDePago;
   PagoMetodosHTML2 = MetodoDePago2;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
@@ -733,7 +732,6 @@ export class FormComponent implements OnInit {
                   } else if (resp.hasOwnProperty('transaction_response')) {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
-                      invoice ="";
                       this.ReciboPay = true;
                     }
                   } else {
@@ -1580,9 +1578,10 @@ export class FormComponent implements OnInit {
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.SearchServiceClient(this.idContrato)
     // this.selectInfoEquipos(this.idContrato);
-    this.bankSelected(this.BancoSelect);
     if (ppal) {
       this.AppFibex = !this.AppFibex;
+    }else{
+      this.bankSelected(this.BancoSelect);
     }
   }
 
