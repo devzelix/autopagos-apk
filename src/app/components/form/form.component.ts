@@ -695,8 +695,6 @@ export class FormComponent implements OnInit {
   PagoDebito() {
     console.log("Este es el nombre del usuario :" + this.name?.value);
     //Clave de Autorización Pgo Móvil
-    let FechaHoy = new Date();
-    let invoice = this.nroContrato?.value + FechaHoy.getFullYear() + FechaHoy.getSeconds() + Math.floor(Math.random() * 10); //Maximo 12 caracteres
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
@@ -707,7 +705,7 @@ export class FormComponent implements OnInit {
       cantidadDC: this.cantidadDC?.value,
       c_iDC: this.pref_ciDC?.value + this.c_iDC?.value,
       Clavetlfonica: this.Clavetlfonica?.value.toString(),
-      invoice: invoice, //Maximo 12 caracteres
+      invoice: "", //El nro de factura se asigna en el backend
       PaymenMethod: this.PaymenMethod,
       Name: this.name?.value,
       Abonado: this.nroContrato?.value,
