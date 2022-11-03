@@ -610,7 +610,7 @@ export class FormComponent implements OnInit {
                 this.invalidForm('La cédula ingresada no es correcta', 'Por favor validé que coloco los datos correctos');
               }
             } else {
-              this.invalidForm('El banco no aprobo su transacción', 'Retifique con su agente bancario');
+              this.invalidForm('El Banco no aprobo su transacción', 'Retifique con su agente bancario');
             }
           } else {
             if (resp.hasOwnProperty('status')) { this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); }
@@ -653,6 +653,8 @@ export class FormComponent implements OnInit {
               this.Contar = 30;
               this.PgMovilRegForm.reset();
               //this.Contador();
+            }else{
+              this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
           } else {
             if (resp.hasOwnProperty('status')) { this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); }
@@ -731,6 +733,8 @@ export class FormComponent implements OnInit {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
                       this.ReciboPay = true;
+                    }else{
+                      this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
                     }
                   } else {
                     if (resp.hasOwnProperty('status')) {
@@ -742,6 +746,8 @@ export class FormComponent implements OnInit {
                 .catch((error: any) => {
                   console.log(error);
                 })
+            }else{
+              this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
             }
           } else {
             console.log(resp);
