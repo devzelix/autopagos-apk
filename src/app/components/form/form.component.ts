@@ -610,12 +610,13 @@ export class FormComponent implements OnInit {
                 this.invalidForm('La cédula ingresada no es correcta', 'Por favor validé que coloco los datos correctos');
               }
             } else {
-              this.invalidForm('El Banco no aprobo su transacción', 'Retifique con su agente bancario');
+              this.invalidForm('El Banco no aprobo su transacción', 'Verifique el monto ingresado');
             }
-          } else {
-            if (resp.hasOwnProperty('status')) { this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); }
-            this.invalidForm(`Error intente mas tarde!`);
-          }
+          } else if (resp.hasOwnProperty('status')) { 
+             this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); 
+         }else{
+          this.invalidForm(`Error intente mas tarde!`);
+         }
         }
 
       })
@@ -656,10 +657,13 @@ export class FormComponent implements OnInit {
             }else{
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
-          } else {
-            if (resp.hasOwnProperty('status')) { this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); }
+          } else if (resp.hasOwnProperty('status')) { 
+            this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!') 
+          }else{
             this.invalidForm(`Error intente mas tarde!`);
           }
+            
+          
         })
         .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
@@ -676,7 +680,6 @@ export class FormComponent implements OnInit {
       destination_id: this.pref_ci?.value + this.c_iRegPgoMvil?.value,
       destination_mobile_number: this.tlfdestin?.value.toString(),
     }
-
     this.alertFindDni('Enviando clave de autorización', 'Por favor espere...');
     this._ApiMercantil.C2PClave(DatosUserAgent)
       .then((resp: any) => {
@@ -684,12 +687,11 @@ export class FormComponent implements OnInit {
           this.alertFindDni(`${resp.error_list[0].description}`, '');
         } else if (resp.hasOwnProperty('scp_info')) {
           this.ButtonGetAuthMercantil();
-        } else {
-          console.log(resp);
-          if (resp.hasOwnProperty('status')) { this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); }
+        } else if (resp.hasOwnProperty('status')) { 
+          this.alertFindDni(`${resp.status.description}`, 'Contacte a un asesor!'); 
+        }else{
           this.invalidForm(`Error intente mas tarde!`);
         }
-
       })
       .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
@@ -736,10 +738,10 @@ export class FormComponent implements OnInit {
                     }else{
                       this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
                     }
-                  } else {
-                    if (resp.hasOwnProperty('status')) {
+                  } else if (resp.hasOwnProperty('status')) {
                       this.invalidForm(`${resp.status.description}`);
-                    }
+                  }else{
+                    this.invalidForm(`Error intente más tarde!`);
                   }
                   console.log(resp);
                 })
@@ -749,12 +751,11 @@ export class FormComponent implements OnInit {
             }else{
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
             }
-          } else {
-            console.log(resp);
-            if (resp.hasOwnProperty('status')) { this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); }
+          } else if (resp.hasOwnProperty('status')) { 
+            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); 
+          }else{
             this.invalidForm(`Error intente más tarde!`);
           }
-
         })
         .catch((error: any) => {
           this.invalidForm(`Error por favor intente más tarde!`);
