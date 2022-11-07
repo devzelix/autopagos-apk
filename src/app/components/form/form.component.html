@@ -31,12 +31,18 @@
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline">
             <mat-label>Cédula/RIF del Cliente</mat-label>
-            <input type="number" matInput required NumbersOnly="true" #inputDni (blur)="searchServices(inputDni,false)">
-            <mat-icon matSuffix (click)="searchServices(inputDni,false)" style="cursor: pointer">search</mat-icon>
+            <input type="number" matInput required NumbersOnly="true" #inputDni>
+            <mat-icon matSuffix style="cursor: pointer">search</mat-icon>
           </mat-form-field>
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su nro. de abonado</h3>
           <br/>
           <br/>
+
+          <button *ngIf="listContratos.length==0" class="button-material-next btn-width-100" mat-raised-button
+              type="button" (click)="searchServices(inputDni,false,true)">
+              Consultar
+          </button>
+
           <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
             <mat-label>Abonado</mat-label>
             <mat-select>
@@ -47,12 +53,12 @@
             </mat-select>
           </mat-form-field>
 
-          <span *ngIf="listContratos.length==1">
+          <!-- <span *ngIf="listContratos.length==1">
             <button class="button-material-next btn-width-100" (click)="lengthContrat()" mat-raised-button
               type="button">
               Siguiente
             </button>
-          </span>
+          </span> -->
 
 
         </div>
@@ -82,6 +88,7 @@
           </div>
         </div>
         <ng-template matStepLabel>Tipo de pago</ng-template>
+        
         <div class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
             <mat-card *ngIf="!option.omitir" class="example-card">
@@ -99,7 +106,6 @@
             </mat-card>
           </div>
         </div>
-
 
       </mat-step>
       <!-- / Fin de métodos de pago -->
@@ -708,11 +714,12 @@
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Tipo de cuenta</mat-label>
                 <mat-select formControlName="typeCuenta">
-                  <mat-option *ngFor="let bank of TypeAcountDC" [value]="bank.type">
-                    {{bank.cuenta}}
+                  <mat-option *ngFor="let Acount of TypeAcountDC" [value]="Acount.type">
+                    {{Acount.cuenta}}
                   </mat-option>
                 </mat-select>
-                <mat-error>La cuenta es obligatoria</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('required')">La cuenta es obligatoria</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('maxlength')">La tarjeta no debe ser mayor a 18 dígitos</mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -725,7 +732,7 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
-                <input type="text" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
+                <input type="password" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
                 <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
                   El número cvv es requerido
                 </mat-error>
@@ -836,13 +843,13 @@
               </table>
             </div>
           </div>
-          <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su correo o Whatsapp la factura del pago efectuado</h3>
+          <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su Whatsapp registrado en nuestro sistema la factura del pago efectuado</h3>
           <br/>
         </div>
         <!-- /Form Para Debito o Credito  -->
         <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button *ngIf="!ReciboPay" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
-            mat-raised-button type="button" (click)="PagoDebito()">
+            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value)">
             Pagar
           </button>
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button

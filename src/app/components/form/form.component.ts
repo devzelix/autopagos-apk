@@ -232,7 +232,7 @@ export class FormComponent implements OnInit {
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
     }, { validator: isNegativeNumber });
 
-    this.DebitoCredito = this.fb.group({
+    /*this.DebitoCredito2 = this.fb.group({
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV)]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
@@ -242,7 +242,23 @@ export class FormComponent implements OnInit {
       fvncmtoMes: ['', [Validators.required]],
       fvncmtoAno: ['', [Validators.required]],
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });
+    }, { validator: isNegativeNumber });*/
+
+     this.DebitoCredito = this.fb.group({
+      ccv: ['', [Validators.required, Validators.pattern(this.regexCCV),Validators.maxLength(3)]],
+      pref_ci: ['', [Validators.required]],
+      c_i: ['', [Validators.required, Validators.minLength(6)]],
+      typeCuenta: ['', [Validators.required]],
+      Ncard: ['', [Validators.required,Validators.maxLength(18)]],
+      Clavetlfonica: ['', [Validators.required, Validators.maxLength(4)]],
+      fvncmtoMes: ['', [Validators.required]],
+      fvncmtoAno: ['', [Validators.required]],
+      cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      validator: Validators.compose(
+        [
+          isNegativeNumber 
+        ])
+      });
 
     this.CriptomonedaForm = this.fb.group({
       Referencia_Cripto: ['', [Validators.required]],
@@ -393,8 +409,6 @@ export class FormComponent implements OnInit {
   get note() { return this.thirdFormFibex.get('note'); }
   get img() { return this.thirdFormFibex.get('img'); }
 
-  //get tipopago() { return this.fourthFormFibex.get('tipopago'); }
-
   get c_iPagMovil() { return this.PgMovilForm.get('c_i'); }
   get referenciapm() { return this.PgMovilForm.get('referencia'); }
   get datepgmovil() { return this.PgMovilForm.get('datepgmovil'); }
@@ -417,12 +431,6 @@ export class FormComponent implements OnInit {
   get cantidadDC() { return this.DebitoCredito.get('cantidad'); }
   get c_iDC() { return this.DebitoCredito.get('c_i'); }
   get Clavetlfonica() { return this.DebitoCredito.get('Clavetlfonica'); }
-  /*
-  Referencia_Cripto:['',[Validators.required]],
-      Monto_Cripto: [``,[Validators.required]],
-      c_i_Cripto: ['',[Validators.required,Validators.minLength(6)]],
-      Pref_ci_Cripto:
-  */
 
   get Referencia_Cripto() { return this.CriptomonedaForm.get('Referencia_Cripto'); }
   get Monto_Cripto() { return this.CriptomonedaForm.get('Monto_Cripto'); }
@@ -559,8 +567,6 @@ export class FormComponent implements OnInit {
 
   ComprobarPgoMovil() {
     //Solo para consultar por referencias de pago Moviles
-    console.log("ComprobarPAgoMovil");
-    console.log(this.IpAddress.ip)
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
@@ -570,8 +576,6 @@ export class FormComponent implements OnInit {
       Abonado: this.nroContrato?.value,
       idContrato: this.idContrato
     }
-    console.log("DatosUserAgent");
-    console.log(DatosUserAgent);
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
       .then((resp: any) => {
@@ -697,18 +701,16 @@ export class FormComponent implements OnInit {
   }
 
   PagoDebito() {
-    console.log("Este es el nombre del usuario :" + this.name?.value);
-    //Clave de Autorización Pgo Móvil
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
-      ccv: this.ccv?.value.toString(),
+      ccv: this.ccv?.value,
       typeCuenta: this.typeCuenta?.value,
       Ncard: this.Ncard?.value,
       vencmto: this.fvncmtoAno?.value + '/' + this.fvncmtoMes?.value,
       cantidadDC: this.cantidadDC?.value,
       c_iDC: this.pref_ciDC?.value + this.c_iDC?.value,
-      Clavetlfonica: this.Clavetlfonica?.value.toString(),
+      Clavetlfonica: this.Clavetlfonica?.value,
       invoice: "", //El nro de factura se asigna en el backend
       PaymenMethod: this.PaymenMethod,
       Name: this.name?.value,
@@ -740,10 +742,9 @@ export class FormComponent implements OnInit {
                     }
                   } else if (resp.hasOwnProperty('status')) {
                       this.invalidForm(`${resp.status.description}`);
-                  }else{
+                  }else {
                     this.invalidForm(`Error intente más tarde!`);
                   }
-                  console.log(resp);
                 })
                 .catch((error: any) => {
                   console.log(error);
@@ -770,16 +771,19 @@ export class FormComponent implements OnInit {
           } else if (resp.hasOwnProperty('transaction_response')) {
             if (resp.transaction_response.trx_status == "approved") {
               this.alertexit("Pago realizado exitosamente");
-              this.Contar = 5;
-              this.Contador();
+              this.ReciboPay = true;
+            }else{
+              this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
-          } else {
-            if (resp.hasOwnProperty('status')) {
+          }else if (resp.hasOwnProperty('status')) {
               this.invalidForm(`${resp.status.description}`);
-            }
+          }else{
+            this.invalidForm(`Error intente más tarde!`);
           }
-          console.log(resp);
         })
+        .catch((error: any) => {
+          this.invalidForm(`Error por favor intente más tarde!`);
+        }) 
     }
 
   }
@@ -896,10 +900,6 @@ export class FormComponent implements OnInit {
     } else {
       this.VerifyRefencia(NroRef)
     }
-
-  }
-
-  DetailModal(data: any) {
 
   }
 
@@ -1159,11 +1159,6 @@ export class FormComponent implements OnInit {
     window.scroll(0, 0);
   }
 
-
-  public removeValidators(form: UntypedFormGroup) {
-
-  }
-
   ResetForm() {
 
     this.nameClient = '';
@@ -1248,7 +1243,7 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean) {
+  searchServices(dni: any, fromParmas?: boolean,NextContrato?:boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1310,6 +1305,12 @@ export class FormComponent implements OnInit {
               if (this.listContratos.length == 0) {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
+              }
+              //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
+              if(NextContrato){
+                if(this.listContratos.length == 1) {
+                  this.AppFibex = !this.AppFibex
+                }
               }
 
 
@@ -1513,7 +1514,6 @@ export class FormComponent implements OnInit {
     }
   }
 
-
   SearchServiceClient(Contrato: any) {
     console.log("SearchServiceClient")
     try {
@@ -1708,6 +1708,27 @@ export class FormComponent implements OnInit {
           this.stepper.selectedIndex = next;
         }
       }
+    })
+  }
+
+  warnignFormDebitoCredito(text: string, html: string, next: number, use?: boolean) {
+    Swal.fire({
+      title: text,
+      html: html,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#00184E',
+      cancelButtonColor: '#f44336',
+      cancelButtonText: 'Editar monto',
+      confirmButtonText: 'Seguir adelante'
+    }).then((result) => {
+      console.log(result);
+      if (result.isConfirmed) {
+        this.PagoDebito();
+      }
+    })
+    .catch((error:any)=>{
+      console.error(error);
     })
   }
 
@@ -2012,8 +2033,8 @@ export class FormComponent implements OnInit {
 
   incorrectBankAndAmount(value: string) {
 
-    if (this.amount?.value === 0) {
-      this.amount.reset()
+    if (Number(this.amount?.value) === 0) {
+      this.amount?.reset()
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0")
       this.enableBtn = true;
       return
@@ -2043,6 +2064,19 @@ export class FormComponent implements OnInit {
     }
 
     this.totalAmount = Number(this.amount?.value);
+  }
+
+  AmountIncorrectConfirm(value: string){
+    if (Number(value) === 0) {
+      this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
+      this.cantidadDC?.reset();
+      return
+    }else if(!this.invalidAmount){
+      let saldobs = Number(this.saldoBs) - Number(value);
+      if (saldobs < 0) saldobs = saldobs * (-1);
+      this.warnignFormDebitoCredito(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
+        `El monto debe ser expresado en BOLIVARES.`, 1);
+    }
   }
 
   dateOfPay() {
@@ -2104,10 +2138,12 @@ export class FormComponent implements OnInit {
     this.cantidadDC?.valueChanges.subscribe({
       next: (value) => {
           if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+            this.invalidAmount = true;
             this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
             this.cantidadDC?.setValue('');
             return;
           }
+          this.invalidAmount = false;
       }
     });
 
@@ -2116,8 +2152,10 @@ export class FormComponent implements OnInit {
           if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
             this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
             this.cantidad?.setValue('');
+            this.invalidAmount = true;
             return;
           }
+          this.invalidAmount = false;
       }
     });
 
@@ -2126,8 +2164,10 @@ export class FormComponent implements OnInit {
           if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
             this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
             this.amountPm?.setValue('');
+            this.invalidAmount = true;
             return;
           }
+          this.invalidAmount = false;
       }
     });
   }

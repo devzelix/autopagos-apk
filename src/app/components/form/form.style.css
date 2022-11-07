@@ -39,6 +39,7 @@
     justify-content: center;
   }
 
+
   @media screen and (max-width: 795px) {
     .cardflex{
         display: block;
