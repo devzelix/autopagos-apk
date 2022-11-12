@@ -224,7 +224,7 @@ export class FormComponent implements OnInit {
     }, { validator: isNegativeNumber });
 
     this.PgMovilRegForm = this.fb.group({
-      tlforigin: ['584126584242', [Validators.required]],
+      tlforigin: ['584129637516', [Validators.required]],//584126584242
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       tlfdestin: ['', [Validators.required]],
@@ -470,44 +470,14 @@ export class FormComponent implements OnInit {
 
     //Pago Movil
     if (x == 2 || x == 3) {
-      const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'mat-button button-material-back',
-          cancelButton: 'mat-button button-material-next'
-        },
-        buttonsStyling: false
-      })
-
-      swalWithBootstrapButtons.fire({
-        title: 'Operación de Pago Móvil',
-        text: "Que deseas hacer?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'REPORTAR',
-        cancelButtonText: 'PAGAR',
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
-          this.TypeForm = this.PgMovilForm;
-          this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
-          this.PgMovilForm.get('prec_i')?.setValue('V');
-          this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
-          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, regrese y seleccione la opción de "Transferencias"`);
-          this.NextMatStepper();
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          this.TypeForm = this.PgMovilRegForm;
-          this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
-          this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
-          this.PgMovilRegForm.get('pref_ci')?.setValue('V');
-          this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
-          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
-          this.NextMatStepper();
-        }
-      })
+      //Por default selecciono el Pago Móvil para Mercantil
+        this.TypeForm = this.PgMovilRegForm;
+        this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+        this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+        this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+        this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+        this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+        this.NextMatStepper();
     }
     //Débito
     if (x == 0) {
@@ -630,8 +600,7 @@ export class FormComponent implements OnInit {
   RegistrarPgoMovil() {
     //Para realizar pago Móviles
     if (this.auth?.value != "") {
-      let FechaHoy = new Date();
-      let invoice = this.nroContrato?.value + FechaHoy.getDay() + FechaHoy.getMonth() + FechaHoy.getFullYear() + FechaHoy.getHours() + FechaHoy.getMinutes(); //Máximo 25 caracteres
+ 
       let DatosUserAgent = {
         Browser: this.TypeNavegador,
         AddresIp: this.IpAddress.ip,
@@ -640,7 +609,7 @@ export class FormComponent implements OnInit {
         tlfdestin: this.tlfdestin?.value.toString(),
         auth: this.auth?.value,
         cantidad: this.amountPm?.value,
-        invoice: invoice, //Máximo 25 caracteres
+        invoice: "", //Máximo 25 caracteres esto se llena en el Backend
         Name: this.name?.value,
         Abonado: this.nroContrato?.value,
         idContrato: this.idContrato
@@ -654,10 +623,8 @@ export class FormComponent implements OnInit {
             this.invalidForm(`${resp.error_list[0].description}`)
           } else if (resp.hasOwnProperty('transaction_c2p_response')) {
             if (resp.transaction_c2p_response.trx_status == "approved") {
-              this.alertexit("Pago aprobado", "Validamos su pago el mismo ya fue procesado su número de referencia: " + resp.transaction_c2p_response.payment_reference);
-              this.Contar = 30;
-              this.PgMovilRegForm.reset();
-              //this.Contador();
+              this.ReciboPay = true;
+              this.alertexit("Pago aprobado");
             }else{
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
@@ -666,10 +633,8 @@ export class FormComponent implements OnInit {
           }else{
             this.invalidForm(`Error intente mas tarde!`);
           }
-            
-          
         })
-        .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+        .catch((error: any) => {this.invalidForm(`Error por favor intente más tarde`); console.error(error)}) //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
       this.invalidForm(`Error debe colocar la clave de autorización!`);
     }
@@ -698,6 +663,76 @@ export class FormComponent implements OnInit {
         }
       })
       .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+  }
+
+  SelectedPagoC2P(value:any){
+    console.log("SelectedPagoC2P");
+    console.log(value._value);
+    let Valor=value._value
+    if(Valor=="otros"){
+      this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
+      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      this.TypeForm = this.PgMovilForm;
+      this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
+      this.PgMovilForm.get('prec_i')?.setValue('V');
+      this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
+      this.warningSimpleFormMercantil(`Los datos para realizar el Pago Móvil son: Tlf: 584129637516 Rif: `, `El Pago Móvil a realizar debe tener como destino Banco Mercantil"`);
+    }else{
+      this.TypeForm = this.PgMovilRegForm;
+      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
+      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+      this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+    }
+    /* this.TypeForm = this.PgMovilRegForm;
+          this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+          this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+          this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+          this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+          this.NextMatStepper();*/
+
+      //Esto que esta comentado es para mostrar o el Pago Móvil o la Consulta de Pago Móvil
+      /*const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'mat-button button-material-back',
+          cancelButton: 'mat-button button-material-next'
+        },
+        buttonsStyling: false
+      })
+
+      swalWithBootstrapButtons.fire({
+        title: 'Operación de Pago Móvil',
+        text: "Que deseas hacer?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'REPORTAR',
+        cancelButtonText: 'PAGAR',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
+          this.TypeForm = this.PgMovilForm;
+          this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
+          this.PgMovilForm.get('prec_i')?.setValue('V');
+          this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
+          this.warningSimpleFormMercantil(`El Pago Móvil realizado debe tener como destino Banco Mercantil`, `Si es diferente, regrese y seleccione la opción de "Transferencias"`);
+          this.NextMatStepper();
+        } else if(
+          // Read more about handling dismissals below
+          result.dismiss === Swal.DismissReason.cancel
+        ){
+          this.TypeForm = this.PgMovilRegForm;
+          this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+          this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+          this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+          this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+          this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+          this.NextMatStepper();
+        }
+      })*/
   }
 
   PagoDebito() {
@@ -1200,6 +1235,9 @@ export class FormComponent implements OnInit {
 
   ResetFormCD() {
     this.DebitoCredito.reset();
+    this.PgMovilRegForm.reset();
+    this.PgMovilForm.reset();
+    this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ReciboPay = false;
   }
 
@@ -1268,7 +1306,7 @@ export class FormComponent implements OnInit {
 
     this.dniConsulted = false;
     if (dni_.length >= 6) {
-      this.alertFindDni('Buscando información del cliente', 'Por favor espere...');
+      this.alertFindDniMercantil('Buscando información del cliente', 'Por favor espere...');
       this.registerPayService.getTypeClient(dni_).subscribe((result: any) => {
         if (result.length > 0 && result[0].TipoCliente != "NATURAL") {
           this.possibleWithholdingAgent = true
@@ -1281,7 +1319,7 @@ export class FormComponent implements OnInit {
           this.closeAlert();
           try {
             if (res.length > 0) {
-
+              this.closeAlert2();
               this.listContratos = [];
               this.ComprobantesPago = [];
               //this.verifyDNI = true;
@@ -1402,7 +1440,7 @@ export class FormComponent implements OnInit {
               this.lastAmount = '';
               this.dniConsulted = true;
               this.patchValueAllForm();
-              this.alertFindDni('Debe colocar una cédula valida', 'Por favor espere...');
+              this.invalidForm('Debe colocar una cédula válida');
               //this.verifyDNI = false;
               this.lastDni = "";
               setTimeout(() => this.closeAlert(), 1000);
@@ -1433,7 +1471,7 @@ export class FormComponent implements OnInit {
       this.dniConsulted = true;
       this.lastDni = "";
       this.name?.setValue('');
-      this.alertFindDni('La cédula debe ser mínimo 6 carácteres', '');
+      this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
       setTimeout(() => this.closeAlert(), 1000);
     }
 

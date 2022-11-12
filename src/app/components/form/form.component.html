@@ -527,7 +527,7 @@
       <!-- / Fin de Transferencias -->
 
       <!-- Pago Móvil -->
-      <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+      <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
         <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
           <div>
             <h4 class="name-client">
@@ -547,7 +547,15 @@
           </div>
         </div>
 
-        <form *ngIf="ConsultarPagoMovilboolean" [formGroup]="PgMovilForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Banco</mat-label>
+          <mat-select value="mercantil" #valor>
+            <mat-option (click)="SelectedPagoC2P(valor)"  value="mercantil">Mercantil</mat-option>
+            <mat-option (click)="SelectedPagoC2P(valor)"  value="otros">Otros Bancos</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <form *ngIf="ConsultarPagoMovilboolean && !ReciboPay" [formGroup]="PgMovilForm">
           <mat-label>Cédula de identidad</mat-label><br>
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="prec_i">
@@ -596,12 +604,10 @@
                 *ngIf="PgMovilForm.hasError('isNegative') && PgMovilForm.get('cantidad')?.hasError('required')">El monto
                 no puede ser negativo</mat-error>
             </mat-form-field>
-
-
           </div>
         </form>
 
-        <form *ngIf="RegistrarPagoMovilboolean" [formGroup]="PgMovilRegForm">
+        <form *ngIf="RegistrarPagoMovilboolean && !ReciboPay" [formGroup]="PgMovilRegForm">
           <mat-label>Cédula de identidad</mat-label><br>
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="pref_ci">
@@ -641,19 +647,69 @@
                 *ngIf="PgMovilRegForm.hasError('isNegative') && PgMovilRegForm.get('amountPm')?.hasError('required')">El
                 monto no puede ser negativo</mat-error>
             </mat-form-field>
-            <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-              <button [disabled]="!PgMovilRegForm.valid" class="button-material-next btn-width-70" mat-raised-button
-                type="button" (click)="ClaveAuthPgoMovil()">
-                Solicitar pin de autorización
-              </button>
-              <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button
-                type="button" matStepperPrevious>
-                Regresar
-              </button>
-            </div>
-
           </div>
         </form>
+
+        <div *ngIf="ReciboPay" >
+          <div class="card-pay">
+            <div class="invoice-box">
+              <table cellpadding="0" cellspacing="0">
+                <tr class="top">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td class="title">
+                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                            style="width: 60%; max-width: 300px" />
+                        </td>
+
+                        <td>
+                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr class="information">
+                  <td colspan="2">
+                    <table>
+                      <tr>
+                        <td>
+                          Servicio: {{ paquete }}<br />
+                          Subscripción: {{subscription}} USD <br />
+                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
+                          <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
+                        </td>
+
+                        <td>
+                          {{nameClient}}<br />
+                          DNI/RIF {{dni?.value}}<br />
+                          <!-- {{email?.value}} -->
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr class="heading">
+                  <td>Usted reporto un pago de</td>
+
+                  <td>Monto #</td>
+                </tr>
+
+                <tr class="details">
+                  <td>{{paquete}}</td>
+
+                  <td>{{cantidadDC?.value}}</td>
+                </tr>
+
+              </table>
+            </div>
+          </div>
+          <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su Whatsapp registrado en nuestro sistema la factura del pago efectuado</h3>
+          <br/>
+        </div>
 
         <div *ngIf="ConsultarPagoMovilboolean" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button [disabled]="!PgMovilForm.valid" class="button-material-next btn-width-70" mat-raised-button
@@ -665,7 +721,18 @@
             Regresar
           </button>
         </div>
-      </mat-step> -->
+
+        <div *ngIf="RegistrarPagoMovilboolean" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+          <button *ngIf="!ReciboPay" [disabled]="!PgMovilRegForm.valid" class="button-material-next btn-width-70" mat-raised-button
+            type="button" (click)="ClaveAuthPgoMovil()">
+            Solicitar pin de autorización
+          </button>
+          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
+            type="button" matStepperPrevious>
+            Regresar
+          </button>
+        </div>
+      </mat-step>
       <!-- / Fin de Pago Móvil -->
 
       <!-- Crédito o Débito -->
