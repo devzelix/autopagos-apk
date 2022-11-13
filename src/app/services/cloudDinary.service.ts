@@ -53,7 +53,7 @@ export class CloudynariService implements  OnInit {
     
         let timestamp= Math.floor(Date.now() / 1000)
         let timestampString = timestamp.toString();
-        let Carpeta="Pagos"
+        let Carpeta="Contratos"
         let Signature =(`folder=${Carpeta}&public_id=${name}&timestamp=${timestamp}${env.ApiSecret}`)
          this.Has256Generate(Signature)
          .then((resp:any)=>{
