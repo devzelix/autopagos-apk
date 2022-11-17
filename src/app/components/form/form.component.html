@@ -33,7 +33,7 @@
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
             <mat-label>Cédula/RIF del Cliente</mat-label>
             <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni [readonly]="readonlyDNI"  >
-            <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && hcaptcha?.valid ? searchServices(inputDni,false,true) : ''">search</mat-icon>
+            <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && hcaptcha?.valid ? searchServices(inputDni,false,true, false) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula requerida
             </mat-error>

@@ -21,7 +21,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide,TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -245,12 +245,12 @@ export class FormComponent implements OnInit {
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
     }, { validator: isNegativeNumber });*/
 
-     this.DebitoCredito = this.fb.group({
-      ccv: ['', [Validators.required, Validators.pattern(this.regexCCV),Validators.maxLength(3)]],
+    this.DebitoCredito = this.fb.group({
+      ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       typeCuenta: ['', [Validators.required]],
-      Ncard: ['', [Validators.required,Validators.maxLength(18)]],
+      Ncard: ['', [Validators.required, Validators.maxLength(18)]],
       Clavetlfonica: ['', [Validators.required, Validators.maxLength(4)]],
       fvncmtoMes: ['', [Validators.required]],
       fvncmtoAno: ['', [Validators.required]],
@@ -259,7 +259,7 @@ export class FormComponent implements OnInit {
         [
           isNegativeNumber
         ])
-      });
+    });
 
     this.CriptomonedaForm = this.fb.group({
       Referencia_Cripto: ['', [Validators.required]],
@@ -318,7 +318,7 @@ export class FormComponent implements OnInit {
         if (res['dni']) {
           //Esto es solo cuando se resiva la cedula
           //this.AppFibex = !this.AppFibex;
-          this.searchServices(res['dni'], true,false);
+          this.searchServices(res['dni'], true, true, true);
           //this.searchInfoEquipos(res['dni']);
           //this.SendOption(0, 0, res['dni']);
           //this.IpAddress={ip:'192.168.1.7'}
@@ -332,8 +332,8 @@ export class FormComponent implements OnInit {
 
   }
 
-      // FORMGROUP DEL CAPTCHA
- hcaptchaFormGroup = () => {
+  // FORMGROUP DEL CAPTCHA
+  hcaptchaFormGroup = () => {
     return this.fb.group({
       hcaptcha: new FormControl(
         { value: null, disabled: false },
@@ -360,6 +360,7 @@ export class FormComponent implements OnInit {
   captchaSubControl = () => {
     this.hcaptcha?.valueChanges.subscribe(data => {
       this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
+      console.log('this.captchaControl :>> ', this.captchaControl);
       this.dni?.markAsTouched();
       this.dni?.updateValueAndValidity()
     });
@@ -464,13 +465,13 @@ export class FormComponent implements OnInit {
     //Pago Movil
     if (x == 2 || x == 3) {
       //Por default selecciono el Pago Móvil para Mercantil
-        this.TypeForm = this.PgMovilRegForm;
-        this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
-        this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
-        this.PgMovilRegForm.get('pref_ci')?.setValue('V');
-        this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
-        // this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
-        this.NextMatStepper();
+      this.TypeForm = this.PgMovilRegForm;
+      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+      // this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
+      this.NextMatStepper();
     }
     //Débito
     if (x == 0) {
@@ -557,10 +558,10 @@ export class FormComponent implements OnInit {
               this.invalidForm('El Banco no aprobo su transacción', 'Verifique el monto ingresado');
             }
           } else if (resp.hasOwnProperty('status')) {
-             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
-         }else{
-          this.invalidForm(`Error intente mas tarde!`);
-         }
+            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
+          } else {
+            this.invalidForm(`Error intente mas tarde!`);
+          }
         }
 
       })
@@ -595,16 +596,16 @@ export class FormComponent implements OnInit {
             if (resp.transaction_c2p_response.trx_status == "approved") {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
-            }else{
+            } else {
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
           } else if (resp.hasOwnProperty('status')) {
             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!')
-          }else{
+          } else {
             this.invalidForm(`Error intente mas tarde!`);
           }
         })
-        .catch((error: any) => {this.invalidForm(`Error por favor intente más tarde`); console.error(error)}) //Tengo que decirle al usuario que paso con la el pago que realizo
+        .catch((error: any) => { this.invalidForm(`Error por favor intente más tarde`); console.error(error) }) //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
       this.invalidForm(`Error debe colocar la clave de autorización!`);
     }
@@ -630,16 +631,16 @@ export class FormComponent implements OnInit {
           this.ButtonGetAuthMercantil();
         } else if (resp.hasOwnProperty('status')) {
           this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
-        }else{
+        } else {
           this.invalidForm(`Error intente mas tarde!`);
         }
       })
       .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
 
-  SelectedPagoC2P(value:any){
-    let Valor=value._value
-    if(Valor=="otros"){
+  SelectedPagoC2P(value: any) {
+    let Valor = value._value
+    if (Valor == "otros") {
       this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
       this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
       this.TypeForm = this.PgMovilForm;
@@ -647,7 +648,7 @@ export class FormComponent implements OnInit {
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
       this.warningSimpleFormMercantil(`Debes realizar un Pago Móvil con los datos a continuación:`, ` <strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105) <br/><br/> Luego de realizar la operación debes reportar el pago en el formulario presentado.`);
-    }else{
+    } else {
       this.TypeForm = this.PgMovilRegForm;
       this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
       this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
@@ -695,24 +696,24 @@ export class FormComponent implements OnInit {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
                       this.ReciboPay = true;
-                    }else{
+                    } else {
                       this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
                     }
                   } else if (resp.hasOwnProperty('status')) {
-                      this.invalidForm(`${resp.status.description}`);
-                  }else {
+                    this.invalidForm(`${resp.status.description}`);
+                  } else {
                     this.invalidForm(`Error intente más tarde!`);
                   }
                 })
                 .catch((error: any) => {
                   console.log(error);
                 })
-            }else{
+            } else {
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
             }
           } else if (resp.hasOwnProperty('status')) {
             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
-          }else{
+          } else {
             this.invalidForm(`Error intente más tarde!`);
           }
         })
@@ -730,12 +731,12 @@ export class FormComponent implements OnInit {
             if (resp.transaction_response.trx_status == "approved") {
               this.alertexit("Pago realizado exitosamente");
               this.ReciboPay = true;
-            }else{
+            } else {
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
-          }else if (resp.hasOwnProperty('status')) {
-              this.invalidForm(`${resp.status.description}`);
-          }else{
+          } else if (resp.hasOwnProperty('status')) {
+            this.invalidForm(`${resp.status.description}`);
+          } else {
             this.invalidForm(`Error intente más tarde!`);
           }
         })
@@ -1204,7 +1205,9 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean,NextContrato?:boolean) {
+  searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean, dataFromAUrl?: boolean) {
+    console.log('params,', dni, fromParmas, NextContrato, dataFromAUrl)
+    console.log('dataFromAUrl :>> ', dataFromAUrl);
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1213,6 +1216,7 @@ export class FormComponent implements OnInit {
     } else if (fromParmas) {
       dni_ = dni;
     }
+    console.log('dni_', dni_)
     if (dni_) {
       dni_ = this.ClearCedula(dni_);
     }
@@ -1261,18 +1265,17 @@ export class FormComponent implements OnInit {
                 this.lastDni = "";
               }
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
-              if(NextContrato){
-                if(this.listContratos.length == 1) {
+              if (NextContrato) {
+                if (this.listContratos.length == 1) {
                   this.AppFibex = true;
-                  this.readonlyDNI = true
-                  // SE ELIMINA ESTE EFECTO TOMANDO EN CUENTA QUE EL USUARIO DEBE REALIZAR EL CAPTCHA VR161122
-                  //Para lograr un efecto de transición
-                  setTimeout(() => {
-                    this.NextMatStepper();
-                  }, 300);
+                  this.readonlyDNI = true;
+                  if (dataFromAUrl == undefined || dataFromAUrl == false) {
+                    setTimeout(() => {
+                      this.NextMatStepper();
+                    }, 300);
+                  }
                 }
               }
-
 
               /* EMITIR TASA DEL DÍA */
               this.tasaService.tasa.next(this.cambio_act.toString());
@@ -1549,7 +1552,7 @@ export class FormComponent implements OnInit {
       setTimeout(() => {
         this.NextMatStepper();
       }, 300);
-    }else{
+    } else {
       this.bankSelected(this.BancoSelect);
     }
   }
@@ -1690,12 +1693,12 @@ export class FormComponent implements OnInit {
         this.PagoDebito();
       }
     })
-    .catch((error:any)=>{
-      console.error(error);
-    })
+      .catch((error: any) => {
+        console.error(error);
+      })
   }
 
-  warnignFormGeneral(text: string, html: string,ButtonCancel:string,ButtonConfirm:string,NameMetodo:string) {
+  warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
     Swal.fire({
       title: text,
       html: html,
@@ -1708,12 +1711,12 @@ export class FormComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         //Metodo que voy a llamar
-         eval(NameMetodo);
+        eval(NameMetodo);
       }
     })
-    .catch((error:any)=>{
-      console.error(error);
-    })
+      .catch((error: any) => {
+        console.error(error);
+      })
   }
 
   alertexit(text: string, optionalText: string = '') {
@@ -2050,18 +2053,18 @@ export class FormComponent implements OnInit {
     this.totalAmount = Number(this.amount?.value);
   }
 
-  AmountIncorrectConfirm(value: string,Metodo:string){
+  AmountIncorrectConfirm(value: string, Metodo: string) {
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();
       return
-    }else if(!this.invalidAmount){
+    } else if (!this.invalidAmount) {
       let saldobs = Number(this.saldoBs) - Number(value);
       if (saldobs < 0) saldobs = saldobs * (-1);
       /*this.warnignFormDebitoCredito(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
         `El monto debe ser expresado en BOLIVARES.`);*/
-        this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-        `El monto debe ser expresado en BOLIVARES.`,"Editar Monto","Seguir adelante",Metodo)
+      this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
+        `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
     }
   }
 
@@ -2123,37 +2126,37 @@ export class FormComponent implements OnInit {
   amountInvalidCreditoDebitoPagoMovil() {
     this.cantidadDC?.valueChanges.subscribe({
       next: (value) => {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
-            this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
-            this.cantidadDC?.setValue('');
-            return;
-          }
-          this.invalidAmount = false;
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+          this.invalidAmount = true;
+          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+          this.cantidadDC?.setValue('');
+          return;
+        }
+        this.invalidAmount = false;
       }
     });
 
     this.cantidad?.valueChanges.subscribe({
       next: (value) => {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
-            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
-            this.cantidad?.setValue('');
-            this.invalidAmount = true;
-            return;
-          }
-          this.invalidAmount = false;
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+          this.cantidad?.setValue('');
+          this.invalidAmount = true;
+          return;
+        }
+        this.invalidAmount = false;
       }
     });
 
     this.amountPm?.valueChanges.subscribe({
       next: (value) => {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
-            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
-            this.amountPm?.setValue('');
-            this.invalidAmount = true;
-            return;
-          }
-          this.invalidAmount = false;
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+          this.amountPm?.setValue('');
+          this.invalidAmount = true;
+          return;
+        }
+        this.invalidAmount = false;
       }
     });
   }
