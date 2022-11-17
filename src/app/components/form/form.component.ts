@@ -318,8 +318,9 @@ export class FormComponent implements OnInit {
         if (res['dni']) {
           //Esto es solo cuando se resiva la cedula
           //this.AppFibex = !this.AppFibex;
-          this.searchServices(res['dni'], true, true, true);
+          //this.searchServices(res['dni'], true, true, true);
           //this.searchInfoEquipos(res['dni']);
+          this.dni?.setValue(`${res['dni']}`)
           //this.SendOption(0, 0, res['dni']);
           //this.IpAddress={ip:'192.168.1.7'}
 
