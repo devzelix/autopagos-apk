@@ -130,7 +130,7 @@ export let DataSlide = [
     }
   ]
 
-export let MetodoDePago2 = [{idpago:0,tipopago:"Débito Mercantil",image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png', alt:'Débito Mercantil'},{idpago:1,tipopago:"Crédito",image:'assets/images/Icono_TDC-PagosFibex.png', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',omitir:false, alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:5,tipopago:"Criptomoneda",omitir:true,image:'assets/images/Coincoinx.png',},{idpago:4,tipopago:"Transferencia",omitir:false,image:'assets/images/Icono_Transferencia-Pagos_Fibex.png', alt:'Otros'}]
+export let MetodoDePago2 = [{idpago:0,tipopago:"Débito Mercantil",image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png', alt:'Débito Mercantil'},{idpago:1,tipopago:"Crédito",image:'assets/images/Icono_TDC-PagosFibex.png', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',omitir:true, alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:5,tipopago:"Criptomoneda",omitir:true,image:'assets/images/Coincoinx.png',},{idpago:4,tipopago:"Transferencia",omitir:false,image:'assets/images/Icono_Transferencia-Pagos_Fibex.png', alt:'Otros'}]
 
 export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
 
