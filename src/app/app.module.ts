@@ -14,8 +14,10 @@ import { MaterialModule } from './material.module';
 
 import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
+import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { SeguridadDatos } from './services/bcryptjs';
 import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
+import { environment } from 'src/environments/environment';
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
@@ -38,13 +40,17 @@ const routes: Routes = [
     CoincoinxComponent
   ],
   imports: [
-    BrowserModule,    
+    BrowserModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MaterialModule,
-    RouterModule.forRoot(routes)     
+    RouterModule.forRoot(routes),
+    NgHcaptchaModule.forRoot({
+      siteKey: environment.CaptchaSiteKey,
+      // languageCode: 'de' // optional, will default to browser language
+    }),
   ],
   providers: [
     NegativeAmountPipe,

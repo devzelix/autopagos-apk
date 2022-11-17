@@ -19,5 +19,6 @@ export const environment = {
   KeyEncrypt: 'AstJuTnDhyUKyRee',
   WidgetID: 'BB611338173A55DC52494CF79D86A6CD',
   DireccionWidget: '14iE4zL57wjWtdnABwi5uiw8c73L9er597',
-  ApiTokenWidget :'CD6D80FC1E4168AAB045C3A80BD0B410'
+  ApiTokenWidget :'CD6D80FC1E4168AAB045C3A80BD0B410',
+  CaptchaSiteKey: '3eb28efd-7444-4f87-9013-fad255d37660'
 };

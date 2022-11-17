@@ -25,7 +25,7 @@ import { DataSlide,TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscr
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-//import { NgHcaptchaService } from 'ng-hcaptcha';
+import { NgHcaptchaService } from 'ng-hcaptcha';
 
 
 import { MatStepper } from '@angular/material/stepper';
@@ -153,9 +153,10 @@ export class FormComponent implements OnInit {
   public ReciboPay: boolean = false;
 
   // Variables de hcaptcha
-  /*public hcaptchaForm: FormGroup
+  public hcaptchaForm: FormGroup
   public verifyDNI: boolean = false
-  public captchaControl: boolean | undefined = true*/
+  public captchaControl: boolean | undefined = true
+  public readonlyDNI: boolean = false
 
 
   constructor(
@@ -256,7 +257,7 @@ export class FormComponent implements OnInit {
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
         [
-          isNegativeNumber 
+          isNegativeNumber
         ])
       });
 
@@ -302,8 +303,9 @@ export class FormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.hcaptchaForm = this.hcaptchaFormGroup();
+    this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
+    this.captchaSubControl();
     this._ApiMercantil.GetAddress()
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
@@ -316,7 +318,7 @@ export class FormComponent implements OnInit {
         if (res['dni']) {
           //Esto es solo cuando se resiva la cedula
           //this.AppFibex = !this.AppFibex;
-          this.searchServices(res['dni'], true,true);
+          this.searchServices(res['dni'], true,false);
           //this.searchInfoEquipos(res['dni']);
           //this.SendOption(0, 0, res['dni']);
           //this.IpAddress={ip:'192.168.1.7'}
@@ -329,31 +331,22 @@ export class FormComponent implements OnInit {
     this.getDaysFeriados();
 
   }
-  // FORMGROUP DEL CAPTCHA
-  /*hcaptchaFormGroup = () => {
-    return this.fb.group({
-      hcaptcha: new FormControl(
-        { value: null, disabled: false },
-        { validators: [Validators.required] }
-      ),
-    });
-  }*/
 
       // FORMGROUP DEL CAPTCHA
- /* hcaptchaFormGroup = () => {
+ hcaptchaFormGroup = () => {
     return this.fb.group({
       hcaptcha: new FormControl(
         { value: null, disabled: false },
         { validators: [Validators.required] }
       ),
     });
-  }*/
+  }
   // FUNCIONES CONTROL DEL CAPTCHA
-  /*DNIvalidation = (inputDni) => {
+  DNIvalidation = (inputDni: any) => {
     const dni_ = inputDni.value
     if (dni_.length >= 1 && dni_.length < 6) {
-      this.dni.reset()
-      this.hcaptcha.reset()
+      this.dni?.reset()
+      this.hcaptcha?.reset()
       this.nameClient = '';
       this.saldoUSD = '';
       this.saldoBs = '';
@@ -365,12 +358,12 @@ export class FormComponent implements OnInit {
     }
   }
   captchaSubControl = () => {
-    this.hcaptcha.valueChanges.subscribe(data => {
-      this.hcaptcha.valid ? this.captchaControl = false : this.captchaControl = true
-      this.dni.markAsTouched();
-      this.dni.updateValueAndValidity()
+    this.hcaptcha?.valueChanges.subscribe(data => {
+      this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
+      this.dni?.markAsTouched();
+      this.dni?.updateValueAndValidity()
     });
-  }*/
+  }
 
   SendOption(page: number, option: any, value: any) {
     let temp = value
@@ -391,7 +384,7 @@ export class FormComponent implements OnInit {
     }
   }
 
-  //get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
+  get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
 
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
@@ -563,8 +556,8 @@ export class FormComponent implements OnInit {
             } else {
               this.invalidForm('El Banco no aprobo su transacción', 'Verifique el monto ingresado');
             }
-          } else if (resp.hasOwnProperty('status')) { 
-             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); 
+          } else if (resp.hasOwnProperty('status')) {
+             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
          }else{
           this.invalidForm(`Error intente mas tarde!`);
          }
@@ -577,7 +570,7 @@ export class FormComponent implements OnInit {
   RegistrarPgoMovil() {
     //Para realizar pago Móviles
     if (this.auth?.value != "") {
- 
+
       let DatosUserAgent = {
         Browser: this.TypeNavegador,
         AddresIp: this.IpAddress.ip,
@@ -605,8 +598,8 @@ export class FormComponent implements OnInit {
             }else{
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
-          } else if (resp.hasOwnProperty('status')) { 
-            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!') 
+          } else if (resp.hasOwnProperty('status')) {
+            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!')
           }else{
             this.invalidForm(`Error intente mas tarde!`);
           }
@@ -635,8 +628,8 @@ export class FormComponent implements OnInit {
           this.invalidForm(`${resp.error_list[0].description}`, '');
         } else if (resp.hasOwnProperty('scp_info')) {
           this.ButtonGetAuthMercantil();
-        } else if (resp.hasOwnProperty('status')) { 
-          this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); 
+        } else if (resp.hasOwnProperty('status')) {
+          this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
         }else{
           this.invalidForm(`Error intente mas tarde!`);
         }
@@ -717,8 +710,8 @@ export class FormComponent implements OnInit {
             }else{
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
             }
-          } else if (resp.hasOwnProperty('status')) { 
-            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!'); 
+          } else if (resp.hasOwnProperty('status')) {
+            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
           }else{
             this.invalidForm(`Error intente más tarde!`);
           }
@@ -748,7 +741,7 @@ export class FormComponent implements OnInit {
         })
         .catch((error: any) => {
           this.invalidForm(`Error por favor intente más tarde!`);
-        }) 
+        })
     }
 
   }
@@ -1215,25 +1208,18 @@ export class FormComponent implements OnInit {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
-
     if (!fromParmas) {
       dni_ = dni.value;
     } else if (fromParmas) {
       dni_ = dni;
     }
-
     if (dni_) {
       dni_ = this.ClearCedula(dni_);
     }
     this.banksFiltered = [...this.bankList];
-
-
-
-
     if (dni_ === this.lastDni) {
       return;
     }
-
     this.dniConsulted = false;
     if (dni_.length >= 6) {
       this.alertFindDniMercantil('Buscando información del cliente', 'Por favor espere...');
@@ -1278,11 +1264,12 @@ export class FormComponent implements OnInit {
               if(NextContrato){
                 if(this.listContratos.length == 1) {
                   this.AppFibex = true;
+                  this.readonlyDNI = true
+                  // SE ELIMINA ESTE EFECTO TOMANDO EN CUENTA QUE EL USUARIO DEBE REALIZAR EL CAPTCHA VR161122
                   //Para lograr un efecto de transición
                   setTimeout(() => {
-                    this.NextMatStepper(); 
+                    this.NextMatStepper();
                   }, 300);
-                  
                 }
               }
 
@@ -1560,7 +1547,7 @@ export class FormComponent implements OnInit {
       this.AppFibex = true;
       //Para lograr un efecto de transición
       setTimeout(() => {
-        this.NextMatStepper(); 
+        this.NextMatStepper();
       }, 300);
     }else{
       this.bankSelected(this.BancoSelect);
