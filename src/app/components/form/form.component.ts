@@ -1031,7 +1031,7 @@ export class FormComponent implements OnInit {
       ...this.thirdFormFibex.value,
       img: this.selectedRetentionOption == 2 ? this.imageUrl + ' -Retención:' + this.retentionImageUrl + ' -Monto:' + this.retentionAmount?.value : this.imageUrl,
       name: contractInfo?.cliente,
-      amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
+      amount: this.selectedRetentionOption == 2 ? this.totalAmount > 0 ? String(this.totalAmount+this.retentionAmount?.value) : this.amount?.value : 
       date,
       id_Cuba: this.BancoSelect.id_cuba
     }
@@ -1853,7 +1853,7 @@ export class FormComponent implements OnInit {
         }
       }
     }
-    this.totalAmount = Number(this.amount?.value);
+    //this.totalAmount = Number(this.amount?.value); NO DESCOMENTAR, SINO NO SE SUMA EL MONTO TOTAL
     this.NextMatStepper();
     //this.stepper.selectedIndex = index;
   }
