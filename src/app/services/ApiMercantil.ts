@@ -181,8 +181,6 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxReferencia/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                     resolve(data)
                 },
                 error: error => {
@@ -257,8 +255,6 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}c2p/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                     resolve(data)
                 },
                 error: error => {
@@ -279,12 +275,8 @@ export class ApiMercantilService implements  OnInit {
       try {
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
-         console.log("Datos a enviar");
-         console.log(Datos);
             this.http.post<any>(`${this.URLAPIMERCANTIL}c2pClave/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                     resolve(data);
                 },
                 error: error => {
@@ -312,8 +304,6 @@ export class ApiMercantilService implements  OnInit {
 
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
-        console.log("voy a enviar esto");
-        console.log(resp);
             this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     resolve(data);
@@ -355,8 +345,6 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                     resolve(data);
                 },
                 error: error => {
@@ -381,7 +369,7 @@ export class ApiMercantilService implements  OnInit {
      this.http.get<any>(WebUrl).subscribe({
         next: data => {
             resolve(data);
-            
+
         },
         error: error => {
             console.error('There was an error!', error);

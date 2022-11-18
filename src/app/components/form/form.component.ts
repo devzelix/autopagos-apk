@@ -361,7 +361,6 @@ export class FormComponent implements OnInit {
   captchaSubControl = () => {
     this.hcaptcha?.valueChanges.subscribe(data => {
       this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
-      console.log('this.captchaControl :>> ', this.captchaControl);
       this.dni?.markAsTouched();
       this.dni?.updateValueAndValidity()
     });
@@ -551,7 +550,6 @@ export class FormComponent implements OnInit {
             this.invalidForm('No se encuentra dicho pago', 'Intente nuevamente!');
           } else if (resp.hasOwnProperty('transaction_list')) {
             let ResBanco = resp.transaction_list[0];
-            console.log(ResBanco)
             if (ResBanco.trx_status == "approved") {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
@@ -624,8 +622,6 @@ export class FormComponent implements OnInit {
     this.alertFindDni('Enviando clave de autorización', 'Por favor espere...');
     this._ApiMercantil.C2PClave(DatosUserAgent)
       .then((resp: any) => {
-        console.log("Respuesta del banco para la clave de pago movil");
-        console.log(resp);
         if (resp.hasOwnProperty('error_list')) {
           this.invalidForm(`${resp.error_list[0].description}`, '');
         } else if (resp.hasOwnProperty('scp_info')) {
@@ -683,7 +679,6 @@ export class FormComponent implements OnInit {
       //Primero debo autorizar el pago
       this._ApiMercantil.GetAuthTDD(DatosUserAgent)
         .then((resp: any) => {
-          console.log(resp);
           if (resp.hasOwnProperty('error_list')) {
             this.invalidForm(`${resp.error_list[0].description}`, '');
           } else if (resp.hasOwnProperty('authentication_info')) {
@@ -1034,7 +1029,7 @@ export class FormComponent implements OnInit {
       ...this.firstFormFibex.value,
       ...this.secondFormFibex.value,
       ...this.thirdFormFibex.value,
-      img: this.selectedRetentionOption == 2 ? this.imageUrl + '- Retención:' + this.retentionImageUrl + '- Monto:' + this.retentionAmount?.value : this.imageUrl,
+      img: this.selectedRetentionOption == 2 ? this.imageUrl + ' -Retención:' + this.retentionImageUrl + ' -Monto:' + this.retentionAmount?.value : this.imageUrl,
       name: contractInfo?.cliente,
       amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
       date,
@@ -1207,8 +1202,6 @@ export class FormComponent implements OnInit {
   }
 
   searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean, dataFromAUrl?: boolean) {
-    console.log('params,', dni, fromParmas, NextContrato, dataFromAUrl)
-    console.log('dataFromAUrl :>> ', dataFromAUrl);
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1217,7 +1210,6 @@ export class FormComponent implements OnInit {
     } else if (fromParmas) {
       dni_ = dni;
     }
-    console.log('dni_', dni_)
     if (dni_) {
       dni_ = this.ClearCedula(dni_);
     }
@@ -1479,7 +1471,6 @@ export class FormComponent implements OnInit {
   }
 
   SearchServiceClient(Contrato: any) {
-    console.log("SearchServiceClient")
     try {
       this.AllService = []
       this.registerPayService.GetListService(Contrato).subscribe((ResService: any) => {
@@ -1673,7 +1664,8 @@ export class FormComponent implements OnInit {
           this.firstFormFibex.valid &&
           !this.disbaleButtonIfDateIsInvalid &&
           !this.invalidAmount) {
-          this.stepper.selectedIndex = next;
+          //this.stepper.selectedIndex = next;
+          this.NextMatStepper();
         }
       }
     })
@@ -1818,8 +1810,7 @@ export class FormComponent implements OnInit {
     this.stepper.selectedIndex = 0;
   }
 
-  nextStep(index: number, verifyAmount?: boolean) {
-    console.log(this.nroContrato?.value);
+  nextStep(verifyAmount?: boolean) {
     if (this.nroContrato?.value.length === 0) {
       this.invalidForm('Debes seleccionar un contrato para avanzar', '');
       return;
@@ -1828,21 +1819,22 @@ export class FormComponent implements OnInit {
 
       if (!this.BancoNacional('')) {
         if (Number(this.amount?.value) > Number(this.saldoUSD)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?',0);
           return;
         }
       } else {
         if (Number(this.amount?.value) > Number(this.saldoBs)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?',0 );
           return;
         }
       }
     }
     this.totalAmount = Number(this.amount?.value);
-    this.stepper.selectedIndex = index;
+    this.NextMatStepper();
+    //this.stepper.selectedIndex = index;
   }
 
-  nextStepWithRetention(index: number, verifyAmount?: boolean) {
+  nextStepWithRetention(verifyAmount?: boolean) {
     if (this.nroContrato?.value.length === 0) {
       this.invalidForm('Debes seleccionar un contrato para avanzar', '');
       return;
@@ -1851,18 +1843,19 @@ export class FormComponent implements OnInit {
 
       if (!this.BancoNacional('')) {
         if (Number(this.totalAmount) > Number(this.saldoUSD)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', 0);
           return;
         }
       } else {
         if (Number(this.totalAmount) > Number(this.saldoBs)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', index);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', 0);
           return;
         }
       }
     }
     this.totalAmount = Number(this.amount?.value);
-    this.stepper.selectedIndex = index;
+    this.NextMatStepper();
+    //this.stepper.selectedIndex = index;
   }
 
   considerWithholdingAmount() {
@@ -1882,12 +1875,14 @@ export class FormComponent implements OnInit {
       this.fourthFormFibex.get('retentionAmount')?.clearValidators();
       this.fourthFormFibex.get('retentionImg')?.updateValueAndValidity();
       this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
+      this.possibleWithholdingAgent = false;
     } else {
       //Campo requerido de imagen de retencion
       this.fourthFormFibex.get('retentionImg')?.setValidators([Validators.required]);
       this.fourthFormFibex.get('retentionAmount')?.setValidators([Validators.required]);
       this.fourthFormFibex.get('retentionImg')?.updateValueAndValidity();
       this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
+      this.possibleWithholdingAgent = true;
     }
   }
 
@@ -2034,19 +2029,23 @@ export class FormComponent implements OnInit {
     let saldobs = Number(this.saldoBs) - Number(value);
     if (saldousd < 0) saldousd = saldousd * (-1);
     if (saldobs < 0) saldobs = saldobs * (-1);
-    if (this.possibleWithholdingAgent && !!this.BancoNacional && this.selectedRetentionOption == 2 && saldobs < 1) {
-      this.warnignForm(`Está a punto de reportar ${value} BOLÍVARES.`,
+
+    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.selectedRetentionOption == 2 ) {
+      this.warnignForm(`Está a punto de reportar ${value} BOLIVARES.`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
-    if (this.possibleWithholdingAgent && !this.BancoNacional && this.selectedRetentionOption == 2 && saldousd < 1) {
+
+    if (this.possibleWithholdingAgent && !this.BancoNacional('') && this.selectedRetentionOption == 2 && saldousd < 1) {
       this.warnignForm(`Está a punto de reportar ${value} DÓLARES.`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
-    if (this.BancoNacional('') && saldousd < saldobs) {
+
+    if (this.BancoNacional('') &&  !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
         `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
     }
-    if (!this.BancoNacional('') && saldousd > saldobs) {
+
+    if (!this.BancoNacional('') &&  !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }

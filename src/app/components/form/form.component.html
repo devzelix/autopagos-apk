@@ -226,7 +226,7 @@
 
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="btn-width-100">
-              <button class="button-material-next btn-width-100" mat-raised-button (click)="nextStep(2, true)"
+              <button class="button-material-next btn-width-100" mat-raised-button (click)="nextStep(true)"
                 type="button" [disabled]="disbaleButtonIfAmountIsInvalid ||
                                       disbaleButtonIfAmountIs0 ||
                                       firstFormFibex.invalid ||
@@ -434,7 +434,7 @@
                 </mat-form-field>
                 <div class="btn-flex-center">
                   <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button
-                    (click)="nextStepWithRetention(5, true)"
+                    (click)="nextStepWithRetention(true)"
                     [disabled]="uploadingRetentionImg || showMessageErrorUpload || this.fourthFormFibex.invalid"
                     type="button">
                     Siguiente

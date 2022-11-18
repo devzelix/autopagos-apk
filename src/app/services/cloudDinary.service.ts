@@ -21,13 +21,13 @@ export class CloudynariService implements  OnInit {
       try {
         const url = `https://api.cloudinary.com/v1_1/${env.CloudName}/image/upload`;
         const formData = new FormData();
-    
+
         formData.append("file", file);
         formData.append("upload_preset", env.upload_preset);
         formData.append("public_id", name);
         formData.append("api_key", env.ApiKey);
         formData.append("folder", "pagos");
-    
+
         fetch(url, {
           method: "POST",
           body: formData
@@ -50,10 +50,10 @@ export class CloudynariService implements  OnInit {
       try {
         const url = `https://api.cloudinary.com/v1_1/${env.CloudName}/image/upload`;
         const formData = new FormData();
-    
+
         let timestamp= Math.floor(Date.now() / 1000)
         let timestampString = timestamp.toString();
-        let Carpeta="Contratos"
+        let Carpeta="Pagos"
         let Signature =(`folder=${Carpeta}&public_id=${name}&timestamp=${timestamp}${env.ApiSecret}`)
          this.Has256Generate(Signature)
          .then((resp:any)=>{
@@ -63,7 +63,7 @@ export class CloudynariService implements  OnInit {
           formData.append("timestamp", timestampString);
           formData.append("signature", resp);
           formData.append("folder", Carpeta);
-      
+
           fetch(url, {
             method: "POST",
             body: formData
@@ -89,11 +89,11 @@ export class CloudynariService implements  OnInit {
     return new Promise((resolve,reject)=>{
       try {
         let sha1=CryptoJS.SHA1(string).toString()
-        resolve(sha1)  
+        resolve(sha1)
       } catch (error) {
         reject(error);
       }
-      
+
     })
   }
 
@@ -117,7 +117,7 @@ export class CloudynariService implements  OnInit {
           formData.append("api_key", env.ApiKey);
           formData.append("timestamp", timestampString);
           formData.append("folder", Carpeta);
-          
+
           fetch(url, {
             method: "POST",
             body: formData
