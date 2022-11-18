@@ -24,7 +24,7 @@
       <h3 class="message-warning" *ngIf="ErrorRegistrando">{{MessageErrorRegistrado}} ({{ Contar }})</h3>
     </div>
 
-    <mat-stepper [linear]="true" #stepper>
+    <mat-stepper [linear]="true" #stepper *ngIf="!payReported">
       <!-- *ngIf="!AppFibex" -->
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
