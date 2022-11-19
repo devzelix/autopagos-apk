@@ -11,6 +11,7 @@ import { RegisterPay } from '../interfaces/registerPay';
 export class RegisterPayService {
 
   private URLGRAPH: string = env.urlGraphql;
+  private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
   private URLAPITHOMAS: string = env.urlThomasApi;
 
   constructor(
@@ -35,7 +36,7 @@ export class RegisterPayService {
             comprobante:"${infoClient.voucher}"
             NombreTitular: "${infoClient.nameTitular}",
             CedulaTitula: "${infoClient.dniTitular}",
-            EmailTitular: "${infoClient.emailTitular}", 
+            EmailTitular: "${infoClient.emailTitular}",
             Tipo:"Pago"
         }
         lic: "${env.lic}"
@@ -79,7 +80,7 @@ export class RegisterPayService {
                 NombreTitular:"${infoClient.nameTitular || ""}"
                 CedulaTitula:"${infoClient.dniTitular || ""}"
                 EmailTitular:"${infoClient.emailTitular || ""}"
-                Tipo:"Pago"      
+                Tipo:"Pago"
               }
               lic:"${env.lic}"
             ){
@@ -123,6 +124,39 @@ export class RegisterPayService {
     })
   }
 
+  paySubs(payObj: any, dni: any) {
+
+    const statusPay = payObj.transaction_response.trx_status == "approved" ? true : false
+    let payData: any = JSON.stringify(payObj.transaction_response)
+    payData = payData.replaceAll('"', "'")
+    console.log('payData', payData)
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        const DataQuery = {
+          query: `
+          mutation{
+            SendVentaWa(Data:{
+              status:${statusPay}
+              Datos:"${payData}"
+              Cedula:"${dni}"
+            })
+          }`,
+        }
+
+        this.http.post(this.URLGRAPHCONTRACT, DataQuery).subscribe((Response: any) => {
+          resolve(Response)
+          console.log('Response', Response)
+        }
+        , (error) => {
+          reject(error)
+        })
+
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   GetDataClient(Cedula: any) {
     return new Promise(async (resolve: any, reject: any) => {
       this.http.get(`${env.urlBackThomas}find-any-info/thomas_cobertura/tmClientes/identidad/${Cedula}`).subscribe((ResClient: any) => {
@@ -137,7 +171,7 @@ export class RegisterPayService {
     try {
 
       this.http.post(`${env.ApiMercantil}RegPay/${env.TokenApiMercantil}`, Data).subscribe((ResClient: any) => {
-        //data recibida 
+        //data recibida
       }, err => {
         console.error(err)
       })
