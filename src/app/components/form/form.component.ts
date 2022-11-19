@@ -21,7 +21,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2 } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, PlantillaConfirmPago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -32,6 +32,7 @@ import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { forEach } from '@angular-devkit/schematics';
 
 
 
@@ -125,6 +126,7 @@ export class FormComponent implements OnInit {
   public tasaCambio: string = '';
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] = [];
+  public BancoDefault:string="Mercantil"
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
   ListService: any = []
@@ -142,7 +144,7 @@ export class FormComponent implements OnInit {
   AppFibex: boolean = false;
   ClienteFibex: boolean = false;
   BancoPago: any;
-  private PaymenMethod: string = "";
+  public PaymenMethod: string = "";
   private TypeNavegador: string = "";
   private IpAddress: any = "";
   public TypeAcountDC: any[] = TypeAccount;
@@ -482,7 +484,7 @@ export class FormComponent implements OnInit {
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencia"`);
+      //this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencia"`);
     }
     //Crédito
     if (x == 1) {
@@ -1031,7 +1033,7 @@ export class FormComponent implements OnInit {
       ...this.thirdFormFibex.value,
       img: this.selectedRetentionOption == 2 ? this.imageUrl + ' -Retención:' + this.retentionImageUrl + ' -Monto:' + this.retentionAmount?.value : this.imageUrl,
       name: contractInfo?.cliente,
-      amount: this.selectedRetentionOption == 2 ? this.totalAmount > 0 ? String(this.totalAmount+this.retentionAmount?.value) : this.amount?.value : 
+      amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
       date,
       id_Cuba: this.BancoSelect.id_cuba
     }
@@ -1040,7 +1042,8 @@ export class FormComponent implements OnInit {
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
       DataForRegister.IdContrato = ContratoActual.id_contrato
-
+      console.log("Estos son los datos a registrar");
+      console.log(DataForRegister)
       this.registerPayService.registerPayClient(DataForRegister)
         .then((res: any) => {
           this.DisableReg = false
@@ -1703,8 +1706,10 @@ export class FormComponent implements OnInit {
       confirmButtonText: ButtonConfirm
     }).then((result) => {
       if (result.isConfirmed) {
-        //Metodo que voy a llamar
-        eval(NameMetodo);
+          //Metodo que voy a llamar
+          eval(NameMetodo);
+        
+        
       }
     })
       .catch((error: any) => {
@@ -2053,7 +2058,7 @@ export class FormComponent implements OnInit {
     this.totalAmount = Number(this.amount?.value);
   }
 
-  AmountIncorrectConfirm(value: string, Metodo: string) {
+  AmountIncorrectConfirm(value: string, Metodo: string,type?:string) {
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();
@@ -2061,10 +2066,29 @@ export class FormComponent implements OnInit {
     } else if (!this.invalidAmount) {
       let saldobs = Number(this.saldoBs) - Number(value);
       if (saldobs < 0) saldobs = saldobs * (-1);
-      /*this.warnignFormDebitoCredito(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-        `El monto debe ser expresado en BOLIVARES.`);*/
-      this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-        `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
+
+        if(type !=undefined && type !=null && type !=""){
+
+          let PlantillaPago = PlantillaConfirmPago.filter((plantilla:any)=> plantilla.tipo == type);
+          PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
+
+            PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem,String(eval(PlantillaPago[0].campos[index])))
+
+            if(index==PlantillaPago[0].replace.length-1){
+
+              this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
+              PlantillaPago[0].html,"Editar Datos","Procesar Pago", Metodo)
+            }
+          })
+
+        }else{
+          this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
+          `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
+        }
+      
+
+      /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
+      <strong>Nro. tarjeta:</strong> 501878200102618990<br> <strong>Fecha de Vencimiento:</strong> 04/2027 <br> <strong>Cantidad a pagar en Bolivares:</strong> 0.1 <br></div>`,`Editar Datos`,`Procesar pago`,Metodo)*/
     }
   }
 

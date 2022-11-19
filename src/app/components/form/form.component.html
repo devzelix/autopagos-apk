@@ -10,10 +10,10 @@
         Servicio de Internet
       </p>
     </span>
-    <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span>
+    <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
   </div>
 
-  <div class="form-login__group">
+  <div  [className]="nameClient ? 'form-login__group2' : 'form-login__group'"  class="form-login__group">
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
         su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
@@ -719,7 +719,7 @@
 
         <div *ngIf="ConsultarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button [disabled]="!PgMovilForm.valid" class="button-material-next btn-width-70" mat-raised-button
-            type="button" (click)="AmountIncorrectConfirm(cantidad?.value,'this.ComprobarPgoMovil()')">
+            type="button" (click)="AmountIncorrectConfirm(cantidad?.value,'this.ComprobarPgoMovil()','c2pnacional')">
             Procesar orden
           </button>
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button"
@@ -730,7 +730,7 @@
 
         <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button  [disabled]="!PgMovilRegForm.valid" class="button-material-next btn-width-70" mat-raised-button
-            type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()')">
+            type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
             Solicitar pin de autorización
           </button>
           <button  class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
@@ -931,7 +931,7 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
-            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()')">
+            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             Pagar
           </button>
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
@@ -1016,6 +1016,7 @@
       </mat-step> -->
       <!-- / Fin de Criptomoneda -->
     </mat-stepper>
+
   </div>
 
 
