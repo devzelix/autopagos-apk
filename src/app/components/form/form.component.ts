@@ -52,7 +52,7 @@ export class FormComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
-
+  public PlantillaTempPago:any=JSON.parse(JSON.stringify(PlantillaConfirmPago));
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
@@ -1708,13 +1708,12 @@ export class FormComponent implements OnInit {
       if (result.isConfirmed) {
           //Metodo que voy a llamar
           eval(NameMetodo);
-        
-        
       }
     })
       .catch((error: any) => {
         console.error(error);
       })
+      this.PlantillaTempPago= JSON.parse(JSON.stringify(PlantillaConfirmPago));
   }
 
   alertexit(text: string, optionalText: string = '') {
@@ -2068,12 +2067,16 @@ export class FormComponent implements OnInit {
       if (saldobs < 0) saldobs = saldobs * (-1);
 
         if(type !=undefined && type !=null && type !=""){
-
-          let PlantillaPago = PlantillaConfirmPago.filter((plantilla:any)=> plantilla.tipo == type);
+          console.log(this.PlantillaTempPago)
+          let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
+          console.log("Antes")
+          console.log(this.PlantillaTempPago)
+          console.log("Original")
+          console.log(PlantillaConfirmPago)
           PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
 
             PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem,String(eval(PlantillaPago[0].campos[index])))
-
+            
             if(index==PlantillaPago[0].replace.length-1){
 
               this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
