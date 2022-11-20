@@ -32,7 +32,7 @@
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
             <mat-label>Cédula/RIF del Cliente</mat-label>
-            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni [readonly]="registerPayService.linkedToContractProcess === 'approved'"  >
+            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni  >
             <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && hcaptcha?.valid ? searchServices(inputDni,false,true) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula requerida
@@ -195,7 +195,7 @@
                   <strong><span *ngIf="!BancoNacional('')">En Dólares</span></strong>
                 </mat-label>
                 <input matInput formControlName="amount" required #inputAmount
-                  (blur)="incorrectBankAndAmount(inputAmount.value)" [readonly]="registerPayService.linkedToContractProcess === 'approved'" >
+                  (blur)="incorrectBankAndAmount(inputAmount.value)" >
                 <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('required')">Monto requerido</mat-error>
                 <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('pattern')">Escriba el monto seguido dos
                   decimales separado por punto, ejemplo: 125.00</mat-error>
@@ -637,7 +637,7 @@
               <mat-label>Cantidad a pagar
                 <strong><span>En Bolivares</span></strong>
               </mat-label>
-              <input matInput formControlName="amountPm" required #inputAmount [readonly]="registerPayService.linkedToContractProcess === 'approved'">
+              <input matInput formControlName="amountPm" required #inputAmount>
               <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
               <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
                 decimales separado por punto, ejemplo: 125.00</mat-error>
@@ -839,7 +839,7 @@
                 <mat-label>Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>
                 </mat-label>
-                <input matInput formControlName="cantidad" required #inputAmount [readonly]="registerPayService.linkedToContractProcess === 'approved'">
+                <input matInput formControlName="cantidad" required #inputAmount>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
                   decimales separado por punto, ejemplo: 125.00</mat-error>
