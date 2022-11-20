@@ -13,6 +13,9 @@ export class RegisterPayService {
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
   private URLAPITHOMAS: string = env.urlThomasApi;
+  public dniCustomerContract: string
+  public amountCustomerContract: string
+  public linkedToContractProcess: string
 
   constructor(
     private http: HttpClient,
@@ -129,7 +132,7 @@ export class RegisterPayService {
     const statusPay = payObj.transaction_response.trx_status == "approved" ? true : false
     let payData: any = JSON.stringify(payObj.transaction_response)
     payData = payData.replaceAll('"', "'")
-    console.log('payData', payData)
+    // console.log('payData', payData)
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const DataQuery = {

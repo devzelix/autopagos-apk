@@ -162,7 +162,7 @@ export class FormComponent implements OnInit {
 
 
   constructor(
-    private registerPayService: RegisterPayService,
+    public registerPayService: RegisterPayService,
     private fb: UntypedFormBuilder,
     private uplaodImageService: UplaodImageService,
     public dialog: MatDialog,
@@ -312,27 +312,29 @@ export class FormComponent implements OnInit {
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
-    this.route.queryParams
-      .pipe(
-        filter((param) => param['dni'])
-      )
-      .subscribe((res) => {
-        if (res['dni']) {
-          //Esto es solo cuando se resiva la cedula
-          //this.AppFibex = !this.AppFibex;
-          //this.searchServices(res['dni'], true, true, true);
-          //this.searchInfoEquipos(res['dni']);
-          this.dni?.setValue(`${res['dni']}`)
-          //this.SendOption(0, 0, res['dni']);
-          //this.IpAddress={ip:'192.168.1.7'}
+    this.route.queryParams.pipe(filter((param) => param['dni'])).subscribe((res) => {
+      console.log('res :>> ', res);
+      if (res['dni']) {
+        //Esto es solo cuando se resiva la cedula
+        this.dni?.setValue(`${res['dni']}`)
+          if (res['linkedToContractProcess'] === "approved") {
+            this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
+            this.registerPayService.dniCustomerContract = `${res['dni']}`
+            this.registerPayService.amountCustomerContract = `${res['amount']}`
+            console.log(this.registerPayService.linkedToContractProcess, this.registerPayService.dniCustomerContract, this.registerPayService.amountCustomerContract,)
+          }
+        //this.AppFibex = !this.AppFibex;
+        //this.searchServices(res['dni'], true, true, true);
+        //this.searchInfoEquipos(res['dni']);
+        //this.SendOption(0, 0, res['dni']);
+        //this.IpAddress={ip:'192.168.1.7'}
 
-        }
-      });
+      }
+    });
     this.dateOfPay();
     this.amountInvalid();
     this.amountInvalidCreditoDebitoPagoMovil();
     this.getDaysFeriados();
-
   }
 
   // FORMGROUP DEL CAPTCHA
@@ -694,6 +696,7 @@ export class FormComponent implements OnInit {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
                       this.ReciboPay = true;
+                      this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract): ''
                     } else {
                       this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
                     }
@@ -1204,7 +1207,7 @@ export class FormComponent implements OnInit {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean, dataFromAUrl?: boolean) {
+  searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1264,12 +1267,9 @@ export class FormComponent implements OnInit {
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
                   this.AppFibex = true;
-                  this.readonlyDNI = true;
-                  if (dataFromAUrl == undefined || dataFromAUrl == false) {
-                    setTimeout(() => {
-                      this.NextMatStepper();
-                    }, 300);
-                  }
+                  setTimeout(() => {
+                    this.NextMatStepper();
+                  }, 300);
                 }
               }
 
@@ -1708,8 +1708,8 @@ export class FormComponent implements OnInit {
       if (result.isConfirmed) {
           //Metodo que voy a llamar
           eval(NameMetodo);
-        
-        
+
+
       }
     })
       .catch((error: any) => {
@@ -2085,7 +2085,7 @@ export class FormComponent implements OnInit {
           this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
           `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
         }
-      
+
 
       /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
       <strong>Nro. tarjeta:</strong> 501878200102618990<br> <strong>Fecha de Vencimiento:</strong> 04/2027 <br> <strong>Cantidad a pagar en Bolivares:</strong> 0.1 <br></div>`,`Editar Datos`,`Procesar pago`,Metodo)*/

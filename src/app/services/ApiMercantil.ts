@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment as env } from '../../environments/environment';
 import { SeguridadDatos } from './bcryptjs'
 import axios from 'axios';
-
+import { RegisterPayService } from './register-pay.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,8 @@ export class ApiMercantilService implements  OnInit {
   constructor(
     private zone: NgZone,
     private http: HttpClient,
-    private _EncrypD:SeguridadDatos
+    private _EncrypD:SeguridadDatos,
+    private registerPayService: RegisterPayService
   ) {
     this.responses = [];
     this.title = '';
