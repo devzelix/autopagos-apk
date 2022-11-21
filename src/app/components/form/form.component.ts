@@ -318,10 +318,14 @@ export class FormComponent implements OnInit {
         //Esto es solo cuando se resiva la cedula
         this.dni?.setValue(`${res['dni']}`)
           if (res['linkedToContractProcess'] === "approved") {
+            this.PagoMetodosHTML2 = MetodoDePago2.filter(x=> x.idpago != 4)
             this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
             this.registerPayService.dniCustomerContract = `${res['dni']}`
             this.registerPayService.amountCustomerContract = `${res['amount']}`
             console.log(this.registerPayService.linkedToContractProcess, this.registerPayService.dniCustomerContract, this.registerPayService.amountCustomerContract,)
+          }
+          else{
+            this.PagoMetodosHTML2 = MetodoDePago2
           }
         //this.AppFibex = !this.AppFibex;
         //this.searchServices(res['dni'], true, true, true);
