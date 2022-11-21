@@ -68,7 +68,7 @@
       <!--/ Fin de Menú ppal -->
       <!-- Menú de métodos de pago -->
       <mat-step *ngIf="AppFibex" class="CardPpal">
-        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
           <div>
             <h4 class="name-client">
               {{nameClient}}
@@ -83,6 +83,24 @@
             </h4>
             <h4 class="name-client">
               Subscripción: {{subscription}} USD
+            </h4>
+          </div>
+        </div>
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+          <div>
+            <h4 class="name-client">
+              CI/RIF: {{nameClient}}
+            </h4>
+            <h4 class="name-client">
+              Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+            </h4>
+          </div>
+          <div>
+            <h4 class="name-client">
+              <!-- Servicio: {{ paquete }} -->
+            </h4>
+            <h4 class="name-client">
+              <!-- Subscripción: {{subscription}} USD -->
             </h4>
           </div>
         </div>
@@ -113,7 +131,7 @@
       <div
         *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda">
         <mat-step [stepControl]="firstFormFibex">
-          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
             <div>
               <h4 class="name-client">
                 {{nameClient}}
@@ -128,6 +146,24 @@
               </h4>
               <h4 class="name-client">
                 Subscripción: {{subscription}} USD
+              </h4>
+            </div>
+          </div>
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                CI/RIF: {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                <!-- Servicio: {{ paquete }} -->
+              </h4>
+              <h4 class="name-client">
+                <!-- Subscripción: {{subscription}} USD -->
               </h4>
             </div>
           </div>
@@ -527,7 +563,7 @@
 
       <!-- Pago Móvil -->
       <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
-        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
           <div>
             <h4 class="name-client">
               {{nameClient}}
@@ -542,6 +578,24 @@
             </h4>
             <h4 class="name-client">
               Subscripción: {{subscription}} USD
+            </h4>
+          </div>
+        </div>
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+          <div>
+            <h4 class="name-client">
+              CI/RIF: {{nameClient}}
+            </h4>
+            <h4 class="name-client">
+              Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+            </h4>
+          </div>
+          <div>
+            <h4 class="name-client">
+              <!-- Servicio: {{ paquete }} -->
+            </h4>
+            <h4 class="name-client">
+              <!-- Subscripción: {{subscription}} USD -->
             </h4>
           </div>
         </div>
@@ -745,7 +799,7 @@
       <!-- Crédito o Débito -->
       <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
             <div>
               <h4 class="name-client">
                 {{nameClient}}
@@ -760,6 +814,24 @@
               </h4>
               <h4 class="name-client">
                 Subscripción: {{subscription}} USD
+              </h4>
+            </div>
+          </div>
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                CI/RIF: {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                <!-- Servicio: {{ paquete }} -->
+              </h4>
+              <h4 class="name-client">
+                <!-- Subscripción: {{subscription}} USD -->
               </h4>
             </div>
           </div>

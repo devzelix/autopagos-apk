@@ -52,7 +52,7 @@ export class FormComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
-  public PlantillaTempPago:any=JSON.parse(JSON.stringify(PlantillaConfirmPago));
+  public PlantillaTempPago: any = JSON.parse(JSON.stringify(PlantillaConfirmPago));
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
@@ -126,7 +126,7 @@ export class FormComponent implements OnInit {
   public tasaCambio: string = '';
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] = [];
-  public BancoDefault:string="Mercantil"
+  public BancoDefault: string = "Mercantil"
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
   ListService: any = []
@@ -317,16 +317,20 @@ export class FormComponent implements OnInit {
       if (res['dni']) {
         //Esto es solo cuando se resiva la cedula
         this.dni?.setValue(`${res['dni']}`)
-          if (res['linkedToContractProcess'] === "approved") {
-            this.PagoMetodosHTML2 = MetodoDePago2.filter(x=> x.idpago != 4)
-            this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
-            this.registerPayService.dniCustomerContract = `${res['dni']}`
-            this.registerPayService.amountCustomerContract = `${res['amount']}`
-            console.log(this.registerPayService.linkedToContractProcess, this.registerPayService.dniCustomerContract, this.registerPayService.amountCustomerContract,)
-          }
-          else{
-            this.PagoMetodosHTML2 = MetodoDePago2
-          }
+        if (res['linkedToContractProcess'] === "approved") {
+          this.tasaService.getSaldoBCV().subscribe((res) => {
+            console.log('res :>> ', res);
+            this.tasaCambio = res
+          })
+          this.PagoMetodosHTML2 = MetodoDePago2.filter(x => x.idpago != 4)
+          this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
+          this.registerPayService.dniCustomerContract = `${res['dni']}`
+          this.registerPayService.amountCustomerContract = `${res['amount']}`
+          console.log(this.registerPayService.linkedToContractProcess, this.registerPayService.dniCustomerContract, this.registerPayService.amountCustomerContract,)
+        }
+        else {
+          this.PagoMetodosHTML2 = MetodoDePago2
+        }
         //this.AppFibex = !this.AppFibex;
         //this.searchServices(res['dni'], true, true, true);
         //this.searchInfoEquipos(res['dni']);
@@ -700,7 +704,7 @@ export class FormComponent implements OnInit {
                     if (resp.transaction_response.trx_status == "approved") {
                       this.alertexit("Pago realizado exitosamente");
                       this.ReciboPay = true;
-                      this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract): ''
+                      this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
                     } else {
                       this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
                     }
@@ -1240,78 +1244,96 @@ export class FormComponent implements OnInit {
         .subscribe((res) => {
           this.lastDni = dni_;
           this.closeAlert();
+          console.log('saldoce', res)
           try {
-            if (res.length > 0) {
+            if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
               this.closeAlert2();
               this.listContratos = [];
               this.ComprobantesPago = [];
               //this.verifyDNI = true;
               this.SendOption(0, 0, dni_);
-              res.forEach((dataContrato: any) => {
-                var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
-                if (ValidOno) {
-                  this.listContratos.push({
-                    id_contrato: dataContrato.id_contrato,
-                    contrato: dataContrato.nro_contrato,
-                    saldo: dataContrato.saldo,
-                    cliente: dataContrato.cliente,
-                    monto_pend_conciliar: dataContrato.monto_pend_conciliar,
-                    subscription: dataContrato.suscripcion,
-                    franquicia: dataContrato.franquicia,
-                    status_contrato: dataContrato.status_contrato,
-                  });
-                  this.cambio_act = dataContrato.cambio_act;
+
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                res.forEach((dataContrato: any) => {
+                  var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
+                  if (ValidOno) {
+                    this.listContratos.push({
+                      id_contrato: dataContrato.id_contrato,
+                      contrato: dataContrato.nro_contrato,
+                      saldo: dataContrato.saldo,
+                      cliente: dataContrato.cliente,
+                      monto_pend_conciliar: dataContrato.monto_pend_conciliar,
+                      subscription: dataContrato.suscripcion,
+                      franquicia: dataContrato.franquicia,
+                      status_contrato: dataContrato.status_contrato,
+                    });
+                    this.cambio_act = dataContrato.cambio_act;
+                  }
+                });
+                if (this.listContratos.length == 0) {
+                  this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
+                  this.lastDni = "";
                 }
-              });
-              if (this.listContratos.length == 0) {
-                this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
-                this.lastDni = "";
-              }
-              //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
-              if (NextContrato) {
-                if (this.listContratos.length == 1) {
-                  this.AppFibex = true;
-                  setTimeout(() => {
-                    this.NextMatStepper();
-                  }, 300);
+                //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
+                if (NextContrato) {
+                  if (this.listContratos.length == 1) {
+                    this.AppFibex = true;
+                    setTimeout(() => {
+                      this.NextMatStepper();
+                    }, 300);
+                  }
                 }
+
+                /* EMITIR TASA DEL DÍA */
+                this.tasaService.tasa.next(this.cambio_act.toString());
+                this.tasaCambio = this.cambio_act.toString();
+                // this.filterContracts();
+                if (this.listContratos.length === 0) {
+                  this.dni?.setValue('')
+                  return;
+                };
+                this.idContrato = this.listContratos[0].id_contrato;
+                this.nroContrato?.setValue(this.listContratos[0].contrato);
+                this.SendOption(0, 3, this.listContratos[0].contrato);
+                this.filterBankByFranquicia(this.listContratos[0].franquicia);
+                this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+                this.nameClient = this.listContratos[0].cliente;
+                this.name?.setValue(res[0].cliente);
+                // this.SearchEmailContra(this.listContratos[0].contrato)
+                this.dni?.setValue(dni_);
+                this.searchInfoEquipos(dni_);
               }
-
-              /* EMITIR TASA DEL DÍA */
-              this.tasaService.tasa.next(this.cambio_act.toString());
-              this.tasaCambio = this.cambio_act.toString();
-              // this.filterContracts();
-              if (this.listContratos.length === 0) {
-                this.dni?.setValue('')
-                return;
-              };
-
-              this.idContrato = this.listContratos[0].id_contrato;
-              this.nameClient = this.listContratos[0].cliente;
-              this.name?.setValue(res[0].cliente);
-              this.nroContrato?.setValue(this.listContratos[0].contrato);
-              // this.SearchEmailContra(this.listContratos[0].contrato)
-              this.SendOption(0, 3, this.listContratos[0].contrato);
-              this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
-              this.filterBankByFranquicia(this.listContratos[0].franquicia);
-              this.dni?.setValue(dni_);
-              this.searchInfoEquipos(dni_);
-
-
-
-
-
+              else {
+                this.dni?.setValue(dni_);
+                // this.searchInfoEquipos(dni_);
+                this.nameClient = String(dni_);
+                this.name?.setValue(String(dni_));
+                this.cambio_act = Number(this.tasaCambio)
+              }
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
-                if (!Number.isNaN(parseFloat(this.listContratos[0].saldo))) {
-                  // Convertir en una función para que no se repita
-                  this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
+                if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
-                  this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                  if (this.registerPayService.linkedToContractProcess != 'approved') {
+                    // Convertir en una función para que no se repita
+                    this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
 
-                  this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
-                  this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
-                  this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+                    this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+
+                    this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                    this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
+                    this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+                  } else {
+                    // this.registerPayService.amountCustomerContract
+                    this.validateIfAmountIsNegativer(this.registerPayService.amountCustomerContract, true);
+
+                    this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+
+                    this.saldoUSD = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+                    this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract) * this.cambio_act).toFixed(2);
+                    this.subscription = parseFloat('0').toFixed(2);
+                  }
+
                 } else {
                   this.amount?.setValue(0);
                   this.lastAmount = '0';
@@ -1342,21 +1364,22 @@ export class FormComponent implements OnInit {
                 });
               }
 
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                //Busco su numeros de comprobantes
+                this.registerPayService.getComprobantClient2(dni_)
+                  .then((comprobante: any) => {
 
-              //Busco su numeros de comprobantes
-              this.registerPayService.getComprobantClient2(dni_)
-                .then((comprobante: any) => {
+                    if (comprobante.length > 0) {
 
-                  if (comprobante.length > 0) {
-
-                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
-                    this.AllComprobantesPago = comprobante;
-                    let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
-                    temp = temp.slice(0, 5);
-                    this.ValidateReferenciaLast(temp)
-                  }
-                })
-                .catch((error: any) => console.error(error));
+                      //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                      this.AllComprobantesPago = comprobante;
+                      let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
+                      temp = temp.slice(0, 5);
+                      this.ValidateReferenciaLast(temp)
+                    }
+                  })
+                  .catch((error: any) => console.error(error));
+              }
             } else {
               //this.hcaptcha.reset()
               this.nameClient = '';
@@ -1374,14 +1397,62 @@ export class FormComponent implements OnInit {
               this.banksFiltered = [...this.bankList];
             }
           } catch (error) {
-            this.nameClient = '';
-            this.saldoUSD = '';
-            this.saldoBs = '';
-            this.dniConsulted = true;
-            this.lastDni = "";
-            this.name?.setValue('');
-            this.alertFindDni('Disculpe intente de nuevo', '');
-            setTimeout(() => this.closeAlert(), 1000);
+
+            if (this.registerPayService.linkedToContractProcess == 'approved') {
+              this.tasaService.getSaldoBCV().subscribe((res) => {
+                console.log('res :>> ', res);
+                this.tasaCambio = res
+              })
+              this.closeAlert2();
+              this.listContratos = [];
+              this.ComprobantesPago = [];
+              //this.verifyDNI = true;
+              this.SendOption(0, 0, dni_);
+
+              this.dni?.setValue(dni_);
+              // this.searchInfoEquipos(dni_);
+              this.nameClient = String(dni_);
+              this.name?.setValue(String(dni_));
+              this.cambio_act = parseFloat(this.tasaCambio)
+              this.AppFibex = true
+
+              /*Esto se hacer por si el usuario preciomente selecciona un banco */
+              if (this.BancoNacional(this.banco)) {
+                if (!Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
+                  // this.registerPayService.amountCustomerContract
+                  this.validateIfAmountIsNegativer(this.registerPayService.amountCustomerContract, true);
+                  this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+                  this.saldoUSD = (parseFloat(this.registerPayService.amountCustomerContract)/ this.cambio_act).toFixed(2);
+                this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
+                  this.subscription = parseFloat('No aplica').toFixed(2);
+                } else {
+                  this.amount?.setValue(0);
+                  this.lastAmount = '0';
+                }
+              } else {
+                //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
+                this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+                this.saldoUSD = (parseFloat(this.registerPayService.amountCustomerContract)/ this.cambio_act).toFixed(2);
+                this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
+                this.subscription = parseFloat('No aplica').toFixed(2);
+              }
+              this.AppFibex = true;
+              setTimeout(() => {
+                this.NextMatStepper();
+              }, 300);
+            }
+            else {
+              this.nameClient = '';
+              this.saldoUSD = '';
+              this.saldoBs = '';
+              this.dniConsulted = true;
+              this.lastDni = "";
+              this.name?.setValue('');
+              this.alertFindDni('Disculpe intente de nuevo', '');
+              setTimeout(() => this.closeAlert(), 1000);
+            }
+
+
           }
 
         })
@@ -1710,14 +1781,14 @@ export class FormComponent implements OnInit {
       confirmButtonText: ButtonConfirm
     }).then((result) => {
       if (result.isConfirmed) {
-          //Metodo que voy a llamar
-          eval(NameMetodo);
+        //Metodo que voy a llamar
+        eval(NameMetodo);
       }
     })
       .catch((error: any) => {
         console.error(error);
       })
-      this.PlantillaTempPago= JSON.parse(JSON.stringify(PlantillaConfirmPago));
+    this.PlantillaTempPago = JSON.parse(JSON.stringify(PlantillaConfirmPago));
   }
 
   alertexit(text: string, optionalText: string = '') {
@@ -1827,12 +1898,12 @@ export class FormComponent implements OnInit {
 
       if (!this.BancoNacional('')) {
         if (Number(this.amount?.value) > Number(this.saldoUSD)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?',0);
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', 0);
           return;
         }
       } else {
         if (Number(this.amount?.value) > Number(this.saldoBs)) {
-          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?',0 );
+          this.warnignForm('Esta apunto de reportar un saldo mayor a su deuda pendiente', '¿Está seguro que sea continuar?', 0);
           return;
         }
       }
@@ -2038,7 +2109,7 @@ export class FormComponent implements OnInit {
     if (saldousd < 0) saldousd = saldousd * (-1);
     if (saldobs < 0) saldobs = saldobs * (-1);
 
-    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.selectedRetentionOption == 2 ) {
+    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.selectedRetentionOption == 2) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES.`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
@@ -2048,12 +2119,12 @@ export class FormComponent implements OnInit {
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
 
-    if (this.BancoNacional('') &&  !this.possibleWithholdingAgent) {
+    if (this.BancoNacional('') && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
         `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
     }
 
-    if (!this.BancoNacional('') &&  !this.possibleWithholdingAgent) {
+    if (!this.BancoNacional('') && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
@@ -2061,7 +2132,7 @@ export class FormComponent implements OnInit {
     this.totalAmount = Number(this.amount?.value);
   }
 
-  AmountIncorrectConfirm(value: string, Metodo: string,type?:string) {
+  AmountIncorrectConfirm(value: string, Metodo: string, type?: string) {
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();
@@ -2070,24 +2141,24 @@ export class FormComponent implements OnInit {
       let saldobs = Number(this.saldoBs) - Number(value);
       if (saldobs < 0) saldobs = saldobs * (-1);
 
-        if(type !=undefined && type !=null && type !=""){
+      if (type != undefined && type != null && type != "") {
 
-          let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
-          PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
+        let PlantillaPago: any = this.PlantillaTempPago.filter((plantilla: any) => plantilla.tipo == type);
+        PlantillaPago[0].replace.forEach((replaceRem: any, index: number) => {
 
-            PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem,String(eval(PlantillaPago[0].campos[index])))
+          PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem, String(eval(PlantillaPago[0].campos[index])))
 
-            if(index==PlantillaPago[0].replace.length-1){
+          if (index == PlantillaPago[0].replace.length - 1) {
 
-              this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
-              PlantillaPago[0].html,"Editar Datos","Procesar Pago", Metodo)
-            }
-          })
+            this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
+              PlantillaPago[0].html, "Editar Datos", "Procesar Pago", Metodo)
+          }
+        })
 
-        }else{
-          this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
+      } else {
+        this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
           `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
-        }
+      }
 
 
       /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
