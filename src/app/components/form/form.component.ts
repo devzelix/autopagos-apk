@@ -2067,16 +2067,12 @@ export class FormComponent implements OnInit {
       if (saldobs < 0) saldobs = saldobs * (-1);
 
         if(type !=undefined && type !=null && type !=""){
-          console.log(this.PlantillaTempPago)
+
           let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
-          console.log("Antes")
-          console.log(this.PlantillaTempPago)
-          console.log("Original")
-          console.log(PlantillaConfirmPago)
           PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
 
             PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem,String(eval(PlantillaPago[0].campos[index])))
-            
+
             if(index==PlantillaPago[0].replace.length-1){
 
               this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
@@ -2088,7 +2084,7 @@ export class FormComponent implements OnInit {
           this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
           `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
         }
-      
+
 
       /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
       <strong>Nro. tarjeta:</strong> 501878200102618990<br> <strong>Fecha de Vencimiento:</strong> 04/2027 <br> <strong>Cantidad a pagar en Bolivares:</strong> 0.1 <br></div>`,`Editar Datos`,`Procesar pago`,Metodo)*/
