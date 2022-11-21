@@ -2067,16 +2067,12 @@ export class FormComponent implements OnInit {
       if (saldobs < 0) saldobs = saldobs * (-1);
 
         if(type !=undefined && type !=null && type !=""){
-          console.log(this.PlantillaTempPago)
+
           let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
-          console.log("Antes")
-          console.log(this.PlantillaTempPago)
-          console.log("Original")
-          console.log(PlantillaConfirmPago)
           PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
 
             PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem,String(eval(PlantillaPago[0].campos[index])))
-            
+
             if(index==PlantillaPago[0].replace.length-1){
 
               this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
