@@ -31,11 +31,12 @@
         <ng-template matStepLabel>Cliente</ng-template>
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
-            <mat-label>Cédula/RIF del Cliente</mat-label>
+            <mat-label>Cédula/RIF <ng-container *ngIf="registerPayService.linkedToContractProcess != 'approved'" >del Cliente</ng-container>
+             </mat-label>
             <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni  >
             <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && hcaptcha?.valid ? searchServices(inputDni,false,true) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
-              La cédula requerida
+              La cédula es requerida
             </mat-error>
           </mat-form-field>
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su nro. de abonado</h3>
