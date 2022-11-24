@@ -1539,6 +1539,7 @@ export class FormComponent implements OnInit {
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
     this.idContrato = contrato.id_contrato;
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
+    this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato)
     // this.selectInfoEquipos(this.idContrato);
     if (ppal) {
