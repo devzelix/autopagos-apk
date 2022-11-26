@@ -547,7 +547,8 @@ export class FormComponent implements OnInit {
       Reference: this.referenciapm?.value,
       Name: this.name?.value,
       Abonado: this.nroContrato?.value,
-      idContrato: this.idContrato
+      idContrato: this.idContrato,
+      c_i: this.prec_i?.value + this.c_iPagMovil?.value,
     }
 
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');

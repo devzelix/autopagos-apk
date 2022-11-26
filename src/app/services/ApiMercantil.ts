@@ -41,7 +41,11 @@ export class ApiMercantilService implements  OnInit {
             "amount":Datos.Cantidad,
             "trx_date":Datos.Date,
             "ipaddress": Datos.AddresIp,
-            "browser_agent": Datos.Browser
+            "browser_agent": Datos.Browser,
+            "Name": Datos.Name,
+            "abonado": Datos.Abonado,
+            "idcontrato": Datos.idContrato,
+            "destination_id": Datos.c_i
         }
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
         .then((resp:any)=>{
