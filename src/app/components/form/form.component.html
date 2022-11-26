@@ -526,28 +526,30 @@
 
       <!-- Pago Móvil -->
       <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
-        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
-          <div>
-            <h4 class="name-client">
-              {{nameClient}}
-            </h4>
-            <h4 class="name-client">
-              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-            </h4>
-          </div>
-          <div>
-            <h4 class="name-client">
-              Servicio: {{ paquete }}
-            </h4>
-            <h4 class="name-client">
-              Subscripción: {{subscription}} USD
-            </h4>
+        <div *ngIf="!ReciboPay">
+          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div>
           </div>
         </div>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!ReciboPay" appearance="outline">
           <mat-label>Banco</mat-label>
-          <mat-select value="mercantil" #valor>
+          <mat-select [value]=SelectPagoc2p #valor>
             <mat-option (click)="SelectedPagoC2P(valor)"  value="mercantil">Mercantil</mat-option>
             <mat-option (click)="SelectedPagoC2P(valor)"  value="otros">Otros Bancos</mat-option>
           </mat-select>
@@ -706,7 +708,8 @@
                 <tr class="details">
                   <td>{{paquete}}</td>
 
-                  <td>{{cantidadDC?.value}}</td>
+                  <td *ngIf="amountPm?.value !=''">{{amountPm?.value}}</td>
+                  <td *ngIf="cantidad?.value !=''">{{cantidad?.value}}</td>
                 </tr>
 
               </table>

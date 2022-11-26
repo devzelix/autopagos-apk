@@ -45,7 +45,8 @@ export class ApiMercantilService implements  OnInit {
             "Name": Datos.Name,
             "abonado": Datos.Abonado,
             "idcontrato": Datos.idContrato,
-            "destination_id": Datos.c_i
+            "destination_id": Datos.c_i,
+            "client": Datos.Cliente
         }
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
         .then((resp:any)=>{
@@ -178,7 +179,8 @@ export class ApiMercantilService implements  OnInit {
             "payment_reference": Agent.Reference,
             "Name": Agent.Name,
             "abonado": Agent.Abonado,
-            "idcontrato": Agent.idContrato
+            "idcontrato": Agent.idContrato,
+            "client": Agent.Cliente
         }
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
@@ -251,7 +253,8 @@ export class ApiMercantilService implements  OnInit {
         "amount":Datos.cantidad,
         "Name": Datos.Name,
         "abonado": Datos.Abonado,
-        "idcontrato": Datos.idContrato
+        "idcontrato": Datos.idContrato,
+        "client": Datos.Cliente
       }
 
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,DatosC2P)
@@ -341,7 +344,8 @@ export class ApiMercantilService implements  OnInit {
           "account_type": Datos.typeCuenta,
           "Name": Datos.Name,
           "abonado": Datos.Abonado,
-          "idcontrato": Datos.idContrato
+          "idcontrato": Datos.idContrato,
+          "client": Datos.Cliente
         }
 
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
@@ -352,6 +356,7 @@ export class ApiMercantilService implements  OnInit {
                 },
                 error: error => {
                     console.error('There was an error!', error);
+                    reject(error);
                 }
             })
        })
