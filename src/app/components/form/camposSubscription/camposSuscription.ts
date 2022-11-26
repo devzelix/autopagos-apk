@@ -130,7 +130,53 @@ export let DataSlide = [
     }
   ]
 
-export let MetodoDePago2 = [{idpago:0,tipopago:"Débito Mercantil",image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png', alt:'Débito Mercantil'},{idpago:1,tipopago:"Crédito",image:'assets/images/Icono_TDC-PagosFibex.png', alt:'Crédito'},{idpago:2,tipopago:"Pago Móvil",image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',omitir:true, alt:'Pago Móvil'},{idpago:3,tipopago:"Reportar Pago Móvil",omitir:true},{idpago:5,tipopago:"Criptomoneda",omitir:true,image:'assets/images/Coincoinx.png',},{idpago:4,tipopago:"Transferencia",omitir:false,image:'assets/images/Icono_Transferencia-Pagos_Fibex.png', alt:'Otros'}]
+export let MetodoDePago2 = [
+  {
+    idpago:6,
+    tipopago:"Zelle",
+    image:'assets/images/Zelle.png',
+    alt:'Zelle',
+    omitir:false,
+  },
+  {
+    idpago:0,
+    tipopago:"Débito Mercantil",
+    image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
+    alt:'Débito Mercantil',
+    omitir:false,
+  },
+  {
+    idpago:1,
+    tipopago:"Crédito",
+    image:'assets/images/Icono_TDC-PagosFibex.png',
+    alt:'Crédito',
+    omitir:false,
+  },
+  {
+    idpago:2,
+    tipopago:"Pago Móvil",
+    image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
+    omitir:false,
+    alt:'Pago Móvil'
+  },
+  {
+    idpago:3,
+    tipopago:"Reportar Pago Móvil",
+    omitir:true
+  },
+  {
+    idpago:5,
+    tipopago:"Criptomoneda",
+    omitir:true,
+    image:'assets/images/Coincoinx.png'
+  },
+  {
+    idpago:4,
+    tipopago:"Transferencia",
+    omitir:false,
+    image:'assets/images/Icono_Transferencia-Pagos_Fibex.png',
+    alt:'Otros'
+  }]
 
 export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
 
@@ -140,14 +186,14 @@ export let Ano = [{ano:"2018"},{ano:"2019"},{ano:"2020"},{ano:"2021"},{ano:"2022
 
 export const PlantillaConfirmPago = [
     {
-      idplantilla:1, 
-      tipo:"tdd", 
-      campos:['this.pref_ciDC?.value+this.c_iDC?.value','this.typeCuenta?.value','this.Ncard?.value','this.cantidadDC?.value'], 
+      idplantilla:1,
+      tipo:"tdd",
+      campos:['this.pref_ciDC?.value+this.c_iDC?.value','this.typeCuenta?.value','this.Ncard?.value','this.cantidadDC?.value'],
       replace:['#CEDULA','#CUENTA','#TARJETA','#BOLIVARES'] ,
       html: `<div align="left"><strong>Cedula:</strong> #CEDULA <br> <strong>Cuenta:</strong> #CUENTA <br> <strong>Nro. tarjeta:</strong> #TARJETA <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES <br></div>`
     },
     {
-      idplantilla:2, 
+      idplantilla:2,
       tipo:"tdc",
       campos:['this.pref_ciDC?.value+this.c_iDC?.value','this.Ncard?.value','this.cantidadDC?.value'],
       replace:['#CEDULA','#TARJETA','#BOLIVARES'],
@@ -161,8 +207,8 @@ export const PlantillaConfirmPago = [
       html: `<div align="left"> <strong>Banco:</strong> #BANCO <br> <strong>Cedula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLF <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
     },
     {
-      id:4, 
-      tipo:"c2pnacional", 
+      id:4,
+      tipo:"c2pnacional",
       campos:['this.prec_i?.value+this.c_iPagMovil?.value','this.referenciapm?.value','this.cantidad?.value'],
       replace:['#CEDULA','#REFERENCIA','#BOLIVARES'],
       html:`<div align="left"><strong>Cedula:</strong> #CEDULA <br>  <strong>Comprobante:</strong> #REFERENCIA <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`

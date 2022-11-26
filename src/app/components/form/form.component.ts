@@ -219,6 +219,8 @@ export class FormComponent implements OnInit {
     });
 
     this.PgMovilForm = this.fb.group({
+      tlforiginReg: ['', [Validators.required]],
+      tlfdestinReg: ['584129637516', [Validators.required]],
       prec_i: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       referencia: ['', [Validators.required]],
@@ -406,6 +408,8 @@ export class FormComponent implements OnInit {
   get img() { return this.thirdFormFibex.get('img'); }
 
   get c_iPagMovil() { return this.PgMovilForm.get('c_i'); }
+  get tlforiginReg() { return this.PgMovilForm.get('tlforiginReg'); }
+  get tlfdestinReg() { return this.PgMovilForm.get('tlfdestinReg'); }
   get referenciapm() { return this.PgMovilForm.get('referencia'); }
   get datepgmovil() { return this.PgMovilForm.get('datepgmovil'); }
   get cantidad() { return this.PgMovilForm.get('cantidad'); }
@@ -536,14 +540,18 @@ export class FormComponent implements OnInit {
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
+      tlforigin: this.tlforiginReg?.value.toString(),
+      tlfdestinReg: this.tlfdestinReg?.value,
+      Cantidad: Number(this.cantidad?.value),
       Date: this.datepgmovil?.value.toISOString(),
       Reference: this.referenciapm?.value,
       Name: this.name?.value,
       Abonado: this.nroContrato?.value,
       idContrato: this.idContrato
     }
+
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
-    this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
+    this._ApiMercantil.ConsultaPagoMovil(DatosUserAgent)
       .then((resp: any) => {
         if (resp.hasOwnProperty('registrado')) {
           this.alertexit('El pago ya fue registrado anteriormente', '');
@@ -551,13 +559,8 @@ export class FormComponent implements OnInit {
           if (resp.hasOwnProperty('error_list')) {
             this.invalidForm('No se encuentra dicho pago', 'Intente nuevamente!');
           } else if (resp.hasOwnProperty('transaction_list')) {
-            let ResBanco = resp.transaction_list[0];
-            if (ResBanco.trx_status == "approved") {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
-            } else {
-              this.invalidForm('El Banco no aprobo su transacción', 'Verifique el monto ingresado');
-            }
           } else if (resp.hasOwnProperty('status')) {
             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
           } else {
@@ -1160,6 +1163,7 @@ export class FormComponent implements OnInit {
     this.DebitoCredito.reset();
     this.PgMovilRegForm.reset();
     this.PgMovilForm.reset();
+    this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ReciboPay = false;
   }

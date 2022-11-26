@@ -575,6 +575,13 @@
             <ng-template matStepLabel>Pago Móvil</ng-template>
 
             <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="tlforiginReg" required type="number" placeholder="Ejemplo: 584121234567">
+              <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')"> Tu número de teléfono es requerido
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
               <mat-label>Número de comprobante</mat-label>
               <input matInput formControlName="referencia" required #inputVouche>
               <mat-error *ngIf="PgMovilForm.get('referencia')?.hasError('required')">Número de comprobante es requerido
@@ -842,10 +849,12 @@
                 <input matInput formControlName="cantidad" required #inputAmount>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
-                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                  decimales separado por punto, ejemplo: 125.00
+                </mat-error>
                 <mat-error
                   *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El
-                  monto no puede ser negativo</mat-error>
+                  monto no puede ser negativo
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
