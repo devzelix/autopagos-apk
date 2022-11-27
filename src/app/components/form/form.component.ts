@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -156,7 +156,9 @@ export class FormComponent implements OnInit {
   public Months = Month;
   public Anos = Ano;
   public ReciboPay: boolean = false;
-  public SelectPagoc2p: string = "mercantil"
+  public SelectPagoc2p: string = "mercantil";
+  public controllerKey: boolean;
+  public values = '';
 
   // Variables de hcaptcha
   public hcaptchaForm: FormGroup
@@ -229,7 +231,11 @@ export class FormComponent implements OnInit {
       referencia: ['', [Validators.required]],
       datepgmovil: ['', [Validators.required]],
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
 
     this.PgMovilRegForm = this.fb.group({
       tlforigin: ['584129637516', [Validators.required]],
@@ -238,7 +244,11 @@ export class FormComponent implements OnInit {
       tlfdestin: ['', [Validators.required]],
       auth: [''],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
 
     this.DebitoCredito = this.fb.group({
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
@@ -374,6 +384,28 @@ export class FormComponent implements OnInit {
         console.error(error)
       }
     }
+  }
+
+  keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    var inp = String.fromCharCode(event.keyCode);
+
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
+    {
+      if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
+        TypeFormKey.get(formcontrol)?.reset();
+        TypeFormKey.get(formcontrol)?.setValue('58')
+      }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
+        TypeFormKey.get(formcontrol)?.setValue('58')
+      }
+  }
+  
+      if (/^[0-9]$/.test(inp)) {
+        return true;
+      } else {
+        event.preventDefault();
+        return false;
+      }
+    
   }
 
   get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }

@@ -52,8 +52,6 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovil/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                  console.log("respondio");
-                  console.log(data);
                     resolve(data)
                 },
                 error: error => {
@@ -89,8 +87,7 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}Test`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -119,8 +116,7 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFecha/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -152,8 +148,6 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFactura/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -220,8 +214,7 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFacturaReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);

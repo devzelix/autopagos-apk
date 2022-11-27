@@ -578,7 +578,7 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlforiginReg" required type="number" placeholder="Ejemplo: 584121234567">
+              <input matInput formControlName="tlforiginReg" (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="number" placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')"> Tu número de teléfono es requerido
               </mat-error>
             </mat-form-field>
@@ -637,7 +637,7 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlfdestin" required type="number" placeholder="Ejemplo: 584121234567">
+              <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="number" placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
               </mat-error>
             </mat-form-field>
