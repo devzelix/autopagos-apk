@@ -524,6 +524,13 @@ export class FormComponent implements OnInit {
       })*/
       this.router.navigate(['coinx']);
     }
+
+    //Zelle
+    if (x == 6) {
+      let BankZelle =this.banksFiltered.filter((bank:any)=>bank.id_cuba=='CUBA2A448529C1B50236')
+      this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
+      this.bankSelected(BankZelle[0]);
+    }
   }
 
   ComprobarPgoMovil() {
@@ -1024,6 +1031,9 @@ export class FormComponent implements OnInit {
       id_Cuba: this.BancoSelect.id_cuba
     }
 
+    console.log("Este es lo que voy a repotar");
+    console.log(DataForRegister);
+
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
@@ -1176,8 +1186,6 @@ export class FormComponent implements OnInit {
       dni_ = this.ClearCedula(dni_);
     }
     this.banksFiltered = [...this.bankList];
-    console.log("Banks Filtrados");
-    console.log(this.banksFiltered);
     if (dni_ === this.lastDni) {
       return;
     }
