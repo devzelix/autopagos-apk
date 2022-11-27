@@ -18,7 +18,7 @@ export const environment = {
   ApiSecret: "7I5iUVfNCJlWI8zS6E1vUSXM4oI",
   urlPHPapi : 'http://127.0.0.1:8000/',
   PHPUpload: false,
-  ApiMercantil:'http://localhost:8090/', //'http://localhost:8090/' https://backendmercantil.thomas-talk.me/
+  ApiMercantil:'https://backendmercantil.thomas-talk.me/', //'http://localhost:8090/' https://backendmercantil.thomas-talk.me/
   TokenApiMercantil:'FCP*F4--3fGGPOK474512RGG**',
   KeyEncrypt: 'AstJuTnDhyUKyRee',
   WidgetID: 'BB611338173A55DC52494CF79D86A6CD',

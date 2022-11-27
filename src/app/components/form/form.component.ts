@@ -184,8 +184,6 @@ export class FormComponent implements OnInit {
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
-      console.log("BanckService");
-      console.log(this.bankList)
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
