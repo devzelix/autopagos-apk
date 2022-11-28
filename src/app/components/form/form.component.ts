@@ -656,6 +656,7 @@ export class FormComponent implements OnInit, OnChanges {
           } else if (resp.hasOwnProperty('transaction_c2p_response')) {
             if (resp.transaction_c2p_response.trx_status == "approved") {
               this.ReciboPay = true;
+              this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
               this.alertexit("Pago aprobado");
             } else {
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
