@@ -18,6 +18,7 @@ import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { SeguridadDatos } from './services/bcryptjs';
 import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
+import { CaptchaThomasModule } from 'captcha-thomas-deprecated-test';
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
@@ -46,6 +47,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MaterialModule,
+    CaptchaThomasModule,
     RouterModule.forRoot(routes),
     NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,

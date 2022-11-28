@@ -34,6 +34,7 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { forEach } from '@angular-devkit/schematics';
+import { CaptchaThomasService } from 'captcha-thomas-deprecated-test';
 
 
 
@@ -183,6 +184,7 @@ export class FormComponent implements OnInit {
     private _ApiMercantil: ApiMercantilService,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
+    public captchaService: CaptchaThomasService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
@@ -312,7 +314,7 @@ export class FormComponent implements OnInit {
   ngOnInit(): void {
     this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
-    this.captchaSubControl();
+    // this.captchaSubControl();
     this._ApiMercantil.GetAddress()
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
@@ -348,7 +350,8 @@ export class FormComponent implements OnInit {
     const dni_ = inputDni.value
     if (dni_.length >= 1 && dni_.length < 6) {
       this.dni?.reset()
-      this.hcaptcha?.reset()
+      // this.hcaptcha?.reset()
+      this.captchaService.validControl = false
       this.nameClient = '';
       this.saldoUSD = '';
       this.saldoBs = '';
@@ -359,13 +362,14 @@ export class FormComponent implements OnInit {
       setTimeout(() => this.closeAlert(), 1000);
     }
   }
-  captchaSubControl = () => {
-    this.hcaptcha?.valueChanges.subscribe(data => {
-      this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
-      this.dni?.markAsTouched();
-      this.dni?.updateValueAndValidity()
-    });
-  }
+  // captchaSubControl = () => {
+  //   this.hcaptcha?.valueChanges.subscribe(data => {
+  //     console.log('this.hcaptcha?.value :>> ', this.hcaptcha?.value);
+  //     this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
+  //     this.dni?.markAsTouched();
+  //     this.dni?.updateValueAndValidity()
+  //   });
+  // }
 
   SendOption(page: number, option: any, value: any) {
     let temp = value
@@ -398,14 +402,14 @@ export class FormComponent implements OnInit {
         TypeFormKey.get(formcontrol)?.setValue('58')
       }
   }
-  
+
       if (/^[0-9]$/.test(inp)) {
         return true;
       } else {
         event.preventDefault();
         return false;
       }
-    
+
   }
 
   get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
