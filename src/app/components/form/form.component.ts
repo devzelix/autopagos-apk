@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, OnChanges } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -50,7 +50,7 @@ export interface DialogData {
   templateUrl: './form.component.html',
   styleUrls: ['./form.style.css']
 })
-export class FormComponent implements OnInit {
+export class FormComponent implements OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -194,6 +194,12 @@ export class FormComponent implements OnInit {
 
     });
   }
+
+  ngOnChanges() {
+    /**********THIS FUNCTION WILL TRIGGER WHEN PARENT COMPONENT UPDATES 'someInput'**************/
+    //Write your code here
+     console.log(this.captchaService.validControl);
+    }
 
   MyInit() {
 

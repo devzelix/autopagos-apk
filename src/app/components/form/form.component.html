@@ -42,10 +42,13 @@
           <br/>
           <br/>
 
-          <form [formGroup]="hcaptchaForm" style="margin-bottom: 1rem; align-self: center;" [hidden]="verifyDNI && hcaptcha?.valid">
-            <lib-CaptchaThomas style="width: auto;" ></lib-CaptchaThomas>
+          <div style="margin-bottom: 1rem; align-self: center;">
+            <lib-CaptchaThomas style="width: auto;"></lib-CaptchaThomas>
+          </div>
+
+          <!-- <form [formGroup]="hcaptchaForm" style="margin-bottom: 1rem; align-self: center;" [hidden]="verifyDNI && hcaptcha?.valid"> -->
             <!-- <ng-hcaptcha formControlName="hcaptcha" style="text-align: center;"></ng-hcaptcha> -->
-          </form>
+          <!-- </form> -->
 
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
               type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
