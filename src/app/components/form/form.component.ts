@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
 import { ThisReceiver } from '@angular/compiler';
-//import { Clipboard } from '@angular/cdk/clipboard';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
@@ -22,7 +22,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, PlantillaConfirmPago } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -183,6 +183,7 @@ export class FormComponent implements OnInit {
     private _ApiMercantil: ApiMercantilService,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
+    private clipboard: Clipboard
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
@@ -392,19 +393,24 @@ export class FormComponent implements OnInit {
     if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
     {
       if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
+
         TypeFormKey.get(formcontrol)?.reset();
-        TypeFormKey.get(formcontrol)?.setValue('58')
+        TypeFormKey.get(formcontrol)?.setValue('58');
+
       }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
-        TypeFormKey.get(formcontrol)?.setValue('58')
+
+        TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
+
       }
   }
-  
       if (/^[0-9]$/.test(inp)) {
         return true;
       } else {
         event.preventDefault();
         return false;
       }
+
+      
     
   }
 
@@ -509,7 +515,7 @@ export class FormComponent implements OnInit {
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      //this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencia"`);
+      //this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencia"`); Escanea el código QR <br> <img src="assets/images/qr_pago_movil.jpeg" alt="Pago_Movil_QR">
     }
     //Crédito
     if (x == 1) {
@@ -681,8 +687,8 @@ export class FormComponent implements OnInit {
       this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
-      this.warningSimpleFormMercantil(`Debes realizar un Pago Móvil con los datos a continuación:`,
-       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105)<br><br> Escanea el código QR <br> <img src="assets/images/qr_pago_movil.jpeg" alt="Pago_Movil_QR"><br><br/> Luego de realizar la operación debes reportar el pago en el formulario presentado.`);
+      this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
+       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105)<br><br>Luego de realizar la operación debes reportar el pago en el formulario presentado.`,'');
     } else if(Valor == "mercantil") {//<button onclick="copyToClipboard()"> <img src="assets/images/Copiar_Datos.png" width="35" height="35" alt="Pago_Movil_QR"> </button>
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
@@ -711,8 +717,6 @@ export class FormComponent implements OnInit {
       idContrato: this.idContrato,
       Cliente: this.idContrato !=""?true:false
     }
-    console.log("Lo que voy a enviar");
-    console.log(DatosUserAgent);
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if (!this.Creditoboolaean) {
       this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
@@ -1061,15 +1065,10 @@ export class FormComponent implements OnInit {
       id_Cuba: this.BancoSelect.id_cuba
     }
 
-    console.log("Este es lo que voy a repotar");
-    console.log(DataForRegister);
-
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
       DataForRegister.IdContrato = ContratoActual.id_contrato
-      console.log("Estos son los datos a registrar");
-      console.log(DataForRegister)
       this.registerPayService.registerPayClient(DataForRegister)
         .then((res: any) => {
           this.DisableReg = false
@@ -1649,6 +1648,22 @@ export class FormComponent implements OnInit {
     })
   }
 
+  warningSimpleFormMercantilConButton(text: string, optionalText: string = '',buttontext:string) {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'warning',
+      showCancelButton: true,
+      cancelButtonText:'Copiar Datos'
+    }).then((result) => {
+      if(result.isDismissed){
+         this.copyText(DatosPagoMovil[0]);
+         this.openSnackBar('Datos copiados!')
+      }
+    })
+    
+  }
+
   warnignForm(text: string, html: string, next: number, use?: boolean) {
     Swal.fire({
       title: text,
@@ -2206,6 +2221,10 @@ export class FormComponent implements OnInit {
       //console.log(res)
       this.daysFeriados = res;
     });
+  }
+
+  copyText(textToCopy: string) {
+    this.clipboard.copy(textToCopy);  
   }
 }
 
