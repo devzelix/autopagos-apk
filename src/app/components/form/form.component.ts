@@ -318,7 +318,7 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.hcaptchaForm = this.hcaptchaFormGroup();
+    // this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
     // this.captchaSubControl();
     this._ApiMercantil.GetAddress()
@@ -343,14 +343,14 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   // FORMGROUP DEL CAPTCHA
-  hcaptchaFormGroup = () => {
-    return this.fb.group({
-      hcaptcha: new FormControl(
-        { value: null, disabled: false },
-        { validators: [Validators.required] }
-      ),
-    });
-  }
+  // hcaptchaFormGroup = () => {
+  //   return this.fb.group({
+  //     hcaptcha: new FormControl(
+  //       { value: null, disabled: false },
+  //       { validators: [Validators.required] }
+  //     ),
+  //   });
+  // }
   // FUNCIONES CONTROL DEL CAPTCHA
   DNIvalidation = (inputDni: any) => {
     const dni_ = inputDni.value
@@ -418,7 +418,7 @@ export class FormComponent implements OnInit, OnChanges {
 
   }
 
-  get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
+  // get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
 
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
