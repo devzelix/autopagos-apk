@@ -335,7 +335,7 @@ export class FormComponent implements OnInit, OnChanges {
             console.log('res :>> ', res);
             this.tasaCambio = res
           })
-          this.PagoMetodosHTML2 = MetodoDePago2.filter(x => x.idpago != 4)
+          this.PagoMetodosHTML2 = MetodoDePago2.filter(x => x.idpago != 4 && x.idpago != 6)
           this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
           this.registerPayService.dniCustomerContract = `${res['dni']}`
           this.registerPayService.amountCustomerContract = `${res['amount']}`
