@@ -32,29 +32,31 @@ export class ApiMercantilService implements  OnInit {
   ConsultaPagoMovil(Datos:any){
     return new Promise((resolve,reject)=>{
       try {
+        Datos.Date = Datos.Date.split('T')[0];
+        Datos.Date = Datos.Date.replace(/\//g,'-')
+
         Datos ={
-            "destination_mobile_number":"584241513063",
-            "origin_mobile_number":"584126584242",
-            "payment_reference":"6460003485",
-            "trx_date":"2022/06/12",
-            "amount":10000,
-            "manufacturer": "Samsung",
-            "model": "S9",
-            "os_version": "Oreo 9.1",
-            "lat": 37.4224764,
-            "lng": -122.0842499,
-            "ipaddress": "10.0.0.1",
-            "browser_agent": "Chrome 18.1.3"
+            "destination_mobile_number":Datos.tlfdestinReg,
+            "origin_mobile_number":Datos.tlforigin,
+            "payment_reference":Datos.Reference,
+            "amount":Datos.Cantidad,
+            "trx_date":Datos.Date,
+            "ipaddress": Datos.AddresIp,
+            "browser_agent": Datos.Browser,
+            "Name": Datos.Name,
+            "abonado": Datos.Abonado,
+            "idcontrato": Datos.idContrato,
+            "destination_id": Datos.c_i,
+            "client": Datos.Cliente
         }
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovil/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+                    resolve(data)
                 },
                 error: error => {
-                    console.error('There was an error!', error);
+                    reject(error);
                     this.ErrorRegJSON(Datos)
                 }
             })
@@ -86,8 +88,7 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}Test`, resp).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -116,8 +117,7 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFecha/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -149,8 +149,6 @@ export class ApiMercantilService implements  OnInit {
         .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFactura/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -176,7 +174,8 @@ export class ApiMercantilService implements  OnInit {
             "payment_reference": Agent.Reference,
             "Name": Agent.Name,
             "abonado": Agent.Abonado,
-            "idcontrato": Agent.idContrato
+            "idcontrato": Agent.idContrato,
+            "client": Agent.Cliente
         }
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
@@ -216,8 +215,7 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}SearchPagoMovilxFacturaReferencia/${this.TOKENAPIMERCANTIL}`, Datos).subscribe({
                 next: data => {
-                    console.log("respondio");
-                    console.log(data)
+
                 },
                 error: error => {
                     console.error('There was an error!', error);
@@ -249,7 +247,8 @@ export class ApiMercantilService implements  OnInit {
         "amount":Datos.cantidad,
         "Name": Datos.Name,
         "abonado": Datos.Abonado,
-        "idcontrato": Datos.idContrato
+        "idcontrato": Datos.idContrato,
+        "client": Datos.Cliente
       }
 
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,DatosC2P)
@@ -339,7 +338,8 @@ export class ApiMercantilService implements  OnInit {
           "account_type": Datos.typeCuenta,
           "Name": Datos.Name,
           "abonado": Datos.Abonado,
-          "idcontrato": Datos.idContrato
+          "idcontrato": Datos.idContrato,
+          "client": Datos.Cliente
         }
 
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
@@ -350,6 +350,7 @@ export class ApiMercantilService implements  OnInit {
                 },
                 error: error => {
                     console.error('There was an error!', error);
+                    reject(error);
                 }
             })
        })

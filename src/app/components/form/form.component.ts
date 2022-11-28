@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { Component, OnInit, ViewChild, OnDestroy, OnChanges } from '@angular/core';
+import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
 import { ThisReceiver } from '@angular/compiler';
+//import { Clipboard } from '@angular/cdk/clipboard';
 
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
@@ -33,6 +34,7 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { forEach } from '@angular-devkit/schematics';
+import { CaptchaThomasService } from 'captcha-thomas-deprecated-test';
 
 
 
@@ -48,7 +50,7 @@ export interface DialogData {
   templateUrl: './form.component.html',
   styleUrls: ['./form.style.css']
 })
-export class FormComponent implements OnInit {
+export class FormComponent implements OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -69,7 +71,8 @@ export class FormComponent implements OnInit {
   public PgMovilRegForm: FormGroup;
   public DebitoCredito: FormGroup;
   public TypeForm: FormGroup;
-  CriptomonedaForm: FormGroup;
+  public CriptomonedaForm: FormGroup;
+  public FirtZelleForm: FormGroup;
   public AllComprobantesPago: any = [];
   public retentionImageUrl: string = '';
   public retentionimageUploaded: boolean = false;
@@ -143,6 +146,7 @@ export class FormComponent implements OnInit {
   tipo_pago: any;
   AppFibex: boolean = false;
   ClienteFibex: boolean = false;
+  ZellePay: boolean = false;
   BancoPago: any;
   public PaymenMethod: string = "";
   private TypeNavegador: string = "";
@@ -153,6 +157,9 @@ export class FormComponent implements OnInit {
   public Months = Month;
   public Anos = Ano;
   public ReciboPay: boolean = false;
+  public SelectPagoc2p: string = "mercantil";
+  public controllerKey: boolean;
+  public values = '';
 
   // Variables de hcaptcha
   public hcaptchaForm: FormGroup
@@ -177,16 +184,22 @@ export class FormComponent implements OnInit {
     private _ApiMercantil: ApiMercantilService,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
+    public captchaService: CaptchaThomasService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
-
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
 
     });
   }
+
+  ngOnChanges() {
+    /**********THIS FUNCTION WILL TRIGGER WHEN PARENT COMPONENT UPDATES 'someInput'**************/
+    //Write your code here
+     console.log(this.captchaService.validControl);
+    }
 
   MyInit() {
 
@@ -219,33 +232,31 @@ export class FormComponent implements OnInit {
     });
 
     this.PgMovilForm = this.fb.group({
+      tlforiginReg: ['', [Validators.required]],
+      tlfdestinReg: ['584129637516', [Validators.required]],
       prec_i: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       referencia: ['', [Validators.required]],
       datepgmovil: ['', [Validators.required]],
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
 
     this.PgMovilRegForm = this.fb.group({
-      tlforigin: ['584129637516', [Validators.required]],//584126584242
+      tlforigin: ['584129637516', [Validators.required]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       tlfdestin: ['', [Validators.required]],
       auth: [''],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });
-
-    /*this.DebitoCredito2 = this.fb.group({
-      ccv: ['', [Validators.required, Validators.pattern(this.regexCCV)]],
-      pref_ci: ['', [Validators.required]],
-      c_i: ['', [Validators.required, Validators.minLength(6)]],
-      typeCuenta: ['', [Validators.required]],
-      Ncard: ['', [Validators.required]],
-      Clavetlfonica: ['', [Validators.required]],
-      fvncmtoMes: ['', [Validators.required]],
-      fvncmtoAno: ['', [Validators.required]],
-      cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    }, { validator: isNegativeNumber });*/
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
 
     this.DebitoCredito = this.fb.group({
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
@@ -269,6 +280,8 @@ export class FormComponent implements OnInit {
       c_i_Cripto: ['', [Validators.required, Validators.minLength(6)]],
       Pref_ci_Cripto: ['', [Validators.required]]
     });
+
+
 
     this.name?.disable();
   }
@@ -305,9 +318,9 @@ export class FormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.hcaptchaForm = this.hcaptchaFormGroup();
+    // this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
-    this.captchaSubControl();
+    // this.captchaSubControl();
     this._ApiMercantil.GetAddress()
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
@@ -346,20 +359,21 @@ export class FormComponent implements OnInit {
   }
 
   // FORMGROUP DEL CAPTCHA
-  hcaptchaFormGroup = () => {
-    return this.fb.group({
-      hcaptcha: new FormControl(
-        { value: null, disabled: false },
-        { validators: [Validators.required] }
-      ),
-    });
-  }
+  // hcaptchaFormGroup = () => {
+  //   return this.fb.group({
+  //     hcaptcha: new FormControl(
+  //       { value: null, disabled: false },
+  //       { validators: [Validators.required] }
+  //     ),
+  //   });
+  // }
   // FUNCIONES CONTROL DEL CAPTCHA
   DNIvalidation = (inputDni: any) => {
     const dni_ = inputDni.value
     if (dni_.length >= 1 && dni_.length < 6) {
       this.dni?.reset()
-      this.hcaptcha?.reset()
+      // this.hcaptcha?.reset()
+      this.captchaService.validControl = false
       this.nameClient = '';
       this.saldoUSD = '';
       this.saldoBs = '';
@@ -370,13 +384,14 @@ export class FormComponent implements OnInit {
       setTimeout(() => this.closeAlert(), 1000);
     }
   }
-  captchaSubControl = () => {
-    this.hcaptcha?.valueChanges.subscribe(data => {
-      this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
-      this.dni?.markAsTouched();
-      this.dni?.updateValueAndValidity()
-    });
-  }
+  // captchaSubControl = () => {
+  //   this.hcaptcha?.valueChanges.subscribe(data => {
+  //     console.log('this.hcaptcha?.value :>> ', this.hcaptcha?.value);
+  //     this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
+  //     this.dni?.markAsTouched();
+  //     this.dni?.updateValueAndValidity()
+  //   });
+  // }
 
   SendOption(page: number, option: any, value: any) {
     let temp = value
@@ -397,7 +412,29 @@ export class FormComponent implements OnInit {
     }
   }
 
-  get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
+  keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    var inp = String.fromCharCode(event.keyCode);
+
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
+    {
+      if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
+        TypeFormKey.get(formcontrol)?.reset();
+        TypeFormKey.get(formcontrol)?.setValue('58')
+      }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
+        TypeFormKey.get(formcontrol)?.setValue('58')
+      }
+  }
+
+      if (/^[0-9]$/.test(inp)) {
+        return true;
+      } else {
+        event.preventDefault();
+        return false;
+      }
+
+  }
+
+  // get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
 
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
@@ -416,6 +453,8 @@ export class FormComponent implements OnInit {
   get img() { return this.thirdFormFibex.get('img'); }
 
   get c_iPagMovil() { return this.PgMovilForm.get('c_i'); }
+  get tlforiginReg() { return this.PgMovilForm.get('tlforiginReg'); }
+  get tlfdestinReg() { return this.PgMovilForm.get('tlfdestinReg'); }
   get referenciapm() { return this.PgMovilForm.get('referencia'); }
   get datepgmovil() { return this.PgMovilForm.get('datepgmovil'); }
   get cantidad() { return this.PgMovilForm.get('cantidad'); }
@@ -437,6 +476,8 @@ export class FormComponent implements OnInit {
   get cantidadDC() { return this.DebitoCredito.get('cantidad'); }
   get c_iDC() { return this.DebitoCredito.get('c_i'); }
   get Clavetlfonica() { return this.DebitoCredito.get('Clavetlfonica'); }
+
+
 
   get Referencia_Cripto() { return this.CriptomonedaForm.get('Referencia_Cripto'); }
   get Monto_Cripto() { return this.CriptomonedaForm.get('Monto_Cripto'); }
@@ -478,11 +519,11 @@ export class FormComponent implements OnInit {
     if (x == 2 || x == 3) {
       //Por default selecciono el Pago Móvil para Mercantil
       this.TypeForm = this.PgMovilRegForm;
-      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      this.SelectPagoc2p="mercantil";
+      this.RegistrarPagoMovilboolean =!this.RegistrarPagoMovilboolean;
       this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
-      // this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
       this.NextMatStepper();
     }
     //Débito
@@ -539,6 +580,13 @@ export class FormComponent implements OnInit {
       })*/
       this.router.navigate(['coinx']);
     }
+
+    //Zelle
+    if (x == 6) {
+      let BankZelle =this.banksFiltered.filter((bank:any)=>bank.id_cuba=='CUBA2A448529C1B50236')
+      this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
+      this.bankSelected(BankZelle[0]);
+    }
   }
 
   ComprobarPgoMovil() {
@@ -546,35 +594,36 @@ export class FormComponent implements OnInit {
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
+      tlforigin: this.tlforiginReg?.value.toString(),
+      tlfdestinReg: this.tlfdestinReg?.value,
+      Cantidad: Number(this.cantidad?.value),
       Date: this.datepgmovil?.value.toISOString(),
       Reference: this.referenciapm?.value,
       Name: this.name?.value,
       Abonado: this.nroContrato?.value,
-      idContrato: this.idContrato
+      idContrato: this.idContrato,
+      c_i: this.prec_i?.value + this.c_iPagMovil?.value,
+      Cliente: this.idContrato !=""?true:false
     }
+
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
-    this._ApiMercantil.ConsultaPagoMovilxReferencia(DatosUserAgent)
+    this._ApiMercantil.ConsultaPagoMovil(DatosUserAgent)
       .then((resp: any) => {
         if (resp.hasOwnProperty('registrado')) {
           this.alertexit('El pago ya fue registrado anteriormente', '');
+          this.ResetFormCD();
         } else {
           if (resp.hasOwnProperty('error_list')) {
             this.invalidForm('No se encuentra dicho pago', 'Intente nuevamente!');
           } else if (resp.hasOwnProperty('transaction_list')) {
-            let ResBanco = resp.transaction_list[0];
-            if (ResBanco.trx_status == "approved") {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
-            } else {
-              this.invalidForm('El Banco no aprobo su transacción', 'Verifique el monto ingresado');
-            }
           } else if (resp.hasOwnProperty('status')) {
             this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
           } else {
             this.invalidForm(`Error intente mas tarde!`);
           }
         }
-
       })
       .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
   }
@@ -594,7 +643,8 @@ export class FormComponent implements OnInit {
         invoice: "", //Máximo 25 caracteres esto se llena en el Backend
         Name: this.name?.value,
         Abonado: this.nroContrato?.value,
-        idContrato: this.idContrato
+        idContrato: this.idContrato,
+        Cliente: this.idContrato !=""?true:false
       }
       this.alertFindDniMercantil('Registrando pago', 'Por favor espere...');
       this._ApiMercantil.C2PCompra(DatosUserAgent)
@@ -648,23 +698,24 @@ export class FormComponent implements OnInit {
   }
 
   SelectedPagoC2P(value: any) {
-    let Valor = value._value
+    let Valor = value._value;
+    this.SelectPagoc2p =value._value;
     if (Valor == "otros") {
-      this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
-      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      this.ConsultarPagoMovilboolean = true;
+      this.RegistrarPagoMovilboolean = false;
       this.TypeForm = this.PgMovilForm;
       this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
-      this.warningSimpleFormMercantil(`Debes realizar un Pago Móvil con los datos a continuación:`, ` <strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105) <br/><br/> Luego de realizar la operación debes reportar el pago en el formulario presentado.`);
-    } else {
+      this.warningSimpleFormMercantil(`Debes realizar un Pago Móvil con los datos a continuación:`,
+       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105)<br><br> Escanea el código QR <br> <img src="assets/images/qr_pago_movil.jpeg" alt="Pago_Movil_QR"><br><br/> Luego de realizar la operación debes reportar el pago en el formulario presentado.`);
+    } else if(Valor == "mercantil") {//<button onclick="copyToClipboard()"> <img src="assets/images/Copiar_Datos.png" width="35" height="35" alt="Pago_Movil_QR"> </button>
       this.TypeForm = this.PgMovilRegForm;
-      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
-      this.ConsultarPagoMovilboolean = !this.ConsultarPagoMovilboolean;
+      this.ConsultarPagoMovilboolean = false;
+      this.RegistrarPagoMovilboolean = true;
       this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
-      this.warningSimpleFormMercantil(`Actualmente el Pago Móvil esta disponible solo para Banco Mercantil`, `¿Esta seguro que su pago es de un Mercantil?`);
     }
   }
 
@@ -683,8 +734,11 @@ export class FormComponent implements OnInit {
       PaymenMethod: this.PaymenMethod,
       Name: this.name?.value,
       Abonado: this.nroContrato?.value,
-      idContrato: this.idContrato
+      idContrato: this.idContrato,
+      Cliente: this.idContrato !=""?true:false
     }
+    console.log("Lo que voy a enviar");
+    console.log(DatosUserAgent);
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if (!this.Creditoboolaean) {
       this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
@@ -1021,22 +1075,7 @@ export class FormComponent implements OnInit {
     let month = (dt.getMonth() + 1).toString().padStart(2, "0");
     let day = dt.getDate().toString().padStart(2, "0");
     let date = year + "/" + month + "/" + day;
-    /**
-     *
-     */
 
-    /*console.log(.
-      {
-        ...this.firstFormFibex.value,
-        ...this.secondFormFibex.value,
-        ...this.thirdFormFibex.value,
-        img: this.imageUrl,
-        name: contractInfo?.cliente,
-        amount: this.amount?.value,
-        date,
-        id_Cuba: this.BancoSelect.id_cuba
-      }
-    )*/
     this.sendingPay = true;
     const DataForRegister = {
       ...this.firstFormFibex.value,
@@ -1048,6 +1087,9 @@ export class FormComponent implements OnInit {
       date,
       id_Cuba: this.BancoSelect.id_cuba
     }
+
+    console.log("Este es lo que voy a repotar");
+    console.log(DataForRegister);
 
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
@@ -1077,13 +1119,7 @@ export class FormComponent implements OnInit {
                     this.playDuplicated = false;
                   }
                 });
-                /* if (index > 0) {
-                   this.playDuplicated = true;
-                   this.payReported = false;
-                 } else {
-                   this.payReported = true;
-                   this.playDuplicated = false;
-                 }*/
+
               } catch (error) {
                 this.payReported = true;
               }
@@ -1105,8 +1141,6 @@ export class FormComponent implements OnInit {
               this.Contar = 10;
               this.Contador();
 
-            } else {
-              // console.log("-----2222222-------");
             }
           }
         })
@@ -1153,24 +1187,13 @@ export class FormComponent implements OnInit {
       const control = this.firstFormFibex.controls[key];
       control.setErrors(null);
     });
-    /*
-      this.firstFormFibex.clearValidators();
-      this.firstFormFibex.markAsPristine();
-      this.firstFormFibex.markAsUntouched();
-      this.secondFormFibex.reset({
-
-      });
-      this.thirdFormFibex.reset({
-
-      });
-    */
-
   }
 
   ResetFormCD() {
     this.DebitoCredito.reset();
     this.PgMovilRegForm.reset();
     this.PgMovilForm.reset();
+    this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ReciboPay = false;
   }
@@ -1179,18 +1202,10 @@ export class FormComponent implements OnInit {
     this.Contar--
     if (this.Contar <= 0) {
       window.location.reload();
-      /*this.stepper.selectedIndex = 0;
-      this.payReported  = false;
-      this.playDuplicated  = false;
-      this.ResetForm();*/
     } else {
       setTimeout(() => this.Contador(), 1000);
     }
 
-  }
-
-  CambiarFocusEnter(s?: any) {
-    // Aqui debo lograr sacar el focus o disparar el evento blur para que puedan buscar con enter
   }
 
   get disbaleButtonIfAmountIsInvalid(): boolean {
@@ -1614,6 +1629,7 @@ export class FormComponent implements OnInit {
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
     this.idContrato = contrato.id_contrato;
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
+    this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato)
     // this.selectInfoEquipos(this.idContrato);
     if (ppal) {
@@ -2278,7 +2294,6 @@ export class FormComponent implements OnInit {
       this.subscription = '';
       this.nameClient = ''
     }
-    //this.invalidForm('Usted posee contratos anulados '+numbersContracts, 'Por favor diríjase a una oficina comercial');
   }
 
   getDaysFeriados() {
@@ -2287,7 +2302,7 @@ export class FormComponent implements OnInit {
       this.daysFeriados = res;
     });
   }
-
 }
+
 
 

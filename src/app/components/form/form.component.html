@@ -31,10 +31,9 @@
         <ng-template matStepLabel>Cliente</ng-template>
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
-            <mat-label>Cédula/RIF <ng-container *ngIf="registerPayService.linkedToContractProcess != 'approved'" >del Cliente</ng-container>
-             </mat-label>
-            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni  >
-            <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && hcaptcha?.valid ? searchServices(inputDni,false,true) : ''">search</mat-icon>
+            <mat-label>Cédula/RIF del Cliente</mat-label>
+            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni [readonly]="readonlyDNI"  >
+            <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && captchaService.validControl ? searchServices(inputDni,false,true) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula es requerida
             </mat-error>
@@ -43,12 +42,16 @@
           <br/>
           <br/>
 
-          <form [formGroup]="hcaptchaForm" style="margin-bottom: 1rem;" [hidden]="verifyDNI && hcaptcha?.valid">
-            <ng-hcaptcha formControlName="hcaptcha" style="text-align: center;"></ng-hcaptcha>
-          </form>
+          <div style="margin-bottom: 1rem; align-self: center;">
+            <lib-CaptchaThomas style="width: auto;"></lib-CaptchaThomas>
+          </div>
+
+          <!-- <form [formGroup]="hcaptchaForm" style="margin-bottom: 1rem; align-self: center;" [hidden]="verifyDNI && hcaptcha?.valid"> -->
+            <!-- <ng-hcaptcha formControlName="hcaptcha" style="text-align: center;"></ng-hcaptcha> -->
+          <!-- </form> -->
 
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
-              type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || captchaControl">
+              type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
               Consultar
           </button>
           <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
@@ -563,22 +566,24 @@
 
       <!-- Pago Móvil -->
       <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
-        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
-          <div>
-            <h4 class="name-client">
-              {{nameClient}}
-            </h4>
-            <h4 class="name-client">
-              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-            </h4>
-          </div>
-          <div>
-            <h4 class="name-client">
-              Servicio: {{ paquete }}
-            </h4>
-            <h4 class="name-client">
-              Subscripción: {{subscription}} USD
-            </h4>
+        <div *ngIf="!ReciboPay">
+          <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div>
           </div>
         </div>
         <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
@@ -600,9 +605,9 @@
           </div>
         </div>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field *ngIf="!ReciboPay" appearance="outline">
           <mat-label>Banco</mat-label>
-          <mat-select value="mercantil" #valor>
+          <mat-select [value]=SelectPagoc2p #valor>
             <mat-option (click)="SelectedPagoC2P(valor)"  value="mercantil">Mercantil</mat-option>
             <mat-option (click)="SelectedPagoC2P(valor)"  value="otros">Otros Bancos</mat-option>
           </mat-select>
@@ -628,6 +633,13 @@
 
           <div class="form-login__item">
             <ng-template matStepLabel>Pago Móvil</ng-template>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono</mat-label>
+              <input matInput formControlName="tlforiginReg" (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="number" placeholder="Ejemplo: 584121234567">
+              <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')"> Tu número de teléfono es requerido
+              </mat-error>
+            </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Número de comprobante</mat-label>
@@ -683,7 +695,7 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlfdestin" required type="number" placeholder="Ejemplo: 584121234567">
+              <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="number" placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
               </mat-error>
             </mat-form-field>
@@ -754,7 +766,8 @@
                 <tr class="details">
                   <td>{{paquete}}</td>
 
-                  <td>{{cantidadDC?.value}}</td>
+                  <td *ngIf="amountPm?.value !=''">{{amountPm?.value}}</td>
+                  <td *ngIf="cantidad?.value !=''">{{cantidad?.value}}</td>
                 </tr>
 
               </table>
@@ -915,10 +928,12 @@
                 <input matInput formControlName="cantidad" required #inputAmount>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
                 <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
-                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                  decimales separado por punto, ejemplo: 125.00
+                </mat-error>
                 <mat-error
                   *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El
-                  monto no puede ser negativo</mat-error>
+                  monto no puede ser negativo
+                </mat-error>
               </mat-form-field>
 
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
