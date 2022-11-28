@@ -129,10 +129,20 @@ export class RegisterPayService {
 
   paySubs(payObj: any, dni: any) {
 
-    const statusPay = payObj.transaction_response.trx_status == "approved" ? true : false
-    let payData: any = JSON.stringify(payObj.transaction_response)
+    let statusPay: any
+    let payData: any
+    if (payObj.hasOwnProperty('transaction_c2p_response')) {
+      statusPay = payObj.transaction_c2p_response.trx_status == "approved" ? true : false
+      payData = JSON.stringify(payObj.transaction_c2p_response)
+    }
+    else if (payObj.hasOwnProperty('transaction_response')) {
+      statusPay = payObj.transaction_response.trx_status == "approved" ? true : false
+      payData = JSON.stringify(payObj.transaction_response)
+    }
+    else {
+      statusPay = false
+    }
     payData = payData.replaceAll('"', "'")
-    // console.log('payData', payData)
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const DataQuery = {
@@ -150,9 +160,9 @@ export class RegisterPayService {
           resolve(Response)
           console.log('Response', Response)
         }
-        , (error) => {
-          reject(error)
-        })
+          , (error) => {
+            reject(error)
+          })
 
       } catch (error) {
         reject(error)
