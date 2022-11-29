@@ -835,6 +835,8 @@ export class FormComponent implements OnInit, OnChanges {
             if (resp.transaction_response.trx_status == "approved") {
               this.alertexit("Pago realizado exitosamente");
               this.ReciboPay = true;
+              this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+
             } else {
               this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
             }
