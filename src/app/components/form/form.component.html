@@ -564,6 +564,7 @@
             <mat-select formControlName="prec_i">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
+              <mat-option value="J">J</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -625,6 +626,7 @@
             <mat-select formControlName="pref_ci">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
+              <mat-option value="J">J</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -784,11 +786,12 @@
           <ng-template matStepLabel>Datos de pago</ng-template>
           <form [formGroup]="DebitoCredito">
             <div>
-              <mat-label>Cédula del titular</mat-label><br>
+              <mat-label>Cédula de identidad</mat-label><br>
               <mat-form-field appearance="outline" class="Prefc_i">
                 <mat-select formControlName="pref_ci">
                   <mat-option value="V">V</mat-option>
                   <mat-option value="E">E</mat-option>
+                  <mat-option value="J">J</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
