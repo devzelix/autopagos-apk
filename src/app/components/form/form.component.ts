@@ -724,7 +724,7 @@ export class FormComponent implements OnInit {
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
       this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
-       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105)<br><br>Luego de realizar la operación debes reportar el pago en el formulario presentado.`,'');
+       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br>Luego de realizar la operación debes reportar el pago en el formulario presentado.`,'');
     } else if(Valor == "mercantil") {//<button onclick="copyToClipboard()"> <img src="assets/images/Copiar_Datos.png" width="35" height="35" alt="Pago_Movil_QR"> </button>
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
