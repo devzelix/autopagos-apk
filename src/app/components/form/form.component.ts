@@ -1514,10 +1514,12 @@ export class FormComponent implements OnInit, OnChanges {
                 this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
                 this.subscription = parseFloat('No aplica').toFixed(2);
               }
-              this.AppFibex = true;
-              setTimeout(() => {
-                this.NextMatStepper();
-              }, 300);
+              if (NextContrato) {
+                  this.AppFibex = true;
+                  setTimeout(() => {
+                    this.NextMatStepper();
+                  }, 300);
+              }
             }
             else {
               this.nameClient = '';
