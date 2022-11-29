@@ -59,6 +59,7 @@ export class FormComponent implements OnInit {
   fecha: string = 'sssssssssssssss';
   displayedColumns: string[] = ['Comprobante', 'Status', 'buttons'];
 
+  public RegexPhone =/^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
   public formFibex: UntypedFormGroup;
@@ -165,6 +166,8 @@ export class FormComponent implements OnInit {
   public verifyDNI: boolean = false
   public captchaControl: boolean | undefined = true
   public readonlyDNI: boolean = false
+  private ComprobanteReportado: string ="";
+  private CountCompReport: number = 0;
 
 
   constructor(
@@ -225,7 +228,7 @@ export class FormComponent implements OnInit {
     });
 
     this.PgMovilForm = this.fb.group({
-      tlforiginReg: ['', [Validators.required]],
+      tlforiginReg: ['', [Validators.required,Validators.pattern(this.RegexPhone)]],
       tlfdestinReg: ['584129637516', [Validators.required]],
       prec_i: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
@@ -242,7 +245,7 @@ export class FormComponent implements OnInit {
       tlforigin: ['584129637516', [Validators.required]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
-      tlfdestin: ['', [Validators.required]],
+      tlfdestin: ['', [Validators.required,Validators.pattern(this.RegexPhone)]],
       auth: [''],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
@@ -389,7 +392,39 @@ export class FormComponent implements OnInit {
 
   keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
     var inp = String.fromCharCode(event.keyCode);
+    //if(String(TypeFormKey.get(formcontrol)?.value =="")
 
+    if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
+      return
+    };
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) != '5' && String(TypeFormKey.get(formcontrol)?.value).slice(0,1) != '') ||
+       (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) !='8' && String(TypeFormKey.get(formcontrol)?.value).slice(1,2) !='' ) )
+    {
+        TypeFormKey.get(formcontrol)?.reset();
+        TypeFormKey.get(formcontrol)?.setValue(`58`);
+        return;
+    }
+
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0' && String(TypeFormKey.get(formcontrol)?.value).slice(2,3) != ''))
+    {
+      TypeFormKey.get(formcontrol)?.reset();
+      TypeFormKey.get(formcontrol)?.setValue('58');
+      return;
+    }
+      if (/^[0-9]$/.test(inp)) {
+        return true;
+      } else {
+        event.preventDefault();
+        return false;
+      }
+
+
+
+  }
+
+  keypressControPhonesv2(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    var inp = String.fromCharCode(event.keyCode);
+    //if(String(TypeFormKey.get(formcontrol)?.value =="")
     if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
     {
       if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
@@ -399,8 +434,8 @@ export class FormComponent implements OnInit {
 
       }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
 
-        TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
-
+        //TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
+        return;
       }
   }
       if (/^[0-9]$/.test(inp)) {
@@ -410,8 +445,8 @@ export class FormComponent implements OnInit {
         return false;
       }
 
-      
-    
+
+
   }
 
   get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
@@ -595,6 +630,7 @@ export class FormComponent implements OnInit {
         } else {
           if (resp.hasOwnProperty('error_list')) {
             this.invalidForm('No se encuentra dicho pago', 'Intente nuevamente!');
+            this.Antibruteforce();
           } else if (resp.hasOwnProperty('transaction_list')) {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
@@ -1279,7 +1315,7 @@ export class FormComponent implements OnInit {
                 this.dni?.setValue('')
                 return;
               };
-
+              this.readonlyDNI = true;
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
               this.name?.setValue(res[0].cliente);
@@ -1661,7 +1697,7 @@ export class FormComponent implements OnInit {
          this.openSnackBar('Datos copiados!')
       }
     })
-    
+
   }
 
   warnignForm(text: string, html: string, next: number, use?: boolean) {
@@ -2083,6 +2119,7 @@ export class FormComponent implements OnInit {
 
         if(type !=undefined && type !=null && type !=""){
 
+
           let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
           PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
 
@@ -2091,7 +2128,7 @@ export class FormComponent implements OnInit {
             if(index==PlantillaPago[0].replace.length-1){
 
               this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
-              PlantillaPago[0].html,"Editar Datos","Procesar Pago", Metodo)
+              PlantillaPago[0].html,"Editar Datos","Procesar Pago", Metodo);
             }
           })
 
@@ -2100,6 +2137,28 @@ export class FormComponent implements OnInit {
           `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
         }
     }
+  }
+
+  Antibruteforce(){
+    if(this.ComprobanteReportado ==""){
+      this.ComprobanteReportado = this.referenciapm?.value;
+      console.log(this.ComprobanteReportado)
+    }
+
+    if(this.ComprobanteReportado == this.referenciapm?.value){
+      if(this.CountCompReport == 2){
+        this.ComprobanteReportado="";
+        this.ResetFormCD();
+        this.CountCompReport=0;
+      }else{
+        ++this.CountCompReport;
+        console.log(this.CountCompReport)
+      }
+    }else{
+      this.ComprobanteReportado = this.referenciapm?.value;
+      this.CountCompReport=1;
+    }
+
   }
 
   dateOfPay() {
@@ -2224,7 +2283,7 @@ export class FormComponent implements OnInit {
   }
 
   copyText(textToCopy: string) {
-    this.clipboard.copy(textToCopy);  
+    this.clipboard.copy(textToCopy);
   }
 }
 
