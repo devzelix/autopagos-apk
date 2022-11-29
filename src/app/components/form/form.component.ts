@@ -1337,22 +1337,25 @@ export class FormComponent implements OnInit, OnChanges {
                   }
                 }
 
-                /* EMITIR TASA DEL DÍA */
-                this.tasaService.tasa.next(this.cambio_act.toString());
-                this.tasaCambio = this.cambio_act.toString();
-                // this.filterContracts();
-                if (this.listContratos.length === 0) {
-                  this.dni?.setValue('')
-                  return;
-                };
-                this.idContrato = this.listContratos[0].id_contrato;
-                this.nroContrato?.setValue(this.listContratos[0].contrato);
-                this.SendOption(0, 3, this.listContratos[0].contrato);
-                this.filterBankByFranquicia(this.listContratos[0].franquicia);
-                this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
-                this.nameClient = this.listContratos[0].cliente;
-                this.name?.setValue(res[0].cliente);
-                // this.SearchEmailContra(this.listContratos[0].contrato)
+                 /* EMITIR TASA DEL DÍA */
+
+                 if (this.registerPayService.linkedToContractProcess != 'approved') {
+                  this.tasaService.tasa.next(this.cambio_act.toString());
+                  this.tasaCambio = this.cambio_act.toString();
+                  // this.filterContracts();
+                  if (this.listContratos.length === 0) {
+                    this.dni?.setValue('')
+                    return;
+                  };
+                  this.idContrato = this.listContratos[0].id_contrato;
+                  this.nroContrato?.setValue(this.listContratos[0].contrato);
+                  this.SendOption(0, 3, this.listContratos[0].contrato);
+                  this.filterBankByFranquicia(this.listContratos[0].franquicia);
+                  this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+                  this.nameClient = this.listContratos[0].cliente;
+                  this.name?.setValue(res[0].cliente);
+                  // this.SearchEmailContra(this.listContratos[0].contrato)
+                }
                 this.dni?.setValue(dni_);
                 this.searchInfoEquipos(dni_);
               }
@@ -1365,27 +1368,24 @@ export class FormComponent implements OnInit, OnChanges {
               }
 
               /* EMITIR TASA DEL DÍA */
-              this.tasaService.tasa.next(this.cambio_act.toString());
-              this.tasaCambio = this.cambio_act.toString();
-              // this.filterContracts();
-              if (this.listContratos.length === 0) {
-                this.dni?.setValue('')
-                return;
-              };
-              this.readonlyDNI = true;
-              this.idContrato = this.listContratos[0].id_contrato;
-              this.nameClient = this.listContratos[0].cliente;
-              this.name?.setValue(res[0].cliente);
-              this.nroContrato?.setValue(this.listContratos[0].contrato);
-              // this.SearchEmailContra(this.listContratos[0].contrato)
-              this.SendOption(0, 3, this.listContratos[0].contrato);
-              this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
-              this.filterBankByFranquicia(this.listContratos[0].franquicia);
-              this.dni?.setValue(dni_);
-              this.searchInfoEquipos(dni_);
-
-
-
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                this.tasaService.tasa.next(this.cambio_act.toString());
+                this.tasaCambio = this.cambio_act.toString();
+                // this.filterContracts();
+                // if (this.listContratos.length === 0) {
+                //   this.dni?.setValue('')
+                //   return;
+                // };
+                this.readonlyDNI = true;
+                this.idContrato = this.listContratos[0].id_contrato;
+                this.nameClient = this.listContratos[0].cliente;
+                this.name?.setValue(res[0].cliente);
+                this.nroContrato?.setValue(this.listContratos[0].contrato);
+                // this.SearchEmailContra(this.listContratos[0].contrato)
+                this.SendOption(0, 3, this.listContratos[0].contrato);
+                this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+                this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              }
 
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
