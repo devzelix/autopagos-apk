@@ -60,6 +60,7 @@ export class FormComponent implements OnInit, OnChanges {
   fecha: string = 'sssssssssssssss';
   displayedColumns: string[] = ['Comprobante', 'Status', 'buttons'];
 
+  public RegexPhone =/^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
   public formFibex: UntypedFormGroup;
@@ -166,6 +167,8 @@ export class FormComponent implements OnInit, OnChanges {
   public verifyDNI: boolean = false
   public captchaControl: boolean | undefined = true
   public readonlyDNI: boolean = false
+  private ComprobanteReportado: string ="";
+  private CountCompReport: number = 0;
 
 
   constructor(
@@ -233,7 +236,7 @@ export class FormComponent implements OnInit, OnChanges {
     });
 
     this.PgMovilForm = this.fb.group({
-      tlforiginReg: ['', [Validators.required]],
+      tlforiginReg: ['', [Validators.required,Validators.pattern(this.RegexPhone)]],
       tlfdestinReg: ['584129637516', [Validators.required]],
       prec_i: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
@@ -250,7 +253,7 @@ export class FormComponent implements OnInit, OnChanges {
       tlforigin: ['584129637516', [Validators.required]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
-      tlfdestin: ['', [Validators.required]],
+      tlfdestin: ['', [Validators.required,Validators.pattern(this.RegexPhone)]],
       auth: [''],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
@@ -415,7 +418,39 @@ export class FormComponent implements OnInit, OnChanges {
 
   keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
     var inp = String.fromCharCode(event.keyCode);
+    //if(String(TypeFormKey.get(formcontrol)?.value =="")
 
+    if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
+      return
+    };
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) != '5' && String(TypeFormKey.get(formcontrol)?.value).slice(0,1) != '') ||
+       (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) !='8' && String(TypeFormKey.get(formcontrol)?.value).slice(1,2) !='' ) )
+    {
+        TypeFormKey.get(formcontrol)?.reset();
+        TypeFormKey.get(formcontrol)?.setValue(`58`);
+        return;
+    }
+
+    if((String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0' && String(TypeFormKey.get(formcontrol)?.value).slice(2,3) != ''))
+    {
+      TypeFormKey.get(formcontrol)?.reset();
+      TypeFormKey.get(formcontrol)?.setValue('58');
+      return;
+    }
+      if (/^[0-9]$/.test(inp)) {
+        return true;
+      } else {
+        event.preventDefault();
+        return false;
+      }
+
+
+
+  }
+
+  keypressControPhonesv2(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    var inp = String.fromCharCode(event.keyCode);
+    //if(String(TypeFormKey.get(formcontrol)?.value =="")
     if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
     {
       if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
@@ -425,8 +460,8 @@ export class FormComponent implements OnInit, OnChanges {
 
       }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
 
-        TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
-
+        //TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
+        return;
       }
   }
       if (/^[0-9]$/.test(inp)) {
@@ -435,6 +470,9 @@ export class FormComponent implements OnInit, OnChanges {
         event.preventDefault();
         return false;
       }
+
+
+
   }
 
   // get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
@@ -618,6 +656,7 @@ export class FormComponent implements OnInit, OnChanges {
         } else {
           if (resp.hasOwnProperty('error_list')) {
             this.invalidForm('No se encuentra dicho pago', 'Intente nuevamente!');
+            this.Antibruteforce();
           } else if (resp.hasOwnProperty('transaction_list')) {
               this.ReciboPay = true;
               this.alertexit("Pago aprobado");
@@ -712,7 +751,7 @@ export class FormComponent implements OnInit, OnChanges {
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
       this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
-       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(105)<br><br>Luego de realizar la operación debes reportar el pago en el formulario presentado.`,'');
+       `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br>Luego de realizar la operación debes reportar el pago en el formulario presentado.`,'');
     } else if(Valor == "mercantil") {//<button onclick="copyToClipboard()"> <img src="assets/images/Copiar_Datos.png" width="35" height="35" alt="Pago_Movil_QR"> </button>
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
@@ -1322,6 +1361,31 @@ export class FormComponent implements OnInit, OnChanges {
                 this.name?.setValue(String(dni_));
                 this.cambio_act = Number(this.tasaCambio)
               }
+
+              /* EMITIR TASA DEL DÍA */
+              this.tasaService.tasa.next(this.cambio_act.toString());
+              this.tasaCambio = this.cambio_act.toString();
+              // this.filterContracts();
+              if (this.listContratos.length === 0) {
+                this.dni?.setValue('')
+                return;
+              };
+              this.readonlyDNI = true;
+              this.idContrato = this.listContratos[0].id_contrato;
+              this.nameClient = this.listContratos[0].cliente;
+              this.name?.setValue(res[0].cliente);
+              this.nroContrato?.setValue(this.listContratos[0].contrato);
+              // this.SearchEmailContra(this.listContratos[0].contrato)
+              this.SendOption(0, 3, this.listContratos[0].contrato);
+              this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+              this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              this.dni?.setValue(dni_);
+              this.searchInfoEquipos(dni_);
+
+
+
+
+
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
               if (this.BancoNacional(this.banco)) {
                 if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
@@ -2172,17 +2236,18 @@ export class FormComponent implements OnInit, OnChanges {
 
       if (type != undefined && type != null && type != "") {
 
-        let PlantillaPago: any = this.PlantillaTempPago.filter((plantilla: any) => plantilla.tipo == type);
-        PlantillaPago[0].replace.forEach((replaceRem: any, index: number) => {
+
+          let PlantillaPago:any = this.PlantillaTempPago.filter((plantilla:any)=> plantilla.tipo == type);
+          PlantillaPago[0].replace.forEach((replaceRem:any,index:number)=>{
 
           PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem, String(eval(PlantillaPago[0].campos[index])))
 
           if (index == PlantillaPago[0].replace.length - 1) {
 
-            this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
-              PlantillaPago[0].html, "Editar Datos", "Procesar Pago", Metodo)
-          }
-        })
+              this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
+              PlantillaPago[0].html,"Editar Datos","Procesar Pago", Metodo);
+            }
+          })
 
       } else {
         this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
@@ -2193,6 +2258,28 @@ export class FormComponent implements OnInit, OnChanges {
       /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
       <strong>Nro. tarjeta:</strong> 501878200102618990<br> <strong>Fecha de Vencimiento:</strong> 04/2027 <br> <strong>Cantidad a pagar en Bolivares:</strong> 0.1 <br></div>`,`Editar Datos`,`Procesar pago`,Metodo)*/
     }
+  }
+
+  Antibruteforce(){
+    if(this.ComprobanteReportado ==""){
+      this.ComprobanteReportado = this.referenciapm?.value;
+      console.log(this.ComprobanteReportado)
+    }
+
+    if(this.ComprobanteReportado == this.referenciapm?.value){
+      if(this.CountCompReport == 2){
+        this.ComprobanteReportado="";
+        this.ResetFormCD();
+        this.CountCompReport=0;
+      }else{
+        ++this.CountCompReport;
+        console.log(this.CountCompReport)
+      }
+    }else{
+      this.ComprobanteReportado = this.referenciapm?.value;
+      this.CountCompReport=1;
+    }
+
   }
 
   dateOfPay() {

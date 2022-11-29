@@ -38,17 +38,13 @@
               La cédula es requerida
             </mat-error>
           </mat-form-field>
-          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su nro. de abonado</h3>
+          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
           <br/>
           <br/>
 
-          <div style="margin-bottom: 1rem; align-self: center;">
+          <div *ngIf="listContratos.length==0" [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center;">
             <lib-CaptchaThomas style="width: auto;"></lib-CaptchaThomas>
           </div>
-
-          <!-- <form [formGroup]="hcaptchaForm" style="margin-bottom: 1rem; align-self: center;" [hidden]="verifyDNI && hcaptcha?.valid"> -->
-            <!-- <ng-hcaptcha formControlName="hcaptcha" style="text-align: center;"></ng-hcaptcha> -->
-          <!-- </form> -->
 
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
               type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
@@ -493,6 +489,8 @@
           <div class="spinner-pay" *ngIf="sendingPay">
             <mat-spinner></mat-spinner>
           </div>
+
+          <h2 class="message-succes" *ngIf="!sendingPay">Por favor verifique sus datos y confirme la operación.</h2>
           <div class="card-pay">
             <div class="invoice-box">
               <table cellpadding="0" cellspacing="0">
@@ -619,6 +617,7 @@
             <mat-select formControlName="prec_i">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
+              <mat-option value="J">J</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -636,8 +635,10 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlforiginReg" (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="number" placeholder="Ejemplo: 584121234567">
-              <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')"> Tu número de teléfono es requerido
+              <input matInput formControlName="tlforiginReg" (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text" placeholder="Ejemplo: 584121234567">
+              <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.errors">
+               <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')">El número es requerido</p>
+               <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567</p>
               </mat-error>
             </mat-form-field>
 
@@ -678,6 +679,7 @@
             <mat-select formControlName="pref_ci">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
+              <mat-option value="J">J</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
@@ -695,9 +697,13 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="number" placeholder="Ejemplo: 584121234567">
-              <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
-              </mat-error>
+              <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text" placeholder="Ejemplo: 584121234567">
+              <!-- <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
+              </mat-error> -->
+              <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
+                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
+                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567</p>
+               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -851,11 +857,12 @@
           <ng-template matStepLabel>Datos de pago</ng-template>
           <form [formGroup]="DebitoCredito">
             <div>
-              <mat-label>Cédula del titular</mat-label><br>
+              <mat-label>Cédula de identidad</mat-label><br>
               <mat-form-field appearance="outline" class="Prefc_i">
                 <mat-select formControlName="pref_ci">
                   <mat-option value="V">V</mat-option>
                   <mat-option value="E">E</mat-option>
+                  <mat-option value="J">J</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
