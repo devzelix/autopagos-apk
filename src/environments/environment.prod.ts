@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   urlGraphql: 'https://pha.thomas-talk.me/',
+  urlGraphqlContract: 'https://backend-fp.thomas-talk.me/',
   urlThomasApi : 'https://api.thomas-talk.me/',
   urlUploadService: 'https://img.thomas-talk.me/api/',
   urlDbMapsApi:'https://dbmaps.thomas-talk.me/api/v1',
