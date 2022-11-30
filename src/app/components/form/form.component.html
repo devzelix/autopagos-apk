@@ -43,7 +43,7 @@
           <br/>
 
           <div *ngIf="listContratos.length==0" [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center;">
-            <lib-CaptchaThomas style="width: auto;"></lib-CaptchaThomas>
+            <captcha-thomas style="width: auto;"></captcha-thomas>
           </div>
 
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button

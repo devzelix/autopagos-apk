@@ -34,7 +34,7 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { forEach } from '@angular-devkit/schematics';
-import { CaptchaThomasService } from 'captcha-thomas-deprecated-test';
+import { CaptchaThomasService } from 'captcha-thomas';
 
 
 
