@@ -750,6 +750,7 @@ export class FormComponent implements OnInit, OnChanges {
       this.RegistrarPagoMovilboolean = false;
       this.TypeForm = this.PgMovilForm;
       this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
+      this.PgMovilRegForm.get('amountPm')?.setValue('');
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
       this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
@@ -759,6 +760,7 @@ export class FormComponent implements OnInit, OnChanges {
       this.ConsultarPagoMovilboolean = false;
       this.RegistrarPagoMovilboolean = true;
       this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+      this.PgMovilForm.get('cantidad')?.setValue('');
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
     }
