@@ -26,7 +26,7 @@ import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, Planti
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-import { NgHcaptchaService } from 'ng-hcaptcha';
+// import { NgHcaptchaService } from 'ng-hcaptcha';
 
 
 import { MatStepper } from '@angular/material/stepper';
@@ -332,20 +332,17 @@ export class FormComponent implements OnInit, OnChanges {
       .catch((error: any) => console.log(error));
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
     this.route.queryParams.pipe(filter((param) => param['dni'])).subscribe((res) => {
-      console.log('res :>> ', res);
       if (res['dni']) {
         //Esto es solo cuando se resiva la cedula
         this.dni?.setValue(`${res['dni']}`)
         if (res['linkedToContractProcess'] === "approved") {
           this.tasaService.getSaldoBCV().subscribe((res) => {
-            console.log('res :>> ', res);
             this.tasaCambio = res
           })
           this.PagoMetodosHTML2 = MetodoDePago2.filter(x => x.idpago != 4 && x.idpago != 6)
           this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
           this.registerPayService.dniCustomerContract = `${res['dni']}`
           this.registerPayService.amountCustomerContract = `${res['amount']}`
-          console.log(this.registerPayService.linkedToContractProcess, this.registerPayService.dniCustomerContract, this.registerPayService.amountCustomerContract,)
         }
         else {
           this.PagoMetodosHTML2 = MetodoDePago2
@@ -392,7 +389,6 @@ export class FormComponent implements OnInit, OnChanges {
   }
   // captchaSubControl = () => {
   //   this.hcaptcha?.valueChanges.subscribe(data => {
-  //     console.log('this.hcaptcha?.value :>> ', this.hcaptcha?.value);
   //     this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
   //     this.dni?.markAsTouched();
   //     this.dni?.updateValueAndValidity()
@@ -1303,7 +1299,6 @@ export class FormComponent implements OnInit, OnChanges {
         .subscribe((res) => {
           this.lastDni = dni_;
           this.closeAlert();
-          console.log('saldoce', res)
           try {
             if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
               this.closeAlert2();
@@ -1484,7 +1479,6 @@ export class FormComponent implements OnInit, OnChanges {
 
             if (this.registerPayService.linkedToContractProcess == 'approved') {
               this.tasaService.getSaldoBCV().subscribe((res) => {
-                console.log('res :>> ', res);
                 this.tasaCambio = res
               })
               this.closeAlert2();

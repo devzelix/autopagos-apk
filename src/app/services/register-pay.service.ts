@@ -158,7 +158,7 @@ export class RegisterPayService {
 
         this.http.post(this.URLGRAPHCONTRACT, DataQuery).subscribe((Response: any) => {
           resolve(Response)
-          console.log('Response', Response)
+          // console.log('Response', Response)
         }
           , (error) => {
             reject(error)

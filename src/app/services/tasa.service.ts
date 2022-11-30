@@ -11,7 +11,7 @@ export class TasaService {
   getSaldoBCV() {
     return this.http.get(`https://service.apibcv.net/SearchBCV/ertyhbnjklo89dvty782`, { headers: { 'Content-Type': 'application/json' } }).pipe(
       map((res: any) => {
-        console.log('res', res)
+        // console.log('res', res)
         return res.filter((coin: any) =>coin.moneda == "USD")[0].precio;
       })
     );
