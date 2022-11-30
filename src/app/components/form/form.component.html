@@ -104,31 +104,34 @@
           </div>
         </div>
         <ng-template matStepLabel>Tipo de pago</ng-template>
-
         <div class="cardflex">
-          <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
-            <mat-card *ngIf="!option.omitir" class="example-card">
-              <mat-card-header>
-                <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
-              </mat-card-header>
-              <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
-              <mat-card-actions>
-                <button mat-button *ngIf="option.tipopago !='Pago Móvil' && option.tipopago !='Criptomoneda'"
-                  (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
-                  matStepperNext>SELECCIONAR</button>
-                <button mat-button *ngIf="option.tipopago =='Pago Móvil' || option.tipopago =='Criptomoneda'"
-                  (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR</button>
-              </mat-card-actions>
-            </mat-card>
-          </div>
+            <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
+              <mat-card *ngIf="!option.omitir" class="example-card">
+                <mat-card-header>
+                  <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
+                </mat-card-header>
+                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
+                <mat-card-actions>
+                  <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
+                    (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
+                    matStepperNext>SELECCIONAR
+                  </button>
+                  <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
+                    (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
         </div>
-
+        <button *ngIf="Otros" class="button-material-back btn-width-100" (click)="TipoPago(8)" mat-raised-button>
+          REGRESAR
+        </button>
       </mat-step>
       <!-- / Fin de métodos de pago -->
 
       <!-- Transferencias -->
       <div
-        *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda">
+        *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda && !Otros && !PrimeraVez">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
             <div>

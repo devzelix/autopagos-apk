@@ -134,13 +134,6 @@ export let DatosPagoMovil =['584129637516, 308182516, 0105']
 
 export let MetodoDePago2 = [
   {
-    idpago:6,
-    tipopago:"Zelle",
-    image:'assets/images/Icono_Zelle.png',
-    alt:'Zelle',
-    omitir:false,
-  },
-  {
     idpago:0,
     tipopago:"Débito Mercantil",
     image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
@@ -162,9 +155,20 @@ export let MetodoDePago2 = [
     alt:'Pago Móvil'
   },
   {
-    idpago:3,
-    tipopago:"Reportar Pago Móvil",
-    omitir:true
+    idpago:4,
+    tipopago:"Transferencia",
+    omitir:false,
+    image:'assets/images/Icono_Transferencia-Pagos_Fibex.png',
+    alt:'Otros'
+  }
+]
+export let MetodoDePago3 = [
+  {
+    idpago:6,
+    tipopago:"Zelle",
+    image:'assets/images/Icono_Zelle.png',
+    alt:'Zelle',
+    omitir:false,
   },
   {
     idpago:5,
@@ -173,12 +177,12 @@ export let MetodoDePago2 = [
     image:'assets/images/Coincoinx.png'
   },
   {
-    idpago:4,
-    tipopago:"Transferencia",
+    idpago:7,
+    tipopago:"Otros",
     omitir:false,
-    image:'assets/images/Icono_Transferencia-Pagos_Fibex.png',
-    alt:'Otros'
-  }]
+    image:'assets/images/otros.png'
+  }
+]
 
 export let TypeAccount = [{id:0, cuenta:"Ahorro",type:"CA"},{id:1, cuenta:"Corriente",type:"CC"}]
 
