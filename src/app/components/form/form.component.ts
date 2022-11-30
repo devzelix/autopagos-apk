@@ -22,7 +22,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -137,12 +137,13 @@ export class FormComponent implements OnInit {
   AllDataClient: any = []
   enableBtn: Boolean = false
   totalAmount: number = 0;
-  PagoMetodosHTML2 = MetodoDePago2;
+  PagoMetodosHTML2:any = MetodoDePago3;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
   DebitoCreditoboolean: boolean = false;
   Criptomoneda: boolean = false;
+  Otros: boolean = false;
   tipo_pago: any;
   AppFibex: boolean = false;
   ClienteFibex: boolean = false;
@@ -154,6 +155,7 @@ export class FormComponent implements OnInit {
   public TypeAcountDC: any[] = TypeAccount;
   public Creditoboolaean: boolean = false;
   public Debitoboolean: boolean = false;
+  public PrimeraVez: boolean = true;
   public Months = Month;
   public Anos = Ano;
   public ReciboPay: boolean = false;
@@ -529,18 +531,8 @@ export class FormComponent implements OnInit {
     this.Debitoboolean = false;
     this.Creditoboolaean = false;
     this.Criptomoneda = false;
-
-    //Pago Movil
-    if (x == 2 || x == 3) {
-      //Por default selecciono el Pago Móvil para Mercantil
-      this.TypeForm = this.PgMovilRegForm;
-      this.SelectPagoc2p="mercantil";
-      this.RegistrarPagoMovilboolean =!this.RegistrarPagoMovilboolean;
-      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
-      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
-      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
-      this.NextMatStepper();
-    }
+    this.Otros = false;
+    this.PrimeraVez = false;
     //Débito
     if (x == 0) {
       this.DebitoCreditoboolean = !this.DebitoCreditoboolean
@@ -550,7 +542,10 @@ export class FormComponent implements OnInit {
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      //this.warningSimpleFormMercantil(`Esta solo aplica para tarjetas Mercantil`, `De lo contrario regrese y seleccione la opción "Transferencia"`); Escanea el código QR <br> <img src="assets/images/qr_pago_movil.jpeg" alt="Pago_Movil_QR">
+      this.Otros = true;
+      setTimeout(() => {
+        this.NextMatStepper()
+      }, 300);
     }
     //Crédito
     if (x == 1) {
@@ -563,45 +558,56 @@ export class FormComponent implements OnInit {
       this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
-      this.Creditoboolaean = !this.Creditoboolaean
+      this.Creditoboolaean = !this.Creditoboolaean;
+      this.Otros = true;
+      setTimeout(() => {
+        this.NextMatStepper()
+      }, 300);
+
+    }
+    //Pago Movil
+    if (x == 2 ) {
+      //Por default selecciono el Pago Móvil para Mercantil
+      this.TypeForm = this.PgMovilRegForm;
+      this.SelectPagoc2p="mercantil";
+      this.RegistrarPagoMovilboolean =!this.RegistrarPagoMovilboolean;
+      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+      this.Otros = true;
+      setTimeout(() => {
+        this.NextMatStepper()
+      }, 300);
+    }
+    //Transferencia
+    if (x == 4) {
+      setTimeout(() => {
+        this.NextMatStepper();
+        this.PagoMetodosHTML2 = MetodoDePago3;
+      }, 300);
     }
     //Criptomoneda
     if (x == 5) {
-      /*const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'mat-button button-material-back',
-          cancelButton: 'mat-button button-material-next'
-        },
-        buttonsStyling: false
-      })
-
-      swalWithBootstrapButtons.fire({
-        title: 'Datos de Wallet para pagar',
-        //text: `Wallet: 4534LGFDKLM4534543FSD Monto USDT: 40,001001`,
-        html:
-        'Wallet: <b>4534LGFDKLM4534543FSD</b><br> ' +
-        `Monto USDT: ${this.saldoUSD}1001`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'REPORTAR',
-        cancelButtonText: 'CERRAR',
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.Criptomoneda = !this.Criptomoneda;
-          this.Monto_Cripto?.setValue(this.saldoUSD+'1001')
-          this.NextMatStepper();
-        }
-      })*/
       this.router.navigate(['coinx']);
     }
-
     //Zelle
     if (x == 6) {
       let BankZelle =this.banksFiltered.filter((bank:any)=>bank.id_cuba=='CUBA2A448529C1B50236')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
       this.bankSelected(BankZelle[0]);
+      setTimeout(() => {
+        this.NextMatStepper()
+      }, 300);
     }
+    //Card para pagos en BS
+    if( x == 7) {
+     this.PagoMetodosHTML2 = MetodoDePago2;
+     this.Otros = true;
+    }
+    //Regresa a las Card en USD
+    if( x == 8) {
+      this.PagoMetodosHTML2 = MetodoDePago3;
+     }
   }
 
   ComprobarPgoMovil() {
