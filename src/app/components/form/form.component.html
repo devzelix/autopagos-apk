@@ -373,7 +373,7 @@
           </form>
         </mat-step>
 
-        <mat-step [stepControl]="thirdFormFibex">
+        <mat-step *ngIf="!Kiosco" [stepControl]="thirdFormFibex">
           <form [formGroup]="thirdFormFibex">
             <ng-template matStepLabel>Comprobante</ng-template>
             <div class="form-login__item">
@@ -425,7 +425,7 @@
           </form>
         </mat-step>
 
-        <ng-container *ngIf="possibleWithholdingAgent && selectedRetentionOption == 2">
+        <ng-container *ngIf="possibleWithholdingAgent && selectedRetentionOption == 2 && !Kiosco">
           <mat-step [stepControl]="fourthFormFibex">
             <form [formGroup]="fourthFormFibex">
               <ng-template matStepLabel>Retención</ng-template>

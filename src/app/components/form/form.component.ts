@@ -171,7 +171,7 @@ export class FormComponent implements OnInit, OnChanges {
   public readonlyDNI: boolean = false
   private ComprobanteReportado: string ="";
   private CountCompReport: number = 0;
-
+  public Kiosco: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -333,6 +333,7 @@ export class FormComponent implements OnInit, OnChanges {
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
     this.route.queryParams.pipe(filter((param) => param['dni'])).subscribe((res) => {
       if (res['dni']) {
+        console.log(res);
         //Esto es solo cuando se resiva la cedula
         this.dni?.setValue(`${res['dni']}`)
         if (res['linkedToContractProcess'] === "approved") {
@@ -343,9 +344,17 @@ export class FormComponent implements OnInit, OnChanges {
           this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
           this.registerPayService.dniCustomerContract = `${res['dni']}`
           this.registerPayService.amountCustomerContract = `${res['amount']}`
-        }
-        else {
-          this.PagoMetodosHTML2 = MetodoDePago2
+        } else {
+          if (res['kiosco']) {
+            this.Kiosco = true;
+            this.fourthFormFibex.get('retentionImg')?.clearValidators();
+            this.fourthFormFibex.get('retentionAmount')?.clearValidators();
+            this.thirdFormFibex.get('img')?.clearValidators();
+            this.fourthFormFibex.get('retentionImg')?.updateValueAndValidity();
+            this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
+            this.thirdFormFibex.get('img')?.updateValueAndValidity();
+          }
+          this.PagoMetodosHTML2 = MetodoDePago3
         }
         //this.AppFibex = !this.AppFibex;
         //this.searchServices(res['dni'], true, true, true);
