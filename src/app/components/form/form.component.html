@@ -217,7 +217,7 @@
                   identidad</mat-error>
               </mat-form-field>
 
-              <ng-container *ngIf="possibleWithholdingAgent">
+              <ng-container *ngIf="possibleWithholdingAgent && !Kiosco">
                 <mat-form-field appearance="outline">
                   <mat-label>Es usted agente de retención?</mat-label>
                   <mat-select [(value)]="selectedRetentionOption" (selectionChange)="resetParams()">
