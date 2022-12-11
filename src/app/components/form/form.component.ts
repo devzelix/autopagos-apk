@@ -324,28 +324,32 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    // this.hcaptchaForm = this.hcaptchaFormGroup();
     this.MyInit();
-    // this.captchaSubControl();
     this._ApiMercantil.GetAddress()
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
+
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
+
     this.route.queryParams.pipe(filter((param) => param['dni'])).subscribe((res) => {
+
       if (res['dni']) {
-        console.log(res);
-        //Esto es solo cuando se resiva la cedula
         this.dni?.setValue(`${res['dni']}`)
+
         if (res['linkedToContractProcess'] === "approved") {
           this.tasaService.getSaldoBCV().subscribe((res) => {
             this.tasaCambio = res
           })
+
           this.PagoMetodosHTML2 = MetodoDePago2.filter(x => x.idpago != 4 && x.idpago != 6)
           this.registerPayService.linkedToContractProcess = `${res['linkedToContractProcess']}`
           this.registerPayService.dniCustomerContract = `${res['dni']}`
           this.registerPayService.amountCustomerContract = `${res['amount']}`
+
         } else {
+
           if (res['kiosco']) {
+
             this.Kiosco = true;
             this.fourthFormFibex.get('retentionImg')?.clearValidators();
             this.fourthFormFibex.get('retentionAmount')?.clearValidators();
@@ -356,12 +360,6 @@ export class FormComponent implements OnInit, OnChanges {
           }
           this.PagoMetodosHTML2 = MetodoDePago3
         }
-        //this.AppFibex = !this.AppFibex;
-        //this.searchServices(res['dni'], true, true, true);
-        //this.searchInfoEquipos(res['dni']);
-        //this.SendOption(0, 0, res['dni']);
-        //this.IpAddress={ip:'192.168.1.7'}
-
       }
     });
     this.dateOfPay();
@@ -370,21 +368,10 @@ export class FormComponent implements OnInit, OnChanges {
     this.getDaysFeriados();
   }
 
-  // FORMGROUP DEL CAPTCHA
-  // hcaptchaFormGroup = () => {
-  //   return this.fb.group({
-  //     hcaptcha: new FormControl(
-  //       { value: null, disabled: false },
-  //       { validators: [Validators.required] }
-  //     ),
-  //   });
-  // }
-  // FUNCIONES CONTROL DEL CAPTCHA
   DNIvalidation = (inputDni: any) => {
     const dni_ = inputDni.value
     if (dni_.length >= 1 && dni_.length < 6) {
       this.dni?.reset()
-      // this.hcaptcha?.reset()
       this.captchaService.validControl = false
       this.nameClient = '';
       this.saldoUSD = '';
@@ -396,13 +383,6 @@ export class FormComponent implements OnInit, OnChanges {
       setTimeout(() => this.closeAlert(), 1000);
     }
   }
-  // captchaSubControl = () => {
-  //   this.hcaptcha?.valueChanges.subscribe(data => {
-  //     this.hcaptcha?.valid ? this.captchaControl = false : this.captchaControl = true
-  //     this.dni?.markAsTouched();
-  //     this.dni?.updateValueAndValidity()
-  //   });
-  // }
 
   SendOption(page: number, option: any, value: any) {
     let temp = value
@@ -425,7 +405,6 @@ export class FormComponent implements OnInit, OnChanges {
 
   keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
     var inp = String.fromCharCode(event.keyCode);
-    //if(String(TypeFormKey.get(formcontrol)?.value =="")
 
     if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
       return
@@ -450,40 +429,8 @@ export class FormComponent implements OnInit, OnChanges {
         event.preventDefault();
         return false;
       }
-
-
-
   }
-
-  keypressControPhonesv2(event: any, formcontrol: string, TypeFormKey: FormGroup) {
-    var inp = String.fromCharCode(event.keyCode);
-    //if(String(TypeFormKey.get(formcontrol)?.value =="")
-    if((String(TypeFormKey.get(formcontrol)?.value).slice(0,1) == '' && event.key !='5' ) || (String(TypeFormKey.get(formcontrol)?.value).slice(1,2) =='' && event.key !='8') || (String(TypeFormKey.get(formcontrol)?.value).slice(2,3) == '0') )
-    {
-      if ((TypeFormKey.get(formcontrol)?.value !=undefined && TypeFormKey.get(formcontrol)?.value !=null && TypeFormKey.get(formcontrol)?.value !='')) {
-
-        TypeFormKey.get(formcontrol)?.reset();
-        TypeFormKey.get(formcontrol)?.setValue('58');
-
-      }else if(TypeFormKey.get(formcontrol)?.value ==undefined || TypeFormKey.get(formcontrol)?.value ==null || TypeFormKey.get(formcontrol)?.value ==''){
-
-        //TypeFormKey.get(formcontrol)?.setValue('58'+this.values);
-        return;
-      }
-  }
-      if (/^[0-9]$/.test(inp)) {
-        return true;
-      } else {
-        event.preventDefault();
-        return false;
-      }
-
-
-
-  }
-
-  // get hcaptcha() { return this.hcaptchaForm.get('hcaptcha'); }
-
+  //Transferencia
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
   get email() { return this.firstFormFibex.get('email'); }
@@ -499,7 +446,7 @@ export class FormComponent implements OnInit, OnChanges {
 
   get note() { return this.thirdFormFibex.get('note'); }
   get img() { return this.thirdFormFibex.get('img'); }
-
+  //Reporte de pago Movil
   get c_iPagMovil() { return this.PgMovilForm.get('c_i'); }
   get tlforiginReg() { return this.PgMovilForm.get('tlforiginReg'); }
   get tlfdestinReg() { return this.PgMovilForm.get('tlfdestinReg'); }
@@ -507,14 +454,14 @@ export class FormComponent implements OnInit, OnChanges {
   get datepgmovil() { return this.PgMovilForm.get('datepgmovil'); }
   get cantidad() { return this.PgMovilForm.get('cantidad'); }
   get prec_i() { return this.PgMovilForm.get('prec_i'); }
-
+  //Pago Movil Mercantil
   get tlforigin() { return this.PgMovilRegForm.get('tlforigin'); }
   get c_iRegPgoMvil() { return this.PgMovilRegForm.get('c_i'); }
   get pref_ci() { return this.PgMovilRegForm.get('pref_ci'); }
   get tlfdestin() { return this.PgMovilRegForm.get('tlfdestin'); }
   get auth() { return this.PgMovilRegForm.get('auth'); }
   get amountPm() { return this.PgMovilRegForm.get('amountPm'); }
-
+  //Debito o Credito
   get ccv() { return this.DebitoCredito.get('ccv'); }
   get typeCuenta() { return this.DebitoCredito.get('typeCuenta'); }
   get pref_ciDC() { return this.DebitoCredito.get('pref_ci'); }
@@ -524,17 +471,14 @@ export class FormComponent implements OnInit, OnChanges {
   get cantidadDC() { return this.DebitoCredito.get('cantidad'); }
   get c_iDC() { return this.DebitoCredito.get('c_i'); }
   get Clavetlfonica() { return this.DebitoCredito.get('Clavetlfonica'); }
-
-
-
+  //Criptomoneda
   get Referencia_Cripto() { return this.CriptomonedaForm.get('Referencia_Cripto'); }
   get Monto_Cripto() { return this.CriptomonedaForm.get('Monto_Cripto'); }
   get c_i_Cripto() { return this.CriptomonedaForm.get('c_i_Cripto'); }
   get Pref_ci_Cripto() { return this.CriptomonedaForm.get('Pref_ci_Cripto'); }
-
+  //Retencion
   get retentionAmount() { return this.fourthFormFibex.get('retentionAmount'); }
   get retentionImg() { return this.fourthFormFibex.get('retentionImg'); }
-
 
 
   ClearCedula(Cedula: any) {
@@ -552,7 +496,6 @@ export class FormComponent implements OnInit, OnChanges {
       event.preventDefault();
     }
   }
-
 
   TipoPago(x: number) {
     this.tipo_pago = x;
@@ -764,7 +707,7 @@ export class FormComponent implements OnInit, OnChanges {
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
       this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
        `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`,'');
-    } else if(Valor == "mercantil") {//<button onclick="copyToClipboard()"> <img src="assets/images/Copiar_Datos.png" width="35" height="35" alt="Pago_Movil_QR"> </button>
+    } else if(Valor == "mercantil") {
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
       this.RegistrarPagoMovilboolean = true;
@@ -879,26 +822,20 @@ export class FormComponent implements OnInit, OnChanges {
           this.uploadingImg = false;
           return;
         }
-        // this.alertFindDni('Subiendo comprobante de pago', 'Porfavor espere');
-        // this.closeAlert();
         this.uplaodImageService.getUrlImageBase64({ dataFileBase64: imageBase64 }).subscribe(
           (res) => {
             this.uploadingImg = false;
             if (res.status === 500 || res.status === 400) {
-              //this.countErrorUploadImage(imageBase64);
               return;
             }
 
             imageBase64 = '';
             this.imageUrl = res.url;
             this.SendOption(2, 0, res.url);
-            //this.img?.patchValue(res.url);
             this.imageUploaded = true;
           }, (err) => {
             this.uploadingImg = false;
-            // this.countErrorUploadImage(imageBase64);
             console.error('error registro pago', err);
-            // console.error(err);
           });
       }
     }
@@ -925,39 +862,32 @@ export class FormComponent implements OnInit, OnChanges {
             return;
           }
 
-          var dt = new Date();
-          let year = dt.getFullYear();
-          let month = (dt.getMonth() + 1).toString().padStart(2, "0");
-          let day = dt.getDate().toString().padStart(2, "0");
-          let Hour = dt.getHours().toString();
-          let Minute = dt.getMinutes().toString();
-          let Second = dt.getSeconds().toString();
-          let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
-          // console.log(NameCloud)
-          //Paso el file en base64 y el nombre que se le asignara
-          this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
-            .then((response: any) => {
-              if (response.hasOwnProperty('error')) {
-                // this.uploadingImg = false;
-                //this.openSnackBar('Error: '+response.error.message);
-                this.countErrorUploadImage(imageBase64, NameCloud);
-                return;
-              }
-              this.uploadingImg = false;
-              imageBase64 = '';
+            var dt = new Date();
+            let year = dt.getFullYear();
+            let month = (dt.getMonth() + 1).toString().padStart(2, "0");
+            let day = dt.getDate().toString().padStart(2, "0");
+            let Hour = dt.getHours().toString();
+            let Minute = dt.getMinutes().toString();
+            let Second = dt.getSeconds().toString();
+            let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
+            //Paso el file en base64 y el nombre que se le asignara
+            this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
+              .then((response: any) => {
+                if (response.hasOwnProperty('error')) {
+                  this.countErrorUploadImage(imageBase64, NameCloud);
+                  return;
+                }
+                this.uploadingImg = false;
+                imageBase64 = '';
 
-              this.imageUrl = response.secure_url;
-              // console.log(this.imageUrl)
-
-              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
-              this.SendOption(2, 0, response.url);
-              //this.img?.patchValue(res.url);
-              this.imageUploaded = true;
-            })
-            .catch((error: any) => {
-              console.error(error);
-              this.countErrorUploadImage(imageBase64, NameCloud)
-            })
+                this.imageUrl = response.secure_url;
+                this.SendOption(2, 0, response.url);
+                this.imageUploaded = true;
+              })
+              .catch((error: any) => {
+                console.error(error);
+                this.countErrorUploadImage(imageBase64, NameCloud)
+              })
         }
       } else {
         this.ValidExtension = false;
@@ -1024,8 +954,6 @@ export class FormComponent implements OnInit, OnChanges {
         this.ComprobantesPago = Data
       }
     });
-
-    // this.ComprobantesPago
   }
 
   NextMatStepper() {
@@ -1059,23 +987,17 @@ export class FormComponent implements OnInit, OnChanges {
           let Minute = dt.getMinutes().toString();
           let Second = dt.getSeconds().toString();
           let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
-          // console.log(NameCloud)
           //Paso el file en base64 y el nombre que se le asignara
           this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
             .then((response: any) => {
               if (response.hasOwnProperty('error')) {
-                // this.uploadingRetentionImg = false;
-                //this.openSnackBar('Error: '+response.error.message);
                 this.countErrorUploadImage(imageBase64, NameCloud);
                 return;
               }
               this.uploadingRetentionImg = false;
               imageBase64 = '';
               this.retentionImageUrl = response.secure_url;
-              // console.log(this.retentionImageUrl)
-              //var ext = value.substring(value.lastIndexOf('.') + 1).toLowerCase();
               this.SendOption(2, 0, response.url);
-              //this.img?.patchValue(res.url);
               this.retentionimageUploaded = true;
             })
             .catch((error: any) => {
@@ -1156,7 +1078,6 @@ export class FormComponent implements OnInit, OnChanges {
             this.sendingPay = false;
             if (res.data.ReportePago_Falla && res.data.ReportePago_Falla.length > 0) {
               try {
-                //const index = res.data.ReportePago_Falla.findIndex((duplicado: any) => duplicado.to == "DUPLICADO");
                 res.data.ReportePago_Falla.forEach((Data: any) => {
                   if (Data.to == "DUPLICADO") {
                     this.playDuplicated = true;
@@ -1222,8 +1143,6 @@ export class FormComponent implements OnInit, OnChanges {
     this.cambio_act = 0;
     this.MyInit()
     this.ScrollUp()
-
-    // this.firstFormFibex.removeValidators(Validators.required);
 
     this.firstFormFibex.patchValue({
       name: '',
@@ -1315,7 +1234,6 @@ export class FormComponent implements OnInit, OnChanges {
               this.closeAlert2();
               this.listContratos = [];
               this.ComprobantesPago = [];
-              //this.verifyDNI = true;
               this.SendOption(0, 0, dni_);
 
               if (this.registerPayService.linkedToContractProcess != 'approved') {
@@ -1622,7 +1540,6 @@ export class FormComponent implements OnInit, OnChanges {
         Email.includes("pagofibes") || Email.includes("pagosfibes") ||
         Email.includes("pagofivex") || Email.includes("pagosfivex") ||
         Email.includes("pagofives") || Email.includes("pagosfives")) {
-
         this.enableBtn = true
         Swal.fire({
           icon: 'error',
@@ -1685,20 +1602,16 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   selectInfoEquipos(id_contrato: string) {
-    // console.log(id_contrato);
     this.paquete = ''
     let paquete = this.paquetesContratos.find((index) => {
-      // console.log(index);
       return index.id_contrato === id_contrato
     })?.paquete;
-    // console.log(paquete, '-------------------------------------------------paquete');
     if (paquete !== undefined) {
       this.paquete = paquete;
     }
   }
 
   contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string }, ppal?: boolean) {
-    //this.validateIfAmountIsNegativer(contrato.saldo);
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
@@ -1707,7 +1620,6 @@ export class FormComponent implements OnInit, OnChanges {
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato)
-    // this.selectInfoEquipos(this.idContrato);
     if (ppal) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
@@ -1844,13 +1756,11 @@ export class FormComponent implements OnInit, OnChanges {
       confirmButtonText: 'Seguir adelante'
     }).then((result) => {
       if (result.isConfirmed && !use) {
-        //console.log(!this.disbaleButtonIfAmountIsInvalid, !this.disbaleButtonIfAmountIs0, this.firstFormFibex.invalid, this.disbaleButtonIfDateIsInvalid)
         if (!this.disbaleButtonIfAmountIsInvalid &&
           !this.disbaleButtonIfAmountIs0 &&
           this.firstFormFibex.valid &&
           !this.disbaleButtonIfDateIsInvalid &&
           !this.invalidAmount) {
-          //this.stepper.selectedIndex = next;
           this.NextMatStepper();
         }
       }
@@ -1933,14 +1843,12 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   openDialogCmprobante(dataC: any): void {
-    // console.log(dataC);
     const dialogRef = this.dialog.open(DialogDetailComprobantesComponent, {
       width: '300px',
       data: dataC,
     });
 
     dialogRef.afterClosed().subscribe((dataC2: boolean) => {
-      // console.log(dataC2);
     });
   }
 
@@ -1948,9 +1856,7 @@ export class FormComponent implements OnInit, OnChanges {
     if (parseFloat(saldo) <= 0) {
       this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: ' + (parseFloat(saldo) * -1).toFixed(2) + ' REGISTO PAGO ADELANTADO');
       setTimeout(() => {
-        // this.ResetForm();
       }, 1500)
-      // this.nameClient = '';
     }
   }
 
@@ -1965,12 +1871,10 @@ export class FormComponent implements OnInit, OnChanges {
     this.retentionImg?.setValue('');
     this.retentionImageUrl = '';
     this.retentionimageUploaded = false;
-    //this._Cloudinary.DeleteImageCloudynariSignature()
-    // this.SendOption(2, 0, "deleteimage");
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
-    // console.log("ValidarIfAomuntIsNegativer");
+
     if (national) {
       if (parseInt(amount) <= 0) {
         this.amount?.setValue('');
@@ -2018,7 +1922,6 @@ export class FormComponent implements OnInit, OnChanges {
     }
     this.totalAmount = Number(this.amount?.value);
     this.NextMatStepper();
-    //this.stepper.selectedIndex = index;
   }
 
   nextStepWithRetention(verifyAmount?: boolean) {
@@ -2040,9 +1943,7 @@ export class FormComponent implements OnInit, OnChanges {
         }
       }
     }
-    //this.totalAmount = Number(this.amount?.value); NO DESCOMENTAR, SINO NO SE SUMA EL MONTO TOTAL
     this.NextMatStepper();
-    //this.stepper.selectedIndex = index;
   }
 
   considerWithholdingAmount() {
@@ -2101,15 +2002,12 @@ export class FormComponent implements OnInit, OnChanges {
           this.counterErrors = 0;
           this.openSnackBar('Error al subir la imagen, intente más tarde');
           this.uploadingImg = false;
-          //this.img?.removeValidators(Validators.required);
           return;
         }
         if (environment.PHPUpload) {
           this._UploadPHP.uploadFilePHP(filebase64, NameFile)
             .then((response: any) => {
               if (response.error) {
-                // this.uploadingImg = false;
-                //this.openSnackBar('Error: '+response.error.message);
                 this.openSnackBar('Error al subir la imagen, intente nuevamente');
                 this.counterErrors++;
                 return;
@@ -2118,7 +2016,6 @@ export class FormComponent implements OnInit, OnChanges {
               filebase64 = '';
               this.imageUrl = response.url;
               this.SendOption(2, 0, response.url);
-              //this.img?.patchValue(res.url);
               this.imageUploaded = true;
             })
             .catch((error: any) => {
@@ -2143,16 +2040,13 @@ export class FormComponent implements OnInit, OnChanges {
           filebase64 = '';
           this.imageUrl = res.url;
           this.SendOption(2, 0, res.url);
-          //this.img?.patchValue(res.url);
           this.imageUploaded = true;
         }, (err) => {
           this.uploadingImg = false;
-          //this.countErrorUploadImage(imageBase64);
           console.error('error registro pago', err);
           this.openSnackBar('Error al subir la imagen, intente nuevamente');
           this.counterErrors++;
           this.img?.setValue('');
-          // console.error(err);
         });
     } else {
       this.img?.setValue('');
@@ -2268,10 +2162,6 @@ export class FormComponent implements OnInit, OnChanges {
         this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
           `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
       }
-
-
-      /*this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,`<div align="left"><strong>Cedula:</strong> V26728159 <br> <strong>Cuenta:</strong> Corriente <br>
-      <strong>Nro. tarjeta:</strong> 501878200102618990<br> <strong>Fecha de Vencimiento:</strong> 04/2027 <br> <strong>Cantidad a pagar en Bolivares:</strong> 0.1 <br></div>`,`Editar Datos`,`Procesar pago`,Metodo)*/
     }
   }
 
@@ -2309,7 +2199,6 @@ export class FormComponent implements OnInit, OnChanges {
             this.firstFormFibex.get('date')?.setValue('');
             this.dateInvalid = true;
             this.errorDate = !this.errorDate;
-            //this.date_.value  = '';
             return;
           }
           this.dateInvalid = false;
@@ -2343,9 +2232,6 @@ export class FormComponent implements OnInit, OnChanges {
             this.amount?.setValue('');
             return;
           }
-        }
-        if (Number(value) > 0) {
-          //  this.incorrectBankAndAmount(value);
         }
         this.invalidAmount = false;
       }
@@ -2413,7 +2299,6 @@ export class FormComponent implements OnInit, OnChanges {
 
   getDaysFeriados() {
     this._Consultas.getDaysFeriados().subscribe((res) => {
-      //console.log(res)
       this.daysFeriados = res;
     });
   }

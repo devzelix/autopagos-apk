@@ -288,24 +288,12 @@
               <mat-form-field appearance="outline" *ngIf="!BancoNacional(banco)">
                 <mat-label>Nombre titular cuenta </mat-label>
                 <input matInput formControlName="nameTitular" #inputNameT (blur)="SendOption(1,0,inputNameT.value)">
-                <!--
-                    <mat-error>Invalid name</mat-error>
-                  -->
               </mat-form-field>
               <mat-form-field appearance="outline" *ngIf="!BancoNacional(banco)">
                 <mat-label>Email titular cuenta</mat-label>
                 <input matInput formControlName="emailTitular" #inputEmailT (blur)="SendOption(1,1,inputEmailT.value)">
-                <!--
-                    <mat-error>Invalid e-mail</mat-error>
-                  -->
               </mat-form-field>
-              <!--
-                  <mat-form-field appearance="outline">
-                    <mat-label>Cédula/Rif</mat-label>
-                    <input matInput formControlName="dniTitular" required>
-                    <mat-error>Invalid e-mail</mat-error>
-                  </mat-form-field>
-                -->
+
               <p>Es el número de referencia del BANCO</p>
               <mat-form-field appearance="outline">
                 <mat-label>Número de comprobante</mat-label>
@@ -320,10 +308,6 @@
               <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago"
                 class="mat-elevation-z8">
 
-                <!--- Note that these columns can be defined in any order.
-                          The actual rendered columns are set as a property on the row definition" -->
-
-                <!-- Name Column -->
                 <ng-container matColumnDef="Comprobante">
                   <th mat-header-cell *matHeaderCellDef> Comprobante </th>
                   <td mat-cell *matCellDef="let element"> {{element.Referencia}} </td>
@@ -360,7 +344,6 @@
             <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
               <button class="button-material-next btn-width-70" (click)="VerifyRefencia()" mat-raised-button
                 type="button" [disabled]="this.secondFormFibex.invalid">
-                <!--matStepperNext-->
                 Siguiente
               </button>
 
@@ -610,7 +593,6 @@
           <mat-label>Banco</mat-label>
           <mat-select [value]=SelectPagoc2p #valor>
             <mat-option (click)="SelectedPagoC2P(valor)"  value="mercantil">Mercantil</mat-option>
-            <!-- <mat-option (click)="SelectedPagoC2P(valor)"  value="otros">Otros Bancos</mat-option> -->
           </mat-select>
         </mat-form-field>
 
@@ -701,8 +683,6 @@
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text" placeholder="Ejemplo: 584121234567">
-              <!-- <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">Su teléfono es requerido
-              </mat-error> -->
               <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
                 <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
                 <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567</p>
@@ -1040,79 +1020,6 @@
 
       </mat-step>
       <!-- / Fin de Crédito o Débito -->
-
-      <!-- Criptomoneda -->
-      <!-- <mat-step *ngIf="Criptomoneda" [stepControl]="CriptomonedaForm">
-        <div *ngIf="nameClient && saldoBs && saldoUSD" class="desc-user">
-          <div>
-            <h4 class="name-client">
-              {{nameClient}}
-            </h4>
-            <h4 class="name-client">
-              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-            </h4>
-          </div>
-          <div>
-            <h4 class="name-client">
-              Servicio: {{ paquete }}
-            </h4>
-            <h4 class="name-client">
-              Subscripción: {{subscription}} USD
-            </h4>
-          </div>
-        </div>
-        <ng-template matStepLabel>Datos de pago</ng-template>
-        <form [formGroup]="CriptomonedaForm">
-          <div>
-            <mat-label>Cédula del titular</mat-label><br>
-
-            <mat-form-field appearance="outline" class="Prefc_i">
-              <mat-select formControlName="Pref_ci_Cripto">
-                <mat-option value="V">V</mat-option>
-                <mat-option value="E">E</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <input type="number" matInput required formControlName="c_i_Cripto" NumbersOnly="true" #inputDni>
-              <mat-error *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('minlength')">
-                La cédula debe contener al menos 6 carácteres
-              </mat-error>
-              <mat-error *ngIf="CriptomonedaForm.get('c_i_Cripto')?.hasError('required')">
-                La cédula es requerida
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-login__item">
-            <mat-form-field appearance="outline">
-              <mat-label>Cantidad a pagar </mat-label>
-              <input matInput formControlName="Monto_Cripto" required readonly>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Nro. Referencia</mat-label>
-              <input type="text" matInput formControlName="Referencia_Cripto" NumbersOnly="true" #inputDni>
-              <mat-error *ngIf="CriptomonedaForm.get('Referencia_Cripto')?.hasError('required')">
-                El número de referencia es requerido
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-        </form>
-        <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button [disabled]="!CriptomonedaForm.valid" class="button-material-next btn-width-70" mat-raised-button
-            type="button">
-            Reportar
-          </button>
-          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
-            type="button" matStepperPrevious>
-            Regresar
-          </button>
-        </div>
-
-      </mat-step> -->
-      <!-- / Fin de Criptomoneda -->
     </mat-stepper>
 
   </div>
