@@ -2193,9 +2193,9 @@ export class FormComponent implements OnInit, OnChanges {
         if (value) {
           let date = new Date(value).getTime()
           const { days } = this.miceService.timeDifference(new Date().getTime(), date);
-          if (days > 91) {
+          if (days > 182) {
 
-            this.invalidForm('No puede reportar un pago de hace 3 meses o más', 'Por favor diríjase a una oficina comercial');
+            this.invalidForm('No puede reportar un pago con más de 6 meses', 'Por favor diríjase a una oficina comercial');
             this.firstFormFibex.get('date')?.setValue('');
             this.dateInvalid = true;
             this.errorDate = !this.errorDate;
@@ -2218,17 +2218,17 @@ export class FormComponent implements OnInit, OnChanges {
     this.amount?.valueChanges.subscribe({
       next: (value) => {
         if (this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
             this.amount?.setValue('');
             return;
           }
         }
         if (!this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 6) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
             this.amount?.setValue('');
             return;
           }
@@ -2241,9 +2241,9 @@ export class FormComponent implements OnInit, OnChanges {
   amountInvalidCreditoDebitoPagoMovil() {
     this.cantidadDC?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
           this.invalidAmount = true;
-          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
           this.cantidadDC?.setValue('');
           return;
         }
@@ -2253,8 +2253,8 @@ export class FormComponent implements OnInit, OnChanges {
 
     this.cantidad?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
-          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
           this.cantidad?.setValue('');
           this.invalidAmount = true;
           return;
@@ -2265,8 +2265,8 @@ export class FormComponent implements OnInit, OnChanges {
 
     this.amountPm?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 3) {
-          this.invalidForm(`Usted no puede reportar 3 meses de su subscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
           this.amountPm?.setValue('');
           this.invalidAmount = true;
           return;
