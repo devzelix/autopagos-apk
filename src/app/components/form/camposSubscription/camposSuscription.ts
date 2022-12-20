@@ -168,7 +168,7 @@ export let MetodoDePago3 = [
     tipopago:"Zelle",
     image:'assets/images/Icono_Zelle.png',
     alt:'Zelle',
-    omitir:false,
+    omitir:true,
   },
   {
     idpago:5,
