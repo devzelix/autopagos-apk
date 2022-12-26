@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment as env } from '../../environments/environment.prod';
 import axios from 'axios';
 import { BanksDays } from '../interfaces/banksDays';
+import * as CryptoJS from 'crypto-js';
+import { RegisterPayService } from './register-pay.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +13,15 @@ import { BanksDays } from '../interfaces/banksDays';
 export class ConsultasService {
 
   private URLBACK: string = env.urlBackThomas;
-  
+  private tokendbfulll: string = env.tokendbFull;
+  private URLDBFULL: string = env.urlDBFULL;
+
   constructor(
-    private http: HttpClient
-  ) { }
+    private http: HttpClient,
+    private registerPayService: RegisterPayService,
+  ) {
+    this.getDaysFeriados()
+  }
 
   Send(Option: any, Msg?: any, Tipo?: any, url?: any, idDevice?: any) {
 
@@ -65,7 +72,17 @@ export class ConsultasService {
   }
 
   getDaysFeriados(): Observable<BanksDays[]> {
-    return this.http.get<BanksDays[]>(`${this.URLBACK}find-all-info/thomas_cobertura/feriados_BCV`)
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'TokenAuthPlataform': this.tokendbfulll,
+        'Authorization': 'Basic ' + btoa('Onur:L4V1d43NsuPl3N1tud**=BghYjLaQeTB'),
+        'db': this.registerPayService.encrypt('thomas_cobertura'),
+        'table': this.registerPayService.encrypt('feriados_BCV'),
+        'type': this.registerPayService.encrypt('find-all-info'),
+      })
+    }
+    return this.http.get<BanksDays[]>(`${this.URLDBFULL}`, httpOptions)
   }
 
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment as env } from '../../environments/environment.prod';
 import { RegisterPay } from '../interfaces/registerPay';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +13,21 @@ export class RegisterPayService {
 
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
-  private URLAPITHOMAS: string = env.urlThomasApi;
+  // private URLAPITHOMAS: string = env.urlThomasApi;
+  private URLDBFULL: string = env.urlDBFULL;
+  private URLAPISSLTHOMAS: string = env.urlApisslThomas;
+  private URLAPISSLTHOMASSEND: string = env.urlApisslThomasSend;
+  private TOKEN: string = env.securityEncrt;
+  private ApiKeyApissl: string = env.ApiKeyApissl;
+  private tokendbfulll: string = env.tokendbFull;
   public dniCustomerContract: string
   public amountCustomerContract: string
   public linkedToContractProcess: string
 
   constructor(
     private http: HttpClient,
-  ) { }
+  ) {
+  }
 
   /* registerPayClient(infoClient: RegisterPay): Observable<any> {
     infoClient.note = infoClient.note+'-Recibo:'+infoClient.img
@@ -56,6 +64,16 @@ export class RegisterPayService {
       }
       ));
   } */
+
+  encrypt(str: string) {
+    let encrypted = CryptoJS.AES.encrypt(str, this.TOKEN, {
+      keySize: 16,
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    // console.log('encrypted.toString() :>> ', encrypted.toString());
+    return encrypted.toString();
+  }
 
   registerPayClient(infoClient: any) {
     return new Promise(async (resolve: any, reject: any) => {
@@ -170,9 +188,29 @@ export class RegisterPayService {
     })
   }
 
+  datatoEncrip = () =>{
+    console.log('find-any-info/thomas_cobertura/tmClientes/identidad/${Cedula}');
+    console.log('find-any-info :>> ', this.encrypt('find-any-info'));
+    console.log('thomas_cobertura :>> ', this.encrypt('thomas_cobertura'));
+    console.log('tmClientes :>> ', this.encrypt('tmClientes'));
+    console.log('identidad :>> ', this.encrypt('identidad'));
+    console.log('Cedula :>> ', this.encrypt('12345678'));
+  }
+
   GetDataClient(Cedula: any) {
     return new Promise(async (resolve: any, reject: any) => {
-      this.http.get(`${env.urlBackThomas}find-any-info/thomas_cobertura/tmClientes/identidad/${Cedula}`).subscribe((ResClient: any) => {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'TokenAuthPlataform': this.tokendbfulll,
+          'Authorization': 'Basic ' + btoa('Onur:L4V1d43NsuPl3N1tud**=BghYjLaQeTB'),
+          'db': this.encrypt('thomas_cobertura'),
+          'table': this.encrypt('tmClientes'),
+          'type': this.encrypt('find-any-info'),
+          'campo': this.encrypt('identidad'),
+          'valor': this.encrypt(Cedula)
+        })
+      }
+      this.http.get(`${this.URLDBFULL}`, httpOptions).subscribe((ResClient: any) => {
         resolve(ResClient)
       }, err => {
         reject(err)
@@ -195,7 +233,18 @@ export class RegisterPayService {
   } */
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
-    return this.http.get(`${this.URLAPITHOMAS}ConciliacionPago/${nroContrato}/${Referencia}/${env.lic}`)
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'method': this.encrypt('ConciliacionPago'),
+        'token': this.encrypt(this.ApiKeyApissl),
+        'NroReferencia': this.encrypt(Referencia),
+        'NroContrato': this.encrypt(nroContrato),
+        'lic': this.encrypt(env.lic),
+        'platform': 'PagosMercantil'
+      }
+    })
       .pipe(
         map((res: any) => {
           let jsonres = JSON.parse(res);
@@ -205,7 +254,17 @@ export class RegisterPayService {
   }
 
   GetListService(id_contrato: any) {
-    return this.http.get(`${this.URLAPITHOMAS}ServiciosIdCo/${id_contrato}/${env.lic}`)
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'method': this.encrypt('ServiciosIdCo'),
+        'token': this.encrypt(this.ApiKeyApissl),
+        'id': this.encrypt(id_contrato),
+        'lic': this.encrypt(env.lic),
+        'platform': 'PagosMercantil'
+      }
+    })
       .pipe(
         map((res: any) => {
           let jsonres = JSON.parse(res);
@@ -225,7 +284,16 @@ export class RegisterPayService {
   }
 
   getNewBankList() {
-    return this.http.get(`${this.URLAPITHOMAS}CtasBancarias/${env.lic}`)
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'method': this.encrypt('CtasBancarias'),
+        'token': this.encrypt(this.ApiKeyApissl),
+        'lic': this.encrypt(env.lic),
+        'platform': 'PagosMercantil'
+      }
+    })
       .pipe(
         map((res: any) => {
           let jsonres = JSON.parse(res);
@@ -236,10 +304,14 @@ export class RegisterPayService {
 
 
   getSaldoByDni(dni: string) {
-    return this.http.get(`${this.URLAPITHOMAS}SaldoCe/${dni}/${env.lic}`,
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
       {
         headers: {
-          'Content-Type': 'application/json'
+          method: this.encrypt('SaldoCe'),
+          token: this.encrypt(this.ApiKeyApissl),
+          id: this.encrypt(dni),
+          lic: this.encrypt(env.lic),
+          platform: 'PagosMercantil'
         }
       }
     )
@@ -252,7 +324,15 @@ export class RegisterPayService {
   }
 
   getTypeClient(dni: string) {
-    return this.http.get(`${this.URLAPITHOMAS}GetTypeClient/${dni}`,
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
+    {
+      headers: {
+        method: this.encrypt('GetTypeClient'),
+        token: this.encrypt(this.ApiKeyApissl),
+        Cedula: this.encrypt(dni),
+        platform: 'PagosMercantil'
+      }
+    }
     )
       .pipe(
         map((res: any) => {
@@ -263,7 +343,17 @@ export class RegisterPayService {
 
 
   infoEquiposClientes(dni: string) {
-    return this.http.get<any>(`${this.URLAPITHOMAS}InfoEquipos/${dni}/${env.lic}`)
+    return this.http.get(`${this.URLAPISSLTHOMAS}`,
+    {
+      headers: {
+        'method': this.encrypt('InfoEquipos'),
+        'token': this.encrypt(this.ApiKeyApissl),
+        'id': this.encrypt(dni),
+        'lic': this.encrypt(env.lic),
+        'platform': 'PagosMercantil',
+        'Content-Type': 'application/json'
+      }
+    })
       .pipe(
         map((res: any) => {
           let result = JSON.parse(res);
@@ -345,8 +435,15 @@ export class RegisterPayService {
               }
             ]
           }
-
-          this.http.post(env.urlThomasApi + `SendWhats`, DataWa).subscribe((response: any) => {
+          this.http.post(`${this.URLAPISSLTHOMASSEND}`, DataWa,
+            {
+              headers: {
+                'method': this.encrypt('SendWhats'),
+                'token': this.encrypt(this.ApiKeyApissl),
+                'platform': 'PagosMercantil',
+                'Content-Type': 'application/json'
+              }
+            }).subscribe((response: any) => {
 
           }, (error) => {
             reject(error);
