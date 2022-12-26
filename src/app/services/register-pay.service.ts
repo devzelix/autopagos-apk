@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { environment as env } from '../../environments/environment.prod';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
+import { SeguridadDatos } from './bscript.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,15 +18,18 @@ export class RegisterPayService {
   private URLDBFULL: string = env.urlDBFULL;
   private URLAPISSLTHOMAS: string = env.urlApisslThomas;
   private URLAPISSLTHOMASSEND: string = env.urlApisslThomasSend;
+  private urlConsultassslThomas: string = env.urlConsultassslThomas;
   private TOKEN: string = env.securityEncrt;
   private ApiKeyApissl: string = env.ApiKeyApissl;
   private tokendbfulll: string = env.tokendbFull;
+  private authDBFULL: string = env.authdbFUll;
   public dniCustomerContract: string
   public amountCustomerContract: string
   public linkedToContractProcess: string
 
   constructor(
     private http: HttpClient,
+    private security: SeguridadDatos,
   ) {
   }
 
@@ -71,7 +75,6 @@ export class RegisterPayService {
       mode: CryptoJS.mode.ECB,
       padding: CryptoJS.pad.Pkcs7,
     });
-    // console.log('encrypted.toString() :>> ', encrypted.toString());
     return encrypted.toString();
   }
 
@@ -188,34 +191,38 @@ export class RegisterPayService {
     })
   }
 
-  datatoEncrip = () =>{
-    console.log('find-any-info/thomas_cobertura/tmClientes/identidad/${Cedula}');
-    console.log('find-any-info :>> ', this.encrypt('find-any-info'));
-    console.log('thomas_cobertura :>> ', this.encrypt('thomas_cobertura'));
-    console.log('tmClientes :>> ', this.encrypt('tmClientes'));
-    console.log('identidad :>> ', this.encrypt('identidad'));
-    console.log('Cedula :>> ', this.encrypt('12345678'));
+  MasterGETDBFULL(headersData: any, url: string) {
+    return new Promise(async (resolve: any, reject: any) => {
+      this.security.EncrypDataHash(headersData).then((headers: any) => {
+        headers.TokenAuthPlataform = this.tokendbfulll
+        headers.Authorization = this.authDBFULL
+        this.http.get(url, { headers }).subscribe((res:any) => {
+              let jsonres;
+              resolve(res);
+            })
+          }).catch((error: any) => {
+            reject(error)
+          })
+
+    })
   }
 
   GetDataClient(Cedula: any) {
+
     return new Promise(async (resolve: any, reject: any) => {
-      const httpOptions = {
-        headers: new HttpHeaders({
-          'TokenAuthPlataform': this.tokendbfulll,
-          'Authorization': 'Basic ' + btoa('Onur:L4V1d43NsuPl3N1tud**=BghYjLaQeTB'),
-          'db': this.encrypt('thomas_cobertura'),
-          'table': this.encrypt('tmClientes'),
-          'type': this.encrypt('find-any-info'),
-          'campo': this.encrypt('identidad'),
-          'valor': this.encrypt(Cedula)
-        })
-      }
-      this.http.get(`${this.URLDBFULL}`, httpOptions).subscribe((ResClient: any) => {
-        resolve(ResClient)
-      }, err => {
-        reject(err)
+      const headersData = {
+        db: `thomas_cobertura`,
+        table: 'tmClientes',
+        type: 'find-any-info',
+        campo: 'identidad',
+        valor: Cedula,
+      };
+      this.MasterGETDBFULL(headersData, this.URLDBFULL).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
       })
-    })
+  })
   }
 
   /* SendDataConciliar(Data: any) {
@@ -233,44 +240,41 @@ export class RegisterPayService {
   } */
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'method': this.encrypt('ConciliacionPago'),
-        'token': this.encrypt(this.ApiKeyApissl),
-        'NroReferencia': this.encrypt(Referencia),
-        'NroContrato': this.encrypt(nroContrato),
-        'lic': this.encrypt(env.lic),
-        'platform': 'PagosMercantil'
-      }
-    })
-      .pipe(
-        map((res: any) => {
-          let jsonres = JSON.parse(res);
-          return jsonres
-        }
-        ))
+
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        method: `ConciliacionPago`,
+        token: this.ApiKeyApissl,
+        NroReferencia: Referencia,
+        NroContrato: nroContrato,
+        platform: "PagosMercantil",
+        lic:env.lic
+      };
+      console.log('headersData :>> ', headersData);
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
   }
 
   GetListService(id_contrato: any) {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'method': this.encrypt('ServiciosIdCo'),
-        'token': this.encrypt(this.ApiKeyApissl),
-        'id': this.encrypt(id_contrato),
-        'lic': this.encrypt(env.lic),
-        'platform': 'PagosMercantil'
-      }
-    })
-      .pipe(
-        map((res: any) => {
-          let jsonres = JSON.parse(res);
-          return jsonres
-        }
-        ))
+
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        method: `ServiciosIdCo`,
+        token: this.ApiKeyApissl,
+        id: id_contrato,
+        lic:env.lic,
+        platform: "PagosMercantil",
+      };
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
   }
 
   getBancosList(): Observable<any> {
@@ -284,85 +288,109 @@ export class RegisterPayService {
   }
 
   getNewBankList() {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'method': this.encrypt('CtasBancarias'),
-        'token': this.encrypt(this.ApiKeyApissl),
-        'lic': this.encrypt(env.lic),
-        'platform': 'PagosMercantil'
-      }
-    })
-      .pipe(
-        map((res: any) => {
-          let jsonres = JSON.parse(res);
-          return jsonres.data.info;
-        }
-        ))
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        method: `CtasBancarias`,
+        token: this.ApiKeyApissl,
+        platform: "PagosMercantil",
+        lic:env.lic
+      };
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
   }
 
+  MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      if (post) {
+        this.security.EncrypDataHash(headersData).then((headers: any) => {
+          this.http.post(url, body, { headers }).subscribe((res:any) => {
+                let jsonres;
+                try {
+                  jsonres = JSON.parse(res);
+                } catch (error) {
+                  jsonres = JSON.parse(res[0]);
+                }
+                resolve(jsonres.data.info);
+              })
+            }).catch((error: any) => {
+              reject(error)
+            })
+      }
+      else{
+        this.security.EncrypDataHash(headersData).then((headers: any) => {
+          this.http.get(url, { headers }).subscribe((res:any) => {
+                let jsonres;
+                try {
+                  jsonres = JSON.parse(res);
+                } catch (error) {
+                  jsonres = JSON.parse(res[0]);
+                }
+                resolve(jsonres.data.info);
+              })
+            }).catch((error: any) => {
+              reject(error)
+            })
+      }
+
+    })
+  }
 
   getSaldoByDni(dni: string) {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-      {
-        headers: {
-          method: this.encrypt('SaldoCe'),
-          token: this.encrypt(this.ApiKeyApissl),
-          id: this.encrypt(dni),
-          lic: this.encrypt(env.lic),
-          platform: 'PagosMercantil'
-        }
-      }
-    )
-      .pipe(
-        map((res: any) => {
-          let jsonres = JSON.parse(res);
-          return jsonres.data.info;
+    return new Promise(async (resolve: any, reject: any) => {
+        const headersData = {
+          method: `SaldoCe`,
+          token: this.ApiKeyApissl,
+          platform: "PagosMercantil",
+          id:dni,
+          lic:env.lic
+        };
+        this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+          resolve(data);
+        }).catch((error: any) => {
+          reject(error)
         })
-      );
+    })
+
   }
 
+
   getTypeClient(dni: string) {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-    {
-      headers: {
-        method: this.encrypt('GetTypeClient'),
-        token: this.encrypt(this.ApiKeyApissl),
-        Cedula: this.encrypt(dni),
-        platform: 'PagosMercantil'
-      }
-    }
-    )
-      .pipe(
-        map((res: any) => {
-          return res;
+    return new Promise(async (resolve: any, reject: any) => {
+        const headersData =  {
+          method: `GetTypeClient`,
+          token: this.ApiKeyApissl,
+          cedula: dni,
+          platform: 'PagosMercantil'
+        };
+        this.MasterGETPOST(headersData, this.urlConsultassslThomas).then((data) => {
+          resolve(data);
+        }).catch((error: any) => {
+          reject(error)
         })
-      );
+    })
   }
 
 
   infoEquiposClientes(dni: string) {
-    return this.http.get(`${this.URLAPISSLTHOMAS}`,
-    {
-      headers: {
-        'method': this.encrypt('InfoEquipos'),
-        'token': this.encrypt(this.ApiKeyApissl),
-        'id': this.encrypt(dni),
-        'lic': this.encrypt(env.lic),
-        'platform': 'PagosMercantil',
-        'Content-Type': 'application/json'
-      }
-    })
-      .pipe(
-        map((res: any) => {
-          let result = JSON.parse(res);
-          if (result.data.info.length > 0) {
-            return result.data.info;
-          }
-          return [];
+      return new Promise(async (resolve: any, reject: any) => {
+        const headersData =  {
+          'method': 'InfoEquipos',
+          'token': this.ApiKeyApissl,
+          'id': dni,
+          'lic': env.lic,
+          'platform': 'PagosMercantil',
+          'Content-Type': 'application/json'
+        };
+        this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+          resolve(data);
+        }).catch((error: any) => {
+          reject(error)
         })
-      );
+      })
   }
 
   registerEquipo(infoEquipo: RegisterPay): Observable<any> {
@@ -435,19 +463,16 @@ export class RegisterPayService {
               }
             ]
           }
-          this.http.post(`${this.URLAPISSLTHOMASSEND}`, DataWa,
-            {
-              headers: {
-                'method': this.encrypt('SendWhats'),
-                'token': this.encrypt(this.ApiKeyApissl),
-                'platform': 'PagosMercantil',
-                'Content-Type': 'application/json'
-              }
-            }).subscribe((response: any) => {
-
-          }, (error) => {
-            reject(error);
-          });
+          const headersData = {
+            method: `SendWhats`,
+            token: this.ApiKeyApissl,
+            platform: "PagosMercantil",
+          };
+          this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS, true, DataWa).then((data) => {
+            resolve(data);
+          }).catch((error: any) => {
+            reject(error)
+          })
 
           if (index === Phones.length - 1) {
             resolve(true)

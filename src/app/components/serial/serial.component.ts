@@ -26,10 +26,10 @@ export class SerialComponent implements OnInit {
   public thirdFormFibex: FormGroup;
   public listContratos: { id_contrato: string, contrato: string, saldo: string, cliente: string, monto_pend_conciliar: number, subscription:  string  } [] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
-  public cambio_act: number = 0; 
+  public cambio_act: number = 0;
   public lastAmount: string = '';
   public banco : string = '';
-  public imageUrl: string = ''; 
+  public imageUrl: string = '';
   public imageUploaded: boolean = false;
   public idContrato: string = '';
   public paquete: string = '';
@@ -42,10 +42,10 @@ export class SerialComponent implements OnInit {
   public saldoUSD: string = '';
   public saldoBs: string = '';
   public saldoClienr: string = '';
-  public subscription: string = '';  
+  public subscription: string = '';
   public monto_pend_conciliar = 0;
-  public Contar = 0;  
-  DisableReg: boolean = false; 
+  public Contar = 0;
+  DisableReg: boolean = false;
   public lastDni: string = '';
   public saldoText: string = '';
 
@@ -57,10 +57,10 @@ export class SerialComponent implements OnInit {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private tasaService: TasaService
-  ) { 
+  ) {
     this.registerPayService.getBancosList()
     .subscribe((res) => {
-      // Si la carga de bancos falla no es posible registrar el pago... 
+      // Si la carga de bancos falla no es posible registrar el pago...
       // Es importante tener servidor de backup para esto Imaginando que SAE plus este caido debemos registrar pagos encolados.
       this.bankList = res.data.ConsultaBancos.Bancos
     });
@@ -116,7 +116,7 @@ export class SerialComponent implements OnInit {
             const file = fileList[0];
             if ( !this.uplaodImageService.verifyFileSize(file.size) ) {
                 return;
-            } 
+            }
             //this.alertFindDni('Subiendo comprobante de pago', 'Porfavor espere' );
             //this.closeAlert();
            this.uplaodImageService.getUrlImageBase64({dataFileBase64: imageBase64}).subscribe(
@@ -156,8 +156,8 @@ export class SerialComponent implements OnInit {
       saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
     } else {
       if (contractInfo?.saldo != undefined)  {
-        saldo = parseFloat(contractInfo?.saldo).toFixed(2) 
-      }    
+        saldo = parseFloat(contractInfo?.saldo).toFixed(2)
+      }
     }
     let date = this.date?.value !== undefined ?  `${new Date(this.date.value).getMonth() + 1}/${new Date(this.date.value).getDate()}/${new Date(this.date.value).getFullYear()}` :
       `${new Date().getMonth() + 1}/${new Date().getDate()}/${new Date().getFullYear()}`;
@@ -169,9 +169,9 @@ export class SerialComponent implements OnInit {
         date
       }).subscribe((res) => {
         this.DisableReg = false
-        console.log(res);
-        this.payReported  = true;   
-        this.playDuplicated  = false; 
+        // console.log(res);
+        this.payReported  = true;
+        this.playDuplicated  = false;
         this.ScrollUp()
         this.Contar = 10;
         this.Contador()
@@ -182,7 +182,7 @@ export class SerialComponent implements OnInit {
     window.scroll(0,0);
   }
 
-  ResetForm() { 
+  ResetForm() {
     this.nameClient = '';
     this.saldoClienr = '';
     this.imageUrl = '';
@@ -221,7 +221,7 @@ export class SerialComponent implements OnInit {
     } else if ( fromParmas ) {
       dni_ = dni;
     }
-    
+
     if( dni_ === this.lastDni ) {
       return;
     }
@@ -234,7 +234,7 @@ export class SerialComponent implements OnInit {
     if( dni_.length >= 6 ) {
       this.alertFindDni('Buscando información del cliente', 'Por favor espere...' );
       this.registerPayService.getSaldoByDni(dni_)
-        .subscribe((res) => {
+        .then((res:any) => {
           this.closeAlert();
           try {
               // console.log(res)
@@ -254,7 +254,7 @@ export class SerialComponent implements OnInit {
                 });
                 this.tasaService.tasa.next(this.cambio_act.toString());
                 this.idContrato = this.listContratos[0].id_contrato;
-                this.nameClient = this.listContratos[0].cliente;              
+                this.nameClient = this.listContratos[0].cliente;
                 this.name?.setValue(res[0].cliente);
                 this.nroContrato?.setValue(this.listContratos[0].contrato);
                 this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
@@ -282,7 +282,7 @@ export class SerialComponent implements OnInit {
                   this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
                   this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
                 }
-              //this.amount?.setValue(parseFloat(this.listContratos[0].saldo).toFixed(2));     
+              //this.amount?.setValue(parseFloat(this.listContratos[0].saldo).toFixed(2));
               //this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
               if( this.listContratos.length === 1 ) {
                 this.listContratos.find((cliente) => {
@@ -295,20 +295,20 @@ export class SerialComponent implements OnInit {
               this.saldoBs = '';
               this.dniConsulted = true;
               this.name?.setValue('');
-              this.dni?.setValue('');                
-              this.alertFindDni('Debe colocar una cédula valida', 'Por favor espere...' );                            
+              this.dni?.setValue('');
+              this.alertFindDni('Debe colocar una cédula valida', 'Por favor espere...' );
               setTimeout(() => this.closeAlert(), 1000);
-              
+
             }
           } catch (error) {
             this.nameClient = '';
               this.saldoClienr = '';
               this.dniConsulted = true;
               this.name?.setValue('');
-            this.alertFindDni('Disculpe intente de nuevo', '' );                        
+            this.alertFindDni('Disculpe intente de nuevo', '' );
             setTimeout(() => this.closeAlert(), 1000);
           }
-          
+
         })
     } else {
         // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
@@ -317,18 +317,18 @@ export class SerialComponent implements OnInit {
         this.saldoClienr = '';
         this.dniConsulted = true;
         this.name?.setValue('');
-        this.alertFindDni('Disculpe intente de nuevo', '' );                        
+        this.alertFindDni('Disculpe intente de nuevo', '' );
         setTimeout(() => this.closeAlert(), 1000);
     }
-  
-  
+
+
   }
 
   searchInfoEquipos(dni: string) {
     this.paquetesContratos = [];
     console.log(dni);
     this.registerPayService.infoEquiposClientes(dni)
-      .subscribe((res: any[]) => {
+      .then((res: any) => {
         console.log(res);
         this.paquetesContratos = res.map((infoPaquete: any) => {
           return {
@@ -358,7 +358,7 @@ export class SerialComponent implements OnInit {
 
   contractSelected( contrato : { contrato: string, saldo: string, id_contrato: string, subscription: string } ) {
     this.validateIfAmountIsNegativer(contrato.saldo);
-    this.lastAmount = parseFloat(contrato.saldo).toFixed(2); 
+    this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     //this.verifySaldo(contrato.saldo);
     this.saldoUSD =  parseFloat(contrato.saldo).toFixed(2);
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
@@ -369,9 +369,9 @@ export class SerialComponent implements OnInit {
   }
 
   BancoNacional(StrBanco: string) {
-    if( StrBanco.toLowerCase().indexOf('mercantil') >= 0  
+    if( StrBanco.toLowerCase().indexOf('mercantil') >= 0
         || StrBanco.toLowerCase().indexOf('bnc') >= 0
-        || StrBanco.toLowerCase().indexOf('bs.') >= 0) { 
+        || StrBanco.toLowerCase().indexOf('bs.') >= 0) {
           return true
     } else return false
   }
@@ -381,12 +381,12 @@ export class SerialComponent implements OnInit {
     if(this.BancoNacional(bank)) {
       console.log("Pase1")
       if (!Number.isNaN(parseFloat(this.lastAmount))) {
-        this.validateIfAmountIsNegativer(this.lastAmount, true);      }  
+        this.validateIfAmountIsNegativer(this.lastAmount, true);      }
     } else {
       console.log("Pase2")
       this.amount?.setValue(this.lastAmount);
       this.saldoClienr = this.lastAmount + ' Saldo';
-    }        
+    }
   }
 
   alertFindDni(title: string, message: string) {
@@ -395,7 +395,7 @@ export class SerialComponent implements OnInit {
       html: message,
       timer: 5000,
       didOpen: () => {
-        Swal.showLoading()   
+        Swal.showLoading()
       }
     })
   }
@@ -440,12 +440,12 @@ export class SerialComponent implements OnInit {
 
   verifySaldo (saldo: string) {
     if (parseFloat(saldo) <= 0) {
-      this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: '+ parseFloat(saldo) * - 1  + ' REGISTO PAGO ADELANTADO');      
+      this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: '+ parseFloat(saldo) * - 1  + ' REGISTO PAGO ADELANTADO');
       setTimeout(() => {
         // this.ResetForm();
       }, 1500)
       // this.nameClient = '';
-      // this.saldoClienr = '';    
+      // this.saldoClienr = '';
     }
   }
 
@@ -466,19 +466,19 @@ export class SerialComponent implements OnInit {
     if( national ) {
       if( parseInt(amount) <= 0) {
         this.amount?.setValue('');
-        this.saldoText = 'SALDO A FAVOR';     
+        this.saldoText = 'SALDO A FAVOR';
       } else if (  parseInt(amount) > 0 ) {
-        this.saldoText = 'SALDO'; 
+        this.saldoText = 'SALDO';
         this.amount?.setValue((parseFloat(amount) * this.cambio_act).toFixed(2));
       }
       return;
     }
 
     if( parseInt(amount) <= 0) {
-      this.amount?.setValue('0');     
-      this.saldoText = 'SALDO A FAVOR';     
+      this.amount?.setValue('0');
+      this.saldoText = 'SALDO A FAVOR';
     } else if (  parseInt(amount) > 0 ) {
-      this.saldoText = 'SALDO'; 
+      this.saldoText = 'SALDO';
       this.amount?.setValue(parseFloat(amount).toFixed(2));1
     }
 

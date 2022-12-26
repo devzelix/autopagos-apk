@@ -12,7 +12,7 @@ import { RegisterPayService } from './register-pay.service';
 })
 export class ConsultasService {
 
-  private URLBACK: string = env.urlBackThomas;
+  // private URLBACK: string = env.urlBackThomas;
   private tokendbfulll: string = env.tokendbFull;
   private URLDBFULL: string = env.urlDBFULL;
 
@@ -20,7 +20,21 @@ export class ConsultasService {
     private http: HttpClient,
     private registerPayService: RegisterPayService,
   ) {
-    this.getDaysFeriados()
+  }
+
+  getDaysFeriados() {
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        db: `thomas_cobertura`,
+        table: 'feriados_BCV',
+        type: 'find-all-info',
+      };
+      this.registerPayService.MasterGETDBFULL(headersData, this.URLDBFULL).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
   }
 
   Send(Option: any, Msg?: any, Tipo?: any, url?: any, idDevice?: any) {
@@ -70,19 +84,4 @@ export class ConsultasService {
     }
 
   }
-
-  getDaysFeriados(): Observable<BanksDays[]> {
-
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'TokenAuthPlataform': this.tokendbfulll,
-        'Authorization': 'Basic ' + btoa('Onur:L4V1d43NsuPl3N1tud**=BghYjLaQeTB'),
-        'db': this.registerPayService.encrypt('thomas_cobertura'),
-        'table': this.registerPayService.encrypt('feriados_BCV'),
-        'type': this.registerPayService.encrypt('find-all-info'),
-      })
-    }
-    return this.http.get<BanksDays[]>(`${this.URLDBFULL}`, httpOptions)
-  }
-
 }

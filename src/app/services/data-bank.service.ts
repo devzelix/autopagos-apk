@@ -22,7 +22,7 @@ export class DataBankService {
 
   GetList() {
     try {
-      this.registerPayService.getNewBankList().subscribe((ResSae: any) => {
+      this.registerPayService.getNewBankList().then((ResSae: any) => {
         for (let indexSae = 0; indexSae < ResSae.length; indexSae++) {
           if (!this.BankExclu.includes(ResSae[indexSae].numero_cuenta)) {
 
@@ -89,6 +89,9 @@ export class DataBankService {
       switch (numero_cuenta) {
         case "01910107022300007074":
           return "USD BANCO NACIONAL CREDITO"
+          break;
+        case "00000007850":
+          return "ZELLE Banesco zelle.pagos@fibextelecom.net"
           break;
         case "01050652295652011351":
           return "USD BANCO MERCANTIL "

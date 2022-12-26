@@ -129,7 +129,7 @@ export class FormComponent implements OnInit, OnChanges {
   public uploadingImg: boolean = false;
   public tasaCambio: string = '';
   public errorDate: boolean = false;
-  public daysFeriados: BanksDays[] = [];
+  public daysFeriados: BanksDays[] | any = [];
   public BancoDefault: string = "Mercantil"
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
@@ -913,10 +913,9 @@ export class FormComponent implements OnInit, OnChanges {
 
   VerifyRefencia(NroRef?: any) {
     try {
-
       if (NroRef || this.voucher?.value) {
 
-        this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).subscribe((ResDeposito: any) => {
+        this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
           if ((ResDeposito.success === "true") || ResDeposito.success === true) {
 
             this.secondFormFibex = this.fb.group({
@@ -943,7 +942,7 @@ export class FormComponent implements OnInit, OnChanges {
 
   ValidateReferenciaLast(Data: any) {
     Data.forEach((element: any, index: any) => {
-      this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia).subscribe((ResDeposito: any) => {
+      this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia).then((ResDeposito: any) => {
         if ((ResDeposito.success === "true") || ResDeposito.success === true) {
           element.Status = ResDeposito.data[0].estatus_deposito;
         } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
@@ -1219,14 +1218,13 @@ export class FormComponent implements OnInit, OnChanges {
     this.dniConsulted = false;
     if (dni_.length >= 6) {
       this.alertFindDniMercantil('Buscando información del cliente', 'Por favor espere...');
-      this.registerPayService.getTypeClient(dni_).subscribe((result: any) => {
+      this.registerPayService.getTypeClient(dni_).then((result: any) => {
         if (result.length > 0 && result[0].TipoCliente != "NATURAL") {
           this.possibleWithholdingAgent = true
         }
       })
       this.SearchDataClient(dni_)
-      this.registerPayService.getSaldoByDni(dni_)
-        .subscribe((res) => {
+      this.registerPayService.getSaldoByDni(dni_).then((res:any) => {
           this.lastDni = dni_;
           this.closeAlert();
           try {
@@ -1559,11 +1557,10 @@ export class FormComponent implements OnInit, OnChanges {
   SearchServiceClient(Contrato: any) {
     try {
       this.AllService = []
-      this.registerPayService.GetListService(Contrato).subscribe((ResService: any) => {
-
-        if (ResService.data.info.length > 0) {
-          for (let index = 0; index < ResService.data.info.length; index++) {
-            this.AllService.push(ResService.data.info[index].nombre_servicio)
+      this.registerPayService.GetListService(Contrato).then((ResService: any) => {
+        if (ResService.length > 0) {
+          for (let index = 0; index < ResService.length; index++) {
+            this.AllService.push(ResService[index].nombre_servicio)
           }
 
           this.paquete = this.AllService
@@ -1584,7 +1581,7 @@ export class FormComponent implements OnInit, OnChanges {
     this.paquetesContratos = [];
     // console.log(dni);
     this.registerPayService.infoEquiposClientes(dni)
-      .subscribe((res: any[]) => {
+      .then((res: any) => {
         // console.log(res);
         this.paquetesContratos = res.map((infoPaquete: any) => {
           return {
@@ -2202,7 +2199,7 @@ export class FormComponent implements OnInit, OnChanges {
             return;
           }
           this.dateInvalid = false;
-          let feriadoDay = this.daysFeriados.find((days) => days.fecha === new Date(value).toISOString());
+          let feriadoDay = this.daysFeriados.find((days: BanksDays) => days.fecha === new Date(value).toISOString());
           if (feriadoDay !== undefined) {
             let month = feriadoDay.mes.charAt(0).toUpperCase() + feriadoDay.mes.slice(1);
             this.warningSimpleForm(`El día ${feriadoDay.diasemana.toLowerCase()} ${feriadoDay.dia} de ${month} es feriado nacional`, `
@@ -2298,7 +2295,7 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   getDaysFeriados() {
-    this._Consultas.getDaysFeriados().subscribe((res) => {
+    this._Consultas.getDaysFeriados().then((res) => {
       this.daysFeriados = res;
     });
   }
