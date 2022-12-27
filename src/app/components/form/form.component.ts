@@ -21,13 +21,8 @@ import { CloudynariService } from '../../services/cloudDinary.service';
 import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
-<<<<<<< HEAD
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
-=======
-import { Contratos } from '../../interfaces/contratos'; 
 import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
->>>>>>> origin/VROMERO
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -1172,7 +1167,7 @@ export class FormComponent implements OnInit, OnChanges {
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ReciboPay = false;
   }
- 
+
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
