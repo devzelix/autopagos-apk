@@ -8,7 +8,7 @@ export const environment = {
   urlGraphqlContract: 'https://backend-fp.thomas-talk.me/',
   UrlSubscriptions: "wss://pha.thomas-talk.me/subscriptions",
   // URLApi: 'https://api.thomas-talk.me/',
-  urlDBFULL: 'http://dbfull.thomas-talk.me/api',
+  urlDBFULL: 'https://dbfull.thomas-talk.me/api',
   urlApisslThomas: 'https://apissl.thomas-talk.me/SAE',
   urlApisslThomasSend: 'https://apissl.thomas-talk.me/Envio',
   Token: 's1e1/c1r2e-2t.2a3r*3i4a',

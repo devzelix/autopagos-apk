@@ -1169,11 +1169,11 @@ export class FormComponent implements OnInit, OnChanges {
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ReciboPay = false;
   }
-
+ 
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
-      // window.location.reload();   // Para verificar porque no registra el pago
+       window.location.reload();   // Para verificar porque no registra el pago
     } else {
       setTimeout(() => this.Contador(), 1000);
     }

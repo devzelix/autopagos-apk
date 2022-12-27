@@ -315,7 +315,10 @@ export class RegisterPayService {
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
     return new Promise(async (resolve: any, reject: any) => {
       if (post) {
+        console.log(headersData); 
+        console.log(body); 
         this.security.EncrypDataHash(headersData).then((headers: any) => {
+          console.log(headers); 
           this.http.post(url, body, { headers }).subscribe((res:any) => {
                 let jsonres;
                 try {
@@ -334,7 +337,7 @@ export class RegisterPayService {
         this.security.EncrypDataHash(headersData).then((headers: any) => {
 
           // se debe cambiar por axion para colocarle un timeout
-          console.log(headers)
+          // console.log(headers)
           this.http.get(url, { headers }).subscribe((res:any) => {
                 let jsonres;
                 try {

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -19,6 +19,7 @@ import { SeguridadDatos } from './services/bcryptjs';
 import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasModule } from 'captcha-thomas';
+import { GlobalErrorHandler } from './utils/GlobalErrorHandler';
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
@@ -56,7 +57,11 @@ const routes: Routes = [
   ],
   providers: [
     NegativeAmountPipe,
-    SeguridadDatos
+    SeguridadDatos,
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    }
   ],
   exports:[MaterialModule],
   bootstrap: [AppComponent]
