@@ -196,13 +196,13 @@ export class RegisterPayService {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
         headers.TokenAuthPlataform = this.tokendbfulll
         headers.Authorization = this.authDBFULL
-        this.http.get(url, { headers }).subscribe((res:any) => {
-              let jsonres;
-              resolve(res);
-            })
-          }).catch((error: any) => {
-            reject(error)
-          })
+        this.http.get(url, { headers }).subscribe((res: any) => {
+          let jsonres;
+          resolve(res);
+        })
+      }).catch((error: any) => {
+        reject(error)
+      })
 
     })
   }
@@ -222,7 +222,7 @@ export class RegisterPayService {
       }).catch((error: any) => {
         reject(error)
       })
-  })
+    })
   }
 
   /* SendDataConciliar(Data: any) {
@@ -239,31 +239,6 @@ export class RegisterPayService {
     }
   } */
 
-  ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
-
-
-    return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
-        method: `ConciliacionPago`,
-        token: this.ApiKeyApissl,
-        NroReferencia: Referencia,
-        NroContrato: nroContrato,
-        platform: "PagosMercantil",
-        lic:env.lic
-      };
-      console.log('headersData :>> ', headersData);
-      console.log(headersData);
-
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
-        console.log("DATA")
-        console.log(data)
-        resolve(data);
-      }).catch((error: any) => {
-        reject(error)
-      })
-  })
-  }
-
   GetListService(id_contrato: any) {
 
     return new Promise(async (resolve: any, reject: any) => {
@@ -271,15 +246,15 @@ export class RegisterPayService {
         method: `ServiciosIdCo`,
         token: this.ApiKeyApissl,
         id: id_contrato,
-        lic:env.lic,
+        lic: env.lic,
         platform: "PagosMercantil",
       };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
-        resolve(data);
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+        resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
       })
-  })
+    })
   }
 
   getBancosList(): Observable<any> {
@@ -298,17 +273,17 @@ export class RegisterPayService {
         method: `CtasBancarias`,
         token: this.ApiKeyApissl,
         platform: "PagosMercantil",
-        lic:env.lic
+        lic: env.lic
       };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
-        resolve(data);
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+        resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
       })
-  })
+    })
   }
 
-   isObject(val: any) {
+  isObject(val: any) {
     return (typeof val === 'object');
   }
 
@@ -318,60 +293,94 @@ export class RegisterPayService {
         console.log(headersData); 
         console.log(body); 
         this.security.EncrypDataHash(headersData).then((headers: any) => {
-          console.log(headers); 
-          this.http.post(url, body, { headers }).subscribe((res:any) => {
-                let jsonres;
-                try {
-                  
-                  jsonres = this.isObject(res) ? JSON.parse(res) : { data:  {info: res}};
-                } catch (error) {
-                  jsonres = JSON.parse(res[0]);
-                }
+          this.http.post(url, body, { headers }).subscribe((res: any) => {
+            let jsonres;
+            try {
+              if (this.isJsonString(res)) {
+                jsonres = JSON.parse(res)
+                console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
                 resolve(jsonres.data.info);
-              })
-            }).catch((error: any) => {
-              reject(error)
-            })
+              } else {
+                jsonres = res
+                console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
+                resolve(jsonres[0]);
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          })
+        }).catch((error: any) => {
+          reject(error)
+        })
       }
-      else{
+      else {
         this.security.EncrypDataHash(headersData).then((headers: any) => {
-
           // se debe cambiar por axion para colocarle un timeout
           // console.log(headers)
-          this.http.get(url, { headers }).subscribe((res:any) => {
-                let jsonres;
-                try {
-                  // jsonres = JSON.parse(res);
-                  jsonres = this.isObject(res) ? JSON.parse(res) : { data:  {info: res}};
-                } catch (error) {
-                  console.log(error)
-                  console.log(res)
-                  jsonres = Array.isArray(res) ? JSON.parse(res[0]) : { data:  {info: res}};
-                }
-                resolve(jsonres.data.info);
-              })
-            }).catch((error: any) => {
-              reject(error)
-            })
+          this.http.get(url, { headers }).subscribe((res: any) => {
+            let jsonres;
+            try {
+              if (this.isJsonString(res)) {
+                jsonres = JSON.parse(res)
+                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
+              } else {
+                jsonres = res
+                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
+              }
+              resolve(jsonres);
+            } catch (error) {
+              console.log(error)
+            }
+          })
+        }).catch((error: any) => {
+          reject(error)
+        })
       }
 
     })
   }
 
+  ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        method: `ConciliacionPago`,
+        token: this.ApiKeyApissl,
+        NroReferencia: Referencia,
+        NroContrato: nroContrato,
+        platform: "PagosMercantil",
+        lic: env.lic
+      };
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+    })
+  }
+
+  isJsonString(jsonToParse: any) {
+    try {
+      JSON.parse(jsonToParse);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   getSaldoByDni(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
-        const headersData = {
-          method: `SaldoCe`,
-          token: this.ApiKeyApissl,
-          platform: "PagosMercantil",
-          id:dni,
-          lic:env.lic
-        };
-        this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
-          resolve(data);
-        }).catch((error: any) => {
-          reject(error)
-        })
+      const headersData = {
+        method: `SaldoCe`,
+        token: this.ApiKeyApissl,
+        platform: "PagosMercantil",
+        id: dni,
+        lic: env.lic
+      };
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+        resolve(data.data.info);
+      }).catch((error: any) => {
+        reject(error)
+      })
     })
 
   }
@@ -379,37 +388,37 @@ export class RegisterPayService {
 
   getTypeClient(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
-        const headersData =  {
-          method: `GetTypeClient`,
-          token: this.ApiKeyApissl,
-          cedula: dni,
-          platform: 'PagosMercantil'
-        };
-        this.MasterGETPOST(headersData, this.urlConsultassslThomas).then((data) => {
-          resolve(data);
-        }).catch((error: any) => {
-          reject(error)
-        })
+      const headersData = {
+        method: `GetTypeClient`,
+        token: this.ApiKeyApissl,
+        cedula: dni,
+        platform: 'PagosMercantil'
+      };
+      this.MasterGETPOST(headersData, this.urlConsultassslThomas).then((data: any) => {
+        resolve(data[0]);
+      }).catch((error: any) => {
+        reject(error)
+      })
     })
   }
 
 
   infoEquiposClientes(dni: string) {
-      return new Promise(async (resolve: any, reject: any) => {
-        const headersData =  {
-          'method': 'InfoEquipos',
-          'token': this.ApiKeyApissl,
-          'id': dni,
-          'lic': env.lic,
-          'platform': 'PagosMercantil',
-          'Content-Type': 'application/json'
-        };
-        this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
-          resolve(data);
-        }).catch((error: any) => {
-          reject(error)
-        })
+    return new Promise(async (resolve: any, reject: any) => {
+      const headersData = {
+        'method': 'InfoEquipos',
+        'token': this.ApiKeyApissl,
+        'id': dni,
+        'lic': env.lic,
+        'platform': 'PagosMercantil',
+        'Content-Type': 'application/json'
+      };
+      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+        resolve(data.data.info);
+      }).catch((error: any) => {
+        reject(error)
       })
+    })
   }
 
   registerEquipo(infoEquipo: RegisterPay): Observable<any> {
@@ -466,11 +475,8 @@ export class RegisterPayService {
   SendWaNotif(Content: any) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
-
         let Phones = ['584143771155', '584129503127', '584142788259', '584145958585', '584141967028']
-
         for (let index = 0; index < Phones.length; index++) {
-
           const DataWa = {
             "lic": env.lic,
             "Mensaje": Content,
@@ -487,8 +493,9 @@ export class RegisterPayService {
             token: this.ApiKeyApissl,
             platform: "PagosMercantil",
           };
-          this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS, true, DataWa).then((data) => {
-            resolve(data);
+          this.MasterGETPOST(headersData, this.URLAPISSLTHOMASSEND, true, DataWa).then((data: any) => {
+            console.log('SendWaNotif :>> ', data);
+            resolve(data.data.info);
           }).catch((error: any) => {
             reject(error)
           })

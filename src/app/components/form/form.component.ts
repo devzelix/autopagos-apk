@@ -21,7 +21,7 @@ import { CloudynariService } from '../../services/cloudDinary.service';
 import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
-import { Contratos } from '../../interfaces/contratos';
+import { Contratos } from '../../interfaces/contratos'; 
 import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
@@ -914,10 +914,10 @@ export class FormComponent implements OnInit, OnChanges {
   VerifyRefencia(NroRef?: any) {
     try {
       if (NroRef || this.voucher?.value) {
-        console.log("Pase1")
+        // console.log("Pase1")
         this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
-          console.log(ResDeposito)
-          if (ResDeposito == undefined)   this.NextMatStepper()   // temporal porque esta fallando Jhonattan
+          // console.log(ResDeposito)
+          // if (ResDeposito == undefined)   this.NextMatStepper()   // temporal porque esta fallando Jhonattan
 
           if ((ResDeposito && ResDeposito.success === "true") || ResDeposito.success === true) {
 
@@ -2168,7 +2168,7 @@ export class FormComponent implements OnInit, OnChanges {
   Antibruteforce(){
     if(this.ComprobanteReportado ==""){
       this.ComprobanteReportado = this.referenciapm?.value;
-      console.log(this.ComprobanteReportado)
+      // console.log(this.ComprobanteReportado)
     }
 
     if(this.ComprobanteReportado == this.referenciapm?.value){

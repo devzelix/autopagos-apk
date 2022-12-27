@@ -239,7 +239,7 @@ export class SerialComponent implements OnInit {
           try {
               // console.log(res)
               if(res.length > 0 ) {
-                console.log(res);
+                // console.log(res);
                 this.listContratos = [];
                 res.forEach((dataContrato: any) => {
                     this.listContratos.push({
@@ -329,7 +329,7 @@ export class SerialComponent implements OnInit {
     console.log(dni);
     this.registerPayService.infoEquiposClientes(dni)
       .then((res: any) => {
-        console.log(res);
+        // console.log(res);
         this.paquetesContratos = res.map((infoPaquete: any) => {
           return {
             id_contrato: infoPaquete.id_contrato,
@@ -345,7 +345,7 @@ export class SerialComponent implements OnInit {
   }
 
   selectInfoEquipos(id_contrato: string) {
-    console.log(id_contrato);
+    // console.log(id_contrato);
     let paquete =  this.paquetesContratos.find((index) => {
       console.log(index);
       return index.id_contrato === id_contrato
