@@ -492,8 +492,7 @@ export class RegisterPayService {
             platform: "PagosMercantil",
           };
           this.MasterGETPOST(headersData, this.URLAPISSLTHOMASSEND, true, DataWa).then((data: any) => {
-            console.log('SendWaNotif :>> ', data);
-            resolve(data.data.info);
+            resolve(data);
           }).catch((error: any) => {
             reject(error)
           })
