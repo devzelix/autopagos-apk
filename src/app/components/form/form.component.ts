@@ -914,9 +914,12 @@ export class FormComponent implements OnInit, OnChanges {
   VerifyRefencia(NroRef?: any) {
     try {
       if (NroRef || this.voucher?.value) {
-
+        console.log("Pase1")
         this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
-          if ((ResDeposito.success === "true") || ResDeposito.success === true) {
+          console.log(ResDeposito)
+          if (ResDeposito == undefined)   this.NextMatStepper()   // temporal porque esta fallando Jhonattan
+
+          if ((ResDeposito && ResDeposito.success === "true") || ResDeposito.success === true) {
 
             this.secondFormFibex = this.fb.group({
               voucher: ['', [Validators.required]],
@@ -925,7 +928,7 @@ export class FormComponent implements OnInit, OnChanges {
             this.ExitRef = false
 
             this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
-          } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
+          } else if ((ResDeposito && ResDeposito.success === "false") || ResDeposito.success === false) {
             if (!NroRef) { this.NextMatStepper() }
           }
 
@@ -1170,7 +1173,7 @@ export class FormComponent implements OnInit, OnChanges {
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
-      window.location.reload();
+      // window.location.reload();   // Para verificar porque no registra el pago
     } else {
       setTimeout(() => this.Contador(), 1000);
     }

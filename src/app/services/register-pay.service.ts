@@ -241,6 +241,7 @@ export class RegisterPayService {
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
 
+
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = {
         method: `ConciliacionPago`,
@@ -251,7 +252,11 @@ export class RegisterPayService {
         lic:env.lic
       };
       console.log('headersData :>> ', headersData);
+      console.log(headersData);
+
       this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+        console.log("DATA")
+        console.log(data)
         resolve(data);
       }).catch((error: any) => {
         reject(error)
@@ -303,6 +308,10 @@ export class RegisterPayService {
   })
   }
 
+   isObject(val: any) {
+    return (typeof val === 'object');
+  }
+
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
     return new Promise(async (resolve: any, reject: any) => {
       if (post) {
@@ -310,7 +319,8 @@ export class RegisterPayService {
           this.http.post(url, body, { headers }).subscribe((res:any) => {
                 let jsonres;
                 try {
-                  jsonres = JSON.parse(res);
+                  
+                  jsonres = this.isObject(res) ? JSON.parse(res) : { data:  {info: res}};
                 } catch (error) {
                   jsonres = JSON.parse(res[0]);
                 }
@@ -322,12 +332,18 @@ export class RegisterPayService {
       }
       else{
         this.security.EncrypDataHash(headersData).then((headers: any) => {
+
+          // se debe cambiar por axion para colocarle un timeout
+          console.log(headers)
           this.http.get(url, { headers }).subscribe((res:any) => {
                 let jsonres;
                 try {
-                  jsonres = JSON.parse(res);
+                  // jsonres = JSON.parse(res);
+                  jsonres = this.isObject(res) ? JSON.parse(res) : { data:  {info: res}};
                 } catch (error) {
-                  jsonres = JSON.parse(res[0]);
+                  console.log(error)
+                  console.log(res)
+                  jsonres = Array.isArray(res) ? JSON.parse(res[0]) : { data:  {info: res}};
                 }
                 resolve(jsonres.data.info);
               })
