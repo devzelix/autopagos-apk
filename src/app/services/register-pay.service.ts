@@ -296,14 +296,13 @@ export class RegisterPayService {
             try {
               if (this.isJsonString(res)) {
                 jsonres = JSON.parse(res)
-                console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
-                resolve(jsonres.data.info);
+                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               } else {
                 jsonres = res
-                console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
-                resolve(jsonres[0]);
+                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               }
-            } catch (error) {
+              resolve(jsonres);
+            }catch (error) {
               console.log(error)
             }
           })
@@ -314,7 +313,6 @@ export class RegisterPayService {
       else {
         this.security.EncrypDataHash(headersData).then((headers: any) => {
           // se debe cambiar por axion para colocarle un timeout
-          // console.log(headers)
           this.http.get(url, { headers }).subscribe((res: any) => {
             let jsonres;
             try {
