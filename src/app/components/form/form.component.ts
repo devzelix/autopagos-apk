@@ -138,7 +138,7 @@ export class FormComponent implements OnInit, OnChanges {
   AllDataClient: any = []
   enableBtn: Boolean = false
   totalAmount: number = 0;
-  PagoMetodosHTML2: any = MetodoDePago2//MetodoDePago3;
+  PagoMetodosHTML2: any = MetodoDePago3;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
@@ -358,7 +358,7 @@ export class FormComponent implements OnInit, OnChanges {
             this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
             this.thirdFormFibex.get('img')?.updateValueAndValidity();
           }
-          this.PagoMetodosHTML2 = MetodoDePago2//MetodoDePago3
+          this.PagoMetodosHTML2 = MetodoDePago3;
         }
       }
     });
@@ -555,7 +555,7 @@ export class FormComponent implements OnInit, OnChanges {
     if (x == 4) {
       setTimeout(() => {
         this.NextMatStepper();
-        this.PagoMetodosHTML2 = MetodoDePago2//MetodoDePago3;
+        this.PagoMetodosHTML2 = MetodoDePago3;
       }, 300);
     }
     //Criptomoneda
@@ -564,7 +564,7 @@ export class FormComponent implements OnInit, OnChanges {
     }
     //Zelle
     if (x == 6) {
-      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
+      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBAA4AC25283E568379')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
       this.bankSelected(BankZelle[0]);
       setTimeout(() => {
@@ -578,7 +578,7 @@ export class FormComponent implements OnInit, OnChanges {
     }
     //Regresa a las Card en USD
     if (x == 8) {
-      this.PagoMetodosHTML2 = MetodoDePago2//MetodoDePago3;
+      this.PagoMetodosHTML2 = MetodoDePago3;
     }
   }
 
