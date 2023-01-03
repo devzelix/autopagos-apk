@@ -295,8 +295,8 @@ export class FormComponent implements OnInit, OnChanges {
   deleteDuplicated(array: any[], key: string) {
     let list: any[] = [];
     array.forEach((items: any) => {
-      const objExists = list.find((obj: any) => obj[key] === items[key]);
-      if (objExists === undefined) {
+      const objExists = list.filter((obj: any) => obj[key] === items[key]);
+      if (objExists === undefined || objExists.length === 0) {
         list.push(items);
       }
     })
