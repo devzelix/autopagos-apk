@@ -59,7 +59,6 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-
         </div>
       </mat-step>
 
@@ -1008,10 +1007,20 @@
 
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
+          <!-- Debito -->
+            <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70" id="PagoDC"
             mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            Pagar
-          </button>
+                <span *ngIf="!Creditoboolaean">Pagar</span>
+            </button>
+            <!-- / Fin Debito -->
+
+            <!-- Credito -->
+            <button *ngIf="Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado" class="button-material-next btn-width-70" id="PagoDC"
+            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
+                <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+            </button>
+            <!-- / Fin Credito -->
+  
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
             type="button" matStepperPrevious>
             Regresar

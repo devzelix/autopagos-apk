@@ -33,7 +33,6 @@ import { MatStepper } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { forEach } from '@angular-devkit/schematics';
 import { CaptchaThomasService } from 'captcha-thomas';
 
 
@@ -163,6 +162,12 @@ export class FormComponent implements OnInit, OnChanges {
   public SelectPagoc2p: string = "mercantil";
   public controllerKey: boolean;
   public values = '';
+  public PinEnviado: boolean= false;
+  public PinError: number = 0;
+  public ConcatenaTimer: string = "";
+  public SetInterval: any= "";
+  public Minutes: any="";
+  public Second: any="";
 
   // Variables de hcaptcha
   public hcaptchaForm: FormGroup
@@ -428,6 +433,8 @@ export class FormComponent implements OnInit, OnChanges {
       return false;
     }
   }
+
+
   //Transferencia
   get name() { return this.firstFormFibex.get('name'); }
   get dni() { return this.firstFormFibex.get('dni'); }
@@ -514,6 +521,10 @@ export class FormComponent implements OnInit, OnChanges {
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
+      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);
+      this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
+      this.DebitoCredito.get('typeCuenta')?.setValidators([Validators.required]);
+      this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Otros = true;
       setTimeout(() => {
         this.NextMatStepper()
@@ -736,75 +747,178 @@ export class FormComponent implements OnInit, OnChanges {
     }
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if (!this.Creditoboolaean) {
-      this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
+      try {
+        this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
       //Primero debo autorizar el pago
-      this._ApiMercantil.GetAuthTDD(DatosUserAgent)
-        .then((resp: any) => {
-          if (resp.hasOwnProperty('error_list')) {
-            this.invalidForm(`${resp.error_list[0].description}`, '');
-          } else if (resp.hasOwnProperty('authentication_info')) {
-            if (resp.authentication_info.trx_status == "approved") {
-              //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
-              this._ApiMercantil.CompraTDD(DatosUserAgent)
-                .then((resp: any) => {
-                  if (resp.hasOwnProperty('error_list')) {
-                    this.invalidForm(`${resp.error_list[0].description}`, '');
-                  } else if (resp.hasOwnProperty('transaction_response')) {
-                    if (resp.transaction_response.trx_status == "approved") {
-                      this.alertexit("Pago realizado exitosamente");
-                      this.ReciboPay = true;
-                      this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+        this._ApiMercantil.GetAuthTDD(DatosUserAgent)
+          .then((resp: any) => {
+            if (resp.hasOwnProperty('error_list')) {
+              this.invalidForm(`${resp.error_list[0].description}`, '');
+            } else if (resp.hasOwnProperty('authentication_info')) {
+              if (resp.authentication_info.trx_status == "approved") {
+                //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
+                this._ApiMercantil.CompraTDD(DatosUserAgent)
+                  .then((resp: any) => {
+                    if (resp.hasOwnProperty('error_list')) {
+                      this.invalidForm(`${resp.error_list[0].description}`, '');
+                    } else if (resp.hasOwnProperty('transaction_response')) {
+                      if (resp.transaction_response.trx_status == "approved") {
+                        this.alertexit("Pago realizado exitosamente");
+                        this.ReciboPay = true;
+                        this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+                      } else {
+                        this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+                      }
+                    } else if (resp.hasOwnProperty('status')) {
+                      this.invalidForm(`${resp.status.description}`);
                     } else {
-                      this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+                      this.invalidForm(`Error intente más tarde!`);
                     }
-                  } else if (resp.hasOwnProperty('status')) {
-                    this.invalidForm(`${resp.status.description}`);
-                  } else {
-                    this.invalidForm(`Error intente más tarde!`);
-                  }
-                })
-                .catch((error: any) => {
-                  console.log(error);
-                })
+                  })
+                  .catch((error: any) => {
+                    console.log(error);
+                  })
+              } else {
+                this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
+              }
+            } else if (resp.hasOwnProperty('status')) {
+              this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
             } else {
-              this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
+              this.invalidForm(`Error intente más tarde!`);
             }
-          } else if (resp.hasOwnProperty('status')) {
-            this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
-          } else {
-            this.invalidForm(`Error intente más tarde!`);
-          }
-        })
-        .catch((error: any) => {
-          this.invalidForm(`Error por favor intente más tarde!`);
-        }) //Tengo que decirle al usuario que paso con la el pago que realizo
+          })
+          .catch((error: any) => {
+            console.error(error);
+            this.invalidForm(`Error por favor intente más tarde!`);
+          })
+      } catch (error) {
+        console.error(error);
+        this.invalidForm(`Error por favor intente más tarde!`)
+      }
+       //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
-      //Credito
-      this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
-      this._ApiMercantil.CompraTDD(DatosUserAgent)
+      try {
+        //Credito
+      this.alertFindDniMercantil('Enviando clave de autorización', 'Por favor espere...');
+      this._Consultas.GeneratePin(String(this.dni?.value),"PinPagos")
         .then((resp: any) => {
-          if (resp.hasOwnProperty('error_list')) {
-            this.invalidForm(`${resp.error_list[0].description}`, '');
-          } else if (resp.hasOwnProperty('transaction_response')) {
-            if (resp.transaction_response.trx_status == "approved") {
-              this.alertexit("Pago realizado exitosamente");
-              this.ReciboPay = true;
-              this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
-
-            } else {
-              this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+          if(resp && resp.status){
+            this.PinEnviado = true;
+            this.ReenvioMethod(1,59);
+            this.AuthCreditoReuso()
+            .then((resp)=>{
+              if(resp){
+                this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
+                  this._ApiMercantil.CompraTDD(DatosUserAgent)
+                    .then((resp: any) => {
+                      if (resp.hasOwnProperty('error_list')) {
+                        this.invalidForm(`${resp.error_list[0].description}`, '');
+                      } else if (resp.hasOwnProperty('transaction_response')) {
+                        if (resp.transaction_response.trx_status == "approved") {
+                          this.alertexit("Pago realizado exitosamente");
+                          this.ReciboPay = true;
+                          this.PinEnviado = false;
+                          this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+                        } else {
+                          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+                        }
+                      } else if (resp.hasOwnProperty('status')) {
+                        this.invalidForm(`${resp.status.description}`);
+                      } else {
+                        this.invalidForm(`Error intente más tarde!`);
+                      }
+                    })
+                    .catch((error: any) => {
+                      this.invalidForm(`Error por favor intente más tarde!`);
+                    })
+              }
+            })
+            .catch((error: any) => this.invalidForm(`Error por favor intente más tarde!`))
+            }else{
+              this.invalidForm(`Error por favor intente más tarde!`)
             }
-          } else if (resp.hasOwnProperty('status')) {
-            this.invalidForm(`${resp.status.description}`);
-          } else {
-            this.invalidForm(`Error intente más tarde!`);
-          }
         })
-        .catch((error: any) => {
-          this.invalidForm(`Error por favor intente más tarde!`);
-        })
+        .catch((error: any) => {console.error(error); this.invalidForm(`Error por favor intente más tarde!`)})
+      } catch (error) {
+        console.error(error);
+        this.invalidForm(`Error por favor intente más tarde!`)
+      }
     }
+  }
 
+  ReenvioMethod(Minute:number, Seconds:number){
+    //Esto es el código para Reenvio
+    var date = new Date();
+    date.setMinutes(Minute);
+    date.setSeconds(Seconds);
+    // Función para rellenar con ceros
+    var padLeft = (n:any) => "00".substring(0, "00".length - n.length) + n;
+    // Asignar el intervalo a una variable para poder eliminar el intervale cuando llegue al limite
+    this.SetInterval = setInterval(() => { 
+
+      this.ConcatenaTimer=":"
+      // Asignar el valor de minutos
+      this.Minutes = padLeft(date.getMinutes() + "");
+      // Asignqr el valor de segundos
+      this.Second = padLeft(date.getSeconds() + "");
+      // Restarle a la fecha actual 1000 milisegundos
+      date = new Date(date.getTime() - 1000);
+        
+      // Si llega a 2:45, eliminar el intervalo
+      if( this.Minutes == '00' && this.Second == '00' ) {
+        this.Minutes="";
+        this.Second="";
+        this.ConcatenaTimer=""
+        clearInterval(this.SetInterval); 
+        this.PinEnviado=false;
+      }
+      
+    }, 1000);
+  }
+
+  AuthCreditoReuso(){
+    return new Promise((resolve,reject)=>{
+      Swal.fire({
+        title: 'Clave de autorización',
+        text: "Enviado vía WhatsApp y SMS",
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        showLoaderOnConfirm: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if(result.value !=''){
+            this._Consultas.VerificarPin(String(this.dni?.value),result.value)
+            .then((resp:any)=>{
+              if(resp && resp.status){
+                resolve(true);
+              }else{
+                this.invalidForm(`Error pin incorrecto!`);
+                setTimeout(() => {
+                  this.AuthCreditoReuso()
+                }, 1000);
+              }
+            })
+            .catch((error:any)=>reject(error))
+          }else{
+            this.invalidForm(`Debe colocar el código que se le envió!`);
+            setTimeout(() => {
+              this.AuthCreditoReuso()
+            }, 1000);
+          }
+        }
+        ++this.PinError
+        if(this.PinError===3){
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000);
+          
+        }
+      })
+    })
   }
 
   uploadImagePayment($event: any) {

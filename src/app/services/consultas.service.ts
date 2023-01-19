@@ -15,6 +15,8 @@ export class ConsultasService {
   // private URLBACK: string = env.urlBackThomas;
   private tokendbfulll: string = env.tokendbFull;
   private URLDBFULL: string = env.urlDBFULL;
+  private ApiKeySSL: string =env.ApiKeyApissl
+  private ApiSSLURL: string = env.urlApisslThomasSolo
 
   constructor(
     private http: HttpClient,
@@ -83,5 +85,52 @@ export class ConsultasService {
       console.error(error)
     }
 
+  }
+
+  GeneratePin(Cedula: any, tipo: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        // Encabezados de la petición
+        const headers = {
+          method: `GenerarPin`,
+          token: this.ApiKeySSL,
+          platform: "pagos",
+          id: Cedula,
+          tipo: tipo
+        };
+
+        this.registerPayService.MasterGETPOST(headers, this.ApiSSLURL+"Consultas").then((data) => {
+          resolve(data);
+        }).catch((error: any) => {
+          reject(error)
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  VerificarPin(Cedula: any, Pin: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        // Encabezados de la petición
+        const headers = {
+          method: `VerificarPin`,
+          token: this.ApiKeySSL,
+          platform: "FibexPlay",
+          id: Cedula,
+          pin: Pin
+        };
+
+        this.registerPayService.MasterGETPOST(headers, this.ApiSSLURL+"Consultas").then((data) => {
+          resolve(data);
+        }).catch((error: any) => {
+          reject(error)
+        })
+
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }

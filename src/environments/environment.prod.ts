@@ -5,6 +5,7 @@ export const environment = {
   // urlThomasApi : 'https://api.thomas-talk.me/',
   urlDBFULL: 'https://dbfull.thomas-talk.me/api',
   urlApisslThomas: 'https://apissl.thomas-talk.me/SAE',
+  urlApisslThomasSolo: 'https://apissl.thomas-talk.me/',
   urlConsultassslThomas: 'https://apissl.thomas-talk.me/Consultas',
   urlApisslThomasSend: 'https://apissl.thomas-talk.me/Envio',
   urlUploadService: 'https://img.thomas-talk.me/api/',

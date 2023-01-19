@@ -10,6 +10,7 @@ export const environment = {
   // URLApi: 'https://api.thomas-talk.me/',
   urlDBFULL: 'https://dbfull.thomas-talk.me/api',
   urlApisslThomas: 'https://apissl.thomas-talk.me/SAE',
+  urlApisslThomasSolo: 'https://apissl.thomas-talk.me/',
   urlConsultassslThomas: 'https://apissl.thomas-talk.me/Consultas',
   urlApisslThomasSend: 'https://apissl.thomas-talk.me/Envio',
   Token: 's1e1/c1r2e-2t.2a3r*3i4a',
