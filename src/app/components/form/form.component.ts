@@ -1034,7 +1034,8 @@ export class FormComponent implements OnInit, OnChanges {
 
             this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
           } else if ((ResDeposito && ResDeposito.success === "false") || ResDeposito.success === false) {
-            if (!NroRef) { this.NextMatStepper() }
+            this.NextMatStepper()
+            //if (!NroRef) { console.log("NEXT");  }
           }
 
         })
