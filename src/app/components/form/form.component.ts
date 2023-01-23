@@ -883,42 +883,86 @@ export class FormComponent implements OnInit, OnChanges {
         text: "Enviado vía WhatsApp y SMS",
         input: 'text',
         inputAttributes: {
-          autocapitalize: 'off'
+          autocapitalize: 'off',
         },
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
-        showLoaderOnConfirm: true
+        showLoaderOnConfirm: true,
+        preConfirm: (resp) => {
+          if(resp && resp.length ===6) {
+            return this._Consultas.VerificarPin(String(this.dni?.value),resp)
+            .then((resp:any)=>{
+                  if(resp && !resp.status){
+                    Swal.showValidationMessage(
+                      `PIN incorrecto`
+                    )
+                    ++this.PinError
+                    if(this.PinError===3){
+                      setTimeout(() => {
+                        window.location.reload()
+                      }, 1000); 
+                    }
+                  }else if(resp && resp.status){
+                    return resp
+                  }else{
+                    Swal.showValidationMessage(
+                      `Error al intentar enviar el PIN intente nuevamente`
+                    )
+                  }
+            })
+            .catch((error:any)=>Swal.showValidationMessage(
+              `Request failed: ${error}`
+            ))
+          }else{
+            return Swal.showValidationMessage(
+              `Longitud de pin es incorrecto deben ser 6 carácteres máximo`
+            )
+          }
+          
+        },
+      allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        resolve(true);
+      })
+    })
+  }
+
+  AuthCreditoReuso2(){
+    return new Promise((resolve,reject)=>{
+      Swal.fire({
+        title: 'Submit your Github username',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Look up',
+        showLoaderOnConfirm: true,
+        preConfirm: (login) => {
+          return fetch(`//api.github.com/users/${login}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(response.statusText)
+              }
+              return response.json()
+            })
+            .catch(error => {
+              Swal.showValidationMessage(
+                `Request failed: ${error}`
+              )
+            })
+        },
+        allowOutsideClick: () => !Swal.isLoading()
       }).then((result) => {
         if (result.isConfirmed) {
-          if(result.value !=''){
-            this._Consultas.VerificarPin(String(this.dni?.value),result.value)
-            .then((resp:any)=>{
-              if(resp && resp.status){
-                resolve(true);
-              }else{
-                this.invalidForm(`Error pin incorrecto!`);
-                setTimeout(() => {
-                  this.AuthCreditoReuso()
-                }, 1000);
-              }
-            })
-            .catch((error:any)=>reject(error))
-          }else{
-            this.invalidForm(`Debe colocar el código que se le envió!`);
-            setTimeout(() => {
-              this.AuthCreditoReuso()
-            }, 1000);
-          }
-        }
-        ++this.PinError
-        if(this.PinError===3){
-          setTimeout(() => {
-            window.location.reload()
-          }, 1000);
-          
+          Swal.fire({
+            title: `${result.value.login}'s avatar`,
+            imageUrl: result.value.avatar_url
+          })
         }
       })
     })
+    
   }
 
   uploadImagePayment($event: any) {
