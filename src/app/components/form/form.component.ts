@@ -57,7 +57,7 @@ export class FormComponent implements OnInit, OnChanges {
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
-  displayedColumns: string[] = ['Comprobante', 'Status', 'buttons'];
+  displayedColumns: string[] = ['Comprobante', 'Status'];
 
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
@@ -1016,21 +1016,6 @@ export class FormComponent implements OnInit, OnChanges {
     }
   }
 
-  // ValidateLastReferencia(NroRef: any) {
-  //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-  //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
-
-  //   if (INDEX != -1) {
-  //     this.secondFormFibex = this.fb.group({
-  //       voucher: ['', [Validators.required]]
-  //     });
-  //     this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
-  //   } else {
-  //     this.VerifyRefencia(NroRef)
-  //   }
-
-  // }
-
   VerifyRefencia(NroRef?: any) {
     try {
       if (NroRef || this.voucher?.value) {
@@ -1061,21 +1046,6 @@ export class FormComponent implements OnInit, OnChanges {
     } catch (error) {
       console.error(error)
     }
-  }
-
-  ValidateReferenciaLast(Data: any) {
-    Data.forEach((element: any, index: any) => {
-      this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia).then((ResDeposito: any) => {
-        if ((ResDeposito.success === "true") || ResDeposito.success === true) {
-          element.Status = ResDeposito.data[0].estatus_deposito;
-        } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
-          element.Status = "SIN PROCESAR";
-        }
-      })
-      if (index == Data.length - 1) {
-        this.ComprobantesPago = Data
-      }
-    });
   }
 
   NextMatStepper() {
@@ -1438,6 +1408,24 @@ export class FormComponent implements OnInit, OnChanges {
               this.filterBankByFranquicia(this.listContratos[0].franquicia);
             }
 
+            if (this.registerPayService.linkedToContractProcess != 'approved') {
+              //Busco su numeros de comprobantes
+              this.registerPayService.getComprobantClient2(dni_)
+                .then((comprobante: any) => {
+
+                  if (comprobante.length > 0) {
+
+                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                    this.AllComprobantesPago = comprobante;
+                    let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
+                    temp = temp.slice(0, 5);
+                    this.ValidateReferenciaLast(temp)
+                  }
+                })
+                .catch((error: any) => console.error(error));
+            }
+            
+
 
             /*Esto se hacer por si el usuario preciomente selecciona un banco */
             if (this.BancoNacional(this.banco)) {
@@ -1608,6 +1596,38 @@ export class FormComponent implements OnInit, OnChanges {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  ValidateLastReferencia(NroRef: any) {
+    //Busco en mi memoria de comprobante luego llamo al de API por si acaso
+    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+  // ValidateLastReferencia(NroRef: any) {
+  //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
+  //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+
+    if (INDEX != -1) {
+      this.secondFormFibex = this.fb.group({
+        voucher: ['', [Validators.required]]
+      });
+      this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+    } else {
+      this.VerifyRefencia(NroRef)
+    }
+  }
+
+  ValidateReferenciaLast(Data: any) {
+    Data.forEach((element: any, index: any) => {
+      this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia).then((ResDeposito: any) => {
+        if ((ResDeposito.success === "true") || ResDeposito.success === true) {
+          element.Status = ResDeposito.data[0].estatus_deposito;
+        } else if ((ResDeposito.success === "false") || ResDeposito.success === false) {
+          element.Status = "SIN PROCESAR";
+        }
+      })
+      if (index == Data.length - 1) {
+        this.ComprobantesPago = Data
+      }
+    });
   }
 
   SearchEmailContra(Contrato: any) {
@@ -1958,15 +1978,15 @@ export class FormComponent implements OnInit, OnChanges {
     });
   }
 
-  openDialogCmprobante(dataC: any): void {
-    const dialogRef = this.dialog.open(DialogDetailComprobantesComponent, {
-      width: '300px',
-      data: dataC,
-    });
+  // openDialogCmprobante(dataC: any): void {
+  //   const dialogRef = this.dialog.open(DialogDetailComprobantesComponent, {
+  //     width: '300px',
+  //     data: dataC,
+  //   });
 
-    dialogRef.afterClosed().subscribe((dataC2: boolean) => {
-    });
-  }
+  //   dialogRef.afterClosed().subscribe((dataC2: boolean) => {
+  //   });
+  // }
 
   verifySaldo(saldo: string) {
     if (parseFloat(saldo) <= 0) {

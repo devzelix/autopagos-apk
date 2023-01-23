@@ -365,6 +365,37 @@ export class RegisterPayService {
     return true;
   }
 
+  getComprobantClient2(dni: string) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        //Actualmente el API trae todos los comprobante del usuario
+        //Se recomienda que se debe colocar un limite para mejoras en el rendimiento
+        this.http.get(`${this.URLGRAPH}?query={RegistroPago(token:"${env.token}",Data:{Cedula:"${dni}"}){Cedula Banco Email Contrato Monto Fecha Tasa_cambio Nombre_Titular Email_Titular Referencia Comprobante Nota}}`).subscribe((response: any) => {
+          // console.log(response)
+          let jsonres = response.data.RegistroPago;
+          if (jsonres && jsonres.length > 0) {
+            jsonres.forEach((element: any, index: number) => {
+              if (element.hasOwnProperty('Fecha')) {
+                element.Fecha = new Date(element.Fecha);
+              }
+              if (index == jsonres.length - 1) {
+                // console.log("Termine");
+                // console.log(jsonres);
+                resolve(jsonres)
+              }
+            });
+          } else {
+            resolve([])
+          }
+        }, (error) => {
+          reject(error);
+        });
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   getSaldoByDni(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = {
