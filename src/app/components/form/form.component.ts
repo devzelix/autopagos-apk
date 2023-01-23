@@ -57,7 +57,7 @@ export class FormComponent implements OnInit, OnChanges {
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
-  displayedColumns: string[] = ['Comprobante', 'Status'];
+  displayedColumns: string[] = ['Comprobante', 'Status','Fecha'];
 
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
@@ -1627,6 +1627,8 @@ export class FormComponent implements OnInit, OnChanges {
       })
       if (index == Data.length - 1) {
         this.ComprobantesPago = Data
+        console.log("Comprobantes Pagos");
+        console.log(this.ComprobantesPago)
       }
     });
   }
