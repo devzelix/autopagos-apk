@@ -693,6 +693,8 @@ export class FormComponent implements OnInit, OnChanges {
         if (resp.hasOwnProperty('error_list')) {
           this.invalidForm(`${resp.error_list[0].description}`, '');
         } else if (resp.hasOwnProperty('scp_info')) {
+          this.PinEnviado = true;
+          this.ReenvioMethod(1,59);
           this.ButtonGetAuthMercantil();
         } else if (resp.hasOwnProperty('status')) {
           this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
@@ -927,44 +929,6 @@ export class FormComponent implements OnInit, OnChanges {
     })
   }
 
-  AuthCreditoReuso2(){
-    return new Promise((resolve,reject)=>{
-      Swal.fire({
-        title: 'Submit your Github username',
-        input: 'text',
-        inputAttributes: {
-          autocapitalize: 'off'
-        },
-        showCancelButton: true,
-        confirmButtonText: 'Look up',
-        showLoaderOnConfirm: true,
-        preConfirm: (login) => {
-          return fetch(`//api.github.com/users/${login}`)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(response.statusText)
-              }
-              return response.json()
-            })
-            .catch(error => {
-              Swal.showValidationMessage(
-                `Request failed: ${error}`
-              )
-            })
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: `${result.value.login}'s avatar`,
-            imageUrl: result.value.avatar_url
-          })
-        }
-      })
-    })
-    
-  }
-
   uploadImagePayment($event: any) {
     this.uploadingImg = true;
     let reader = new FileReader();
@@ -1052,20 +1016,20 @@ export class FormComponent implements OnInit, OnChanges {
     }
   }
 
-  ValidateLastReferencia(NroRef: any) {
-    //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+  // ValidateLastReferencia(NroRef: any) {
+  //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
+  //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
 
-    if (INDEX != -1) {
-      this.secondFormFibex = this.fb.group({
-        voucher: ['', [Validators.required]]
-      });
-      this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
-    } else {
-      this.VerifyRefencia(NroRef)
-    }
+  //   if (INDEX != -1) {
+  //     this.secondFormFibex = this.fb.group({
+  //       voucher: ['', [Validators.required]]
+  //     });
+  //     this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+  //   } else {
+  //     this.VerifyRefencia(NroRef)
+  //   }
 
-  }
+  // }
 
   VerifyRefencia(NroRef?: any) {
     try {
@@ -1528,23 +1492,6 @@ export class FormComponent implements OnInit, OnChanges {
                 this.verifySaldo(cliente.saldo);
               });
             }
-
-            if (this.registerPayService.linkedToContractProcess != 'approved') {
-              //Busco su numeros de comprobantes
-              this.registerPayService.getComprobantClient2(dni_)
-                .then((comprobante: any) => {
-
-                  if (comprobante.length > 0) {
-
-                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
-                    this.AllComprobantesPago = comprobante;
-                    let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
-                    temp = temp.slice(0, 5);
-                    this.ValidateReferenciaLast(temp)
-                  }
-                })
-                .catch((error: any) => console.error(error));
-            }
           } else {
             //this.hcaptcha.reset()
             this.nameClient = '';
@@ -1840,7 +1787,20 @@ export class FormComponent implements OnInit, OnChanges {
       confirmButtonText: 'Confirmar',
       showLoaderOnConfirm: true,
       preConfirm: (authClave) => {
-        this.PgMovilRegForm.controls['auth'].setValue(authClave);
+        if(authClave && authClave.length===8){
+          this.PgMovilRegForm.controls['auth'].setValue(authClave);
+          return authClave
+        }else{
+          ++this.PinError
+          if(this.PinError===3){
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000); 
+          }
+          return Swal.showValidationMessage(
+            `Longitud de pin es incorrecto deben ser 8 carácteres máximo`
+          )
+        }
       },
       allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {

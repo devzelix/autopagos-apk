@@ -297,13 +297,13 @@
               <mat-form-field appearance="outline">
                 <mat-label>Número de comprobante</mat-label>
                 <input matInput formControlName="voucher" required #inputVouche
-                  (blur)="SendOption(1,2,inputVouche.value)" (blur)="ValidateLastReferencia(inputVouche.value)">
+                  (blur)="SendOption(1,2,inputVouche.value)">
                 <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es
                   requerido
                 </mat-error>
               </mat-form-field>
 
-              <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos realizados</h3><br>
+              <!-- <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos realizados</h3><br>
               <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago"
                 class="mat-elevation-z8">
 
@@ -337,7 +337,7 @@
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
+              </table> -->
 
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
@@ -785,9 +785,9 @@
         </div>
 
         <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button  [disabled]="!PgMovilRegForm.valid" class="button-material-next btn-width-70" mat-raised-button
+          <button  [disabled]="!PgMovilRegForm.valid || PinEnviado" class="button-material-next btn-width-70" mat-raised-button
             type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
-            Solicitar pin de autorización
+            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button  class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
             type="button" matStepperPrevious>
