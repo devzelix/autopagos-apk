@@ -924,7 +924,10 @@ export class FormComponent implements OnInit, OnChanges {
         },
       allowOutsideClick: () => !Swal.isLoading()
       }).then((result) => {
-        resolve(true);
+        if (result.isConfirmed) {
+          resolve(true);
+        }
+        
       })
     })
   }
