@@ -42,7 +42,7 @@
           <br/>
           <br/>
 
-          <div *ngIf="listContratos.length==0" [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center;">
+          <div *ngIf="listContratos.length==0" [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center; z-index: 99;">
             <captcha-thomas style="width: auto;"></captcha-thomas>
           </div>
 
@@ -961,7 +961,7 @@
                     </table>
                   </td>
                 </tr>
-
+dawdawdawdawdadawdadaddda daw daw d awd ad
                 <tr class="information">
                   <td colspan="2">
                     <table>
@@ -1025,7 +1025,7 @@
                 <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
             </button>
             <!-- / Fin Credito -->
-  
+
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
             type="button" matStepperPrevious>
             Regresar
