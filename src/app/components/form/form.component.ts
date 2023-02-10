@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, OnChanges, AfterViewInit } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,7 +22,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -35,6 +35,7 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasService } from 'captcha-thomas';
+import { HelperService } from 'src/app/services/helper.service';
 
 
 
@@ -50,7 +51,7 @@ export interface DialogData {
   templateUrl: './form.component.html',
   styleUrls: ['./form.style.css']
 })
-export class FormComponent implements OnInit, OnChanges {
+export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -58,7 +59,7 @@ export class FormComponent implements OnInit, OnChanges {
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
-  displayedColumns: string[] = ['Comprobante', 'Status','Fecha'];
+  displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
 
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
@@ -163,12 +164,12 @@ export class FormComponent implements OnInit, OnChanges {
   public SelectPagoc2p: string = "mercantil";
   public controllerKey: boolean;
   public values = '';
-  public PinEnviado: boolean= false;
+  public PinEnviado: boolean = false;
   public PinError: number = 0;
   public ConcatenaTimer: string = "";
-  public SetInterval: any= "";
-  public Minutes: any="";
-  public Second: any="";
+  public SetInterval: any = "";
+  public Minutes: any = "";
+  public Second: any = "";
 
   // Variables de hcaptcha
   public hcaptchaForm: FormGroup
@@ -197,7 +198,8 @@ export class FormComponent implements OnInit, OnChanges {
     public router: Router,
     public captchaService: CaptchaThomasService,
     private clipboard: Clipboard,
-    private _seguridadDatos: SeguridadDatos
+    private _seguridadDatos: SeguridadDatos,
+    private _helper: HelperService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
@@ -214,8 +216,16 @@ export class FormComponent implements OnInit, OnChanges {
     console.log(this.captchaService.validControl);
   }
 
-  MyInit() {
+  ngAfterViewInit(): void {
+    if (this._helper.dniToReload) {
+      this.searchServices(this._helper.dniToReload, true, true)
+      setTimeout(() => {
+        this._helper.dniToReload = ''
+      }, 200);
+    }
+  }
 
+  MyInit() {
     this.firstFormFibex = this.fb.group({
       name: ['', [Validators.required]],
       dni: ['', [Validators.required, Validators.minLength(6)]],
@@ -701,7 +711,7 @@ export class FormComponent implements OnInit, OnChanges {
           this.invalidForm(`${resp.error_list[0].description}`, '');
         } else if (resp.hasOwnProperty('scp_info')) {
           this.PinEnviado = true;
-          this.ReenvioMethod(1,59);
+          this.ReenvioMethod(1, 59);
           this.ButtonGetAuthMercantil();
         } else if (resp.hasOwnProperty('status')) {
           this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
@@ -758,7 +768,7 @@ export class FormComponent implements OnInit, OnChanges {
     if (!this.Creditoboolaean) {
       try {
         this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
-      //Primero debo autorizar el pago
+        //Primero debo autorizar el pago
         this._ApiMercantil.GetAuthTDD(DatosUserAgent)
           .then((resp: any) => {
             if (resp.hasOwnProperty('error_list')) {
@@ -804,50 +814,50 @@ export class FormComponent implements OnInit, OnChanges {
         console.error(error);
         this.invalidForm(`Error por favor intente más tarde!`)
       }
-       //Tengo que decirle al usuario que paso con la el pago que realizo
+      //Tengo que decirle al usuario que paso con la el pago que realizo
     } else {
       try {
         //Credito
-      this.alertFindDniMercantil('Enviando clave de autorización', 'Por favor espere...');
-      this._Consultas.GeneratePin(String(this.dni?.value),"PinPagos")
-        .then((resp: any) => {
-          if(resp && resp.status){
-            this.PinEnviado = true;
-            this.ReenvioMethod(1,59);
-            this.AuthCreditoReuso()
-            .then((resp)=>{
-              if(resp){
-                this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
-                  this._ApiMercantil.CompraTDD(DatosUserAgent)
-                    .then((resp: any) => {
-                      if (resp.hasOwnProperty('error_list')) {
-                        this.invalidForm(`${resp.error_list[0].description}`, '');
-                      } else if (resp.hasOwnProperty('transaction_response')) {
-                        if (resp.transaction_response.trx_status == "approved") {
-                          this.alertexit("Pago realizado exitosamente");
-                          this.ReciboPay = true;
-                          this.PinEnviado = false;
-                          this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+        this.alertFindDniMercantil('Enviando clave de autorización', 'Por favor espere...');
+        this._Consultas.GeneratePin(String(this.dni?.value), "PinPagos")
+          .then((resp: any) => {
+            if (resp && resp.status) {
+              this.PinEnviado = true;
+              this.ReenvioMethod(1, 59);
+              this.AuthCreditoReuso()
+                .then((resp) => {
+                  if (resp) {
+                    this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
+                    this._ApiMercantil.CompraTDD(DatosUserAgent)
+                      .then((resp: any) => {
+                        if (resp.hasOwnProperty('error_list')) {
+                          this.invalidForm(`${resp.error_list[0].description}`, '');
+                        } else if (resp.hasOwnProperty('transaction_response')) {
+                          if (resp.transaction_response.trx_status == "approved") {
+                            this.alertexit("Pago realizado exitosamente");
+                            this.ReciboPay = true;
+                            this.PinEnviado = false;
+                            this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+                          } else {
+                            this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+                          }
+                        } else if (resp.hasOwnProperty('status')) {
+                          this.invalidForm(`${resp.status.description}`);
                         } else {
-                          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+                          this.invalidForm(`Error intente más tarde!`);
                         }
-                      } else if (resp.hasOwnProperty('status')) {
-                        this.invalidForm(`${resp.status.description}`);
-                      } else {
-                        this.invalidForm(`Error intente más tarde!`);
-                      }
-                    })
-                    .catch((error: any) => {
-                      this.invalidForm(`Error por favor intente más tarde!`);
-                    })
-              }
-            })
-            .catch((error: any) => this.invalidForm(`Error por favor intente más tarde!`))
-            }else{
+                      })
+                      .catch((error: any) => {
+                        this.invalidForm(`Error por favor intente más tarde!`);
+                      })
+                  }
+                })
+                .catch((error: any) => this.invalidForm(`Error por favor intente más tarde!`))
+            } else {
               this.invalidForm(`Error por favor intente más tarde!`)
             }
-        })
-        .catch((error: any) => {console.error(error); this.invalidForm(`Error por favor intente más tarde!`)})
+          })
+          .catch((error: any) => { console.error(error); this.invalidForm(`Error por favor intente más tarde!`) })
       } catch (error) {
         console.error(error);
         this.invalidForm(`Error por favor intente más tarde!`)
@@ -855,38 +865,38 @@ export class FormComponent implements OnInit, OnChanges {
     }
   }
 
-  ReenvioMethod(Minute:number, Seconds:number){
+  ReenvioMethod(Minute: number, Seconds: number) {
     //Esto es el código para Reenvio
     var date = new Date();
     date.setMinutes(Minute);
     date.setSeconds(Seconds);
     // Función para rellenar con ceros
-    var padLeft = (n:any) => "00".substring(0, "00".length - n.length) + n;
+    var padLeft = (n: any) => "00".substring(0, "00".length - n.length) + n;
     // Asignar el intervalo a una variable para poder eliminar el intervale cuando llegue al limite
-    this.SetInterval = setInterval(() => { 
+    this.SetInterval = setInterval(() => {
 
-      this.ConcatenaTimer=":"
+      this.ConcatenaTimer = ":"
       // Asignar el valor de minutos
       this.Minutes = padLeft(date.getMinutes() + "");
       // Asignqr el valor de segundos
       this.Second = padLeft(date.getSeconds() + "");
       // Restarle a la fecha actual 1000 milisegundos
       date = new Date(date.getTime() - 1000);
-        
+
       // Si llega a 2:45, eliminar el intervalo
-      if( this.Minutes == '00' && this.Second == '00' ) {
-        this.Minutes="";
-        this.Second="";
-        this.ConcatenaTimer=""
-        clearInterval(this.SetInterval); 
-        this.PinEnviado=false;
+      if (this.Minutes == '00' && this.Second == '00') {
+        this.Minutes = "";
+        this.Second = "";
+        this.ConcatenaTimer = ""
+        clearInterval(this.SetInterval);
+        this.PinEnviado = false;
       }
-      
+
     }, 1000);
   }
 
-  AuthCreditoReuso(){
-    return new Promise((resolve,reject)=>{
+  AuthCreditoReuso() {
+    return new Promise((resolve, reject) => {
       Swal.fire({
         title: 'Clave de autorización',
         text: "Enviado vía WhatsApp y SMS",
@@ -898,43 +908,43 @@ export class FormComponent implements OnInit, OnChanges {
         confirmButtonText: 'Confirmar',
         showLoaderOnConfirm: true,
         preConfirm: (resp) => {
-          if(resp && resp.length ===6) {
-            return this._Consultas.VerificarPin(String(this.dni?.value),resp)
-            .then((resp:any)=>{
-                  if(resp && !resp.status){
-                    Swal.showValidationMessage(
-                      `PIN incorrecto`
-                    )
-                    ++this.PinError
-                    if(this.PinError===3){
-                      setTimeout(() => {
-                        window.location.reload()
-                      }, 1000); 
-                    }
-                  }else if(resp && resp.status){
-                    return resp
-                  }else{
-                    Swal.showValidationMessage(
-                      `Error al intentar enviar el PIN intente nuevamente`
-                    )
+          if (resp && resp.length === 6) {
+            return this._Consultas.VerificarPin(String(this.dni?.value), resp)
+              .then((resp: any) => {
+                if (resp && !resp.status) {
+                  Swal.showValidationMessage(
+                    `PIN incorrecto`
+                  )
+                  ++this.PinError
+                  if (this.PinError === 3) {
+                    setTimeout(() => {
+                      window.location.reload()
+                    }, 1000);
                   }
-            })
-            .catch((error:any)=>Swal.showValidationMessage(
-              `Request failed: ${error}`
-            ))
-          }else{
+                } else if (resp && resp.status) {
+                  return resp
+                } else {
+                  Swal.showValidationMessage(
+                    `Error al intentar enviar el PIN intente nuevamente`
+                  )
+                }
+              })
+              .catch((error: any) => Swal.showValidationMessage(
+                `Request failed: ${error}`
+              ))
+          } else {
             return Swal.showValidationMessage(
               `Longitud de pin es incorrecto deben ser 6 carácteres máximo`
             )
           }
-          
+
         },
-      allowOutsideClick: () => !Swal.isLoading()
+        allowOutsideClick: () => !Swal.isLoading()
       }).then((result) => {
         if (result.isConfirmed) {
           resolve(true);
         }
-        
+
       })
     })
   }
@@ -1274,7 +1284,7 @@ export class FormComponent implements OnInit, OnChanges {
   Contador() {
     this.Contar--
     if (this.Contar <= 0) {
-       window.location.reload();   // Para verificar porque no registra el pago
+      window.location.reload();   // Para verificar porque no registra el pago
     } else {
       setTimeout(() => this.Contador(), 1000);
     }
@@ -1435,7 +1445,6 @@ export class FormComponent implements OnInit, OnChanges {
                 })
                 .catch((error: any) => console.error(error));
             }
-            
 
 
             /*Esto se hacer por si el usuario preciomente selecciona un banco */
@@ -1475,10 +1484,12 @@ export class FormComponent implements OnInit, OnChanges {
             }
 
             //Esto lo uso para el CoinCoinx NO BORRAR
-            localStorage.setItem("Name",this._seguridadDatos.encrypt(this.nameClient) );
-            localStorage.setItem("Monto",this._seguridadDatos.encrypt(this.saldoUSD));
-            localStorage.setItem("idContrato",this._seguridadDatos.encrypt(this.idContrato));
-            localStorage.setItem("dni",this._seguridadDatos.encrypt(this.dni?.value));
+            localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
+            localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
+            localStorage.setItem("MontoBs", this._seguridadDatos.encrypt(this.saldoBs));
+            localStorage.setItem("Subscription", this._seguridadDatos.encrypt(this.subscription));
+            localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
+            localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
             try {
               // this.SendOption(0,0,dni.value);
               this.SendOption(0, 6, this.nameClient);
@@ -1603,6 +1614,7 @@ export class FormComponent implements OnInit, OnChanges {
       this.registerPayService.GetDataClient(Cedula).then((Res: any) => {
         if (Res) {
           this.AllDataClient = Res
+          localStorage.setItem("Abonado", this._seguridadDatos.encrypt(Res[0].idCliente));
         }
       })
 
@@ -1614,9 +1626,9 @@ export class FormComponent implements OnInit, OnChanges {
   ValidateLastReferencia(NroRef: any) {
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
-  // ValidateLastReferencia(NroRef: any) {
-  //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-  //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+    // ValidateLastReferencia(NroRef: any) {
+    //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
+    //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
 
     if (INDEX != -1) {
       this.secondFormFibex = this.fb.group({
@@ -1703,8 +1715,8 @@ export class FormComponent implements OnInit, OnChanges {
           for (let index = 0; index < ResService.length; index++) {
             this.AllService.push(ResService[index].nombre_servicio)
           }
-
           this.paquete = this.AllService
+          localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
         } else {
           this.selectInfoEquipos(Contrato)
         }
@@ -1822,15 +1834,15 @@ export class FormComponent implements OnInit, OnChanges {
       confirmButtonText: 'Confirmar',
       showLoaderOnConfirm: true,
       preConfirm: (authClave) => {
-        if(authClave && authClave.length===8){
+        if (authClave && authClave.length === 8) {
           this.PgMovilRegForm.controls['auth'].setValue(authClave);
           return authClave
-        }else{
+        } else {
           ++this.PinError
-          if(this.PinError===3){
+          if (this.PinError === 3) {
             setTimeout(() => {
               window.location.reload()
-            }, 1000); 
+            }, 1000);
           }
           return Swal.showValidationMessage(
             `Longitud de pin es incorrecto deben ser 8 carácteres máximo`
@@ -1880,7 +1892,7 @@ export class FormComponent implements OnInit, OnChanges {
   }
 
   warningSimpleFormMercantilConButton(text: string, optionalText: string = '', buttontext: string) {
-    Swal.fire({
+    return Swal.fire({
       title: text,
       html: optionalText,
       icon: 'warning',
@@ -2030,8 +2042,10 @@ export class FormComponent implements OnInit, OnChanges {
       if (parseInt(amount) <= 0) {
         this.amount?.setValue('');
         this.saldoText = 'SALDO A FAVOR';
+        localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       } else if (parseInt(amount) > 0) {
         this.saldoText = 'SALDO';
+        localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
         this.amount?.setValue('');
         this.SendOption(0, 4, this.amount?.value)
       }
@@ -2041,11 +2055,12 @@ export class FormComponent implements OnInit, OnChanges {
     if (parseInt(amount) <= 0) {
       this.amount?.setValue('');
       this.saldoText = 'SALDO A FAVOR';
+      localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
     } else if (parseInt(amount) > 0) {
       this.saldoText = 'SALDO';
+      localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       this.amount?.setValue('');
     }
-
   }
 
   resetStepper() {

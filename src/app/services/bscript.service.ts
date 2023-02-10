@@ -21,6 +21,15 @@ export class SeguridadDatos {
       return encrypted.toString();
     }
 
+    decrypt(str: string) {
+      let decrypted = CryptoJS.AES.decrypt(str, this.key, {
+        keySize: 16,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7,
+      }).toString(CryptoJS.enc.Utf8);
+      return decrypted.toString()
+    }
+
     private EncrypObj(obj: any) {
         const newObj: any = {};
 
