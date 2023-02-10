@@ -3,7 +3,7 @@ export const environment = {
   urlGraphql: 'https://pha.thomas-talk.me/',
   urlGraphqlContract: 'https://backend-fp.thomas-talk.me/',
   // urlThomasApi : 'https://api.thomas-talk.me/',
-  urlDBFULL: 'https://dbfull.thomas-talk.me/api',
+  urlDBFULL: 'https://dbfull.thomas-talk.me/api/',
   urlApisslThomas: 'https://apissl.thomas-talk.me/SAE',
   urlApisslThomasSolo: 'https://apissl.thomas-talk.me/',
   urlConsultassslThomas: 'https://apissl.thomas-talk.me/Consultas',

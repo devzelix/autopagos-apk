@@ -11,6 +11,7 @@ import { ImageComponent } from './components/image/image.component';
 import { NavComponent } from './components/nav/nav.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
+import { NgxPayPalModule } from 'ngx-paypal';
 
 import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
@@ -20,11 +21,14 @@ import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasModule } from 'captcha-thomas';
 import { GlobalErrorHandler } from './utils/GlobalErrorHandler';
+import { PaypalComponent } from './components/paypal/paypal.component';
+
 
 const routes: Routes = [
   { path: 'pay', component: FormComponent },
   {  path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
+  { path: 'paypal', component: PaypalComponent },
   { path: '',   redirectTo: '/pay', pathMatch: 'full' }
 ]
 
@@ -39,7 +43,8 @@ const routes: Routes = [
     NavComponent,
     NegativeAmountPipe,
     DialogDetailComprobantesComponent,
-    CoincoinxComponent
+    CoincoinxComponent,
+    PaypalComponent
   ],
   imports: [
     BrowserModule,
@@ -49,6 +54,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     MaterialModule,
     CaptchaThomasModule,
+    NgxPayPalModule,
     RouterModule.forRoot(routes),
     NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,

@@ -44,7 +44,6 @@
             ],
             "scripts": [
               "src/assets/js/api.js",
-              "src/assets/js/apiinit.js",
               "node_modules/@fortawesome/fontawesome-free/js/all.js"
             ]
           },

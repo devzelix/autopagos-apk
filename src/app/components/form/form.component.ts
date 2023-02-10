@@ -26,6 +26,7 @@ import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2,MetodoDePago3, Planti
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
+import { SeguridadDatos } from 'src/app/services/bscript.service';
 // import { NgHcaptchaService } from 'ng-hcaptcha';
 
 
@@ -195,7 +196,8 @@ export class FormComponent implements OnInit, OnChanges {
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
     public captchaService: CaptchaThomasService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private _seguridadDatos: SeguridadDatos
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.dataBankService.bankList.subscribe((banks) => {
@@ -590,6 +592,11 @@ export class FormComponent implements OnInit, OnChanges {
     //Regresa a las Card en USD
     if (x == 8) {
       this.PagoMetodosHTML2 = MetodoDePago3;
+    }
+
+    //Paypal
+    if (x == 9) {
+      this.router.navigate(['paypal']);
     }
   }
 
@@ -1468,8 +1475,10 @@ export class FormComponent implements OnInit, OnChanges {
             }
 
             //Esto lo uso para el CoinCoinx NO BORRAR
-            localStorage.setItem("Name", this.nameClient);
-            localStorage.setItem("Monto", this.saldoUSD);
+            localStorage.setItem("Name",this._seguridadDatos.encrypt(this.nameClient) );
+            localStorage.setItem("Monto",this._seguridadDatos.encrypt(this.saldoUSD));
+            localStorage.setItem("idContrato",this._seguridadDatos.encrypt(this.idContrato));
+            localStorage.setItem("dni",this._seguridadDatos.encrypt(this.dni?.value));
             try {
               // this.SendOption(0,0,dni.value);
               this.SendOption(0, 6, this.nameClient);

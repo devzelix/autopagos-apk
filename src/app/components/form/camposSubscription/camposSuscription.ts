@@ -173,8 +173,14 @@ export let MetodoDePago3 = [
   {
     idpago:5,
     tipopago:"Criptomoneda",
-    omitir:true,
+    omitir:false,
     image:'assets/images/Coincoinx.png'
+  },
+  {
+    idpago:9,
+    tipopago:"Paypal",
+    omitir:false,
+    image:'assets/images/Paypal.png'
   },
   {
     idpago:7,

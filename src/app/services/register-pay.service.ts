@@ -207,6 +207,21 @@ export class RegisterPayService {
     })
   }
 
+  MasterPOSTDBFULL(headersData: any, body:any, url: string) {
+    return new Promise(async (resolve: any, reject: any) => {
+      this.security.EncrypDataHash(headersData).then((headers: any) => {
+        headers.TokenAuthPlataform = this.tokendbfulll
+        headers.Authorization = this.authDBFULL
+        this.http.post(url,body,{ headers }).subscribe((res: any) => {
+          resolve(res);
+        })
+      }).catch((error: any) => {
+        reject(error)
+      })
+
+    })
+  }
+
   GetDataClient(Cedula: any) {
 
     return new Promise(async (resolve: any, reject: any) => {
@@ -218,6 +233,56 @@ export class RegisterPayService {
         valor: Cedula,
       };
       this.MasterGETDBFULL(headersData, this.URLDBFULL).then((data) => {
+        resolve(data);
+      }).catch((error: any) => {
+        reject(error)
+      })
+    })
+  }
+
+  AjusteDataPaypal(Body:any){
+
+    
+    // const BodyJSON ={
+    //   name_user: BodyJson.name_user,
+    //   customer_id: BodyJson.customer_id,
+    //   email: BodyJson.email,
+    //   payer_id: BodyJson.payer_id,
+    //   id: BodyJson.id,
+    //   abonado: BodyJson.abonado,
+    //   id_contrato: BodyJson.id_contrato,
+    //   amount: BodyJson.amount,
+    //   currency: BodyJson.currency,
+    //   processing_date: BodyJson.processing_date,
+    //   status: BodyJson.status
+    // }
+  }
+
+  PostRegisPaypal(BodyJson:any) {
+
+    return new Promise(async (resolve: any, reject: any) => {
+
+      
+      const headersData = {
+        db: `thomas_cobertura`,
+        table: 'paypal_pay',
+      };
+
+      const Body ={
+        name_user: BodyJson.name_user,
+        customer_id: BodyJson.customer_id,
+        email: BodyJson.email,
+        payer_id: BodyJson.payer_id,
+        id: BodyJson.id,
+        abonado: BodyJson.abonado,
+        id_contrato: BodyJson.id_contrato,
+        amount: BodyJson.amount,
+        currency: BodyJson.currency,
+        processing_date: BodyJson.processing_date,
+        status: BodyJson.status
+      }
+
+      this.MasterPOSTDBFULL(headersData,Body,this.URLDBFULL+'create-info').then((data) => {
         resolve(data);
       }).catch((error: any) => {
         reject(error)

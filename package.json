@@ -32,6 +32,7 @@
     "nanoid": "^3.3.4",
     "ng-chartist": "^7.0.0",
     "ng-hcaptcha": "^2.0.0",
+    "ngx-paypal":"10.0.1",
     "rxjs": "~7.5.0",
     "sha.js": "^2.4.11",
     "sha1": "^1.1.1",

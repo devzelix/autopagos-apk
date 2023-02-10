@@ -8,7 +8,7 @@ export const environment = {
   urlGraphqlContract: 'https://backend-fp.thomas-talk.me/',
   UrlSubscriptions: "wss://pha.thomas-talk.me/subscriptions",
   // URLApi: 'https://api.thomas-talk.me/',
-  urlDBFULL: 'https://dbfull.thomas-talk.me/api',
+  urlDBFULL: 'https://dbfull.thomas-talk.me/api/',
   urlApisslThomas: 'https://apissl.thomas-talk.me/SAE',
   urlApisslThomasSolo: 'https://apissl.thomas-talk.me/',
   urlConsultassslThomas: 'https://apissl.thomas-talk.me/Consultas',
@@ -34,7 +34,8 @@ export const environment = {
   DireccionWidget: '14iE4zL57wjWtdnABwi5uiw8c73L9er597',
   ApiTokenWidget: 'CD6D80FC1E4168AAB045C3A80BD0B410',
   CaptchaSiteKey: '10000000-ffff-ffff-ffff-000000000001',
-  KeyEncriptado: 'T0rNaDoK4tr1Na?RTgcNmhKU='
+  KeyEncriptado: 'T0rNaDoK4tr1Na?RTgcNmhKU=',
+  clientId: 'AZ-_aWUvKv_qn6_zPcsK0XIBLB5nKmwzcOw4w6-TyjKWSXA3tMaPXWolr3TJgM96CM-hb6rnKFJS2WOs'
 };
 
 /*
