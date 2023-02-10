@@ -1169,9 +1169,6 @@ export class FormComponent implements OnInit, OnChanges {
       id_Cuba: this.BancoSelect.id_cuba
     }
 
-    console.log("Datos a registrar");
-    console.log(DataForRegister);
-
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
@@ -2278,7 +2275,7 @@ export class FormComponent implements OnInit, OnChanges {
     }
 
     if (this.possibleWithholdingAgent && this.BancoNacional('')=="EUR" && this.selectedRetentionOption == 2) {
-      this.warnignForm(`Está a punto de reportar ${value} EUROS.`,
+      this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS.<span>`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
 
@@ -2293,7 +2290,7 @@ export class FormComponent implements OnInit, OnChanges {
     }
 
     if (this.BancoNacional('')=="EUR" && !this.possibleWithholdingAgent) {
-      this.warnignForm(`Está a punto de reportar ${value} EUROS, ¿estas seguro?`,
+      this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS </span>, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
 
