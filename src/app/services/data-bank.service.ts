@@ -96,6 +96,8 @@ export class DataBankService {
         case "01050652295652011351":
           return "USD BANCO MERCANTIL "
           break;
+        case "01050652225652011394":
+          return "EUR BANCO MERCANTIL "
       }
 
       if (NewReplace) {
