@@ -641,6 +641,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
       localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+      localStorage.setItem("IpAdress", this._seguridadDatos.encrypt(this.IpAddress.ip));
       resolve()
     })
   }

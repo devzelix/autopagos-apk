@@ -6,6 +6,8 @@ import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
 import { RegisterPayService } from '../../services/register-pay.service';
+import { ApiMercantilService } from '../../services/ApiMercantil';
+import { TypeBrowserService } from '../../services/TypeBrowser';
 
 @Component({
   selector: 'app-paypal',
@@ -21,8 +23,9 @@ export class PaypalComponent implements OnInit {
   public saldoBs: string = ''
   public saldoText: string = ''
   public subscription: string = ''
+  private TypeNavegador: string ='';
 
-  constructor(private _RegisterPayService: RegisterPayService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router) {
+  constructor(private _TypeBrowserService: TypeBrowserService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router,private _apimercantil: ApiMercantilService) {
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
     this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
@@ -33,6 +36,7 @@ export class PaypalComponent implements OnInit {
 
   ngOnInit() {
     this.initConfig();
+    this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
   }
 
   Clear() {
@@ -51,12 +55,12 @@ export class PaypalComponent implements OnInit {
           {
             amount: {
               currency_code: "USD",
-              value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "", //total a pagar
+              value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "", //total a pagar
               // value: "1", //total a pagar
               breakdown: {
                 item_total: {
                   currency_code: "USD",
-                  value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
                   // value: "1",
                 }
               }
@@ -68,7 +72,7 @@ export class PaypalComponent implements OnInit {
                 category: "DIGITAL_GOODS",
                 unit_amount: {
                   currency_code: "USD",
-                  value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
                   // value: "1",
                 }
               }
@@ -111,20 +115,24 @@ export class PaypalComponent implements OnInit {
           id_contrato: this._seguridadDatos.decrypt(localStorage.getItem("idContrato")!) ? this._seguridadDatos.decrypt(localStorage.getItem("idContrato")!) : "",//us
           name_user: this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "", //us
           customer_id: this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : "",//us
+          addresip: this._seguridadDatos.decrypt(localStorage.getItem("IpAdress")!) ? this._seguridadDatos.decrypt(localStorage.getItem("IpAdress")!) : "",//us
+          browser_agent: this.TypeNavegador
         }
-        this._RegisterPayService.PostRegisPaypal(dataRegis).then((payResult) => {
-          try {
-            if (payResult.status === 'COMPLETED') {
-              this._hModal.alertexit("Pago aprobado").then((result) => {
-                if (result) {
-                  this.Clear()
-                }
-              })
+       // this._RegisterPayService.PostRegisPaypal(dataRegis).then((payResult) => {
+        if (data.status === 'COMPLETED') {
+          this._apimercantil.RegPay(dataRegis).then((resp:any)=>{
+            try {
+                this._hModal.alertexit("Pago aprobado").then((result) => {
+                  if (result) {
+                    this.Clear()
+                  }
+                })
+            } catch (error) {
+              console.error('Error:', error);
             }
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        });
+          })
+          .catch((error:any)=>console.error(error));
+        }
       },
       onCancel: (data: any, actions: any) => {
         console.log("OnCancel", data, actions);

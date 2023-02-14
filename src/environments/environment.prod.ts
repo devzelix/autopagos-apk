@@ -31,5 +31,9 @@ export const environment = {
   DireccionWidget: '14iE4zL57wjWtdnABwi5uiw8c73L9er597',
   ApiTokenWidget: 'CD6D80FC1E4168AAB045C3A80BD0B410',
   CaptchaSiteKey: '3eb28efd-7444-4f87-9013-fad255d37660',
-  KeyEncriptado: 'T0rNaDoK4tr1Na?RTgcNmhKU='
+  KeyEncriptado: 'T0rNaDoK4tr1Na?RTgcNmhKU=',
+  AuthdbMercantil: 'Basic ' + btoa('Spartano:Khdky/6#()[}Ng/itrtyryY74=d35gw5HHd'),
+  clientIdP: 'ATNjLYhTUGqQyZOAvY5RX6TYM8GfGTzsOFvq3f6tQNdyh9TMpYJb_D-63NO-L_cAMhjOF36alFYFmRHe',
+  clientId: 'AZ-_aWUvKv_qn6_zPcsK0XIBLB5nKmwzcOw4w6-TyjKWSXA3tMaPXWolr3TJgM96CM-hb6rnKFJS2WOs',
+  NewTokenMercantil: 'U48zFpYohkTLlDoRAMPW_VTNCXdzJtGnN9cYrO3vzXADVWpmjPvwU9XB_vfl46oryT8f4CmpCNMi0LTYDD4uJ1SxIRMEfN9O72ecHyCk96qJwlNhEsnWqgyN5dxCyEaNMQVe6LFvO4rAS-XIyQOSHc7fOEGFDwz_127NN8_t-9cgHLlK6gO4'
 };
