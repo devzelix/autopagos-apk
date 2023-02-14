@@ -229,8 +229,9 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>Monto Pagado
-                  <strong><span *ngIf="BancoNacional('')">En Bolivares</span></strong>
+                  <strong><span *ngIf="BancoNacional('') && BancoNacional('') !='EUR'">En Bolivares</span></strong>
                   <strong><span *ngIf="!BancoNacional('')">En Dólares</span></strong>
+                  <strong><span *ngIf="BancoNacional('') =='EUR'">En Euros</span></strong>
                 </mat-label>
                 <input matInput formControlName="amount" required #inputAmount
                   (blur)="incorrectBankAndAmount(inputAmount.value)" >
@@ -531,13 +532,15 @@
                 <tr class="details">
                   <td>{{paquete}}</td>
 
-                  <td>{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)=='EUR'">{{totalAmount}} EUR</td>
                 </tr>
 
                 <tr class="total">
                   <td></td>
 
-                  <td>Total: {{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">Total: {{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)=='EUR'">Total: {{totalAmount}} EUR</td>
                 </tr>
               </table>
             </div>

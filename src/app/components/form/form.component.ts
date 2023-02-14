@@ -1823,8 +1823,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE')) return false
-    else return true
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')){ 
+      if(this.bank?.value.includes('EUR')) return 'EUR'
+      else return false
+    }else return true
   }
 
   bankSelected(bank: any) {
@@ -2318,7 +2320,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (saldousd < 0) saldousd = saldousd * (-1);
     if (saldobs < 0) saldobs = saldobs * (-1);
 
-    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.selectedRetentionOption == 2) {
+    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.BancoNacional('')!="EUR" && this.selectedRetentionOption == 2) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES.`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
@@ -2328,13 +2330,23 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
 
-    if (this.BancoNacional('') && !this.possibleWithholdingAgent) {
+    if (this.possibleWithholdingAgent && this.BancoNacional('')=="EUR" && this.selectedRetentionOption == 2) {
+      this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS.<span>`,
+        `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
+    }
+
+    if (this.BancoNacional('') && this.BancoNacional('')!="EUR" && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
         `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
     }
 
     if (!this.BancoNacional('') && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
+        `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
+    }
+
+    if (this.BancoNacional('')=="EUR" && !this.possibleWithholdingAgent) {
+      this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS </span>, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
 
