@@ -51,7 +51,7 @@ export interface DialogData {
   templateUrl: './form.component.html',
   styleUrls: ['./form.style.css']
 })
-export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
+export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -179,6 +179,7 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
   private ComprobanteReportado: string = "";
   private CountCompReport: number = 0;
   public Kiosco: boolean = false;
+  public abonado: string = ''
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -218,10 +219,12 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
 
   ngAfterViewInit(): void {
     if (this._helper.dniToReload) {
-      this.searchServices(this._helper.dniToReload, true, true)
       setTimeout(() => {
-        this._helper.dniToReload = ''
-      }, 200);
+        this.searchServices(this._helper.dniToReload, true, true)
+        setTimeout(() => {
+          this._helper.dniToReload = ''
+        }, 200);
+      }, 500);
     }
   }
 
@@ -583,7 +586,11 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
     }
     //Criptomoneda
     if (x == 5) {
-      this.router.navigate(['coinx']);
+      this.checkLocalStorageData().then((result) => {
+        this.router.navigate(['coinx']);
+      }).catch((err) => {
+        console.log('No se han podido llenar los datos correctamente.')
+      });
     }
     //Zelle
     if (x == 6) {
@@ -606,8 +613,36 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
 
     //Paypal
     if (x == 9) {
-      this.router.navigate(['paypal']);
+      this.checkLocalStorageData().then((result) => {
+        this.router.navigate(['paypal']);
+      }).catch((err) => {
+        console.log('No se han podido llenar los datos correctamente.')
+      });
     }
+  }
+
+  checkLocalStorageData() {
+    return new Promise<void>((resolve, reject) => {
+      // console.log(this.nameClient)
+      // console.log(this.saldoUSD)
+      // console.log(this.saldoBs)
+      // console.log(this.subscription)
+      // console.log(this.idContrato)
+      // console.log(this.dni?.value)
+      // console.log(this.saldoText)
+      // console.log(JSON.stringify(this.paquete))
+      // console.log(this.abonado)
+      localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
+      localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
+      localStorage.setItem("MontoBs", this._seguridadDatos.encrypt(this.saldoBs));
+      localStorage.setItem("Subscription", this._seguridadDatos.encrypt(this.subscription));
+      localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
+      localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
+      localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
+      localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
+      localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+      resolve()
+    })
   }
 
   ComprobarPgoMovil() {
@@ -1343,7 +1378,6 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
         this.closeAlert();
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
-            this.closeAlert2();
             this.listContratos = [];
             this.ComprobantesPago = [];
             this.SendOption(0, 0, dni_);
@@ -1399,7 +1433,10 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
                 // this.SearchEmailContra(this.listContratos[0].contrato)
               }
               this.dni?.setValue(dni_);
-              this.searchInfoEquipos(dni_);
+              this.searchInfoEquipos(dni_).then((result) => {
+              }).catch((err) => {
+                console.log('falló el ingreso de datos del usuario')
+              });
             }
             else {
               this.dni?.setValue(dni_);
@@ -1614,7 +1651,8 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
       this.registerPayService.GetDataClient(Cedula).then((Res: any) => {
         if (Res) {
           this.AllDataClient = Res
-          localStorage.setItem("Abonado", this._seguridadDatos.encrypt(Res[0].idCliente));
+          this.abonado =  Res[0].idCliente
+          localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
         }
       })
 
@@ -1731,24 +1769,27 @@ export class FormComponent implements  AfterViewInit, OnInit, OnChanges {
   }
 
   searchInfoEquipos(dni: string) {
-    this.paquetesContratos = [];
-    // console.log(dni);
-    this.registerPayService.infoEquiposClientes(dni)
-      .then((res: any) => {
-        // console.log(res);
-        this.paquetesContratos = res.map((infoPaquete: any) => {
-          return {
-            id_contrato: infoPaquete.id_contrato,
-            paquete: infoPaquete.paquetes
+    return new Promise<void>((resolve, reject) => {
+      this.paquetesContratos = [];
+      // console.log(dni);
+      this.registerPayService.infoEquiposClientes(dni)
+        .then((res: any) => {
+          // console.log(res);
+          this.paquetesContratos = res.map((infoPaquete: any) => {
+            return {
+              id_contrato: infoPaquete.id_contrato,
+              paquete: infoPaquete.paquetes
+            }
+          });
+          if (this.paquetesContratos.length === 0) {
+            // this.paquete = '';
+            this.SearchServiceClient(this.idContrato)
+            return;
           }
+          this.SearchServiceClient(this.paquetesContratos[0].id_contrato)
         });
-        if (this.paquetesContratos.length === 0) {
-          // this.paquete = '';
-          this.SearchServiceClient(this.idContrato)
-          return;
-        }
-        this.SearchServiceClient(this.paquetesContratos[0].id_contrato)
-      });
+        resolve()
+    })
   }
 
   selectInfoEquipos(id_contrato: string) {

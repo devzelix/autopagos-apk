@@ -15,14 +15,21 @@ import { RegisterPayService } from '../../services/register-pay.service';
 export class PaypalComponent implements OnInit {
 
   public payPalConfig: any;
-  public nameClient: string = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
-  public saldoUSD: string = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
-  public paquete: string = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
-  public saldoBs: string = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
-  public saldoText: string = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
-  public subscription: string = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
+  public nameClient: string = ''
+  public saldoUSD: string = ''
+  public paquete: string = ''
+  public saldoBs: string = ''
+  public saldoText: string = ''
+  public subscription: string = ''
 
-  constructor(private _RegisterPayService: RegisterPayService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router) { }
+  constructor(private _RegisterPayService: RegisterPayService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router) {
+    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
+    this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
+    this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
+    this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
+    this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
+    this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
+  }
 
   ngOnInit() {
     this.initConfig();
@@ -30,10 +37,8 @@ export class PaypalComponent implements OnInit {
 
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
-    setTimeout(() => {
-      localStorage.clear();
-      this.router.navigate(['pay']);
-    }, 500);
+    localStorage.clear();
+    this.router.navigate(['pay']);
   }
 
   private initConfig(): void {
