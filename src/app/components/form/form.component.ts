@@ -577,7 +577,7 @@ export class FormComponent implements OnInit, OnChanges {
     }
     //Zelle
     if (x == 6) {
-      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBAA4AC25283E568379')
+      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
       this.bankSelected(BankZelle[0]);
       setTimeout(() => {

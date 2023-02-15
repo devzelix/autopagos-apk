@@ -76,7 +76,7 @@ export class DataBankService {
         {
           Banco: "BANK OF AMERICA", Replace: "USD CUENTA BANK OF AMERICA pagos@fibextelecom.com"
         }] : [
-        { Banco: "WELL FARGO", Replace: "ZELLE WELL FARGO pagos.zelle@fibextelecom.net" },
+        { Banco: "WELL FARGO", Replace: "ZELLE WELL FARGO pagos@fibextelecom.net" },
         {
           Banco: "BANK OF AMERICA", Replace: "USD BANK OF AMERICA TRANSFERENCIA"
         }]
@@ -91,7 +91,7 @@ export class DataBankService {
           return "USD BANCO NACIONAL CREDITO"
           break;
         case "00000000101":
-          return "ZELLE Banesco pagos.zelle@fibextelecom.net"
+          return "ZELLE WELL FARGO pagos.zelle@fibextelecom.net"
           break;
         case "01050652295652011351":
           return "USD BANCO MERCANTIL "
