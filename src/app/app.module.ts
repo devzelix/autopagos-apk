@@ -22,6 +22,8 @@ import { environment } from 'src/environments/environment';
 import { CaptchaThomasModule } from 'captcha-thomas';
 import { GlobalErrorHandler } from './utils/GlobalErrorHandler';
 import { PaypalComponent } from './components/paypal/paypal.component';
+import { StripeComponent } from './components/stripe/stripe.component';
+import { NgxStripeModule } from 'ngx-stripe';
 
 
 const routes: Routes = [
@@ -29,6 +31,7 @@ const routes: Routes = [
   {  path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
+  {path:'stripe', component:StripeComponent},
   { path: '',   redirectTo: '/pay', pathMatch: 'full' }
 ]
 
@@ -44,7 +47,8 @@ const routes: Routes = [
     NegativeAmountPipe,
     DialogDetailComprobantesComponent,
     CoincoinxComponent,
-    PaypalComponent
+    PaypalComponent, 
+    StripeComponent
   ],
   imports: [
     BrowserModule,
@@ -54,6 +58,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     MaterialModule,
     CaptchaThomasModule,
+    NgxStripeModule.forRoot('pk_test_nDR7IWEIGLp4a1SBtqKH5eyg'),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
     NgHcaptchaModule.forRoot({

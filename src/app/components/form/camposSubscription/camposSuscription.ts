@@ -183,6 +183,12 @@ export let MetodoDePago3 = [
     image:'assets/images/Paypal.png'
   },
   {
+    idpago:28,
+    tipopago:"Stripe",
+    omitir:false,
+    image:'assets/images/stripe-logo-2.png'
+  },
+  {
     idpago:7,
     tipopago:"Otros",
     omitir:false,

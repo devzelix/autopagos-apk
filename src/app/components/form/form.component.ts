@@ -598,6 +598,9 @@ export class FormComponent implements OnInit, OnChanges {
     if (x == 9) {
       this.router.navigate(['paypal']);
     }
+    if (x == 28) {
+      this.router.navigate(['stripe']);
+    }
   }
 
   ComprobarPgoMovil() {

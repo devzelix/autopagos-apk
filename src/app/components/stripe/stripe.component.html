@@ -1,0 +1,51 @@
+
+<div class="form-login " id="form-offer">
+
+    <div class="form-login__offer">
+    
+        <span class="button-link__bold button-link button__secondary btn-width-70">
+          <p>
+           Holaholahola
+          </p>
+          <p>
+            Servicio de Internet
+          </p>
+        </span>
+        <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
+      </div>
+    
+      <div class="form-login__group">
+            <div >
+                <div class="row">
+                  <div class="col-md-12" [formGroup]="paymentForm">
+                    <div class="form-group">
+                      <label>Nombre</label>
+                      <input class="form-control" type="text" formControlName="name">
+                    </div>
+                    <div class="form-group">
+                      <ngx-stripe-card
+                        [options]="cardOptions"
+                        (on)="onChange($event)"
+                        [elementsOptions]="elementsOptions"
+                      ></ngx-stripe-card>
+                    </div>
+                    <button 
+                      class="btn btn-success"
+                      (click)="buy()" 
+             
+                    >Aceptar</button>
+                  </div>
+                </div>
+              </div>
+            <!-- <form novalidate (ngSubmit)="createToken()" [formGroup]="stripeTest">
+                <input type="text" formControlName="name" placeholder="Jane Doe">
+                <ngx-stripe-card
+                  [options]="cardOptions"
+                  [elementsOptions]="elementsOptions"
+                ></ngx-stripe-card>
+                <button type="submit">
+                  CREATE TOKEN
+                </button>
+            </form> -->
+        </div>
+    </div>
