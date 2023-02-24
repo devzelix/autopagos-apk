@@ -179,7 +179,7 @@ export let MetodoDePago3 = [
   {
     idpago:9,
     tipopago:"Paypal",
-    omitir:true,
+    omitir:false,
     image:'assets/images/Paypal.png'
   },
   {
