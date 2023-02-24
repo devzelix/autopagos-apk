@@ -1,7 +1,5 @@
 <div class="form-login " id="form-offer">
-
-<div class="form-login__offer">
-
+  <div class="form-login__offer">
     <span class="button-link__bold button-link button__secondary btn-width-70">
       <p>
         Registre su pago
@@ -12,14 +10,32 @@
     </span>
     <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
   </div>
-
-  <div class="paypal__group"> 
-    <div>
-        <ngx-paypal 
-          [config]="payPalConfig">
-        </ngx-paypal>
+  <div class="paypal__group">
+    <div *ngIf="nameClient && saldoUSD" class="desc-user">
+      <div>
+        <h4 class="name-client">
+          {{nameClient}}
+        </h4>
+        <h4 class="name-client">
+          {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+        </h4>
+      </div>
+      <div>
+        <h4 class="name-client">
+          Servicio: {{ paquete }}
+        </h4>
+        <h4 class="name-client">
+          Subscripción: {{subscription}} USD
+        </h4>
+      </div>
     </div>
-    
-
-  </div> 
+    <div>
+      <ngx-paypal class="paypal-container" [config]="payPalConfig">
+      </ngx-paypal>
+    </div>
+    <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+      mat-raised-button>
+      Regresar
+    </button>
+  </div>
 </div>

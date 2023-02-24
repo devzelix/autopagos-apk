@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment'
 import { CoinxService } from 'src/app/services/coinxServices'
+import { HelperService } from 'src/app/services/helper.service';
+import { SeguridadDatos } from 'src/app/services/bscript.service';
+import { Router } from '@angular/router';
 declare var cargar:any;
 
 
@@ -16,15 +19,15 @@ export class CoincoinxComponent implements OnInit {
   private WidgetID = environment.WidgetID;
   private WidgetAdress = environment.DireccionWidget;
   public Error : boolean = false;
-  
-  
-  constructor( private _CoinxServices: CoinxService) { }
+
+
+  constructor( private _CoinxServices: CoinxService, private _helper: HelperService, private _seguridadDatos: SeguridadDatos, public router: Router) { }
 
   ngOnInit(): void {
     this.Monto =localStorage.getItem("Monto") ? localStorage.getItem("Monto") : "";
     this.nameClient =localStorage.getItem("Name") ? localStorage.getItem("Name") : "";
 
-    //Obtengo el token para poder realizar el pago 
+    //Obtengo el token para poder realizar el pago
     this._CoinxServices.TokenWidget()
     .then((resp:any)=>{
       if(resp!=undefined && resp){
@@ -46,8 +49,12 @@ export class CoincoinxComponent implements OnInit {
     })
   }
 
-  Clear(){
-    localStorage.clear();
+  Clear() {
+    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
+    setTimeout(() => {
+      localStorage.clear();
+      this.router.navigate(['pay']);
+    }, 500);
   }
 
 }
