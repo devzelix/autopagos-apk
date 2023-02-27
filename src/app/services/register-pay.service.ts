@@ -11,6 +11,7 @@ import { SeguridadDatos } from './bscript.service';
   providedIn: 'root'
 })
 export class RegisterPayService {
+  private stripeAPI:'http://localhost:8888/payment'
 
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
@@ -331,8 +332,16 @@ export class RegisterPayService {
       }
     );
   }
+  getStripePayment(data: any): Observable<any> {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization':'' });
+    let options = { headers: headers };
+    return this.http.post(this.stripeAPI, data, options);
+  }
 
   getNewBankList() {
+    
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = {
         method: `CtasBancarias`,

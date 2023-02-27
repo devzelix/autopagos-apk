@@ -5,8 +5,8 @@
     
         <span class="button-link__bold button-link button__secondary btn-width-70">
           <p>
-           Holaholahola
-          </p>
+           Holaholahola  2222
+          </p> 
           <p>
             Servicio de Internet
           </p>
@@ -15,37 +15,46 @@
       </div>
     
       <div class="form-login__group">
-            <div >
-                <div class="row">
-                  <div class="col-md-12" [formGroup]="paymentForm">
-                    <div class="form-group">
-                      <label>Nombre</label>
-                      <input class="form-control" type="text" formControlName="name">
-                    </div>
-                    <div class="form-group">
-                      <ngx-stripe-card
-                        [options]="cardOptions"
-                        (on)="onChange($event)"
-                        [elementsOptions]="elementsOptions"
-                      ></ngx-stripe-card>
-                    </div>
-                    <button 
-                      class="btn btn-success"
-                      (click)="buy()" 
-             
-                    >Aceptar</button>
-                  </div>
-                </div>
-              </div>
-            <!-- <form novalidate (ngSubmit)="createToken()" [formGroup]="stripeTest">
-                <input type="text" formControlName="name" placeholder="Jane Doe">
+        <mat-card>
+          <mat-card-title>
+            {{nameClient}}
+          </mat-card-title>
+          <!-- <span *ngIf="nameClient" class="name">{{nameClient}}</span> -->
+          <mat-card-content>
+            <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
+              <div class="card">
                 <ngx-stripe-card
-                  [options]="cardOptions"
-                  [elementsOptions]="elementsOptions"
-                ></ngx-stripe-card>
-                <button type="submit">
-                  CREATE TOKEN
-                </button>
-            </form> -->
+                [options]="cardOptions"
+                (on)="onChange($event)"
+                [elementsOptions]="elementsOptions"
+              ></ngx-stripe-card>
+            </div>
+              </div>
+          </mat-card-content>
+            <mat-card-footer>
+              <button class="button-material-next btn-width-100" mat-raised-button (click)="buy()"
+              type="button">
+              Realizar pago
+            </button>
+            </mat-card-footer>
+          <!-- <div class="container2">
+            <div class="row">
+              <div class="col-md-12" [formGroup]="paymentForm">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input class="form-control" type="text" formControlName="name">
+                </div>
+                <div class="form-group">
+               
+                </div>
+                <button 
+                  class="btn btn-success"
+                  (click)="buy()" 
+                  [disabled]="!validForm"
+                >CLICK</button>
+              </div>
+            </div>
+          </div> -->
+        </mat-card>
         </div>
     </div>

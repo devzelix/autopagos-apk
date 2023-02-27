@@ -1,9 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
-import { StripeService, StripeCardNumberComponent, StripeCardComponent } from 'ngx-stripe';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { StripeService, StripeCardNumberComponent, StripeCardComponent} from 'ngx-stripe';
 import {
   StripeCardElementOptions,
   StripeElementsOptions,
@@ -12,6 +8,9 @@ import {
 
 import { environment as env } from 'src/environments/environment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RegisterPayService } from 'src/app/services/register-pay.service';
+import Swal from 'sweetalert2';
+import { SeguridadDatos } from 'src/app/services/bscript.service';
 
 @Component({
   selector: 'app-stripe',
@@ -19,63 +18,18 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./stripe.component.scss']
 })
 export class StripeComponent implements OnInit {
-  // @ViewChild(StripeCardComponent) card: StripeCardComponent;
-
-  // cardOptions: StripeCardElementOptions = {
-  //   style: {
-  //     base: {
-  //       iconColor: '#666EE8',
-  //       color: '#31325F',
-  //       fontWeight: '300',
-  //       fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-  //       fontSize: '18px',
-  //       '::placeholder': {
-  //         color: '#CFD7E0'
-  //       }
-  //     }
-  //   }
-  // };
-
-  // elementsOptions: StripeElementsOptions = {
-  //   locale: 'es'
-  // };
-
-  // stripeTest: FormGroup;
-
-  // constructor(private fb: FormBuilder, private stripeService: StripeService) {
-  //   this.stripeTest = this.fb.group({
-  //     name: ['', [Validators.required]]
-  //   });
-  // }
-
-  // ngOnInit(): void {
- 
-  // }
-
-  // createToken(): void {
-  //   const name = this.stripeTest.get('name')?.value;
-  //   this.stripeService
-  //     .createToken(this.card.element, { name })
-  //     .subscribe((result) => {
-  //       if (result.token) {
-  //         // Use the token
-  //         console.log(result.token.id);
-  //       } else if (result.error) {
-  //         // Error creating the token
-  //         console.log(result.error.message);
-  //       }
-  //     });
-  // }
   paymentForm: FormGroup;
   stripeCardValid: boolean = false;
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
+  public Monto:any; 
+  public nameClient:any;
 
   cardOptions: StripeCardElementOptions = {
     style: {
       base: {
         iconColor: '#666EE8',
         color: '#31325F',
-        fontWeight: 300,
+        fontWeight: 100,
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSize: '18px',
         '::placeholder': {
@@ -95,13 +49,25 @@ export class StripeComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private stripeService: StripeService
+    private stripeService: StripeService, 
+    public registerPayService:RegisterPayService, 
+    private seguridadDatos:SeguridadDatos
   ) { }
 
   ngOnInit() {
+    // this.Monto =localStorage.getItem("Monto") ? localStorage.getItem("Monto") : "";
+    // this.nameClient =localStorage.getItem("Name") ? localStorage.getItem("Name") : "";
+    this.Monto=500;
+    this.nameClient='Cliente Prueba'
     this.paymentForm = this.fb.group({
       name: ['', [Validators.required]]
     });
+    this.registerPayService.getStripePayment('hola')
+          .subscribe((res) => {
+            
+            console.log(res)
+            this.clientSecret=res;
+          });
   }
 
   onChange( ev:any ) {
@@ -111,17 +77,33 @@ export class StripeComponent implements OnInit {
       this.stripeCardValid = event.complete;
     }
   }
-
+  public clientSecret:any;
   buy() {
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
-        if (result.token) {
-          console.log(result.token);
-        } else if (result.error) {
-          console.log(result.error.message);
-        }
+        let resultTok:any;
+        resultTok=result.token
+        // Swal.fire({
+        //   icon: 'error',
+        //   title: 'Correo erróneo',
+        //   text: resultTok
+        // });
+            let data={
+              token:result?.token?.id,
+              name:this.nameClient,
+              amount:this.Monto
+            }
+            this.registerPayService.getStripePayment(data)
+            .subscribe((res) => {
+              if(res.pago){
+                this.stripeService.confirmCardPayment(res.clientSecret).subscribe(result =>{
+                  
+                })
+              }
+            });
       });
   }
 }
+
 

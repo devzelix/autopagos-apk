@@ -186,7 +186,7 @@ export let MetodoDePago3 = [
     idpago:28,
     tipopago:"Stripe",
     omitir:false,
-    image:'assets/images/stripe-logo-2.png'
+    image:'assets/images/Stripe-Logo-2009.png'
   },
   {
     idpago:7,

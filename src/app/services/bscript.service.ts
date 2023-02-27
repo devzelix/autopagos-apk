@@ -20,6 +20,15 @@ export class SeguridadDatos {
     //   console.log(str)
       return encrypted.toString();
     }
+    Desencrypt2(str:any){;
+        let decrypted = CryptoJS.AES.decrypted(str, this.key, {
+            keySize: 16,
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7,
+        });
+  
+        return decrypted;
+      }
 
     private EncrypObj(obj: any) {
         const newObj: any = {};
