@@ -192,6 +192,49 @@ export class RegisterPayService {
     })
   }
 
+  PostRegisPaypal(BodyJson:any) {
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        let PreHeaders = {
+          db: `thomas_cobertura`,
+          table: `paypal_pay`,
+        };
+        const body ={
+          name_user: BodyJson.name_user, //us
+          customer_id: BodyJson.customer_id,//us
+          email: BodyJson.purchase_units[0].payee.email_address,
+          payer_id: BodyJson.payer.payer_id,
+          id: BodyJson.id,
+          abonado: BodyJson.abonado,//us
+          id_contrato: BodyJson.id_contrato,//us
+          amount: BodyJson.purchase_units[0].amount.value,
+          currency: BodyJson.purchase_units[0].amount.currency_code,
+          processing_date: BodyJson.create_time,
+          status: BodyJson.status
+        }
+        console.log('body :>> ', body);
+        this.security.EncrypDataHash(PreHeaders).then((headers: any) => {
+          try {
+            this.DbFullPost(this.URLDBFULL, headers, body, '["idstr"]').then((result: any) => {
+              console.log('result :>> ', result);
+              resolve(result)
+            }).catch((err) => {
+              console.error(err)
+              console.log(new Date());
+              reject(err)
+            });
+          } catch (error) {
+            console.error('Error:', error);
+            reject(error)
+          }
+        })
+      } catch (error) {
+        console.error('Error:', error);
+        reject(error)
+      }
+    })
+  }
+
   MasterGETDBFULL(headersData: any, url: string) {
     return new Promise(async (resolve: any, reject: any) => {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
@@ -205,6 +248,48 @@ export class RegisterPayService {
         reject(error)
       })
 
+    })
+  }
+
+  DbFullPost(Url: string, headers1: {}, Databody: any, registerChange: string) {
+    console.log('entró :>> ');
+    return new Promise(async (resolve: any, reject: any) => {
+          try {
+            const headersData: any = {
+              ...headers1,
+              'TokenAuthPlataform': this.tokendbfulll,
+              'Authorization': this.authDBFULL,
+              'x-keys-to-add-id': `${registerChange}`,
+              'x-keys-of-arrays': '[]',
+              'x-relations': 'false',
+              'Content-Type': 'application/json'
+            }
+            let databodyF: any = {
+              ...Databody,
+            }
+            console.log('headersData :>> ', headersData);
+            console.log('databodyF :>> ', databodyF);
+            this.http.post<any>(`${this.URLDBFULL}create-info`, databodyF, { headers: headersData }).subscribe((response: any) => {
+              console.log('response :>> ', response);
+              let jsonres;
+              try {
+                if (this.isJsonString(response)) {
+                  jsonres = JSON.parse(response)
+                } else {
+                  jsonres = response
+                }
+                console.log('salio:>>')
+                resolve(jsonres);
+              } catch (error) {
+                console.log(error)
+              }
+            }, err => {
+              reject(err);
+            });
+          } catch (error) {
+            console.log(error)
+            reject(error)
+          }
     })
   }
 
@@ -242,8 +327,6 @@ export class RegisterPayService {
   }
 
   AjusteDataPaypal(Body:any){
-
-    
     // const BodyJSON ={
     //   name_user: BodyJson.name_user,
     //   customer_id: BodyJson.customer_id,
@@ -259,37 +342,7 @@ export class RegisterPayService {
     // }
   }
 
-  PostRegisPaypal(BodyJson:any) {
 
-    return new Promise(async (resolve: any, reject: any) => {
-
-      
-      const headersData = {
-        db: `thomas_cobertura`,
-        table: 'paypal_pay',
-      };
-
-      const Body ={
-        name_user: BodyJson.name_user,
-        customer_id: BodyJson.customer_id,
-        email: BodyJson.email,
-        payer_id: BodyJson.payer_id,
-        id: BodyJson.id,
-        abonado: BodyJson.abonado,
-        id_contrato: BodyJson.id_contrato,
-        amount: BodyJson.amount,
-        currency: BodyJson.currency,
-        processing_date: BodyJson.processing_date,
-        status: BodyJson.status
-      }
-
-      this.MasterPOSTDBFULL(headersData,Body,this.URLDBFULL+'create-info').then((data) => {
-        resolve(data);
-      }).catch((error: any) => {
-        reject(error)
-      })
-    })
-  }
 
   /* SendDataConciliar(Data: any) {
     try {
@@ -403,18 +456,16 @@ export class RegisterPayService {
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
     return new Promise(async (resolve: any, reject: any) => {
       if (post) {
-        console.log(headersData); 
-        console.log(body); 
+        console.log(headersData);
+        console.log(body);
         this.security.EncrypDataHash(headersData).then((headers: any) => {
           this.http.post(url, body, { headers }).subscribe((res: any) => {
             let jsonres;
             try {
               if (this.isJsonString(res)) {
                 jsonres = JSON.parse(res)
-                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               } else {
                 jsonres = res
-                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               }
               resolve(jsonres);
             }catch (error) {
@@ -433,10 +484,8 @@ export class RegisterPayService {
             try {
               if (this.isJsonString(res)) {
                 jsonres = JSON.parse(res)
-                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               } else {
                 jsonres = res
-                // console.log('Metodo :>> ', headersData.method, 'res sin json:>> ', res, 'respuesta de los metodos en jsonres:>> ', jsonres);
               }
               resolve(jsonres);
             } catch (error) {
