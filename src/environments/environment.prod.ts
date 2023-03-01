@@ -12,6 +12,7 @@ export const environment = {
   urlDbMapsApi: 'https://dbmaps.thomas-talk.me/api/v1',
   // urlBackThomas: 'https://backend.thomas-talk.me/api/v1/',
   token: 's1e1/c1r2e-2t.2a3r*3i4a',
+  stripeAPI:"http://localhost:9095/payment",
   lic: '584120202020@c.us',
   upload_preset: "itenw8im",
   ApiKey: "167871278349249",

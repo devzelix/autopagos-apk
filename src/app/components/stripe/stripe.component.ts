@@ -62,12 +62,13 @@ export class StripeComponent implements OnInit {
     this.paymentForm = this.fb.group({
       name: ['', [Validators.required]]
     });
-    this.registerPayService.getStripePayment('hola')
-          .subscribe((res) => {
+    //Este era de prueba ok
+    // this.registerPayService.getStripePayment('hola')
+    //       .subscribe((res) => {
             
-            console.log(res)
-            this.clientSecret=res;
-          });
+    //         console.log(res)
+    //         this.clientSecret=res;
+    //       });
   }
 
   onChange( ev:any ) {
@@ -78,30 +79,51 @@ export class StripeComponent implements OnInit {
     }
   }
   public clientSecret:any;
+
   buy() {
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
+        console.log("Stripe Servicio");
         let resultTok:any;
         resultTok=result.token
-        // Swal.fire({
-        //   icon: 'error',
-        //   title: 'Correo erróneo',
-        //   text: resultTok
-        // });
             let data={
               token:result?.token?.id,
               name:this.nameClient,
-              amount:this.Monto
+              amount:this.Monto*100
             }
+            //Aqui
             this.registerPayService.getStripePayment(data)
-            .subscribe((res) => {
-              if(res.pago){
-                this.stripeService.confirmCardPayment(res.clientSecret).subscribe(result =>{
-                  
-                })
+            .then((res:any)=>{
+                if(res.pago){
+                    console.log("Stripe registerPayService");
+                    let client_secret=res.pago.client_secret
+                    console.log(client_secret)
+                    this.stripeService.confirmCardPayment(client_secret, 
+                      {
+                        payment_method: { card: this.card.getCard() },
+                      }).subscribe(result =>{
+                      if(result.error){
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Correo erróneo',
+                          text: result.error.message
+                        });
+                      }
+                      else{
+                        Swal.fire({
+                          icon: 'success',
+                          title: 'Exitoso',
+                          text: 'Pago exitoso'
+                        });
+                      }
+                        
+                    })
               }
-            });
+            })
+            .catch((error:any)=>{
+              console.log(error);
+            })
       });
   }
 }

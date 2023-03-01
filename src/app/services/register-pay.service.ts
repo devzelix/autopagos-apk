@@ -11,7 +11,7 @@ import { SeguridadDatos } from './bscript.service';
   providedIn: 'root'
 })
 export class RegisterPayService {
-  private stripeAPI:'http://localhost:8888/payment'
+  private stripeAPI:'http://localhost:9095/payment' //Esto luego lo metes en un environment
 
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
@@ -332,13 +332,52 @@ export class RegisterPayService {
       }
     );
   }
-  getStripePayment(data: any): Observable<any> {
+  getStripePayment2(data: any): Observable<any> {
+    console.log("Voy a llamar al https");
     let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization':'' });
     let options = { headers: headers };
+    console.log("Lo que le voy a pasar");
+    console.log(data);
     return this.http.post(this.stripeAPI, data, options);
+
+  
+
   }
+
+  getStripePayment(data: any){
+    return new Promise((resolve,reject)=>{
+      console.log("Voy a llamar al https");
+      console.log("Lo que le voy a pasar");
+      console.log(data);
+      this.http.post(env.stripeAPI, data).subscribe({
+        next: data => {
+          console.log(data);
+            resolve(data)
+        },
+        error: error => {
+          console.log(error);
+            reject(error);
+        }
+    });
+    });
+  }
+  confirmPaymen(data: any){
+    return new Promise((resolve,reject)=>{
+      this.http.post(env.stripeAPI, data).subscribe({
+        next: data => {
+          console.log(data);
+            resolve(data)
+        },
+        error: error => {
+          console.log(error);
+            reject(error);
+        }
+    });
+    });
+  }
+
 
   getNewBankList() {
     
