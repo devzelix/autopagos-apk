@@ -16,6 +16,7 @@ import { TypeBrowserService } from '../../services/TypeBrowser';
 })
 export class PaypalComponent implements OnInit {
 
+  public montoComision: number;
   public payPalConfig: any;
   public nameClient: string = ''
   public saldoUSD: string = ''
@@ -32,6 +33,8 @@ export class PaypalComponent implements OnInit {
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
     this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
     this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
+
+    this.newAmount(parseInt(this.saldoUSD))
   }
 
   ngOnInit() {
@@ -144,6 +147,14 @@ export class PaypalComponent implements OnInit {
         console.log("onClick", data, actions);
       }
     };
+  }
+
+  newAmount(saldoUSD: number) {
+    let montoComision = 5.4
+    let cobroSolicitudPago = 0.30
+    let monto = Math.trunc(saldoUSD)
+    let trunc = monto / 100 * montoComision + cobroSolicitudPago;
+    this.montoComision = monto + trunc;
   }
 
 }

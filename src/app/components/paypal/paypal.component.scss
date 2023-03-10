@@ -1,3 +1,14 @@
 .paypal-container {
   text-align-last: center;
 }
+
+.monto-comision {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-block-end: 15px;
+}
+
+small {
+  margin-inline-start: 5px;
+}
