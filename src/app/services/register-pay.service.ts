@@ -6,6 +6,7 @@ import { environment as env } from '../../environments/environment.prod';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
+import { StripeData } from '../interfaces/stripeData';
 
 @Injectable({
   providedIn: 'root'
@@ -394,9 +395,6 @@ export class RegisterPayService {
     console.log("Lo que le voy a pasar");
     console.log(data);
     return this.http.post(this.stripeAPI, data, options);
-
-  
-
   }
 
   getStripePayment(data: any){
@@ -404,7 +402,7 @@ export class RegisterPayService {
       console.log("Voy a llamar al https");
       console.log("Lo que le voy a pasar");
       console.log(data);
-      this.http.post(env.stripeAPI, data).subscribe({
+      this.http.post(`${env.stripeAPI}/payment`, data).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -418,7 +416,7 @@ export class RegisterPayService {
   }
   confirmPaymen(data: any){
     return new Promise((resolve,reject)=>{
-      this.http.post(env.stripeAPI, data).subscribe({
+      this.http.post(`${env.stripeAPI}/payment`, data).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -429,6 +427,10 @@ export class RegisterPayService {
         }
     });
     });
+  }
+
+  stripePost(data: StripeData) {
+    return this.http.post<StripeData>(`${env.stripeAPI}/stripe-data`, data);
   }
 
 
@@ -670,5 +672,7 @@ export class RegisterPayService {
       }
     })
   }
+
+
 
 }

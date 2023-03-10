@@ -27,6 +27,7 @@
 
   .example-card {
     max-width: 200px;
+    min-height: 220px;
     margin: 10px;
   }
 

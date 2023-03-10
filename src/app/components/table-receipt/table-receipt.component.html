@@ -1,0 +1,59 @@
+<div class="card-pay">
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                                    style="width: 60%; max-width: 300px" />
+                            </td>
+
+                            <td>
+                                Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                Servicio: {{ paquete }}<br />
+                                Subscripción: {{subscription}} USD <br />
+                                Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}}
+                                Bs<br />
+                                <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
+                            </td>
+
+                            <td>
+                                {{nameClient}}<br />
+                                DNI/RIF {{dni}}<br />
+                                <!-- {{email?.value}} -->
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td>Usted reporto un pago de</td>
+                <td>Monto #</td>
+            </tr>
+
+            <tr class="details">
+                <td>{{paquete}}</td>
+                <td *ngIf="amountPm?.value !=''">{{amountPm?.value}}</td>
+                <td *ngIf="cantidad?.value !=''">{{cantidad?.value}}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<!-- <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su Whatsapp registrado en
+    nuestro sistema la factura del pago efectuado</h3> -->
+<br />

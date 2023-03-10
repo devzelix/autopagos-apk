@@ -24,7 +24,19 @@ form.checkout button {
 form.checkout button:active {
   background: rgb(165, 76, 43);
 }
+
+.desc-stripe {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.card-container {
+  width: 100%;
+}
+
 mat-card{
+  margin: auto;
   width: 45%;
   min-height: 150px;
   display: flex;

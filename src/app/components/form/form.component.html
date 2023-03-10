@@ -109,7 +109,7 @@
                 <mat-card-header>
                   <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
                 </mat-card-header>
-                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
+                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}" style="min-height: 140px">
                 <mat-card-actions>
                   <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
                     (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
@@ -712,65 +712,7 @@
         </form>
 
         <div *ngIf="ReciboPay" >
-          <div class="card-pay">
-            <div class="invoice-box">
-              <table cellpadding="0" cellspacing="0">
-                <tr class="top">
-                  <td colspan="2">
-                    <table>
-                      <tr>
-                        <td class="title">
-                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
-                            style="width: 60%; max-width: 300px" />
-                        </td>
-
-                        <td>
-                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr class="information">
-                  <td colspan="2">
-                    <table>
-                      <tr>
-                        <td>
-                          Servicio: {{ paquete }}<br />
-                          Subscripción: {{subscription}} USD <br />
-                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
-                          <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
-                        </td>
-
-                        <td>
-                          {{nameClient}}<br />
-                          DNI/RIF {{dni?.value}}<br />
-                          <!-- {{email?.value}} -->
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr class="heading">
-                  <td>Usted reporto un pago de</td>
-
-                  <td>Monto #</td>
-                </tr>
-
-                <tr class="details">
-                  <td>{{paquete}}</td>
-
-                  <td *ngIf="amountPm?.value !=''">{{amountPm?.value}}</td>
-                  <td *ngIf="cantidad?.value !=''">{{cantidad?.value}}</td>
-                </tr>
-
-              </table>
-            </div>
-          </div>
-          <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su Whatsapp registrado en nuestro sistema la factura del pago efectuado</h3>
-          <br/>
+          <app-table-receipt [amountPm]="amountPm" [cantidad]="cantidad"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
@@ -945,64 +887,7 @@
         </div>
         <!-- *ngIf="ReciboPay" -->
         <div *ngIf="ReciboPay" >
-          <div class="card-pay">
-            <div class="invoice-box">
-              <table cellpadding="0" cellspacing="0">
-                <tr class="top">
-                  <td colspan="2">
-                    <table>
-                      <tr>
-                        <td class="title">
-                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
-                            style="width: 60%; max-width: 300px" />
-                        </td>
-
-                        <td>
-                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-dawdawdawdawdadawdadaddda daw daw d awd ad
-                <tr class="information">
-                  <td colspan="2">
-                    <table>
-                      <tr>
-                        <td>
-                          Servicio: {{ paquete }}<br />
-                          Subscripción: {{subscription}} USD <br />
-                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
-                          <!-- <strong>Banco receptor: {{bank?.value}}</strong> -->
-                        </td>
-
-                        <td>
-                          {{nameClient}}<br />
-                          DNI/RIF {{dni?.value}}<br />
-                          <!-- {{email?.value}} -->
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr class="heading">
-                  <td>Usted reporto un pago de</td>
-
-                  <td>Monto #</td>
-                </tr>
-
-                <tr class="details">
-                  <td>{{paquete}}</td>
-
-                  <td>{{cantidadDC?.value}}</td>
-                </tr>
-
-              </table>
-            </div>
-          </div>
-          <h3 class="message-succes" style="align-content:center;"> En breves momentos le será enviado a su Whatsapp registrado en nuestro sistema la factura del pago efectuado</h3>
-          <br/>
+          <app-table-receipt [cantidad]="cantidadDC"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->

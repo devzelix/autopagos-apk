@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { StripeService, StripeCardNumberComponent, StripeCardComponent} from 'ngx-stripe';
+import { Router } from '@angular/router';
 import {
   StripeCardElementOptions,
   StripeElementsOptions,
@@ -11,6 +12,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterPayService } from 'src/app/services/register-pay.service';
 import Swal from 'sweetalert2';
 import { SeguridadDatos } from 'src/app/services/bscript.service';
+import { HelperService } from 'src/app/services/helper.service';
+import { TypeBrowserService } from 'src/app/services/TypeBrowser';
+import { ApiMercantilService } from 'src/app/services/ApiMercantil';
+import { ConsultasService } from 'src/app/services/consultas.service';
+import { StripeData } from 'src/app/interfaces/stripeData';
 
 @Component({
   selector: 'app-stripe',
@@ -23,17 +29,31 @@ export class StripeComponent implements OnInit {
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
   public Monto:any; 
   public nameClient:any;
+  public saldoUSD: string = '';
+  public saldoBs: string = '';
+  public saldoText: string = '';
+  public paquete: string = '';
+  public subscription: string = '';
+  public showReceipt: boolean = false;
+  public newAmount: object;
+
+  private TypeNavegador: string;
+  private IpAddress: any;
+  private c_i: any;
+  private nroContrato: any;
+  private name: any;
+  private idContrato: any;
 
   cardOptions: StripeCardElementOptions = {
     style: {
       base: {
-        iconColor: '#666EE8',
+        iconColor: '#000000bb',
         color: '#31325F',
         fontWeight: 100,
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSize: '18px',
         '::placeholder': {
-          color: '#CFD7E0'
+          color: '#000000bb'
         }
       }
     }
@@ -51,10 +71,30 @@ export class StripeComponent implements OnInit {
     private fb: FormBuilder,
     private stripeService: StripeService, 
     public registerPayService:RegisterPayService, 
-    private seguridadDatos:SeguridadDatos
-  ) { }
+    private _helper: HelperService,
+    private _seguridadDatos: SeguridadDatos,
+    private router: Router,
+    private _TypeBrowserService: TypeBrowserService,
+    private _ApiMercantil: ApiMercantilService,
+    private _Consultas: ConsultasService
+  ) {
+    this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
+    this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
+    this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
+    this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
+    this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
+    this.c_i = this._seguridadDatos.decrypt(localStorage.getItem('dni')!) ? this._seguridadDatos.decrypt(localStorage.getItem('dni')!) : "";
+    this.nroContrato = this._seguridadDatos.decrypt(localStorage.getItem('Abonado')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Abonado')!) : "";
+    this.name = this._seguridadDatos.decrypt(localStorage.getItem('Name')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Name')!) : "";
+    this.idContrato = this._seguridadDatos.decrypt(localStorage.getItem('idContrato')!) ? this._seguridadDatos.decrypt(localStorage.getItem('idContrato')!) : "";
+  }
 
   ngOnInit() {
+    this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
+    this._ApiMercantil.GetAddress()
+      .then((resp: any) => this.IpAddress = resp)
+      .catch((error: any) => console.log(error));
+
     // this.Monto =localStorage.getItem("Monto") ? localStorage.getItem("Monto") : "";
     // this.nameClient =localStorage.getItem("Name") ? localStorage.getItem("Name") : "";
     this.Monto=500;
@@ -78,14 +118,22 @@ export class StripeComponent implements OnInit {
       this.stripeCardValid = event.complete;
     }
   }
+
+  Clear() {
+    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
+    localStorage.clear();
+    this.router.navigate(['pay']);
+  }
+
   public clientSecret:any;
 
   buy() {
+    this.paymentProcessing('Registrando pago', 'Por favor espere...')
+    let resultTok:any;
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
-        console.log("Stripe Servicio");
-        let resultTok:any;
+        // this.newAmount = {cantidad: result.amount}
         resultTok=result.token
             let data={
               token:result?.token?.id,
@@ -96,9 +144,9 @@ export class StripeComponent implements OnInit {
             this.registerPayService.getStripePayment(data)
             .then((res:any)=>{
                 if(res.pago){
-                    console.log("Stripe registerPayService");
+                    // console.log("Stripe registerPayService");
                     let client_secret=res.pago.client_secret
-                    console.log(client_secret)
+                    // console.log(client_secret)
                     this.stripeService.confirmCardPayment(client_secret, 
                       {
                         payment_method: { card: this.card.getCard() },
@@ -111,11 +159,14 @@ export class StripeComponent implements OnInit {
                         });
                       }
                       else{
+                        // this.newAmount = {cantidad: result.paymentIntent?.amount};
                         Swal.fire({
                           icon: 'success',
                           title: 'Exitoso',
                           text: 'Pago exitoso'
-                        });
+                        }).then(res => {
+                          if(res.isConfirmed) this.showReceipt = true
+                        })
                       }
                         
                     })
@@ -126,6 +177,46 @@ export class StripeComponent implements OnInit {
             })
       });
   }
+
+  paymentProcessing(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      //timer: 5000,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+  }
+
+  ClaveAuthStripe() {
+    let DatosUserAgent: StripeData = {
+      c_iDC: this.c_i,
+      Abonado: this.nroContrato,
+      Name: this.name,
+      idContrato: this.idContrato,
+      browser_agent: this.TypeNavegador,
+      ipaddress: this.IpAddress.ip,
+    }
+
+    // TODO: Michael queda pendiente por la API para poder postear estos datos 
+    // TODO: Realizar sweet alert para comprobar si el pin retornado de la api es el mismo que se tipea
+    // TODO: Peticion
+    
+
+    this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
+    .then((res: any) => {
+      if(res.status) {
+        this.buy();
+        this.registerPayService.stripePost(DatosUserAgent).subscribe(res => {
+          console.log(res)
+        })
+      }
+    })
+    .catch(err => console.error(err))
+  }
 }
+
+
 
 

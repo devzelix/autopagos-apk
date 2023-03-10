@@ -24,6 +24,7 @@ import { GlobalErrorHandler } from './utils/GlobalErrorHandler';
 import { PaypalComponent } from './components/paypal/paypal.component';
 import { StripeComponent } from './components/stripe/stripe.component';
 import { NgxStripeModule } from 'ngx-stripe';
+import { TableReceiptComponent } from './components/table-receipt/table-receipt.component';
 
 
 const routes: Routes = [
@@ -43,6 +44,7 @@ const routes: Routes = [
     SerialComponent,
     FooterComponent,
     ImageComponent,
+    TableReceiptComponent,
     NavComponent,
     NegativeAmountPipe,
     DialogDetailComprobantesComponent,
