@@ -216,28 +216,13 @@ export class StripeComponent implements OnInit {
     // TODO: Michael queda pendiente por la API para poder postear estos datos 
     // TODO: Realizar sweet alert para comprobar si el pin retornado de la api es el mismo que se tipea
     // TODO: Peticion
-    this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
-    .then((res: any) => {
-      if(res.status) {
-        this.buy();
-      }
-    })
-    .catch(err => console.error(err))
-  }
-
-  PostData(DataStripe:any){
-    let DatosUserAgent= {
-      c_iDC: this.c_i,
-      Abonado: this.nroContrato,
-      Name: this.name,
-      idContrato: this.idContrato,
-      browser_agent: this.TypeNavegador,
-      ipaddress: this.IpAddress.ip,
-      ...DataStripe
-    }
-
-    this.registerPayService.stripePost(DatosUserAgent)
-
+    // this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
+    // .then((res: any) => {
+    //   if(res.status) {
+    //     this.buy();
+    //   }
+    // })
+    // .catch(err => console.error(err))
     this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
     .then((res: any) => {
       if(res.status) {
@@ -272,6 +257,20 @@ export class StripeComponent implements OnInit {
       }
     })
     .catch(err => console.error(err))
+  }
+
+  PostData(DataStripe:any){
+    let DatosUserAgent= {
+      c_iDC: this.c_i,
+      Abonado: this.nroContrato,
+      Name: this.name,
+      idContrato: this.idContrato,
+      browser_agent: this.TypeNavegador,
+      ipaddress: this.IpAddress.ip,
+      ...DataStripe
+    }
+
+    this.registerPayService.stripePost(DatosUserAgent)
   }
 
   Countdown(Minute: number, Seconds: number) {
