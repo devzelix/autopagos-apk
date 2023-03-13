@@ -402,7 +402,7 @@ export class RegisterPayService {
       console.log("Voy a llamar al https");
       console.log("Lo que le voy a pasar");
       console.log(data);
-      this.http.post(`${env.stripeAPI}/payment`, data).subscribe({
+      this.http.post(`${env.stripeAPI}/RegStr`, data).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -429,8 +429,31 @@ export class RegisterPayService {
     });
   }
 
-  stripePost(data: StripeData) {
-    return this.http.post<StripeData>(`${env.stripeAPI}/stripe-data`, data);
+  stripePost(data: any) {
+
+    let DataUSer={
+      "name_user": data.Name,
+      "customer_id": data.c_iDC,
+      "stripe_id": data.id,
+      "payment_method": data.payment_method,
+      "browser_agent": data.browser_agent,
+      "ipaddress": data.ipaddress,
+      "abonado": data.Abonado,
+      "id_contrato": data.idContrato,
+      "amount": data.amount,
+      "description": data.description,
+      "currency": data.currency,
+      "processing_date": data.created,
+      "status": data.status
+    }
+    console.log("Lo que le voy a enviar");
+    console.log(DataUSer);
+    this.http.post(`${env.stripeAPI}/SavStr`, DataUSer).subscribe({
+      error: error => {
+        console.log(error);
+      }
+    })
+
   }
 
 

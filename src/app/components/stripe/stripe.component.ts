@@ -137,8 +137,8 @@ export class StripeComponent implements OnInit {
         resultTok=result.token
             let data={
               token:result?.token?.id,
-              name:this.nameClient,
-              amount:this.Monto*100
+              amount:this.Monto*100,
+              paquete: this.paquete
             }
             //Aqui
             this.registerPayService.getStripePayment(data)
@@ -151,10 +151,12 @@ export class StripeComponent implements OnInit {
                       {
                         payment_method: { card: this.card.getCard() },
                       }).subscribe(result =>{
+                        console.log("REspondio el confirmCardPayment");
+                        console.log(result);
                       if(result.error){
                         Swal.fire({
                           icon: 'error',
-                          title: 'Correo erróneo',
+                          title: 'Ocurrió un error con tu pago',
                           text: result.error.message
                         });
                       }
@@ -165,7 +167,11 @@ export class StripeComponent implements OnInit {
                           title: 'Exitoso',
                           text: 'Pago exitoso'
                         }).then(res => {
-                          if(res.isConfirmed) this.showReceipt = true
+                          if(res.isConfirmed){ 
+                            this.showReceipt = true
+                            this.PostData(result.paymentIntent);
+                          }
+
                         })
                       }
                         
@@ -190,30 +196,31 @@ export class StripeComponent implements OnInit {
   }
 
   ClaveAuthStripe() {
-    let DatosUserAgent: StripeData = {
+    // TODO: Michael queda pendiente por la API para poder postear estos datos 
+    // TODO: Realizar sweet alert para comprobar si el pin retornado de la api es el mismo que se tipea
+    // TODO: Peticion
+    this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
+    .then((res: any) => {
+      if(res.status) {
+        this.buy();
+      }
+    })
+    .catch(err => console.error(err))
+  }
+
+  PostData(DataStripe:any){
+    let DatosUserAgent= {
       c_iDC: this.c_i,
       Abonado: this.nroContrato,
       Name: this.name,
       idContrato: this.idContrato,
       browser_agent: this.TypeNavegador,
       ipaddress: this.IpAddress.ip,
+      ...DataStripe
     }
 
-    // TODO: Michael queda pendiente por la API para poder postear estos datos 
-    // TODO: Realizar sweet alert para comprobar si el pin retornado de la api es el mismo que se tipea
-    // TODO: Peticion
-    
+    this.registerPayService.stripePost(DatosUserAgent)
 
-    this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
-    .then((res: any) => {
-      if(res.status) {
-        this.buy();
-        this.registerPayService.stripePost(DatosUserAgent).subscribe(res => {
-          console.log(res)
-        })
-      }
-    })
-    .catch(err => console.error(err))
   }
 }
 

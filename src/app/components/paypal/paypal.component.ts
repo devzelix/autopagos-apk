@@ -58,12 +58,12 @@ export class PaypalComponent implements OnInit {
           {
             amount: {
               currency_code: "USD",
-              value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "", //total a pagar
+              value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "", //total a pagar
               // value: "1", //total a pagar
               breakdown: {
                 item_total: {
                   currency_code: "USD",
-                  value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
                   // value: "1",
                 }
               }
@@ -75,7 +75,7 @@ export class PaypalComponent implements OnInit {
                 category: "DIGITAL_GOODS",
                 unit_amount: {
                   currency_code: "USD",
-                  value: this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
                   // value: "1",
                 }
               }
