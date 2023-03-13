@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { StripeService, StripeCardNumberComponent, StripeCardComponent} from 'ngx-stripe';
 import { Router } from '@angular/router';
 import {
@@ -27,6 +27,7 @@ export class StripeComponent implements OnInit {
   paymentForm: FormGroup;
   stripeCardValid: boolean = false;
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
+  public pinSend: boolean = false;
   public Monto:any; 
   public nameClient:any;
   public saldoUSD: string = '';
@@ -43,6 +44,12 @@ export class StripeComponent implements OnInit {
   private nroContrato: any;
   private name: any;
   private idContrato: any;
+
+  public SetInterval: any;
+  public newTime: string;
+  public Minutes: string;
+  public Second: string;
+  public errorPin: boolean = false;
 
   cardOptions: StripeCardElementOptions = {
     style: {
@@ -76,7 +83,7 @@ export class StripeComponent implements OnInit {
     private router: Router,
     private _TypeBrowserService: TypeBrowserService,
     private _ApiMercantil: ApiMercantilService,
-    private _Consultas: ConsultasService
+    private _Consultas: ConsultasService,
   ) {
     this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
@@ -87,6 +94,13 @@ export class StripeComponent implements OnInit {
     this.nroContrato = this._seguridadDatos.decrypt(localStorage.getItem('Abonado')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Abonado')!) : "";
     this.name = this._seguridadDatos.decrypt(localStorage.getItem('Name')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Name')!) : "";
     this.idContrato = this._seguridadDatos.decrypt(localStorage.getItem('idContrato')!) ? this._seguridadDatos.decrypt(localStorage.getItem('idContrato')!) : "";
+
+    let minutes = parseInt(sessionStorage.getItem('minutes')!);
+    let seconds = parseInt(sessionStorage.getItem('seconds')!);
+    if(minutes && seconds) {
+      this.Countdown(minutes, minutes)
+      this.pinSend = true
+    }
   }
 
   ngOnInit() {
@@ -95,10 +109,10 @@ export class StripeComponent implements OnInit {
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
 
-    // this.Monto =localStorage.getItem("Monto") ? localStorage.getItem("Monto") : "";
-    // this.nameClient =localStorage.getItem("Name") ? localStorage.getItem("Name") : "";
-    this.Monto=500;
-    this.nameClient='Cliente Prueba'
+    this.Monto = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!)  : ""
+    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!)  : "";
+    // this.Monto=500;
+    // this.nameClient='Cliente Prueba'
     this.paymentForm = this.fb.group({
       name: ['', [Validators.required]]
     });
@@ -123,6 +137,9 @@ export class StripeComponent implements OnInit {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
     localStorage.clear();
     this.router.navigate(['pay']);
+
+    sessionStorage.setItem('minutes', this.Minutes);
+    sessionStorage.setItem('seconds', this.Second);
   }
 
   public clientSecret:any;
@@ -165,7 +182,7 @@ export class StripeComponent implements OnInit {
                           title: 'Exitoso',
                           text: 'Pago exitoso'
                         }).then(res => {
-                          if(res.isConfirmed) this.showReceipt = true
+                          if(res.isConfirmed) this.showReceipt = true;
                         })
                       }
                         
@@ -189,7 +206,7 @@ export class StripeComponent implements OnInit {
     })
   }
 
-  ClaveAuthStripe() {
+  ClaveAuthStripe () {
     let DatosUserAgent: StripeData = {
       c_iDC: this.c_i,
       Abonado: this.nroContrato,
@@ -207,13 +224,64 @@ export class StripeComponent implements OnInit {
     this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
     .then((res: any) => {
       if(res.status) {
-        this.buy();
-        this.registerPayService.stripePost(DatosUserAgent).subscribe(res => {
-          console.log(res)
+        this.pinSend = true;
+        this.Countdown(1, 59);
+
+        Swal.fire({
+          title: 'Ingrese el PIN recibido.',
+          input: 'text',
+          inputAttributes: {
+            autocapitalize: 'off'
+          },
+          showCancelButton: true,
+          confirmButtonText: 'Enviar',
+          cancelButtonText: 'Cancelar',
+          showLoaderOnConfirm: true,
+          preConfirm: (pin) => {
+            this._Consultas.VerificarPin(this.c_i, pin).then( async (response: any) => {
+              if(response.status) {
+                if(sessionStorage.getItem('minutes') && sessionStorage.getItem('seconds')) {
+                  sessionStorage.removeItem('minutes');
+                  sessionStorage.removeItem('seconds');
+                }
+
+                await this.buy();
+
+                await this.registerPayService.stripePost(DatosUserAgent).subscribe(res => {
+                  console.log(res)
+                })
+              }else{
+                this.errorPin = true;
+              } 
+            })
+          },
+          allowOutsideClick: () => !Swal.isLoading()
         })
       }
     })
     .catch(err => console.error(err))
+  }
+
+  Countdown(Minute: number, Seconds: number) {
+    var date = new Date();
+    date.setMinutes(Minute);
+    date.setSeconds(Seconds);
+    var padLeft = (n: any) => "00".substring(0, "00".length - n.length) + n;
+
+    this.SetInterval = setInterval(() => {
+      this.Minutes = padLeft(date.getMinutes() + "");
+      this.Second = padLeft(date.getSeconds() + "");
+      date = new Date(date.getTime() - 1000);
+      
+      this.newTime = `${this.Minutes}:${this.Second}`
+      if (this.Minutes == '00' && this.Second == '00') {
+        this.Minutes = "";
+        this.Second = "";
+        this.newTime = ""
+        clearInterval(this.SetInterval);
+        this.pinSend = false;
+      }
+    }, 1000);
   }
 }
 

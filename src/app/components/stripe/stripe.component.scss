@@ -50,3 +50,15 @@ mat-card-title{
   text-align: center;
   font-size: 16px;
 }
+
+.error-msg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.error-msg span {
+  font-weight: bold;
+  color: #ff0000;
+}

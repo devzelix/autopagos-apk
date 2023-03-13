@@ -35,9 +35,6 @@
         </div>
         <div class="card-container">
           <mat-card>
-            <mat-card-title>
-              {{nameClient}}
-            </mat-card-title>
             <!-- <span *ngIf="nameClient" class="name">{{nameClient}}</span> -->
             <mat-card-content>
               <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
@@ -46,15 +43,18 @@
                   [options]="cardOptions"
                   (on)="onChange($event)"
                   [elementsOptions]="elementsOptions"
-                ></ngx-stripe-card>
-              </div>
+                  ></ngx-stripe-card>
                 </div>
+              </div>
+              <div *ngIf="errorPin" class="error-msg">
+                <span>El PIN ingresado no es valido, espere el tiempo necesario para volver a intentar</span>
+              </div>
             </mat-card-content>
               <mat-card-footer>
-                <button class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
-                type="button">
-                Solicitar pin para realizar el pago
-              </button>
+                <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
+                  type="button">
+                  Solicitar pin para realizar el pago {{newTime}}
+                </button>
               </mat-card-footer>
             <!-- <div class="container2">
               <div class="row">
