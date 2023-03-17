@@ -19,6 +19,7 @@ export class TableReceiptComponent implements OnInit {
   public saldoBs: string = '';
   public nameClient: string = '';
   public dni: string = '';
+  public Service:string = '';
 
   constructor(private _seguridadDatos: SeguridadDatos) {
     this.subscription = this._seguridadDatos.decrypt(localStorage.getItem('Subscription')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Subscription')!) : "";
@@ -26,11 +27,18 @@ export class TableReceiptComponent implements OnInit {
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem('MontoBs')!) ? this._seguridadDatos.decrypt(localStorage.getItem('MontoBs')!) : "";
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem('Name')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Name')!) : "";
     this.dni = this._seguridadDatos.decrypt(localStorage.getItem('dni')!) ? this._seguridadDatos.decrypt(localStorage.getItem('dni')!) : "";
+    this.Service = this._seguridadDatos.decrypt(localStorage.getItem('Service')!) ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem('Service')!)) : "";
 
-    console.log(this.cantidad)
   }
 
   ngOnInit(): void {
+    if(typeof this.cantidad == 'object'){
+      this.cantidad = this.cantidad?.value;
+    } 
+
+    if(typeof this.amountPm == 'object'){
+      this.amountPm = this.amountPm?.value;
+    }
   }
 
   

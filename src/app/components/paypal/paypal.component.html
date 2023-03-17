@@ -29,13 +29,22 @@
         </h4>
       </div>
     </div>
-    <div class="monto-comision">
-      <span><b>NOTA:</b></span>
-      <small>Al realizar un pago por paypal la comisión del pago corre por parte del cliente, su monto a pagar es <b>{{montoComision | currency}}</b></small>
+    <div *ngIf="ValidoPagoPaypal && !ReciberPay">
+      <div class="monto-comision">
+        <span ><b >NOTA:</b></span>
+        <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar | currency}}</b></small>
+      </div>
+      <div>
+        <ngx-paypal class="paypal-container" [config]="payPalConfig">
+        </ngx-paypal>
+      </div>
     </div>
-    <div>
-      <ngx-paypal class="paypal-container" [config]="payPalConfig">
-      </ngx-paypal>
+    <div *ngIf="!ValidoPagoPaypal && !ReciberPay">
+      <h3 class="message-warning">Lo sentimos estimado cliente el monto a pagar debe ser mínimo $10</h3>
+      <br>
+    </div>
+    <div *ngIf="ReciberPay">
+      <app-table-receipt [cantidad]="MontoCancelar"></app-table-receipt>
     </div>
     <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
       mat-raised-button>

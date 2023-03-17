@@ -25,6 +25,11 @@ export class PaypalComponent implements OnInit {
   public saldoText: string = ''
   public subscription: string = ''
   private TypeNavegador: string ='';
+  private PaypalTasa:number = 5.4;
+  private ComissionF:number = 0.3;
+  public MontoCancelar: string="";
+  public ValidoPagoPaypal: boolean= true;
+  public ReciberPay: boolean = false;
 
   constructor(private _TypeBrowserService: TypeBrowserService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router,private _apimercantil: ApiMercantilService) {
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
@@ -33,19 +38,26 @@ export class PaypalComponent implements OnInit {
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
     this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
     this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
-
     this.newAmount(parseInt(this.saldoUSD))
   }
 
   ngOnInit() {
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
+    this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
+    if(Number(this.MontoCancelar)<10){
+      this.ValidoPagoPaypal=false;
+    }
   }
 
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
     localStorage.clear();
     this.router.navigate(['pay']);
+  }
+
+  GetMontoNetoRecibir(){
+    return (eval(`parseFloat((100*(this.ComissionF + Number(this.MontoCancelar))) / (0 - this.PaypalTasa + 100)).toFixed(2)`));
   }
 
   private initConfig(): void {
@@ -58,12 +70,12 @@ export class PaypalComponent implements OnInit {
           {
             amount: {
               currency_code: "USD",
-              value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "", //total a pagar
+              value: this.GetMontoNetoRecibir(), //total a pagar
               // value: "1", //total a pagar
               breakdown: {
                 item_total: {
                   currency_code: "USD",
-                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: this.GetMontoNetoRecibir(),
                   // value: "1",
                 }
               }
@@ -75,7 +87,7 @@ export class PaypalComponent implements OnInit {
                 category: "DIGITAL_GOODS",
                 unit_amount: {
                   currency_code: "USD",
-                  value: '1',//this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "",
+                  value: this.GetMontoNetoRecibir(),
                   // value: "1",
                 }
               }
@@ -119,22 +131,24 @@ export class PaypalComponent implements OnInit {
           name_user: this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "", //us
           customer_id: this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : "",//us
           addresip: this._seguridadDatos.decrypt(localStorage.getItem("IpAdress")!) ? this._seguridadDatos.decrypt(localStorage.getItem("IpAdress")!) : "",//us
-          browser_agent: this.TypeNavegador
+          browser_agent: this.TypeNavegador,
+          montoarecibir: this.MontoCancelar
         }
        // this._RegisterPayService.PostRegisPaypal(dataRegis).then((payResult) => {
         if (data.status === 'COMPLETED') {
-          this._apimercantil.RegPay(dataRegis).then((resp:any)=>{
-            try {
-                this._hModal.alertexit("Pago aprobado").then((result) => {
-                  if (result) {
-                    this.Clear()
-                  }
-                })
-            } catch (error) {
-              console.error('Error:', error);
-            }
-          })
-          .catch((error:any)=>console.error(error));
+          if(Number(data.purchase_units[0].amount.value) == this.GetMontoNetoRecibir() || Number(data.purchase_units[0].amount.value) >= this.GetMontoNetoRecibir()){
+            this._apimercantil.RegPay(dataRegis).then((resp:any)=>{
+              try {
+                  this.ReciberPay = true;
+                  this._hModal.alertexit("Pago aprobado")
+              } catch (error) {
+                console.error('Error:', error);
+              }
+            })
+            .catch((error:any)=>console.error(error));
+          }else{
+            this._hModal.invalidForm("El monto es menor a lo indicado, por favor comuniquese con soporte");
+          }
         }
       },
       onCancel: (data: any, actions: any) => {

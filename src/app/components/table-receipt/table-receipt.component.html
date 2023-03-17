@@ -23,7 +23,7 @@
                     <table>
                         <tr>
                             <td>
-                                Servicio: {{ paquete }}<br />
+                                Servicio: {{ Service }}<br />
                                 Subscripción: {{subscription}} USD <br />
                                 Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}}
                                 Bs<br />
@@ -46,9 +46,9 @@
             </tr>
 
             <tr class="details">
-                <td>{{paquete}}</td>
-                <td *ngIf="amountPm?.value !=''">{{amountPm?.value}}</td>
-                <td *ngIf="cantidad?.value !=''">{{cantidad?.value}}</td>
+                <td>{{Service}}</td>
+                <td  *ngIf="amountPm?.value !=''"><span style="margin-left: -40px;">{{amountPm}}</span></td>
+                <td  *ngIf="cantidad?.value !=''"><span style="margin-left: -40px;">{{cantidad}}</span></td>
             </tr>
 
         </table>

@@ -109,7 +109,8 @@
                 <mat-card-header>
                   <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
                 </mat-card-header>
-                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}" style="min-height: 140px">
+                <!-- style="min-height: 140px" -->
+                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
                 <mat-card-actions>
                   <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
                     (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
