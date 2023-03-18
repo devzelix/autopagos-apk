@@ -389,9 +389,9 @@ export class ApiMercantilService implements  OnInit {
         let body ={
             name_user: BodyJson.name_user, //us
             customer_id: BodyJson.customer_id,//us
-            email: BodyJson.purchase_units[0].payee.email_address,
+            email: BodyJson.payer.email_address,
             payer_id: BodyJson.payer.payer_id,
-            payment_reference: BodyJson.id,
+            payment_reference: BodyJson.purchase_units[0].payments.captures[0].id,
             abonado: BodyJson.abonado,//us
             id_contrato: BodyJson.id_contrato,//us
             amount: BodyJson.montoarecibir,
