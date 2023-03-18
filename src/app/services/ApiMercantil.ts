@@ -14,8 +14,8 @@ export class ApiMercantilService implements  OnInit {
   private title: string;
   private RegPagosFallidos: any =[];
   responses: any[];
-  URLAPIMERCANTIL = 'http://localhost:8090/';//env.ApiMercantil
-  TOKENAPIMERCANTIL = env.TokenApiMercantil
+  URLAPIMERCANTIL = env.ApiMercantil;
+  TOKENAPIMERCANTIL = env.TokenApiMercantil;
 
   constructor(
     private zone: NgZone,
