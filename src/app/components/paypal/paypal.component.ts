@@ -8,6 +8,9 @@ import { environment } from 'src/environments/environment';
 import { RegisterPayService } from '../../services/register-pay.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
+import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import { isNegativeNumber } from '../../validators/customValidatorAmount';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-paypal',
@@ -27,28 +30,75 @@ export class PaypalComponent implements OnInit {
   private TypeNavegador: string ='';
   private PaypalTasa:number = 5.4;
   private ComissionF:number = 0.3;
-  public MontoCancelar: string="";
-  public ValidoPagoPaypal: boolean= true;
+  public MontoCancelar: any="";
+  public ValidoPagoPaypal: boolean= false;
   public ReciberPay: boolean = false;
+  public MountNegative: boolean = false;
+  
+  public MountPaypal: FormGroup;
+  public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
+  public TasaCambio: string ="";
 
-  constructor(private _TypeBrowserService: TypeBrowserService, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router,private _apimercantil: ApiMercantilService) {
+  constructor(private _TypeBrowserService: TypeBrowserService,private fb: UntypedFormBuilder ,private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router,private _apimercantil: ApiMercantilService) {
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
     this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
     this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
     this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
-    this.newAmount(parseInt(this.saldoUSD))
+    this.TasaCambio = this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) ? this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) : "";
+    this.TasaCambio = this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) ? this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) : "";
   }
 
   ngOnInit() {
+    this.MountPaypal = this.fb.group({
+      cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+    },{ validator: isNegativeNumber })
+    this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
-    this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
-    if(Number(this.MontoCancelar)<10){
-      this.ValidoPagoPaypal=false;
+    if(Number(this.MontoCancelar<=1)){
+      this.MontoCancelar ="1";
+      this.cantidadPaypal?.setValue('1');
+      this.PagoACobrar();
+    }else{
+      this.MountNegative=true;
     }
+    
+    
   }
+
+  get cantidadPaypal() { return this.MountPaypal.get('cantidad'); }
+
+  PagoACobrar(){
+    this.cantidadPaypal?.valueChanges.subscribe({
+      
+      next: (value) => {
+        if (value) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
+            this.ValidoPagoPaypal = true;
+            this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
+            this.cantidadPaypal?.setValue('');
+            return;
+          }else{
+            this.ValidoPagoPaypal = false;
+          }
+          this.MontoCancelar=value;
+          this.GetMontoNetoRecibir();
+        }
+      }
+    })
+  }
+
+  invalidForm(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'error'
+    })
+  }
+
+  
 
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
@@ -163,12 +213,6 @@ export class PaypalComponent implements OnInit {
     };
   }
 
-  newAmount(saldoUSD: number) {
-    let montoComision = 5.4
-    let cobroSolicitudPago = 0.30
-    let monto = Math.trunc(saldoUSD)
-    let trunc = monto / 100 * montoComision + cobroSolicitudPago;
-    this.montoComision = monto + trunc;
-  }
+
 
 }

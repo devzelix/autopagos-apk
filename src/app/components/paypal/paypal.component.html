@@ -29,19 +29,39 @@
         </h4>
       </div>
     </div>
-    <div *ngIf="ValidoPagoPaypal && !ReciberPay">
-      <div class="monto-comision">
-        <span ><b >NOTA:</b></span>
-        <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar | currency}}</b></small>
+    <div *ngIf="!ReciberPay">
+
+      <div *ngIf="!MountNegative">
+        <div class="form"><h4>Monto a pagar USD</h4><br></div>
+        <div class="form">
+          <form [formGroup]="MountPaypal">
+            <mat-form-field appearance="outline">
+              <mat-label><strong>$</strong>
+              </mat-label> 
+              <input matInput formControlName="cantidad" required #inputAmount>
+              <mat-error *ngIf="MountPaypal.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+              <mat-error *ngIf="MountPaypal.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
+                separado por punto, ejemplo: 125.00</mat-error>
+              <mat-error
+                *ngIf="MountPaypal.hasError('isNegative') && MountPaypal.get('cantidad')?.hasError('required')">El monto
+                no puede ser negativo</mat-error>
+            </mat-form-field>
+          </form>
+        </div>
       </div>
-      <div>
-        <ngx-paypal class="paypal-container" [config]="payPalConfig">
-        </ngx-paypal>
+      
+
+      <div *ngIf="!ValidoPagoPaypal">
+        <div class="monto-comision">
+          <span ><b >NOTA:</b></span>
+          <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar | currency}}</b></small>
+        </div>
+        <div>
+          <ngx-paypal class="paypal-container" [config]="payPalConfig">
+          </ngx-paypal>
+        </div>
       </div>
-    </div>
-    <div *ngIf="!ValidoPagoPaypal && !ReciberPay">
-      <h3 class="message-warning">Lo sentimos estimado cliente el monto a pagar debe ser mínimo $10</h3>
-      <br>
+      
     </div>
     <div *ngIf="ReciberPay">
       <app-table-receipt [cantidad]="MontoCancelar"></app-table-receipt>
