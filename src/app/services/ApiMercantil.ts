@@ -14,8 +14,8 @@ export class ApiMercantilService implements  OnInit {
   private title: string;
   private RegPagosFallidos: any =[];
   responses: any[];
-  URLAPIMERCANTIL = env.ApiMercantil;
-  TOKENAPIMERCANTIL = env.TokenApiMercantil;
+  URLAPIMERCANTIL = env.ApiMercantil;//'http://localhost:8090/'
+  TOKENAPIMERCANTIL = env.TokenApiMercantil
 
   constructor(
     private zone: NgZone,
@@ -383,19 +383,18 @@ export class ApiMercantilService implements  OnInit {
   }
 
   RegPay(BodyJson:any){
-    console.log("RegPay")
     return new Promise((resolve,reject)=>{
       try {
 
         let body ={
             name_user: BodyJson.name_user, //us
             customer_id: BodyJson.customer_id,//us
-            email: BodyJson.purchase_units[0].payee.email_address,
+            email: BodyJson.payer.email_address,
             payer_id: BodyJson.payer.payer_id,
-            payment_reference: BodyJson.id,
+            payment_reference: BodyJson.purchase_units[0].payments.captures[0].id,
             abonado: BodyJson.abonado,//us
             id_contrato: BodyJson.id_contrato,//us
-            amount: BodyJson.purchase_units[0].amount.value,
+            amount: BodyJson.montoarecibir,
             currency: BodyJson.purchase_units[0].amount.currency_code,
             processing_date: BodyJson.create_time,
             status: BodyJson.status,
@@ -403,16 +402,11 @@ export class ApiMercantilService implements  OnInit {
             ipaddress:BodyJson.addresip
           }
 
-          console.log("Esto es lo que voy a enviar");
-          console.log(body);
-
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,body)
        .then((resp:any)=>{
         const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
             this.http.post<any>(`${this.URLAPIMERCANTIL}RegPaypal`, resp,{headers:headers}).subscribe({
                 next: data => {
-                  console.log("Respondio");
-                  console.log(data);
                     resolve(data)
                 },
                 error: error => {

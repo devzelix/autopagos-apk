@@ -20,6 +20,7 @@ export class DialogDetailComprobantesComponent implements OnInit {
   public campos:any= ['Banco','Comprobante','Fecha','Monto','Referencia','Nota']
 
   ngOnInit(): void {
+    console.log('hola')
     Object.entries(this.comprobante).forEach(([key,value],index:number)=>{
       const INDEX = this.campos.findIndex((valueC:any)=>key == valueC);
       if(INDEX !=-1){

@@ -619,19 +619,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         console.log('No se han podido llenar los datos correctamente.')
       });
     }
+    if (x == 28) {
+      this.router.navigate(['stripe']);
+    }
   }
 
   checkLocalStorageData() {
     return new Promise<void>((resolve, reject) => {
-      // console.log(this.nameClient)this.abonado
-      // console.log(this.saldoUSD)
-      // console.log(this.saldoBs)
-      // console.log(this.subscription)
-      // console.log(this.idContrato)
-      // console.log(this.dni?.value)
-      // console.log(this.saldoText)
-      // console.log(JSON.stringify(this.paquete))
-      // console.log(this.abonado)
       localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
       localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
       localStorage.setItem("MontoBs", this._seguridadDatos.encrypt(this.saldoBs));
@@ -640,8 +634,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
-      localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+      localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.nroContrato?.value));
       localStorage.setItem("IpAdress", this._seguridadDatos.encrypt(this.IpAddress.ip));
+      localStorage.setItem("TasaCambio", this._seguridadDatos.encrypt(this.tasaCambio));
       resolve()
     })
   }
@@ -1521,19 +1516,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
 
-            //Esto lo uso para el CoinCoinx NO BORRAR
+            //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
             localStorage.setItem("MontoBs", this._seguridadDatos.encrypt(this.saldoBs));
             localStorage.setItem("Subscription", this._seguridadDatos.encrypt(this.subscription));
             localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
             localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
+            localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+
             try {
-              // this.SendOption(0,0,dni.value);
-              this.SendOption(0, 6, this.nameClient);
-              this.SendOption(0, 7, this.monto_pend_conciliar);
-              this.SendOption(0, 8, this.saldoBs);
-              this.SendOption(0, 9, this.saldoUSD);
+              // // this.SendOption(0,0,dni.value);
+              // this.SendOption(0, 6, this.nameClient);
+              // this.SendOption(0, 7, this.monto_pend_conciliar);
+              // this.SendOption(0, 8, this.saldoBs);
+              // this.SendOption(0, 9, this.saldoUSD);
             } catch (error) {
               console.error(error);
             }
@@ -1812,7 +1809,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
-    this.abonado= this.nroContrato?.value
+    this.abonado= this.nroContrato?.value;
     if (ppal) {
       this.AppFibex = true;
       //Para lograr un efecto de transición

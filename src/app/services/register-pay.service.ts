@@ -6,11 +6,13 @@ import { environment as env } from '../../environments/environment.prod';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
+import { StripeData } from '../interfaces/stripeData';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterPayService {
+  private stripeAPI:'http://localhost:9095/payment' //Esto luego lo metes en un environment
 
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
@@ -384,8 +386,79 @@ export class RegisterPayService {
       }
     );
   }
+  getStripePayment2(data: any): Observable<any> {
+    console.log("Voy a llamar al https");
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization':'' });
+    let options = { headers: headers };
+    console.log("Lo que le voy a pasar");
+    console.log(data);
+    return this.http.post(this.stripeAPI, data, options);
+  }
+
+  getStripePayment(data: any){
+    return new Promise((resolve,reject)=>{
+      console.log("Voy a llamar al https");
+      console.log("Lo que le voy a pasar");
+      console.log(data);
+      this.http.post(`${env.stripeAPI}/RegStr`, data).subscribe({
+        next: data => {
+          console.log(data);
+            resolve(data)
+        },
+        error: error => {
+          console.log(error);
+            reject(error);
+        }
+    });
+    });
+  }
+  confirmPaymen(data: any){
+    return new Promise((resolve,reject)=>{
+      this.http.post(`${env.stripeAPI}/payment`, data).subscribe({
+        next: data => {
+          console.log(data);
+            resolve(data)
+        },
+        error: error => {
+          console.log(error);
+            reject(error);
+        }
+    });
+    });
+  }
+
+  stripePost(data: any) {
+
+    let DataUSer={
+      "name_user": data.Name,
+      "customer_id": data.c_iDC,
+      "stripe_id": data.id,
+      "payment_method": data.payment_method,
+      "browser_agent": data.browser_agent,
+      "ipaddress": data.ipaddress,
+      "abonado": data.Abonado,
+      "id_contrato": data.idContrato,
+      "amount": data.amount,
+      "description": data.description,
+      "currency": data.currency,
+      "processing_date": data.created,
+      "status": data.status
+    }
+    console.log("Lo que le voy a enviar");
+    console.log(DataUSer);
+    this.http.post(`${env.stripeAPI}/SavStr`, DataUSer).subscribe({
+      error: error => {
+        console.log(error);
+      }
+    })
+
+  }
+
 
   getNewBankList() {
+    
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = {
         method: `CtasBancarias`,
@@ -622,5 +695,7 @@ export class RegisterPayService {
       }
     })
   }
+
+
 
 }

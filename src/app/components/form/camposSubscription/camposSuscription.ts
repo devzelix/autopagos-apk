@@ -180,11 +180,17 @@ export let MetodoDePago3 = [
     idpago:9,
     tipopago:"Paypal",
     omitir:false,
-    image:'assets/images/Paypal.png'
+    image:'assets/images/Paypal_2014_logo.png'
+  },
+  {
+    idpago:28,
+    tipopago:"Tarjeta Internacional",
+    omitir:true,
+    image:'assets/images/Stripe-Logo-2009.png'
   },
   {
     idpago:7,
-    tipopago:"Otros",
+    tipopago:"Otros pagos",
     omitir:false,
     image:'assets/images/otros.png'
   }

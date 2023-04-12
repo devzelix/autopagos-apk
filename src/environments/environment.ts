@@ -21,6 +21,8 @@ export const environment = {
   upload_preset: "itenw8im",
   ApiKey: "167871278349249",
   CloudName: "thomasv9",
+  stripeAPI:"http://localhost:9095/payment",
+  stripeAPIConfirm:"http://localhost:9095/confirm-payment",
   tokendbFull: '81N2vjsIqq39qjGoEmDmMtjLqW7gLDA7vBV-Ffwuhwf-evejDaRGMrdSASny480GVOl7fcYfh21xfcpJWZ8VzQBHf0chPGOhyo9w3zJQ8OXEYGxwzxCU1gDplt3ebE4wDCkoujh4284bTkzz52AbNudtcR1HBq5_xU3mL5IJ4pqbeiFOJVa9',
   securityEncrt: 'T0rNaDoK4tr1Na?RTgcNmhKU=',
   ApiKeyApissl: '4p1_[51t3m4s]_f186@th0m4s',
