@@ -21,7 +21,7 @@
               {{nameClient}}
             </h4>
             <h4 class="name-client">
-              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              {{MontoCancelar | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
             </h4>
           </div>
           <div>
@@ -33,54 +33,84 @@
             </h4>
           </div>
         </div>
-        <div class="card-container">
-          <mat-card>
-            <!-- <span *ngIf="nameClient" class="name">{{nameClient}}</span> -->
-            <mat-card-content>
-              <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-                <div class="card">
-                  <ngx-stripe-card
-                  [options]="cardOptions"
-                  (on)="onChange($event)"
-                  [elementsOptions]="elementsOptions"
-                  ></ngx-stripe-card>
-                </div>
-              </div>
-              <div *ngIf="errorPin" class="error-msg">
-                <span>El PIN ingresado no es valido, espere el tiempo necesario para volver a intentar</span>
-              </div>
-            </mat-card-content>
-              <mat-card-footer>
-                <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
-                  type="button">
-                  Solicitar pin para realizar el pago {{newTime}}
-                </button>
-              </mat-card-footer>
-            <!-- <div class="container2">
-              <div class="row">
-                <div class="col-md-12" [formGroup]="paymentForm">
-                  <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control" type="text" formControlName="name">
-                  </div>
-                  <div class="form-group">
-                
-                  </div>
-                  <button 
-                    class="btn btn-success"
-                    (click)="buy()" 
-                    [disabled]="!validForm"
-                  >CLICK</button>
-                </div>
-              </div>
-            </div> -->
-          </mat-card>
 
-          <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
-            mat-raised-button>
-            Regresar
-          </button>
+        <div *ngIf="!MountNegative">
+          <div class="form"><h4>Monto a pagar USD</h4><br></div>
+          <div class="form">
+            <form [formGroup]="paymentForm">
+              <mat-form-field appearance="outline">
+                <mat-label><strong>$</strong>
+                </mat-label> 
+                <input matInput formControlName="cantidad" required #inputAmount>
+                <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
+                  separado por punto, ejemplo: 125.00</mat-error>
+                <mat-error
+                  *ngIf="paymentForm.hasError('isNegative') && paymentForm.get('cantidad')?.hasError('required')">El monto
+                  no puede ser negativo</mat-error>
+              </mat-form-field>
+            </form>
+          </div>
         </div>
+        <div *ngIf="!ValidoPagoStripe">
+          <div class="monto-comision">
+            <span ><b >NOTA:</b></span>
+            <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
+          </div>
+          <br>
+          <div>
+            <div class="card-container">
+              <mat-card>
+                <!-- <span *ngIf="nameClient" class="name">{{nameClient}}</span> -->
+                <mat-card-content>
+                  <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
+                    <div class="card">
+                      <ngx-stripe-card
+                      [options]="cardOptions"
+                      (on)="onChange($event)"
+                      [elementsOptions]="elementsOptions"
+                      ></ngx-stripe-card>
+                    </div>
+                  </div>
+                  <div *ngIf="errorPin" class="error-msg">
+                    <span>El PIN ingresado no es valido, espere el tiempo necesario para volver a intentar</span>
+                  </div>
+                </mat-card-content>
+                  <mat-card-footer>
+                    <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
+                      type="button">
+                      Solicitar pin para realizar el pago {{newTime}}
+                    </button>
+                  </mat-card-footer>
+                <!-- <div class="container2">
+                  <div class="row">
+                    <div class="col-md-12" [formGroup]="paymentForm">
+                      <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" type="text" formControlName="name">
+                      </div>
+                      <div class="form-group">
+                    
+                      </div>
+                      <button 
+                        class="btn btn-success"
+                        (click)="buy()" 
+                        [disabled]="!validForm"
+                      >CLICK</button>
+                    </div>
+                  </div>
+                </div> -->
+              </mat-card>
+    
+              <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+                mat-raised-button>
+                Regresar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        
     </div>
 
     <div class="form-login__group" *ngIf="showReceipt">

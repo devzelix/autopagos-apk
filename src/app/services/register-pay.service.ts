@@ -402,7 +402,8 @@ export class RegisterPayService {
       console.log("Voy a llamar al https");
       console.log("Lo que le voy a pasar");
       console.log(data);
-      this.http.post(`${env.stripeAPI}/RegStr`, data).subscribe({
+      const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+      this.http.post(`${env.stripeAPI}/RegStr`, data,{headers:headers}).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -446,9 +447,10 @@ export class RegisterPayService {
       "processing_date": data.created,
       "status": data.status
     }
-    console.log("Lo que le voy a enviar");
+    console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
-    this.http.post(`${env.stripeAPI}/SavStr`, DataUSer).subscribe({
+    const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+    this.http.post(`${env.stripeAPI}/SavStr`, DataUSer,{headers:headers}).subscribe({
       error: error => {
         console.log(error);
       }
