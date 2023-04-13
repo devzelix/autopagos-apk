@@ -1718,7 +1718,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   VerifyEmail() {
     try {
 
-      const Email = this.email?.value.toLowerCase()
+      const Email = this.email?.value.toLowerCase().trim();
 
       if (Email.includes("pagos3") || Email.includes("pago3") ||
         Email.includes("pagoshogar") || Email.includes("pagohogar") ||
