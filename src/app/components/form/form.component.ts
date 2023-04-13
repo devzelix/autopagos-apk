@@ -355,6 +355,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
       if (res['dni']) {
         this.dni?.setValue(`${res['dni']}`)
+        this.searchServices(res['dni'],true,true)
 
         if (res['linkedToContractProcess'] === "approved") {
           this.tasaService.getSaldoBCV().subscribe((res) => {
@@ -1822,7 +1823,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')){ 
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')){
       if(this.bank?.value.includes('EUR')) return 'EUR'
       else return false
     }else return true
