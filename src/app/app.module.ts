@@ -60,7 +60,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     MaterialModule,
     CaptchaThomasModule,
-    NgxStripeModule.forRoot('pk_test_51MgWq9CrigrxRymxjSsAq5tGpzR4La4gHyah2M6sU2WmGqCiqS8mv855cnymKBTniutwsuyVQHE0Wdbj1GezJKjH00zarjRxSa'),
+    NgxStripeModule.forRoot(environment.TokenStripe),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
     NgHcaptchaModule.forRoot({

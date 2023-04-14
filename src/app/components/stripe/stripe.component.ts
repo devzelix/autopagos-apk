@@ -28,9 +28,8 @@ export class StripeComponent implements OnInit {
   stripeCardValid: boolean = false;
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
   public pinSend: boolean = false;
-  public Monto:any; 
   public nameClient:any;
-  public saldoUSD: string = '';
+  public saldoUSD: any = '';
   public saldoBs: string = '';
   public saldoText: string = '';
   public paquete: string = '';
@@ -50,6 +49,11 @@ export class StripeComponent implements OnInit {
   public Minutes: string;
   public Second: string;
   public errorPin: boolean = false;
+  public MountNegative: boolean = false; //Esto debe ir true por defecto ojo acomodar horita es temporal
+  public ValidoPagoStripe: boolean= false;
+  public MontoCancelar: string ="";
+  private StripeTasa:number = 2.9;
+  private ComissionF:number = 0.3;
 
   cardOptions: StripeCardElementOptions = {
     style: {
@@ -86,6 +90,7 @@ export class StripeComponent implements OnInit {
     private _Consultas: ConsultasService,
   ) {
     this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
+    this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) ? this._seguridadDatos.decrypt(localStorage.getItem("MontoBs")!) : "";
     this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
     this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
@@ -109,21 +114,23 @@ export class StripeComponent implements OnInit {
       .then((resp: any) => this.IpAddress = resp)
       .catch((error: any) => console.log(error));
 
-    this.Monto = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!)  : ""
-    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!)  : "";
-    // this.Monto=500;
-    // this.nameClient='Cliente Prueba'
     this.paymentForm = this.fb.group({
-      name: ['', [Validators.required]]
+      cantidad: ['', [Validators.required]]
     });
-    //Este era de prueba ok
-    // this.registerPayService.getStripePayment('hola')
-    //       .subscribe((res) => {
-            
-    //         console.log(res)
-    //         this.clientSecret=res;
-    //       });
+
+    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!)  : "";
+    // if(Number(this.saldoUSD<=1)){
+    //   this.saldoUSD ="1";
+    //   this.cantidadStripe?.setValue('1');
+    //   this.PagoACobrar();
+    // }else{
+    //   this.MountNegative=true;
+    // }
+
+    this.PagoACobrar();//Temporalll
   }
+
+  get cantidadStripe() { return this.paymentForm.get('cantidad'); }
 
   onChange( ev:any ) {
     let type=ev.type;
@@ -142,6 +149,39 @@ export class StripeComponent implements OnInit {
     sessionStorage.setItem('seconds', this.Second);
   }
 
+  PagoACobrar(){
+    this.cantidadStripe?.valueChanges.subscribe({
+     
+      next: (value) => {
+        if (value) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
+            this.ValidoPagoStripe = true;
+            this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
+            this.cantidadStripe?.setValue('');
+            return;
+          }else{
+            this.ValidoPagoStripe = false;
+          }
+          this.saldoUSD=value;
+          this.GetMontoNetoRecibir();
+        }
+      }
+    })
+  }
+
+  GetMontoNetoRecibir(){
+    return (eval(`parseFloat((100*(this.ComissionF + Number(this.saldoUSD))) / (0 - this.StripeTasa + 100)).toFixed(2)`));
+  }
+
+
+  invalidForm(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'error'
+    })
+  }
+
   public clientSecret:any;
 
   buy() {
@@ -154,7 +194,7 @@ export class StripeComponent implements OnInit {
         resultTok=result.token
             let data={
               token:result?.token?.id,
-              amount:this.Monto*100,
+              amount:this.GetMontoNetoRecibir()*100,
               paquete: this.paquete
             }
             //Aqui
@@ -163,36 +203,23 @@ export class StripeComponent implements OnInit {
                 if(res.pago){
                     // console.log("Stripe registerPayService");
                     let client_secret=res.pago.client_secret
-                    // console.log(client_secret)
+                    // console.log(4000000000009995)
                     this.stripeService.confirmCardPayment(client_secret, 
                       {
                         payment_method: { card: this.card.getCard() },
-                      }).subscribe(result =>{
-                        console.log("REspondio el confirmCardPayment");
-                        console.log(result);
+                      }).subscribe((result:any) =>{
                       if(result.error){
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Ocurrió un error con tu pago',
-                          text: result.error.message
-                        });
+                        this.paymentReject('Ocurrió un error con tu pago',result.error.message);
                       }
                       else{
-                        // this.newAmount = {cantidad: result.paymentIntent?.amount};
-                        Swal.fire({
-                          icon: 'success',
-                          title: 'Exitoso',
-                          text: 'Pago exitoso'
-                        }).then(res => {
-                          if(res.isConfirmed){ 
-                            this.showReceipt = true
-                            this.PostData(result.paymentIntent);
-                          }
-
-                        })
+                        this.paymentAproved('Exitoso','Pago exitoso')
+                        this.showReceipt = true
+                        this.PostData(result.paymentIntent);
                       }
                         
                     })
+              }else{
+                this.paymentReject('Ocurrió un error con tu pago','Intenta de nuevo en otro momento');
               }
             })
             .catch((error:any)=>{
@@ -210,6 +237,22 @@ export class StripeComponent implements OnInit {
         Swal.showLoading()
       }
     })
+  }
+
+  paymentAproved(title: string, message: string) {
+    Swal.fire({
+      icon: 'success',
+      title: title,
+      text: message
+    })
+  }
+
+  paymentReject(title: string, message: string) {
+    Swal.fire({
+      icon: 'error',
+      title: title,
+      text: message
+    });
   }
 
   ClaveAuthStripe() {
