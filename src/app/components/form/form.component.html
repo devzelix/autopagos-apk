@@ -41,11 +41,9 @@
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
           <br/>
           <br/>
-
-          <div *ngIf="listContratos.length==0" [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center; z-index: 99;">
-            <captcha-thomas style="width: auto;"></captcha-thomas>
-          </div>
-
+          <ng-container *ngIf="listContratos.length==0">
+            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center; width: 20%;"></captcha-thomas>
+          </ng-container>
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
               type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
               Consultar
