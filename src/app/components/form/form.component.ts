@@ -2060,7 +2060,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   verifySaldo(saldo: string) {
     if (parseFloat(saldo) <= 0) {
-      this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: ' + (parseFloat(saldo) * -1).toFixed(2) + ' REGISTO PAGO ADELANTADO');
+      this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: ' + (parseFloat(saldo) * -1).toFixed(2) + ' REGISTRO PAGO ADELANTADO');
       setTimeout(() => {
       }, 1500)
     }
