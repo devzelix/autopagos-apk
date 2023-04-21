@@ -28,7 +28,7 @@ export class PaypalComponent implements OnInit {
   public saldoText: string = ''
   public subscription: string = ''
   private TypeNavegador: string ='';
-  private PaypalTasa:number = 5.4;
+  private PaypalTasa:number = 5.5;
   private ComissionF:number = 0.3;
   public MontoCancelar: any="";
   public ValidoPagoPaypal: boolean= false;
