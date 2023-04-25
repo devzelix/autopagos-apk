@@ -41,7 +41,8 @@ export const environment = {
   clientIdP: 'Adc6VPw2TTuA0CwXNRAQre6NICbU5ZvE-yrOnEAr6O6Ex3uxxK-qAIaeUqBu-0mHq54CdPrhp3B85ow7',
   NewTokenMercantil: 'U48zFpYohkTLlDoRAMPW_VTNCXdzJtGnN9cYrO3vzXADVWpmjPvwU9XB_vfl46oryT8f4CmpCNMi0LTYDD4uJ1SxIRMEfN9O72ecHyCk96qJwlNhEsnWqgyN5dxCyEaNMQVe6LFvO4rAS-XIyQOSHc7fOEGFDwz_127NN8_t-9cgHLlK6gO4',
   AuthdbMercantil: 'Basic ' + btoa('Spartano:Khdky/6#()[}Ng/itrtyryY74=d35gw5HHd'),
-  TokenStripe: "pk_live_51MihWrKd3CUyyb189ivb1FcFr1Fb0EwAITvXCEqmWj3nRMkJjmHI7fcnhDaeqvt2CY1II1H5J8JTY0sqKrLJ9nx9009MLWhkab"
+  TokenStripe: "pk_live_51MihWrKd3CUyyb189ivb1FcFr1Fb0EwAITvXCEqmWj3nRMkJjmHI7fcnhDaeqvt2CY1II1H5J8JTY0sqKrLJ9nx9009MLWhkab",
+  TokenStripeDesarrollo: "pk_test_51MihWrKd3CUyyb18atyrVsyIrJv6U5JylqddBLtvN8BolIWPuTUugh0g8BgrXgIpRGwBohL5x5rvRrCbxTyvPG6800GwmH5V7h"
 };
 
 /*

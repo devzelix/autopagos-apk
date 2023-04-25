@@ -433,7 +433,7 @@ export class RegisterPayService {
       "ipaddress": data.ipaddress,
       "abonado": data.Abonado,
       "id_contrato": data.idContrato,
-      "amount": data.amount,
+      "amount": data.neto,
       "description": data.description,
       "currency": data.currency,
       "processing_date": data.created,
@@ -442,7 +442,7 @@ export class RegisterPayService {
     console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
     const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-    this.http.post(`${env.ApiMercantil}/SavStr`, DataUSer,{headers:headers}).subscribe({
+    this.http.post(`${env.ApiMercantil}SavStr`, DataUSer,{headers:headers}).subscribe({
       error: error => {
         console.log(error);
       }

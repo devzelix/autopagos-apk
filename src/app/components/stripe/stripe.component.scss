@@ -31,17 +31,22 @@ form.checkout button:active {
   justify-content: space-around;
 }
 
+
+
 .card-container {
   width: 100%;
 }
 
 mat-card{
   margin: auto;
-  width: 45%;
+  width: 90%;
   min-height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  @media (min-width: 600px) {
+    width: 60%;
+  }
 }
 .card{
   margin: 5px;

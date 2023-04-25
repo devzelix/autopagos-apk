@@ -53,13 +53,13 @@
           </div>
         </div>
         <div *ngIf="!ValidoPagoStripe">
-          <div class="monto-comision">
+          <div>
             <span ><b >NOTA:</b></span>
             <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
           </div>
           <br>
           <div>
-            <div class="card-container">
+            <div>
               <mat-card>
                 <mat-card-content>
                   <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
@@ -80,7 +80,7 @@
                   <mat-card-footer>
                     <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
                       type="button">
-                      Solicitar pin de autorización{{newTime}}
+                      Solicitar pin de autorización {{newTime}}
                     </button>
                   </mat-card-footer>
               </mat-card>
@@ -95,7 +95,7 @@
       </div>
 
     <div class="form-login__group" *ngIf="showReceipt">
-      <app-table-receipt [cantidad]="newAmount"></app-table-receipt>
+      <app-table-receipt [cantidad]="saldoUSD"></app-table-receipt>
 
       <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
             mat-raised-button>

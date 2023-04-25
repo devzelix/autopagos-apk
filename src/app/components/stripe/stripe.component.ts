@@ -192,6 +192,7 @@ export class StripeComponent implements OnInit {
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
         // this.newAmount = {cantidad: result.amount}
+        console.log(result);
         resultTok=result.token
             let data={
               token:result?.token?.id,
@@ -214,7 +215,8 @@ export class StripeComponent implements OnInit {
                       }
                       else{
                         this.paymentAproved('Exitoso','Pago exitoso')
-                        this.showReceipt = true
+                        this.showReceipt = true;
+                        result.paymentIntent.neto=this.saldoUSD
                         this.PostData(result.paymentIntent);
                       }
                         
@@ -293,6 +295,8 @@ export class StripeComponent implements OnInit {
   }
 
   PostData(DataStripe:any){
+    console.log("PostData");
+    console.log(DataStripe);
     let DatosUserAgent= {
       c_iDC: this.c_i,
       Abonado: this.nroContrato,
