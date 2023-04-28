@@ -1042,24 +1042,46 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           let Minute = dt.getMinutes().toString();
           let Second = dt.getSeconds().toString();
           let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
+
+          //OLD SERVICE TO CONVERT IMG//PDF FILES
+
           //Paso el file en base64 y el nombre que se le asignara
-          this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
-            .then((response: any) => {
-              if (response.hasOwnProperty('error')) {
-                this.countErrorUploadImage(imageBase64, NameCloud);
-                return;
-              }
+          // this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
+          //   .then((response: any) => {
+          //     if (response.hasOwnProperty('error')) {
+          //       this.countErrorUploadImage(imageBase64, NameCloud);
+          //       return;
+          //     }
+          //     this.uploadingImg = false;
+          //     imageBase64 = '';
+
+          //     this.imageUrl = response.secure_url;
+          //     this.SendOption(2, 0, response.url);
+          //     this.imageUploaded = true;
+          //   })
+          //   .catch((error: any) => {
+          //     console.error(error);
+          //     this.countErrorUploadImage(imageBase64, NameCloud)
+          //   })
+
+
+
+          //NEW SERVICE TO CONVERT IMG//PDF FILES
+          try {
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
               this.uploadingImg = false;
               imageBase64 = '';
 
-              this.imageUrl = response.secure_url;
-              this.SendOption(2, 0, response.url);
+              this.imageUrl = res.secure_url;
+              this.SendOption(2, 0, res.url);
               this.imageUploaded = true;
+
             })
-            .catch((error: any) => {
-              console.error(error);
-              this.countErrorUploadImage(imageBase64, NameCloud)
-            })
+            
+          } catch (error) {
+            console.error(error);
+            this.countErrorUploadImage(imageBase64, NameCloud)
+          }
         }
       } else {
         this.ValidExtension = false;
@@ -1132,23 +1154,44 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           let Minute = dt.getMinutes().toString();
           let Second = dt.getSeconds().toString();
           let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
+
+          //NEW SERVICE TO CONVERT IMG//PDF FILES
+
           //Paso el file en base64 y el nombre que se le asignara
-          this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
-            .then((response: any) => {
-              if (response.hasOwnProperty('error')) {
-                this.countErrorUploadImage(imageBase64, NameCloud);
-                return;
-              }
+          // this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
+          //   .then((response: any) => {
+          //     if (response.hasOwnProperty('error')) {
+          //       this.countErrorUploadImage(imageBase64, NameCloud);
+          //       return;
+          //     }
+          //     this.uploadingRetentionImg = false;
+          //     imageBase64 = '';
+          //     this.retentionImageUrl = response.secure_url;
+          //     this.SendOption(2, 0, response.url);
+          //     this.retentionimageUploaded = true;
+          //   })
+          //   .catch((error: any) => {
+          //     console.error(error);
+          //     this.countErrorUploadImage(imageBase64, NameCloud)
+          //   })
+
+
+            //NEW SERVICE TO CONVERT IMG//PDF FILES
+
+          try {
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
               this.uploadingRetentionImg = false;
               imageBase64 = '';
-              this.retentionImageUrl = response.secure_url;
-              this.SendOption(2, 0, response.url);
+              this.retentionImageUrl = res.secure_url;
+              this.SendOption(2, 0, res.url);
               this.retentionimageUploaded = true;
+
             })
-            .catch((error: any) => {
-              console.error(error);
-              this.countErrorUploadImage(imageBase64, NameCloud)
-            })
+            
+          } catch (error) {
+            console.error(error);
+            this.countErrorUploadImage(imageBase64, NameCloud)
+          }
         }
       } else {
         this.ValidRetentionImgExtension = false;
