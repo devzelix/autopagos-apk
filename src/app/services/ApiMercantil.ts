@@ -14,7 +14,7 @@ export class ApiMercantilService implements  OnInit {
   private title: string;
   private RegPagosFallidos: any =[];
   responses: any[];
-  URLAPIMERCANTIL = env.ApiMercantil;//'http://localhost:8090/'
+  URLAPIMERCANTIL = env.ApiMercantil;
   TOKENAPIMERCANTIL = env.TokenApiMercantil
 
   constructor(

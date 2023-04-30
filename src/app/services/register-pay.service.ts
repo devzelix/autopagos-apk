@@ -428,7 +428,7 @@ export class RegisterPayService {
       "name_user": data.Name,
       "customer_id": data.c_iDC,
       "stripe_id": data.id,
-      "payment_method": data.payment_method,
+      "payment_reference": data.payment_method,
       "browser_agent": data.browser_agent,
       "ipaddress": data.ipaddress,
       "abonado": data.Abonado,

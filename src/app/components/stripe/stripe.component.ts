@@ -52,7 +52,7 @@ export class StripeComponent implements OnInit {
   public MountNegative: boolean = false; //Esto debe ir true por defecto ojo acomodar horita es temporal
   public ValidoPagoStripe: boolean= false;
   public MontoCancelar: string ="";
-  private StripeTasa:number = 2.9;
+  private StripeTasa:number = 4;
   private ComissionF:number = 0.3;
 
   cardOptions: StripeCardElementOptions = {
@@ -295,8 +295,6 @@ export class StripeComponent implements OnInit {
   }
 
   PostData(DataStripe:any){
-    console.log("PostData");
-    console.log(DataStripe);
     let DatosUserAgent= {
       c_iDC: this.c_i,
       Abonado: this.nroContrato,
