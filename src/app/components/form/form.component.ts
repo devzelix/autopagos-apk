@@ -36,6 +36,7 @@ import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
+import { ClearCacheService } from 'src/app/services/clear-cache.service';
 
 
 
@@ -200,9 +201,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     public captchaService: CaptchaThomasService,
     private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
-    private _helper: HelperService
+    private _helper: HelperService,
+    private cacheService: ClearCacheService
     //private hcaptchaService: NgHcaptchaService
   ) {
+    this.cacheService.clear();
+
     this.dataBankService.bankList.subscribe((banks) => {
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
