@@ -1108,8 +1108,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
             this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
           } else if ((ResDeposito && ResDeposito.success === "false") || ResDeposito.success === false) {
+            this.voucher?.setValue(NroRef);
             this.NextMatStepper()
-            //if (!NroRef) { console.log("NEXT");  }
           }
 
         })
@@ -1704,6 +1704,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   ValidateLastReferencia(NroRef: any) {
+    //Elimino todos los ceros a la izquierda
+      NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {
