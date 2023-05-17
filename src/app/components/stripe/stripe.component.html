@@ -85,7 +85,7 @@
                   </mat-card-footer>
               </mat-card>
     
-              <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+              <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
                 mat-raised-button>
                 Regresar
               </button>
@@ -97,7 +97,7 @@
     <div class="form-login__group" *ngIf="showReceipt">
       <app-table-receipt [cantidad]="saldoUSD"></app-table-receipt>
 
-      <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+      <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
             mat-raised-button>
             Regresar
       </button>

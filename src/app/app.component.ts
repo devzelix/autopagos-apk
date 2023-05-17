@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,14 @@ import { Component } from '@angular/core';
 })
 export class AppComponent { 
 
-  constructor() {}
+  public view:boolean=false;
+
+  constructor( private activatedRoute: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((parameter: any) => {
+      const { app } = parameter;
+      if (app !== undefined && app !== null) this.view = !this.view;
+    })
+  }
 }

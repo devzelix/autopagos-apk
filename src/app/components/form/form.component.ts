@@ -22,7 +22,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -50,7 +50,7 @@ export interface DialogData {
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
-  styleUrls: ['./form.style.css']
+  styleUrls: ['./form.style.scss']
 })
 export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
@@ -140,7 +140,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   AllDataClient: any = []
   enableBtn: Boolean = false
   totalAmount: number = 0;
-  PagoMetodosHTML2: any = MetodoDePago3;
+  PagoMetodosHTML2: any = FormasDePago;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
@@ -383,7 +383,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
             this.thirdFormFibex.get('img')?.updateValueAndValidity();
           }
-          this.PagoMetodosHTML2 = MetodoDePago3;
+          this.PagoMetodosHTML2 = FormasDePago;
         }
       }
     });
@@ -532,6 +532,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.Criptomoneda = false;
     this.Otros = false;
     this.PrimeraVez = false;
+
     //Débito
     if (x == 0) {
       this.DebitoCreditoboolean = !this.DebitoCreditoboolean
@@ -586,7 +587,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 4) {
       setTimeout(() => {
         this.NextMatStepper();
-        this.PagoMetodosHTML2 = MetodoDePago3;
+        //this.PagoMetodosHTML2 = MetodoDePago3;
       }, 300);
     }
     //Criptomoneda
@@ -601,9 +602,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 6) {
       let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
+      
       this.bankSelected(BankZelle[0]);
       setTimeout(() => {
-        this.NextMatStepper()
+        this.NextMatStepper();
       }, 300);
     }
     //Card para pagos en BS
@@ -613,9 +615,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Regresa a las Card en USD
     if (x == 8) {
-      this.PagoMetodosHTML2 = MetodoDePago3;
+      this.PagoMetodosHTML2 = FormasDePago;
     }
-
     //Paypal
     if (x == 9) {
       this.checkLocalStorageData().then((result) => {
@@ -624,9 +625,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         console.log('No se han podido llenar los datos correctamente.')
       });
     }
+    //Stripe
     if (x == 28) {
       this.router.navigate(['stripe']);
     }
+    //Reportar
+    if (x == 29) {
+      this.PagoMetodosHTML2 = MetodoDePago2;
+      this.Otros = true;
+    }
+    //Pagar
+    if (x == 30) {
+      this.PagoMetodosHTML2 = MetodoDePago3;
+      this.Otros = true;
+    }
+
   }
 
   checkLocalStorageData() {

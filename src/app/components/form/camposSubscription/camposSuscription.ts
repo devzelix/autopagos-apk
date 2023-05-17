@@ -134,25 +134,11 @@ export let DatosPagoMovil =['584129637516, 308182516, 0105']
 
 export let MetodoDePago2 = [
   {
-    idpago:0,
-    tipopago:"Débito Mercantil",
-    image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
-    alt:'Débito Mercantil',
+    idpago:6,
+    tipopago:"Zelle",
+    image:'assets/images/Icono_Zelle.png',
+    alt:'Zelle',
     omitir:false,
-  },
-  {
-    idpago:1,
-    tipopago:"Crédito",
-    image:'assets/images/Icono_TDC-PagosFibex.png',
-    alt:'Crédito',
-    omitir:false,
-  },
-  {
-    idpago:2,
-    tipopago:"Pago Móvil",
-    image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
-    omitir:false,
-    alt:'Pago Móvil'
   },
   {
     idpago:4,
@@ -163,13 +149,7 @@ export let MetodoDePago2 = [
   }
 ]
 export let MetodoDePago3 = [
-  {
-    idpago:6,
-    tipopago:"Zelle",
-    image:'assets/images/Icono_Zelle.png',
-    alt:'Zelle',
-    omitir:false,
-  },
+  
   {
     idpago:5,
     tipopago:"Criptomoneda",
@@ -191,8 +171,44 @@ export let MetodoDePago3 = [
   {
     idpago:7,
     tipopago:"Otros pagos",
-    omitir:false,
+    omitir:true,
     image:'assets/images/otros.png'
+  },
+  {
+    idpago:0,
+    tipopago:"Débito Mercantil",
+    image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
+    alt:'Débito Mercantil',
+    omitir:false,
+  },
+  {
+    idpago:1,
+    tipopago:"Crédito",
+    image:'assets/images/Icono_TDC-PagosFibex.png',
+    alt:'Crédito',
+    omitir:false,
+  },
+  {
+    idpago:2,
+    tipopago:"Pago Móvil",
+    image:'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
+    omitir:false,
+    alt:'Pago Móvil'
+  },
+]
+
+export let FormasDePago = [
+  {
+    idpago:29,
+    tipopago:"FormasDePago",
+    tittle:"Reportar",
+    omitir:false,
+  },
+  {
+    idpago:30,
+    tipopago:"FormasDePago",
+    tittle:"Pagar",
+    omitir:false,
   }
 ]
 

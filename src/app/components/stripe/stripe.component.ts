@@ -144,7 +144,7 @@ export class StripeComponent implements OnInit {
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
     localStorage.clear();
-    this.router.navigate(['pay']);
+    this.router.navigate(['']);
 
     sessionStorage.setItem('minutes', this.Minutes);
     sessionStorage.setItem('seconds', this.Second);
