@@ -25,7 +25,7 @@
     <!-- / Mensajes de alerta -->
 
     <mat-stepper [linear]="true" #stepper *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
-     
+
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
         <ng-template matStepLabel>Cliente</ng-template>
@@ -41,7 +41,7 @@
           </mat-form-field>
           <!-- Si no tiene contratos activos -->
           <ng-container *ngIf="listContratos.length==0">
-            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; display: flex; justify-content: center ; width: 100%;"></captcha-thomas>
+            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" class="captcha-box"></captcha-thomas>
           </ng-container>
           <!-- / Si no tiene contratos activos -->
 
@@ -108,7 +108,7 @@
             </h4>
           </div> -->
         </div>
-        
+
         <ng-template matStepLabel>Tipo de pago</ng-template>
         <div class="cardflex">
             <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
@@ -120,7 +120,7 @@
                       <h3 >
                         {{option.tittle}}
                       </h3>
-                    </button> 
+                    </button>
 
                 </span>
 

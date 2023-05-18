@@ -2,8 +2,8 @@
     background-color: #6cb73a;
     color: rgba(22, 20, 20, 0.418);
   }
-  
-  
+
+
    .mat-step-header .mat-step-icon {
       background-color: rgba(35, 77, 167, 0.54);
       color: #fff;
@@ -34,7 +34,7 @@
   .TitlePerson{
     font-size: 14px !important;
   }
-  
+
   .example-header-image {
     background-size: cover;
   }
@@ -43,6 +43,13 @@
     align-items: center;
     justify-content: center;
   }
+
+.captcha-box {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
 .grid-cards {
   display: grid;
@@ -100,34 +107,34 @@
       -webkit-transform: translate3d(0, 100%, 0);
       transform: translate3d(0, 100%, 0);
     }
-  
+
     to {
       opacity: 1;
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
     }
   }
-  
+
   @keyframes fadeInUp {
     from {
       opacity: 0;
       -webkit-transform: translate3d(0, 100%, 0);
       transform: translate3d(0, 100%, 0);
     }
-  
+
     to {
       opacity: 1;
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
     }
   }
-  
+
   .fadeInUp {
     -webkit-animation-name: fadeInUp;
     animation-name: fadeInUp;
   }
 
-  
+
 
 
   @media screen and (max-width: 930px) {
@@ -142,6 +149,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    } 
+    }
 }
 
