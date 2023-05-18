@@ -134,6 +134,47 @@ export let DatosPagoMovil =['584129637516, 308182516, 0105']
 
 export let MetodoDePago2 = [
   {
+    idpago:6,
+    tipopago:"Zelle",
+    image:'assets/images/Icono_Zelle.png',
+    alt:'Zelle',
+    omitir:false,
+  },
+  {
+    idpago:4,
+    tipopago:"Transferencia",
+    omitir:false,
+    image:'assets/images/Icono_Transferencia-Pagos_Fibex.png',
+    alt:'Otros'
+  }
+]
+export let MetodoDePago3 = [
+  
+  {
+    idpago:5,
+    tipopago:"Criptomoneda",
+    omitir:true,
+    image:'assets/images/Coincoinx.png'
+  },
+  {
+    idpago:9,
+    tipopago:"Paypal",
+    omitir:false,
+    image:'assets/images/Paypal_2014_logo.png'
+  },
+  {
+    idpago:28,
+    tipopago:"Tarjeta Internacional",
+    omitir:false,
+    image:'assets/images/Stripe.png'
+  },
+  {
+    idpago:7,
+    tipopago:"Otros pagos",
+    omitir:true,
+    image:'assets/images/otros.png'
+  },
+  {
     idpago:0,
     tipopago:"Débito Mercantil",
     image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
@@ -154,45 +195,20 @@ export let MetodoDePago2 = [
     omitir:false,
     alt:'Pago Móvil'
   },
-  {
-    idpago:4,
-    tipopago:"Transferencia",
-    omitir:false,
-    image:'assets/images/Icono_Transferencia-Pagos_Fibex.png',
-    alt:'Otros'
-  }
 ]
-export let MetodoDePago3 = [
+
+export let FormasDePago = [
   {
-    idpago:6,
-    tipopago:"Zelle",
-    image:'assets/images/Icono_Zelle.png',
-    alt:'Zelle',
+    idpago:29,
+    tipopago:"FormasDePago",
+    tittle:"Reportar",
     omitir:false,
   },
   {
-    idpago:5,
-    tipopago:"Criptomoneda",
-    omitir:true,
-    image:'assets/images/Coincoinx.png'
-  },
-  {
-    idpago:9,
-    tipopago:"Paypal",
+    idpago:30,
+    tipopago:"FormasDePago",
+    tittle:"Pagar",
     omitir:false,
-    image:'assets/images/Paypal_2014_logo.png'
-  },
-  {
-    idpago:28,
-    tipopago:"Tarjeta Internacional",
-    omitir:true,
-    image:'assets/images/Stripe-Logo-2009.png'
-  },
-  {
-    idpago:7,
-    tipopago:"Otros pagos",
-    omitir:false,
-    image:'assets/images/otros.png'
   }
 ]
 

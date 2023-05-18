@@ -28,12 +28,12 @@ import { TableReceiptComponent } from './components/table-receipt/table-receipt.
 
 
 const routes: Routes = [
-  { path: 'pay', component: FormComponent },
+  { path: '', component: FormComponent },
   {  path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
   {path:'stripe', component:StripeComponent},
-  { path: '',   redirectTo: '/pay', pathMatch: 'full' }
+  //{ path: '',   redirectTo: '/', pathMatch: 'full' }
 ]
 
 

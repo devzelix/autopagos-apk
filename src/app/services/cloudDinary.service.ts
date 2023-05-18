@@ -1,6 +1,7 @@
 import { Injectable, NgZone, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment as env } from '../../environments/environment';
+import { EncryptService } from './encrypt.service';
 
 import * as CryptoJS from 'crypto-js';
 
@@ -11,7 +12,10 @@ export class CloudynariService implements  OnInit {
 
   private SignatureLast:string = "";
   private PublicID:string ="";
-  constructor() { }
+  constructor( 
+    private http: HttpClient,
+    private security: EncryptService
+    ) { }
 
    ngOnInit(): void {  }
 
@@ -45,45 +49,45 @@ export class CloudynariService implements  OnInit {
     })
   }*/
 
-  UploadImagenCloudynariSignature(file:any,name:string){
-    return new Promise((resolve,reject)=>{
-      try {
-        const url = `https://api.cloudinary.com/v1_1/${env.CloudName}/image/upload`;
-        const formData = new FormData();
+  // UploadImagenCloudynariSignature(file:any,name:string){
+  //   return new Promise((resolve,reject)=>{
+  //     try {
+  //       const url = `https://api.cloudinary.com/v1_1/${env.CloudName}/image/upload`;
+  //       const formData = new FormData();
 
-        let timestamp= Math.floor(Date.now() / 1000)
-        let timestampString = timestamp.toString();
-        let Carpeta="Pagos"
-        let Signature =(`folder=${Carpeta}&public_id=${name}&timestamp=${timestamp}${env.ApiSecret}`)
-         this.Has256Generate(Signature)
-         .then((resp:any)=>{
-          formData.append("file", file);
-          formData.append("public_id", name);
-          formData.append("api_key", env.ApiKey);
-          formData.append("timestamp", timestampString);
-          formData.append("signature", resp);
-          formData.append("folder", Carpeta);
+  //       let timestamp= Math.floor(Date.now() / 1000)
+  //       let timestampString = timestamp.toString();
+  //       let Carpeta="Pagos"
+  //       let Signature =(`folder=${Carpeta}&public_id=${name}&timestamp=${timestamp}${env.ApiSecret}`)
+  //        this.Has256Generate(Signature)
+  //        .then((resp:any)=>{
+  //         formData.append("file", file);
+  //         formData.append("public_id", name);
+  //         formData.append("api_key", env.ApiKey);
+  //         formData.append("timestamp", timestampString);
+  //         formData.append("signature", resp);
+  //         formData.append("folder", Carpeta);
 
-          fetch(url, {
-            method: "POST",
-            body: formData
-          })
-            .then((response) => {
-              return response.text();
-            })
-            .then((data) => {
-              resolve(JSON.parse(data));
-            })
-            .catch((error:any)=>{reject(error)}) //Este es el que ataja el error
-         })
-         .catch((error:any)=>{
-          console.log(error);
-         })
-      } catch (error) {
-        reject(error);
-      }
-    })
-  }
+  //         fetch(url, {
+  //           method: "POST",
+  //           body: formData
+  //         })
+  //           .then((response) => {
+  //             return response.text();
+  //           })
+  //           .then((data) => {
+  //             resolve(JSON.parse(data));
+  //           })
+  //           .catch((error:any)=>{reject(error)}) //Este es el que ataja el error
+  //        })
+  //        .catch((error:any)=>{
+  //         console.log(error);
+  //        })
+  //     } catch (error) {
+  //       reject(error);
+  //     }
+  //   })
+  // }
 
   Has256Generate(string:any){
     return new Promise((resolve,reject)=>{
@@ -158,5 +162,20 @@ export class CloudynariService implements  OnInit {
       this.responses.splice(index, 1);
     });
   }*/
+
+  upload_images(file: any, name: string){
+
+    const headers = {
+      TokenAuth:env.upload_image_token,
+      "Authorization": `Basic ${this.security.btoa(`${env.upload_image_user}:${env.upload_image_password}`)}`
+    }
+
+    const formData = new FormData()
+    formData.append('file', file),
+    formData.append('name', name),
+    formData.append('folder', env.folder)
+
+    return this.http.post(`${env.upload_image_url}/${env.upload_image_endpoint}`, formData, {headers})
+  }
 
 }

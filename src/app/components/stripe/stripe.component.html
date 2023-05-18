@@ -12,7 +12,7 @@
           </p>
         </span>
         <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
-      </div>
+    </div>
     
       <div class="form-login__group" *ngIf="!showReceipt">
         <div *ngIf="nameClient && saldoUSD" class="desc-stripe">
@@ -53,23 +53,24 @@
           </div>
         </div>
         <div *ngIf="!ValidoPagoStripe">
-          <div class="monto-comision">
+          <div>
             <span ><b >NOTA:</b></span>
             <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
           </div>
           <br>
           <div>
-            <div class="card-container">
+            <div>
               <mat-card>
-                <!-- <span *ngIf="nameClient" class="name">{{nameClient}}</span> -->
                 <mat-card-content>
                   <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
                     <div class="card">
                       <ngx-stripe-card
+                      containerClass="example"
                       [options]="cardOptions"
                       (on)="onChange($event)"
                       [elementsOptions]="elementsOptions"
-                      ></ngx-stripe-card>
+                      >
+                      </ngx-stripe-card>
                     </div>
                   </div>
                   <div *ngIf="errorPin" class="error-msg">
@@ -79,44 +80,24 @@
                   <mat-card-footer>
                     <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
                       type="button">
-                      Solicitar pin para realizar el pago {{newTime}}
+                      Solicitar pin de autorización {{newTime}}
                     </button>
                   </mat-card-footer>
-                <!-- <div class="container2">
-                  <div class="row">
-                    <div class="col-md-12" [formGroup]="paymentForm">
-                      <div class="form-group">
-                        <label>Name</label>
-                        <input class="form-control" type="text" formControlName="name">
-                      </div>
-                      <div class="form-group">
-                    
-                      </div>
-                      <button 
-                        class="btn btn-success"
-                        (click)="buy()" 
-                        [disabled]="!validForm"
-                      >CLICK</button>
-                    </div>
-                  </div>
-                </div> -->
               </mat-card>
     
-              <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+              <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
                 mat-raised-button>
                 Regresar
               </button>
             </div>
           </div>
         </div>
-
-        
-    </div>
+      </div>
 
     <div class="form-login__group" *ngIf="showReceipt">
-      <app-table-receipt [cantidad]="newAmount"></app-table-receipt>
+      <app-table-receipt [cantidad]="saldoUSD"></app-table-receipt>
 
-      <button class="button-material-back btn-width-100" routerLink="/pay" style="margin-top: 10px;" (click)="Clear()"
+      <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
             mat-raised-button>
             Regresar
       </button>

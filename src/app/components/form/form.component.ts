@@ -22,7 +22,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -36,6 +36,7 @@ import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
+import { ClearCacheService } from 'src/app/services/clear-cache.service';
 
 
 
@@ -49,7 +50,7 @@ export interface DialogData {
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
-  styleUrls: ['./form.style.css']
+  styleUrls: ['./form.style.scss']
 })
 export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   @ViewChild('stepper') stepper: MatStepper;
@@ -139,7 +140,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   AllDataClient: any = []
   enableBtn: Boolean = false
   totalAmount: number = 0;
-  PagoMetodosHTML2: any = MetodoDePago3;
+  PagoMetodosHTML2: any = FormasDePago;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
@@ -200,9 +201,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     public captchaService: CaptchaThomasService,
     private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
-    private _helper: HelperService
+    private _helper: HelperService,
+    private cacheService: ClearCacheService
     //private hcaptchaService: NgHcaptchaService
   ) {
+    this.cacheService.clear();
+
     this.dataBankService.bankList.subscribe((banks) => {
       this.bankList = banks;
       this.banksFiltered = [...this.bankList];
@@ -379,7 +383,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.fourthFormFibex.get('retentionAmount')?.updateValueAndValidity();
             this.thirdFormFibex.get('img')?.updateValueAndValidity();
           }
-          this.PagoMetodosHTML2 = MetodoDePago3;
+          this.PagoMetodosHTML2 = FormasDePago;
         }
       }
     });
@@ -528,6 +532,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.Criptomoneda = false;
     this.Otros = false;
     this.PrimeraVez = false;
+
     //Débito
     if (x == 0) {
       this.DebitoCreditoboolean = !this.DebitoCreditoboolean
@@ -582,7 +587,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 4) {
       setTimeout(() => {
         this.NextMatStepper();
-        this.PagoMetodosHTML2 = MetodoDePago3;
+        //this.PagoMetodosHTML2 = MetodoDePago3;
       }, 300);
     }
     //Criptomoneda
@@ -597,9 +602,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 6) {
       let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
+      
       this.bankSelected(BankZelle[0]);
       setTimeout(() => {
-        this.NextMatStepper()
+        this.NextMatStepper();
       }, 300);
     }
     //Card para pagos en BS
@@ -609,9 +615,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Regresa a las Card en USD
     if (x == 8) {
-      this.PagoMetodosHTML2 = MetodoDePago3;
+      this.PagoMetodosHTML2 = FormasDePago;
     }
-
     //Paypal
     if (x == 9) {
       this.checkLocalStorageData().then((result) => {
@@ -620,9 +625,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         console.log('No se han podido llenar los datos correctamente.')
       });
     }
+    //Stripe
     if (x == 28) {
       this.router.navigate(['stripe']);
     }
+    //Reportar
+    if (x == 29) {
+      this.PagoMetodosHTML2 = MetodoDePago2;
+      this.Otros = true;
+    }
+    //Pagar
+    if (x == 30) {
+      this.PagoMetodosHTML2 = MetodoDePago3;
+      this.Otros = true;
+    }
+
   }
 
   checkLocalStorageData() {
@@ -1042,24 +1059,46 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           let Minute = dt.getMinutes().toString();
           let Second = dt.getSeconds().toString();
           let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
+
+          //OLD SERVICE TO CONVERT IMG//PDF FILES
+
           //Paso el file en base64 y el nombre que se le asignara
-          this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
-            .then((response: any) => {
-              if (response.hasOwnProperty('error')) {
-                this.countErrorUploadImage(imageBase64, NameCloud);
-                return;
-              }
+          // this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
+          //   .then((response: any) => {
+          //     if (response.hasOwnProperty('error')) {
+          //       this.countErrorUploadImage(imageBase64, NameCloud);
+          //       return;
+          //     }
+          //     this.uploadingImg = false;
+          //     imageBase64 = '';
+
+          //     this.imageUrl = response.secure_url;
+          //     this.SendOption(2, 0, response.url);
+          //     this.imageUploaded = true;
+          //   })
+          //   .catch((error: any) => {
+          //     console.error(error);
+          //     this.countErrorUploadImage(imageBase64, NameCloud)
+          //   })
+
+
+
+          //NEW SERVICE TO CONVERT IMG//PDF FILES
+          try {
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
               this.uploadingImg = false;
               imageBase64 = '';
 
-              this.imageUrl = response.secure_url;
-              this.SendOption(2, 0, response.url);
+              this.imageUrl = res.secure_url;
+              this.SendOption(2, 0, res.url);
               this.imageUploaded = true;
+
             })
-            .catch((error: any) => {
-              console.error(error);
-              this.countErrorUploadImage(imageBase64, NameCloud)
-            })
+            
+          } catch (error) {
+            console.error(error);
+            this.countErrorUploadImage(imageBase64, NameCloud)
+          }
         }
       } else {
         this.ValidExtension = false;
@@ -1086,8 +1125,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
             this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
           } else if ((ResDeposito && ResDeposito.success === "false") || ResDeposito.success === false) {
+            this.voucher?.setValue(NroRef);
             this.NextMatStepper()
-            //if (!NroRef) { console.log("NEXT");  }
           }
 
         })
@@ -1132,23 +1171,44 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           let Minute = dt.getMinutes().toString();
           let Second = dt.getSeconds().toString();
           let NameCloud = this.nroContrato?.value + '-' + day + '-' + month + '-' + year + '-' + Hour + Minute + Second
+
+          //NEW SERVICE TO CONVERT IMG//PDF FILES
+
           //Paso el file en base64 y el nombre que se le asignara
-          this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
-            .then((response: any) => {
-              if (response.hasOwnProperty('error')) {
-                this.countErrorUploadImage(imageBase64, NameCloud);
-                return;
-              }
+          // this._Cloudinary.UploadImagenCloudynariSignature(imageBase64, NameCloud)
+          //   .then((response: any) => {
+          //     if (response.hasOwnProperty('error')) {
+          //       this.countErrorUploadImage(imageBase64, NameCloud);
+          //       return;
+          //     }
+          //     this.uploadingRetentionImg = false;
+          //     imageBase64 = '';
+          //     this.retentionImageUrl = response.secure_url;
+          //     this.SendOption(2, 0, response.url);
+          //     this.retentionimageUploaded = true;
+          //   })
+          //   .catch((error: any) => {
+          //     console.error(error);
+          //     this.countErrorUploadImage(imageBase64, NameCloud)
+          //   })
+
+
+            //NEW SERVICE TO CONVERT IMG//PDF FILES
+
+          try {
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
               this.uploadingRetentionImg = false;
               imageBase64 = '';
-              this.retentionImageUrl = response.secure_url;
-              this.SendOption(2, 0, response.url);
+              this.retentionImageUrl = res.secure_url;
+              this.SendOption(2, 0, res.url);
               this.retentionimageUploaded = true;
+
             })
-            .catch((error: any) => {
-              console.error(error);
-              this.countErrorUploadImage(imageBase64, NameCloud)
-            })
+            
+          } catch (error) {
+            console.error(error);
+            this.countErrorUploadImage(imageBase64, NameCloud)
+          }
         }
       } else {
         this.ValidRetentionImgExtension = false;
@@ -1661,6 +1721,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   ValidateLastReferencia(NroRef: any) {
+    //Elimino todos los ceros a la izquierda
+      NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {

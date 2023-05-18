@@ -4,10 +4,8 @@ import { Router } from '@angular/router';
 import {
   StripeCardElementOptions,
   StripeElementsOptions,
-  PaymentIntent,
 } from '@stripe/stripe-js';
 
-import { environment as env } from 'src/environments/environment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterPayService } from 'src/app/services/register-pay.service';
 import Swal from 'sweetalert2';
@@ -16,17 +14,19 @@ import { HelperService } from 'src/app/services/helper.service';
 import { TypeBrowserService } from 'src/app/services/TypeBrowser';
 import { ApiMercantilService } from 'src/app/services/ApiMercantil';
 import { ConsultasService } from 'src/app/services/consultas.service';
-import { StripeData } from 'src/app/interfaces/stripeData';
+
 
 @Component({
   selector: 'app-stripe',
   templateUrl: './stripe.component.html',
   styleUrls: ['./stripe.component.scss']
 })
+
 export class StripeComponent implements OnInit {
   paymentForm: FormGroup;
   stripeCardValid: boolean = false;
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
+  
   public pinSend: boolean = false;
   public nameClient:any;
   public saldoUSD: any = '';
@@ -52,10 +52,11 @@ export class StripeComponent implements OnInit {
   public MountNegative: boolean = false; //Esto debe ir true por defecto ojo acomodar horita es temporal
   public ValidoPagoStripe: boolean= false;
   public MontoCancelar: string ="";
-  private StripeTasa:number = 2.9;
+  private StripeTasa:number = 4;
   private ComissionF:number = 0.3;
 
   cardOptions: StripeCardElementOptions = {
+    iconStyle: 'solid',
     style: {
       base: {
         iconColor: '#000000bb',
@@ -65,7 +66,7 @@ export class StripeComponent implements OnInit {
         fontSize: '18px',
         '::placeholder': {
           color: '#000000bb'
-        }
+        },
       }
     }
   };
@@ -119,15 +120,15 @@ export class StripeComponent implements OnInit {
     });
 
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!)  : "";
-    // if(Number(this.saldoUSD<=1)){
-    //   this.saldoUSD ="1";
-    //   this.cantidadStripe?.setValue('1');
-    //   this.PagoACobrar();
-    // }else{
-    //   this.MountNegative=true;
-    // }
+    if(Number(this.saldoUSD<=1)){
+      this.saldoUSD ="1";
+      this.cantidadStripe?.setValue('1');
+      this.PagoACobrar();
+    }else{
+      this.MountNegative=true;
+    }
 
-    this.PagoACobrar();//Temporalll
+    //this.PagoACobrar();//Temporalll
   }
 
   get cantidadStripe() { return this.paymentForm.get('cantidad'); }
@@ -143,7 +144,7 @@ export class StripeComponent implements OnInit {
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
     localStorage.clear();
-    this.router.navigate(['pay']);
+    this.router.navigate(['']);
 
     sessionStorage.setItem('minutes', this.Minutes);
     sessionStorage.setItem('seconds', this.Second);
@@ -191,6 +192,7 @@ export class StripeComponent implements OnInit {
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
         // this.newAmount = {cantidad: result.amount}
+        console.log(result);
         resultTok=result.token
             let data={
               token:result?.token?.id,
@@ -213,7 +215,8 @@ export class StripeComponent implements OnInit {
                       }
                       else{
                         this.paymentAproved('Exitoso','Pago exitoso')
-                        this.showReceipt = true
+                        this.showReceipt = true;
+                        result.paymentIntent.neto=this.saldoUSD
                         this.PostData(result.paymentIntent);
                       }
                         
@@ -232,7 +235,6 @@ export class StripeComponent implements OnInit {
     Swal.fire({
       title,
       html: message,
-      //timer: 5000,
       didOpen: () => {
         Swal.showLoading()
       }
@@ -256,16 +258,6 @@ export class StripeComponent implements OnInit {
   }
 
   ClaveAuthStripe() {
-    // TODO: Michael queda pendiente por la API para poder postear estos datos 
-    // TODO: Realizar sweet alert para comprobar si el pin retornado de la api es el mismo que se tipea
-    // TODO: Peticion
-    // this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
-    // .then((res: any) => {
-    //   if(res.status) {
-    //     this.buy();
-    //   }
-    // })
-    // .catch(err => console.error(err))
     this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
     .then((res: any) => {
       if(res.status) {

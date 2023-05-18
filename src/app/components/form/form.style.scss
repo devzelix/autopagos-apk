@@ -1,0 +1,147 @@
+.basic-container .mat-step-header .mat-step-icon-selected {
+    background-color: #6cb73a;
+    color: rgba(22, 20, 20, 0.418);
+  }
+  
+  
+   .mat-step-header .mat-step-icon {
+      background-color: rgba(35, 77, 167, 0.54);
+      color: #fff;
+  }
+
+  .textinvalido{
+    color:red;
+  }
+
+  .Topclass{
+    margin-top: -30px;
+  }
+
+  .Prefc_i{
+    width: 70px;
+  }
+
+  .Prefc_i2{
+    width: 100px;
+  }
+
+  .example-card {
+    max-width: 200px;
+    min-height: 220px;
+    margin: 10px;
+  }
+
+  .TitlePerson{
+    font-size: 14px !important;
+  }
+  
+  .example-header-image {
+    background-size: cover;
+  }
+  .cardflex{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  margin-top: 35px;
+  grid-gap: 4%;
+  grid-auto-rows: minmax(100px, auto);
+}
+.grid-cards-item {
+  color: #d6d5ef;
+  border-radius: 9px;
+  filter: drop-shadow(0 0 0.75rem #0b255f);
+  height: 100px !important;
+  border-radius: 13px;
+  background-color: #00184e;
+  border: none;
+  cursor: pointer;
+  h3 {
+    margin: 7px;
+    font-size: 18px;
+  }
+  p {
+    font-size: 11px;
+  }
+}
+.grid-cards-item:hover, .grid-cards-item:focus {
+  background-color: #0e2f79;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.faster {
+  -webkit-animation-duration: 500ms;
+  animation-duration: 500ms;
+}
+
+.btn-nav-container-grid {
+  width: 100% !important;
+    position: absolute;
+    display: grid;
+    grid-template-columns: 22% 70%;
+    /* padding: 37px; */
+    gap: 10px;
+    margin-top: 4%;
+    justify-content: center;
+  }
+
+  @-webkit-keyframes fadeInUp {
+    from {
+      opacity: 0;
+      -webkit-transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 100%, 0);
+    }
+  
+    to {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      -webkit-transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 100%, 0);
+    }
+  
+    to {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  .fadeInUp {
+    -webkit-animation-name: fadeInUp;
+    animation-name: fadeInUp;
+  }
+
+  
+
+
+  @media screen and (max-width: 930px) {
+    .cardflex{
+        display: block;
+        /* align-items: center;
+        justify-content: center; */
+        width: 100%;
+        height: 100%;
+    }
+     .unicard{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    } 
+}
+

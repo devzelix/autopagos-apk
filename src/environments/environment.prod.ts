@@ -15,13 +15,10 @@ export const environment = {
   stripeAPI:"http://localhost:8090",
   lic: '584120202020@c.us',
   upload_preset: "itenw8im",
-  ApiKey: "167871278349249",
-  CloudName: "thomasv9",
   tokendbFull: '81N2vjsIqq39qjGoEmDmMtjLqW7gLDA7vBV-Ffwuhwf-evejDaRGMrdSASny480GVOl7fcYfh21xfcpJWZ8VzQBHf0chPGOhyo9w3zJQ8OXEYGxwzxCU1gDplt3ebE4wDCkoujh4284bTkzz52AbNudtcR1HBq5_xU3mL5IJ4pqbeiFOJVa9',
   authdbFUll: 'Basic ' + btoa('Onur:L4V1d43NsuPl3N1tud**=BghYjLaQeTB'),
   securityEncrt: 'T0rNaDoK4tr1Na?RTgcNmhKU=',
   ApiKeyApissl: '4p1_[51t3m4s]_f186@th0m4s',
-  ApiSecret: "7I5iUVfNCJlWI8zS6E1vUSXM4oI",
   urlPHPapi: 'http://127.0.0.1:8000/',
   PHPUpload: false,
   ApiMercantil: 'https://backendmercantil.thomas-talk.me/',//'https://backendmercantil.thomas-talk.me/' 'http://localhost:8090/'
@@ -37,5 +34,13 @@ export const environment = {
   clientIdP: 'Adc6VPw2TTuA0CwXNRAQre6NICbU5ZvE-yrOnEAr6O6Ex3uxxK-qAIaeUqBu-0mHq54CdPrhp3B85ow7',
   clientId: 'AZ-_aWUvKv_qn6_zPcsK0XIBLB5nKmwzcOw4w6-TyjKWSXA3tMaPXWolr3TJgM96CM-hb6rnKFJS2WOs',
   NewTokenMercantil: 'U48zFpYohkTLlDoRAMPW_VTNCXdzJtGnN9cYrO3vzXADVWpmjPvwU9XB_vfl46oryT8f4CmpCNMi0LTYDD4uJ1SxIRMEfN9O72ecHyCk96qJwlNhEsnWqgyN5dxCyEaNMQVe6LFvO4rAS-XIyQOSHc7fOEGFDwz_127NN8_t-9cgHLlK6gO4',
-  TokenStripe: "pk_live_51MihWrKd3CUyyb189ivb1FcFr1Fb0EwAITvXCEqmWj3nRMkJjmHI7fcnhDaeqvt2CY1II1H5J8JTY0sqKrLJ9nx9009MLWhkab"
+  TokenStripe: "pk_live_51MihWrKd3CUyyb189ivb1FcFr1Fb0EwAITvXCEqmWj3nRMkJjmHI7fcnhDaeqvt2CY1II1H5J8JTY0sqKrLJ9nx9009MLWhkab",
+
+  //CLOUDINARY
+  upload_image_url:'https://images-services.thomas-talk.me',
+	upload_image_token:'bT5n-xuJ4JXcxIGvVsF2ZmffHg3I_h2OLcon6UvZ9kBxNAzlDIoQFmFpOWkU5yU4Z0R0GbTjK-5bXpv7PAtw6h2BlYJ2DddJKi9A5GouXgCpoxfNTbOMVwmiNAvCvDFJsULA3q-rqgESUgR9Rk4g61ttRV_1HCv-vl5-tj3lODHTtLK2_hGh',
+  upload_image_user:'Randal',
+	upload_image_password:'$%rgY6rh==vbhp93*',
+	upload_image_endpoint:'upload-images',
+	folder:'Pagos'
 };

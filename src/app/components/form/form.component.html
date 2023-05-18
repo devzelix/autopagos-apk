@@ -1,7 +1,6 @@
 <form class="form-login" id="form-offer">
 
   <div class="form-login__offer">
-
     <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
       <p>
         Registre su pago
@@ -10,10 +9,10 @@
         Servicio de Internet
       </p>
     </span>
-    <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
   </div>
 
   <div  [className]="nameClient ? 'form-login__group2' : 'form-login__group'"  class="form-login__group">
+    <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
         su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
@@ -23,12 +22,14 @@
         es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
       <h3 class="message-warning" *ngIf="ErrorRegistrando">{{MessageErrorRegistrado}} ({{ Contar }})</h3>
     </div>
+    <!-- / Mensajes de alerta -->
 
     <mat-stepper [linear]="true" #stepper *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
-      <!-- *ngIf="!AppFibex" -->
+     
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
         <ng-template matStepLabel>Cliente</ng-template>
+
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
             <mat-label>Cédula/RIF del Cliente</mat-label>
@@ -38,32 +39,41 @@
               La cédula es requerida
             </mat-error>
           </mat-form-field>
-          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
-          <br/>
-          <br/>
+          <!-- Si no tiene contratos activos -->
           <ng-container *ngIf="listContratos.length==0">
             <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; display: flex; justify-content: center ; width: 100%;"></captcha-thomas>
           </ng-container>
+          <!-- / Si no tiene contratos activos -->
+
+          <!-- Muestra de boton consultar -->
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
               type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
               Consultar
           </button>
-          <mat-form-field *ngIf="listContratos.length>1" appearance="outline">
-            <mat-label>Abonado</mat-label>
-            <mat-select>
-              <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
-                (click)="contractSelected(contrato,true)" required>
-                {{contrato.contrato}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <!-- /Muestra de boton consultar -->
+
+          <!-- En caso de tener dos o más abonados -->
+          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
+          <div *ngIf="listContratos.length>1" class="grid-cards animated fadeInUp">
+              <button *ngFor="let contrato of listContratos" class="grid-cards-item"
+              (click)="contractSelected(contrato,true)">
+                <h3>
+                  {{contrato.contrato}}
+                </h3>
+                <p>
+                  {{contrato.status_contrato}}
+                </p>
+              </button>
+          </div>
+          <!--  / En caso de tener dos o más abonados -->
         </div>
       </mat-step>
 
-
       <!--/ Fin de Menú ppal -->
+
       <!-- Menú de métodos de pago -->
       <mat-step *ngIf="AppFibex" class="CardPpal">
+
         <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
           <div>
             <h4 class="name-client">
@@ -91,38 +101,54 @@
               Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
             </h4>
           </div>
-          <div>
+          <!-- <div>
             <h4 class="name-client">
-              <!-- Servicio: {{ paquete }} -->
             </h4>
             <h4 class="name-client">
-              <!-- Subscripción: {{subscription}} USD -->
             </h4>
-          </div>
+          </div> -->
         </div>
+        
         <ng-template matStepLabel>Tipo de pago</ng-template>
         <div class="cardflex">
             <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
-              <mat-card *ngIf="!option.omitir" class="example-card">
-                <mat-card-header>
-                  <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
-                </mat-card-header>
-                <!-- style="min-height: 140px" -->
-                <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
-                <mat-card-actions>
-                  <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
-                    (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
-                    matStepperNext>SELECCIONAR
-                  </button>
-                  <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
-                    (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
-                  </button>
-                </mat-card-actions>
-              </mat-card>
+              <span [ngSwitch]="option.tipopago">
+
+                <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
+
+                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="TipoPago(option.idpago)">
+                      <h3 >
+                        {{option.tittle}}
+                      </h3>
+                    </button> 
+
+                </span>
+
+                <span *ngSwitchDefault>
+
+                  <mat-card *ngIf="!option.omitir" class="example-card">
+                    <mat-card-header>
+                      <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
+                    </mat-card-header>
+                    <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
+
+                    <mat-card-actions>
+                      <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
+                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
+                        matStepperNext>SELECCIONAR
+                      </button>
+                      <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
+                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
+                      </button>
+                    </mat-card-actions>
+                  </mat-card>
+                </span>
+
+              </span>
             </div>
         </div>
         <button *ngIf="Otros" class="button-material-back btn-width-100" (click)="TipoPago(8)" mat-raised-button>
-          REGRESAR
+              REGRESAR
         </button>
       </mat-step>
       <!-- / Fin de métodos de pago -->

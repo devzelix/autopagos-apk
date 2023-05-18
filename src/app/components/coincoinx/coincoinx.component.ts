@@ -53,7 +53,7 @@ export class CoincoinxComponent implements OnInit {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
     setTimeout(() => {
       localStorage.clear();
-      this.router.navigate(['pay']);
+      this.router.navigate(['']);
     }, 500);
   }
 

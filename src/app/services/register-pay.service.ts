@@ -11,8 +11,9 @@ import { StripeData } from '../interfaces/stripeData';
 @Injectable({
   providedIn: 'root'
 })
+
 export class RegisterPayService {
-  private stripeAPI:'http://localhost:9095/payment' //Esto luego lo metes en un environment
+  private stripeAPI=env.ApiMercantil //Esto luego lo metes en un environment
 
   private URLGRAPH: string = env.urlGraphql;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
@@ -386,16 +387,6 @@ export class RegisterPayService {
       }
     );
   }
-  getStripePayment2(data: any): Observable<any> {
-    console.log("Voy a llamar al https");
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization':'' });
-    let options = { headers: headers };
-    console.log("Lo que le voy a pasar");
-    console.log(data);
-    return this.http.post(this.stripeAPI, data, options);
-  }
 
   getStripePayment(data: any){
     return new Promise((resolve,reject)=>{
@@ -403,7 +394,7 @@ export class RegisterPayService {
       console.log("Lo que le voy a pasar");
       console.log(data);
       const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-      this.http.post(`${env.stripeAPI}/RegStr`, data,{headers:headers}).subscribe({
+      this.http.post(`${env.ApiMercantil}RegStr`, data,{headers:headers}).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -415,9 +406,10 @@ export class RegisterPayService {
     });
     });
   }
+
   confirmPaymen(data: any){
     return new Promise((resolve,reject)=>{
-      this.http.post(`${env.stripeAPI}/payment`, data).subscribe({
+      this.http.post(`${env.ApiMercantil}payment`, data).subscribe({
         next: data => {
           console.log(data);
             resolve(data)
@@ -436,12 +428,12 @@ export class RegisterPayService {
       "name_user": data.Name,
       "customer_id": data.c_iDC,
       "stripe_id": data.id,
-      "payment_method": data.payment_method,
+      "payment_reference": data.payment_method,
       "browser_agent": data.browser_agent,
       "ipaddress": data.ipaddress,
       "abonado": data.Abonado,
       "id_contrato": data.idContrato,
-      "amount": data.amount,
+      "amount": data.neto,
       "description": data.description,
       "currency": data.currency,
       "processing_date": data.created,
@@ -450,7 +442,7 @@ export class RegisterPayService {
     console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
     const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-    this.http.post(`${env.stripeAPI}/SavStr`, DataUSer,{headers:headers}).subscribe({
+    this.http.post(`${env.ApiMercantil}SavStr`, DataUSer,{headers:headers}).subscribe({
       error: error => {
         console.log(error);
       }
