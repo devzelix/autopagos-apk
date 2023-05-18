@@ -42,7 +42,7 @@
           <br/>
           <br/>
           <ng-container *ngIf="listContratos.length==0">
-            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; align-self: center; width: 20%;"></captcha-thomas>
+            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" style="margin-bottom: 1rem; display: flex; justify-content: center ; width: 100%;"></captcha-thomas>
           </ng-container>
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
               type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
