@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, OnChanges, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, OnChanges, AfterViewInit, Input } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,13 +30,14 @@ import { SeguridadDatos } from 'src/app/services/bscript.service';
 // import { NgHcaptchaService } from 'ng-hcaptcha';
 
 
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, StepState } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
 import { ClearCacheService } from 'src/app/services/clear-cache.service';
+import { STEP_STATE } from '@angular/cdk/stepper';
 
 
 
@@ -171,6 +172,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public SetInterval: any = "";
   public Minutes: any = "";
   public Second: any = "";
+  public BackFormaPago: boolean = false;//Regresar para reportar o pagar
 
   // Variables de hcaptcha
   public hcaptchaForm: FormGroup
@@ -180,7 +182,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   private ComprobanteReportado: string = "";
   private CountCompReport: number = 0;
   public Kiosco: boolean = false;
-  public abonado: string = ''
+  public abonado: string = '';
+  @Input() state: StepState
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -359,7 +362,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
       if (res['dni']) {
         this.dni?.setValue(`${res['dni']}`)
-        this.searchServices(res['dni'],true,true)
+        this.searchServices(res['dni'], true, true)
 
         if (res['linkedToContractProcess'] === "approved") {
           this.tasaService.getSaldoBCV().subscribe((res) => {
@@ -602,20 +605,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 6) {
       let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
-      
+
       this.bankSelected(BankZelle[0]);
       setTimeout(() => {
         this.NextMatStepper();
       }, 300);
-    }
-    //Card para pagos en BS
-    if (x == 7) {
-      this.PagoMetodosHTML2 = MetodoDePago2;
-      this.Otros = true;
-    }
-    //Regresa a las Card en USD
-    if (x == 8) {
-      this.PagoMetodosHTML2 = FormasDePago;
     }
     //Paypal
     if (x == 9) {
@@ -627,7 +621,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Stripe
     if (x == 28) {
-      this.router.navigate(['stripe']);
+      this.checkLocalStorageData().then((result) => {
+        this.router.navigate(['stripe']);
+      }).catch((err) => {
+        console.log('No se han podido llenar los datos correctamente.')
+      });
     }
     //Reportar
     if (x == 29) {
@@ -639,7 +637,23 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.PagoMetodosHTML2 = MetodoDePago3;
       this.Otros = true;
     }
+  }
 
+  FormaPago(x: number) {
+    console.log("FormaPago");
+    this.BackFormaPago = !this.BackFormaPago;
+    //Reportar
+    if (x == 29) {
+      this.PagoMetodosHTML2 = MetodoDePago2;
+    }
+    //Pagar
+    if (x == 30) {
+      this.PagoMetodosHTML2 = MetodoDePago3;
+    }
+
+    if (x == 31) {
+      this.PagoMetodosHTML2 = FormasDePago;
+    }
   }
 
   checkLocalStorageData() {
@@ -1085,7 +1099,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
           //NEW SERVICE TO CONVERT IMG//PDF FILES
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) => {
               this.uploadingImg = false;
               imageBase64 = '';
 
@@ -1094,7 +1108,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.imageUploaded = true;
 
             })
-            
+
           } catch (error) {
             console.error(error);
             this.countErrorUploadImage(imageBase64, NameCloud)
@@ -1193,10 +1207,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           //   })
 
 
-            //NEW SERVICE TO CONVERT IMG//PDF FILES
+          //NEW SERVICE TO CONVERT IMG//PDF FILES
 
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) =>{
+            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) => {
               this.uploadingRetentionImg = false;
               imageBase64 = '';
               this.retentionImageUrl = res.secure_url;
@@ -1204,7 +1218,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.retentionimageUploaded = true;
 
             })
-            
+
           } catch (error) {
             console.error(error);
             this.countErrorUploadImage(imageBase64, NameCloud)
@@ -1367,6 +1381,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ResetFormCD() {
     this.DebitoCredito.reset();
     this.PgMovilRegForm.reset();
+    this.firstFormFibex.reset();
     this.PgMovilForm.reset();
     this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
@@ -1512,6 +1527,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //   this.dni?.setValue('')
               //   return;
               // };
+              this.closeAlert2();
               this.readonlyDNI = true;
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
@@ -1576,7 +1592,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
-
+            
             //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
@@ -1586,15 +1602,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
             localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
 
-            try {
-              // // this.SendOption(0,0,dni.value);
-              // this.SendOption(0, 6, this.nameClient);
-              // this.SendOption(0, 7, this.monto_pend_conciliar);
-              // this.SendOption(0, 8, this.saldoBs);
-              // this.SendOption(0, 9, this.saldoUSD);
-            } catch (error) {
-              console.error(error);
-            }
             if (this.listContratos.length === 1) {
               this.listContratos.find((cliente) => {
                 this.verifySaldo(cliente.saldo);
@@ -1710,7 +1717,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.GetDataClient(Cedula).then((Res: any) => {
         if (Res) {
           this.AllDataClient = Res
-          this.abonado =  Res[0].idCliente
+          this.abonado = Res[0].idCliente
           localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
         }
       })
@@ -1722,7 +1729,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   ValidateLastReferencia(NroRef: any) {
     //Elimino todos los ceros a la izquierda
-      NroRef = NroRef.replace(/^(0+)/g, '');
+    NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {
@@ -1849,7 +1856,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           }
           this.SearchServiceClient(this.paquetesContratos[0].id_contrato)
         });
-        resolve()
+      resolve()
     })
   }
 
@@ -1872,7 +1879,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
-    this.abonado= this.nroContrato?.value;
+    this.abonado = this.nroContrato?.value;
     if (ppal) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
@@ -1885,10 +1892,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')){
-      if(this.bank?.value.includes('EUR')) return 'EUR'
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')) {
+      if (this.bank?.value.includes('EUR')) return 'EUR'
       else return false
-    }else return true
+    } else return true
   }
 
   bankSelected(bank: any) {
@@ -2382,7 +2389,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (saldousd < 0) saldousd = saldousd * (-1);
     if (saldobs < 0) saldobs = saldobs * (-1);
 
-    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.BancoNacional('')!="EUR" && this.selectedRetentionOption == 2) {
+    if (this.possibleWithholdingAgent && this.BancoNacional('') && this.BancoNacional('') != "EUR" && this.selectedRetentionOption == 2) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES.`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
@@ -2392,12 +2399,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
 
-    if (this.possibleWithholdingAgent && this.BancoNacional('')=="EUR" && this.selectedRetentionOption == 2) {
+    if (this.possibleWithholdingAgent && this.BancoNacional('') == "EUR" && this.selectedRetentionOption == 2) {
       this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS.<span>`,
         `En caso de ser agente de retención, no considere la cantidad a retener e incorpórelo en el apartado de Retención.`, 1);
     }
 
-    if (this.BancoNacional('') && this.BancoNacional('')!="EUR" && !this.possibleWithholdingAgent) {
+    if (this.BancoNacional('') && this.BancoNacional('') != "EUR" && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
         `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
     }
@@ -2407,7 +2414,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
 
-    if (this.BancoNacional('')=="EUR" && !this.possibleWithholdingAgent) {
+    if (this.BancoNacional('') == "EUR" && !this.possibleWithholdingAgent) {
       this.warnignForm(`Está a punto de reportar ${value} <span style="color:red;"> EUROS </span>, ¿estas seguro?`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }

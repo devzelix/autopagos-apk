@@ -85,7 +85,7 @@ export class RegisterPayService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
-
+        infoClient.name=infoClient.name.replace(/["]+/g, '');
         const DataQuery = {
           query: `
           query{
@@ -116,7 +116,14 @@ export class RegisterPayService {
           }`,
         }
 
+        console.log("Esto es lo que estoy enviando");
+        console.log(DataQuery);
+        console.log("infoClient")
+        console.log(infoClient);
+
         this.http.post(this.URLGRAPH, DataQuery).subscribe((Response: any) => {
+          console.log("Respuesta del SAE");
+          console.log(Response);
           resolve(Response)
 
           if (!Response.data.ReportePago_Falla[0].to.includes("DUPLICADO") || !Response.data.ReportePago_Falla[0].to.includes("CEDULA_ERRONEA") || !Response.data.ReportePago_Falla[0].to.includes("Error registrando")) {
@@ -146,6 +153,8 @@ export class RegisterPayService {
         })
 
       } catch (error) {
+        console.log("Hubo un error");
+        console.log(error);
         reject(error)
       }
     })
@@ -473,6 +482,7 @@ export class RegisterPayService {
   }
 
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
+    console.log("MasterGETPOST")
     return new Promise(async (resolve: any, reject: any) => {
       if (post) {
         console.log(headersData);
@@ -587,6 +597,7 @@ export class RegisterPayService {
         lic: env.lic
       };
       this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+        console.log()
         resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)

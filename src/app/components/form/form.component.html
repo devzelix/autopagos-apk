@@ -11,7 +11,7 @@
     </span>
   </div>
 
-  <div  [className]="nameClient ? 'form-login__group2' : 'form-login__group'"  class="form-login__group">
+  <div [className]="nameClient ? 'form-login__group2' : 'form-login__group'" class="form-login__group">
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
@@ -33,8 +33,10 @@
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
             <mat-label>Cédula/RIF del Cliente</mat-label>
-            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni [readonly]="readonlyDNI"  >
-            <mat-icon matSuffix style="cursor: pointer" (click)="dni?.valid && captchaService.validControl ? searchServices(inputDni,false,true) : ''">search</mat-icon>
+            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni
+              [readonly]="readonlyDNI">
+            <mat-icon matSuffix style="cursor: pointer"
+              (click)="dni?.valid && captchaService.validControl ? searchServices(inputDni,false,true) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula es requerida
             </mat-error>
@@ -46,24 +48,25 @@
           <!-- / Si no tiene contratos activos -->
 
           <!-- Muestra de boton consultar -->
-          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100" mat-raised-button
-              type="button" (click)="searchServices(inputDni,false,true)" [disabled]="dni?.invalid || !captchaService.validControl">
-              Consultar
+          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100"
+            mat-raised-button type="button" (click)="searchServices(inputDni,false,true)"
+            [disabled]="dni?.invalid || !captchaService.validControl">
+            Consultar
           </button>
           <!-- /Muestra de boton consultar -->
 
           <!-- En caso de tener dos o más abonados -->
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
           <div *ngIf="listContratos.length>1" class="grid-cards animated fadeInUp">
-              <button *ngFor="let contrato of listContratos" class="grid-cards-item"
+            <button *ngFor="let contrato of listContratos" class="grid-cards-item"
               (click)="contractSelected(contrato,true)">
-                <h3>
-                  {{contrato.contrato}}
-                </h3>
-                <p>
-                  {{contrato.status_contrato}}
-                </p>
-              </button>
+              <h3>
+                {{contrato.contrato}}
+              </h3>
+              <p>
+                {{contrato.status_contrato}}
+              </p>
+            </button>
           </div>
           <!--  / En caso de tener dos o más abonados -->
         </div>
@@ -74,7 +77,8 @@
       <!-- Menú de métodos de pago -->
       <mat-step *ngIf="AppFibex" class="CardPpal">
 
-        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
+          class="desc-user">
           <div>
             <h4 class="name-client">
               {{nameClient}}
@@ -92,7 +96,8 @@
             </h4>
           </div>
         </div>
-        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
+          class="desc-user">
           <div>
             <h4 class="name-client">
               CI/RIF: {{nameClient}}
@@ -111,13 +116,13 @@
 
         <ng-template matStepLabel>Tipo de pago</ng-template>
         <div class="cardflex">
-            <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
-              <span [ngSwitch]="option.tipopago">
+          <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
+            <span [ngSwitch]="option.tipopago">
 
-                <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
+              <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
-                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="TipoPago(option.idpago)">
-                      <h3 >
+                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="FormaPago(option.idpago)">
+                      <h3>
                         {{option.tittle}}
                       </h3>
                     </button>
@@ -144,11 +149,11 @@
                   </mat-card>
                 </span>
 
-              </span>
-            </div>
+            </span>
+          </div>
         </div>
-        <button *ngIf="Otros" class="button-material-back btn-width-100" (click)="TipoPago(8)" mat-raised-button>
-              REGRESAR
+        <button *ngIf="BackFormaPago" class="button-material-back btn-width-100 animated fadeInUp" (click)="FormaPago(31)" mat-raised-button>
+          REGRESAR
         </button>
       </mat-step>
       <!-- / Fin de métodos de pago -->
@@ -157,7 +162,8 @@
       <div
         *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda && !Otros && !PrimeraVez">
         <mat-step [stepControl]="firstFormFibex">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 {{nameClient}}
@@ -175,7 +181,8 @@
               </h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 CI/RIF: {{nameClient}}
@@ -259,7 +266,7 @@
                   <strong><span *ngIf="BancoNacional('') =='EUR'">En Euros</span></strong>
                 </mat-label>
                 <input matInput formControlName="amount" required #inputAmount
-                  (blur)="incorrectBankAndAmount(inputAmount.value)" >
+                  (blur)="incorrectBankAndAmount(inputAmount.value)">
                 <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('required')">Monto requerido</mat-error>
                 <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('pattern')">Escriba el monto seguido dos
                   decimales separado por punto, ejemplo: 125.00</mat-error>
@@ -277,6 +284,7 @@
                 <mat-error *ngIf="firstFormFibex.get('date')?.hasError('required')">La fecha del pago es requerida
                 </mat-error>
               </mat-form-field>
+
               <mat-form-field appearance="outline" *ngIf="errorDate">
                 <mat-label>Fecha del pago</mat-label>
                 <input matInput [matDatepicker]="picker2" formControlName="date" [max]="dateToDay" #inputDate
@@ -349,8 +357,8 @@
                 </ng-container>
                 <!-- <ng-container matColumnDef="buttons">
                   <mat-header-cell *matHeaderCellDef></mat-header-cell> -->
-                  <!-- <mat-cell *matCellDef="let element"> -->
-                    <!-- <div fxFlex="row" fxLayoutAlign="end center">
+                <!-- <mat-cell *matCellDef="let element"> -->
+                <!-- <div fxFlex="row" fxLayoutAlign="end center">
                       <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
                         (click)="$event.stopPropagation();">
                         <mat-icon class="secondary-text">more_vert</mat-icon>
@@ -363,7 +371,7 @@
                       </mat-menu>
                     </div> -->
 
-                  <!-- </mat-cell> -->
+                <!-- </mat-cell> -->
                 <!-- </ng-container> -->
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -372,8 +380,8 @@
 
             </div>
             <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-              <button class="button-material-next btn-width-70" (click)="ValidateLastReferencia(inputVouche.value)" mat-raised-button
-                type="button" [disabled]="this.secondFormFibex.invalid">
+              <button class="button-material-next btn-width-70" (click)="ValidateLastReferencia(inputVouche.value)"
+                mat-raised-button type="button" [disabled]="this.secondFormFibex.invalid">
                 Siguiente
               </button>
 
@@ -557,14 +565,16 @@
                 <tr class="details">
                   <td>{{paquete}}</td>
 
-                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' :
+                    'USD' }}</td>
                   <td *ngIf="BancoNacional(bank?.value)=='EUR'">{{totalAmount}} EUR</td>
                 </tr>
 
                 <tr class="total">
                   <td></td>
 
-                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">Total: {{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' : 'USD' }}</td>
+                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">Total: {{totalAmount}} {{BancoNacional(bank?.value) ?
+                    'Bs.' : 'USD' }}</td>
                   <td *ngIf="BancoNacional(bank?.value)=='EUR'">Total: {{totalAmount}} EUR</td>
                 </tr>
               </table>
@@ -583,7 +593,8 @@
       <!-- Pago Móvil -->
       <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 {{nameClient}}
@@ -601,7 +612,8 @@
               </h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 CI/RIF: {{nameClient}}
@@ -624,7 +636,7 @@
         <mat-form-field *ngIf="!ReciboPay" appearance="outline">
           <mat-label>Banco</mat-label>
           <mat-select [value]=SelectPagoc2p #valor>
-            <mat-option (click)="SelectedPagoC2P(valor)"  value="mercantil">Mercantil</mat-option>
+            <mat-option (click)="SelectedPagoC2P(valor)" value="mercantil">Mercantil</mat-option>
           </mat-select>
         </mat-form-field>
 
@@ -652,10 +664,13 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlforiginReg" (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text" placeholder="Ejemplo: 584121234567">
+              <input matInput formControlName="tlforiginReg"
+                (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text"
+                placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.errors">
-               <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')">El número es requerido</p>
-               <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567</p>
+                <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')">El número es requerido</p>
+                <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                </p>
               </mat-error>
             </mat-form-field>
 
@@ -714,11 +729,14 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlfdestin" (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text" placeholder="Ejemplo: 584121234567">
+              <input matInput formControlName="tlfdestin"
+                (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text"
+                placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
                 <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
-                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567</p>
-               </mat-error>
+                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                </p>
+              </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -736,19 +754,21 @@
           </div>
         </form>
 
-        <div *ngIf="ReciboPay" >
+        <div *ngIf="ReciboPay">
           <app-table-receipt [amountPm]="amountPm" [cantidad]="cantidad"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
         <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-        <button class="button-material-back btn-width-30" (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button
-        type="button" matStepperPrevious>
-          Regresar
-        </button>
+          <button class="button-material-back btn-width-30"
+            (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button type="button"
+            matStepperPrevious>
+            Regresar
+          </button>
         </div>
 
-        <div *ngIf="ConsultarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+        <div *ngIf="ConsultarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
+          class="btn-flex-center">
           <button [disabled]="!PgMovilForm.valid" class="button-material-next btn-width-70" mat-raised-button
             type="button" (click)="AmountIncorrectConfirm(cantidad?.value,'this.ComprobarPgoMovil()','c2pnacional')">
             Procesar orden
@@ -759,12 +779,14 @@
           </button>
         </div>
 
-        <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button  [disabled]="!PgMovilRegForm.valid || PinEnviado" class="button-material-next btn-width-70" mat-raised-button
-            type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
+        <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
+          class="btn-flex-center">
+          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="button-material-next btn-width-70"
+            mat-raised-button type="button"
+            (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
             Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
-          <button  class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
+          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
             type="button" matStepperPrevious>
             Regresar
           </button>
@@ -775,7 +797,8 @@
       <!-- Crédito o Débito -->
       <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 {{nameClient}}
@@ -793,7 +816,8 @@
               </h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'" class="desc-user">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
+            class="desc-user">
             <div>
               <h4 class="name-client">
                 CI/RIF: {{nameClient}}
@@ -841,8 +865,10 @@
                     {{Acount.cuenta}}
                   </mat-option>
                 </mat-select>
-                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('required')">La cuenta es obligatoria</mat-error>
-                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('maxlength')">La tarjeta no debe ser mayor a 18 dígitos</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('required')">La cuenta es
+                  obligatoria</mat-error>
+                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('maxlength')">La tarjeta no debe ser mayor a
+                  18 dígitos</mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -911,14 +937,15 @@
           </form>
         </div>
         <!-- *ngIf="ReciboPay" -->
-        <div *ngIf="ReciboPay" >
+        <div *ngIf="ReciboPay">
           <app-table-receipt [cantidad]="cantidadDC"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
         <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button  class="button-material-back btn-width-30" (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button
-          type="button" matStepperPrevious>
+          <button class="button-material-back btn-width-30"
+            (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button type="button"
+            matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -926,18 +953,20 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <!-- Debito -->
-            <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70" id="PagoDC"
-            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-                <span *ngIf="!Creditoboolaean">Pagar</span>
-            </button>
-            <!-- / Fin Debito -->
+          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
+            id="PagoDC" mat-raised-button type="button"
+            (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
+            <span *ngIf="!Creditoboolaean">Pagar</span>
+          </button>
+          <!-- / Fin Debito -->
 
-            <!-- Credito -->
-            <button *ngIf="Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado" class="button-material-next btn-width-70" id="PagoDC"
-            mat-raised-button type="button" (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-                <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
-            </button>
-            <!-- / Fin Credito -->
+          <!-- Credito -->
+          <button *ngIf="Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado"
+            class="button-material-next btn-width-70" id="PagoDC" mat-raised-button type="button"
+            (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
+            <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+          </button>
+          <!-- / Fin Credito -->
 
           <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
             type="button" matStepperPrevious>
