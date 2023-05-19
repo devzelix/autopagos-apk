@@ -24,8 +24,7 @@
     </div>
     <!-- / Mensajes de alerta -->
 
-    <mat-stepper [linear]="true" #stepper
-      *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
+    <mat-stepper [linear]="true" #stepper *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
 
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
@@ -44,8 +43,7 @@
           </mat-form-field>
           <!-- Si no tiene contratos activos -->
           <ng-container *ngIf="listContratos.length==0">
-            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl"
-              style="margin-bottom: 1rem; display: flex; justify-content: center ; width: 100%;"></captcha-thomas>
+            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" class="captcha-box"></captcha-thomas>
           </ng-container>
           <!-- / Si no tiene contratos activos -->
 
@@ -123,33 +121,33 @@
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
-                <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="FormaPago(option.idpago)">
-                  <h3>
-                    {{option.tittle}}
-                  </h3>
-                </button>
-
-              </span>
-
-              <span *ngSwitchDefault>
-
-                <mat-card *ngIf="!option.omitir" class="example-card animated fadeInUp">
-                  <mat-card-header>
-                    <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
-                  </mat-card-header>
-                  <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
-
-                  <mat-card-actions>
-                    <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
-                      (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
-                      matStepperNext>SELECCIONAR
+                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="FormaPago(option.idpago)">
+                      <h3>
+                        {{option.tittle}}
+                      </h3>
                     </button>
-                    <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
-                      (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
-                    </button>
-                  </mat-card-actions>
-                </mat-card>
-              </span>
+
+                </span>
+
+                <span *ngSwitchDefault>
+
+                  <mat-card *ngIf="!option.omitir" class="example-card">
+                    <mat-card-header>
+                      <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
+                    </mat-card-header>
+                    <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
+
+                    <mat-card-actions>
+                      <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
+                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
+                        matStepperNext>SELECCIONAR
+                      </button>
+                      <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
+                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
+                      </button>
+                    </mat-card-actions>
+                  </mat-card>
+                </span>
 
             </span>
           </div>

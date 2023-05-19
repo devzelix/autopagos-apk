@@ -117,6 +117,8 @@ export class RegisterPayService {
         }
 
         this.http.post(this.URLGRAPH, DataQuery).subscribe((Response: any) => {
+          console.log("Respuesta del SAE");
+          console.log(Response);
           resolve(Response)
 
           if (!Response.data.ReportePago_Falla[0].to.includes("DUPLICADO") || !Response.data.ReportePago_Falla[0].to.includes("CEDULA_ERRONEA") || !Response.data.ReportePago_Falla[0].to.includes("Error registrando")) {
@@ -146,6 +148,8 @@ export class RegisterPayService {
         })
 
       } catch (error) {
+        console.log("Hubo un error");
+        console.log(error);
         reject(error)
       }
     })
