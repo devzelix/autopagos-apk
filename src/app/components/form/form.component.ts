@@ -1880,6 +1880,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
     this.abonado = this.nroContrato?.value;
+    this.checkLocalStorageData()
     if (ppal) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
