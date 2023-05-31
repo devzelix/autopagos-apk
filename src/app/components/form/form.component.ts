@@ -772,7 +772,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       .then((resp: any) => {
         if (resp.hasOwnProperty('error_list')) {
           this.invalidForm(`${resp.error_list[0].description}`, '');
-        } else if (resp.hasOwnProperty('scp_info')) {
+        } else if (resp.hasOwnProperty('transactionScpInfoResponse')) {
           this.PinEnviado = true;
           this.ReenvioMethod(1, 59);
           this.ButtonGetAuthMercantil();
