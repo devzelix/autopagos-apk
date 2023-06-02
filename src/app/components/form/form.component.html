@@ -36,7 +36,7 @@
             <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni
               [readonly]="readonlyDNI">
             <mat-icon matSuffix style="cursor: pointer"
-              (click)="dni?.valid && captchaService.validControl ? searchServices(inputDni,false,true) : ''">search</mat-icon>
+              (click)="dni?.valid && captchaService.validControl ? searchServicesv2(inputDni,false,true) : ''">search</mat-icon>
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula es requerida
             </mat-error>
@@ -49,7 +49,7 @@
 
           <!-- Muestra de boton consultar -->
           <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100"
-            mat-raised-button type="button" (click)="searchServices(inputDni,false,true)"
+            mat-raised-button type="button" (click)="searchServicesv2(inputDni,false,true)"
             [disabled]="dni?.invalid || !captchaService.validControl">
             Consultar
           </button>
@@ -207,8 +207,8 @@
               <mat-form-field appearance="outline">
                 <mat-label>Cédula/RIF del Cliente</mat-label>
                 <input type="number" matInput required formControlName="dni" NumbersOnly="true" #inputDni
-                  (blur)="searchServices(inputDni)">
-                <mat-icon matSuffix (click)="searchServices(inputDni, false)" style="cursor: pointer">search</mat-icon>
+                  (blur)="searchServicesv2(inputDni)">
+                <mat-icon matSuffix (click)="searchServicesv2(inputDni, false)" style="cursor: pointer">search</mat-icon>
                 <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
                   La cédula requerida
                 </mat-error>
@@ -761,7 +761,7 @@
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
         <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button class="button-material-back btn-width-30"
-            (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button type="button"
+            (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
             matStepperPrevious>
             Regresar
           </button>
@@ -944,7 +944,7 @@
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
         <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button class="button-material-back btn-width-30"
-            (click)="ResetFormCD(); lastDni=''; searchServices(dni,false,false)" mat-raised-button type="button"
+            (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
             matStepperPrevious>
             Regresar
           </button>
