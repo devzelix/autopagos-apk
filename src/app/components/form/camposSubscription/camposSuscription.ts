@@ -149,7 +149,7 @@ export let MetodoDePago2 = [
   }
 ]
 export let MetodoDePago3 = [
-  
+
   {
     idpago:5,
     tipopago:"Criptomoneda",
@@ -166,7 +166,7 @@ export let MetodoDePago3 = [
     idpago:28,
     tipopago:"Crédito Internacional",
     omitir:false,
-    image:'assets/images/Stripe.png'
+    image:'assets/images/Tarjetas de Credito_Mesa de trabajo 1.jpg',
   },
   {
     idpago:0,
