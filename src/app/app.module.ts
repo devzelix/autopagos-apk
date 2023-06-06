@@ -25,6 +25,7 @@ import { PaypalComponent } from './components/paypal/paypal.component';
 import { StripeComponent } from './components/stripe/stripe.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { TableReceiptComponent } from './components/table-receipt/table-receipt.component';
+import { PaymentDialogComponent } from './components/payment-dialog/payment-dialog.component';
 
 
 const routes: Routes = [
@@ -47,10 +48,11 @@ const routes: Routes = [
     ImageComponent,
     TableReceiptComponent,
     NavComponent,
+    PaymentDialogComponent,
     NegativeAmountPipe,
     DialogDetailComprobantesComponent,
     CoincoinxComponent,
-    PaypalComponent, 
+    PaypalComponent,
     StripeComponent
   ],
   imports: [

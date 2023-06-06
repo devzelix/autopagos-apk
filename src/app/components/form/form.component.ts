@@ -38,6 +38,7 @@ import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
 import { ClearCacheService } from 'src/app/services/clear-cache.service';
 import { STEP_STATE } from '@angular/cdk/stepper';
+import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 
 
 
@@ -205,7 +206,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
     private _helper: HelperService,
-    private cacheService: ClearCacheService
+    private cacheService: ClearCacheService,
+    public dialogTemplate: MatDialog
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.cacheService.clear();
@@ -1516,7 +1518,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //   this.name?.setValue(res[0].cliente);
               //   // this.SearchEmailContra(this.listContratos[0].contrato)
               // }
-              
+
             } else {
 
               this.dni?.setValue(dni_);
@@ -1605,7 +1607,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
-            
+
             //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
@@ -1807,7 +1809,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                 this.dni?.setValue('')
                 return;
               };
-              
+
               this.closeAlert2();
               this.readonlyDNI = true;
               this.idContrato = this.listContratos[0].id_contrato;
@@ -1877,7 +1879,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
-            
+
             //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
@@ -2879,6 +2881,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   copyText(textToCopy: string) {
     this.clipboard.copy(textToCopy);
+  }
+
+  openDialogPM() {
+    const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
+      height: '90vh',
+      disableClose: false,
+    })
+    dialog.afterClosed().subscribe(result => {
+    });
   }
 }
 
