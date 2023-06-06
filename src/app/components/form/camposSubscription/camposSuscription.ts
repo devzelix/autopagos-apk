@@ -164,7 +164,7 @@ export let MetodoDePago3 = [
   },
   {
     idpago:28,
-    tipopago:"Tarjeta Internacional",
+    tipopago:"Crédito Internacional",
     omitir:false,
     image:'assets/images/Stripe.png'
   },
@@ -177,7 +177,7 @@ export let MetodoDePago3 = [
   },
   {
     idpago:1,
-    tipopago:"Crédito",
+    tipopago:"Crédito Nacional",
     image:'assets/images/Icono_TDC-PagosFibex.png',
     alt:'Crédito',
     omitir:false,
