@@ -29,6 +29,7 @@ import { TableReceiptComponent } from './components/table-receipt/table-receipt.
 
 const routes: Routes = [
   { path: '', component: FormComponent },
+  { path: 'pay', component: FormComponent },
   {  path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },

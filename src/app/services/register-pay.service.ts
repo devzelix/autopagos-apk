@@ -399,9 +399,6 @@ export class RegisterPayService {
 
   getStripePayment(data: any){
     return new Promise((resolve,reject)=>{
-      console.log("Voy a llamar al https");
-      console.log("Lo que le voy a pasar");
-      console.log(data);
       const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
       this.http.post(`${env.ApiMercantil}RegStr`, data,{headers:headers}).subscribe({
         next: data => {
@@ -482,7 +479,6 @@ export class RegisterPayService {
   }
 
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
-    console.log("MasterGETPOST")
     return new Promise(async (resolve: any, reject: any) => {
       if (post) {
         console.log(headersData);

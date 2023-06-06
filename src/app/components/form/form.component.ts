@@ -227,7 +227,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ngAfterViewInit(): void {
     if (this._helper.dniToReload) {
       setTimeout(() => {
-        this.searchServices(this._helper.dniToReload, true, true)
+        this.searchServicesv2(this._helper.dniToReload, true, true)
         setTimeout(() => {
           this._helper.dniToReload = ''
         }, 200);
@@ -362,7 +362,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
       if (res['dni']) {
         this.dni?.setValue(`${res['dni']}`)
-        this.searchServices(res['dni'], true, true)
+        this.searchServicesv2(res['dni'], true, true)
 
         if (res['linkedToContractProcess'] === "approved") {
           this.tasaService.getSaldoBCV().subscribe((res) => {
@@ -690,6 +690,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       Cliente: this.idContrato != "" ? true : false
     }
 
+    console.log("ComprobarPgoMovil");
+    console.log(DatosUserAgent);
+
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.ConsultaPagoMovil(DatosUserAgent)
       .then((resp: any) => {
@@ -772,7 +775,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       .then((resp: any) => {
         if (resp.hasOwnProperty('error_list')) {
           this.invalidForm(`${resp.error_list[0].description}`, '');
-        } else if (resp.hasOwnProperty('scp_info')) {
+        } else if (resp.hasOwnProperty('transactionScpInfoResponse')) {
           this.PinEnviado = true;
           this.ReenvioMethod(1, 59);
           this.ButtonGetAuthMercantil();
@@ -827,6 +830,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       idContrato: this.idContrato,
       Cliente: this.idContrato != "" ? true : false
     }
+
+    console.log("DatosUserAgent");
+    console.log(DatosUserAgent);
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if (!this.Creditoboolaean) {
       try {
@@ -1381,7 +1387,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ResetFormCD() {
     this.DebitoCredito.reset();
     this.PgMovilRegForm.reset();
-    this.firstFormFibex.reset();
+    //this.firstFormFibex.reset();
     this.PgMovilForm.reset();
     this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
@@ -1439,22 +1445,27 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.dniConsulted = false;
     if (dni_.length >= 6) {
       this.alertFindDniMercantil('Buscando información del cliente', 'Por favor espere...');
+      //Busco el tipo de cliente
       this.registerPayService.getTypeClient(dni_).then((result: any) => {
         if (result.length > 0 && result[0].TipoCliente != "NATURAL") {
           this.possibleWithholdingAgent = true
         }
       })
+      //Busco por su Cédula
       this.SearchDataClient(dni_)
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
+
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
+
             this.listContratos = [];
             this.ComprobantesPago = [];
             this.SendOption(0, 0, dni_);
 
             if (this.registerPayService.linkedToContractProcess != 'approved') {
+              //Valido los estatus de los contratos
               res.forEach((dataContrato: any) => {
                 var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
                 if (ValidOno) {
@@ -1471,10 +1482,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   this.cambio_act = dataContrato.cambio_act;
                 }
               });
+
               if (this.listContratos.length == 0) {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
               }
+
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
@@ -1485,32 +1498,27 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                 }
               }
 
-              /* EMITIR TASA DEL DÍA */
+              // if (this.registerPayService.linkedToContractProcess != 'approved') {
+              //   this.tasaService.tasa.next(this.cambio_act.toString());
+              //   this.tasaCambio = this.cambio_act.toString();
+              //   // this.filterContracts();
+              //   if (this.listContratos.length === 0) {
+              //     this.dni?.setValue('')
+              //     return;
+              //   };
 
-              if (this.registerPayService.linkedToContractProcess != 'approved') {
-                this.tasaService.tasa.next(this.cambio_act.toString());
-                this.tasaCambio = this.cambio_act.toString();
-                // this.filterContracts();
-                if (this.listContratos.length === 0) {
-                  this.dni?.setValue('')
-                  return;
-                };
-                this.idContrato = this.listContratos[0].id_contrato;
-                this.nroContrato?.setValue(this.listContratos[0].contrato);
-                this.SendOption(0, 3, this.listContratos[0].contrato);
-                this.filterBankByFranquicia(this.listContratos[0].franquicia);
-                this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
-                this.nameClient = this.listContratos[0].cliente;
-                this.name?.setValue(res[0].cliente);
-                // this.SearchEmailContra(this.listContratos[0].contrato)
-              }
-              this.dni?.setValue(dni_);
-              this.searchInfoEquipos(dni_).then((result) => {
-              }).catch((err) => {
-                console.log('falló el ingreso de datos del usuario')
-              });
-            }
-            else {
+              //   this.idContrato = this.listContratos[0].id_contrato;
+              //   this.nroContrato?.setValue(this.listContratos[0].contrato);
+              //   this.SendOption(0, 3, this.listContratos[0].contrato);
+              //   this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              //   this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+              //   this.nameClient = this.listContratos[0].cliente;
+              //   this.name?.setValue(res[0].cliente);
+              //   // this.SearchEmailContra(this.listContratos[0].contrato)
+              // }
+              
+            } else {
+
               this.dni?.setValue(dni_);
               // this.searchInfoEquipos(dni_);
               this.nameClient = String(dni_);
@@ -1537,6 +1545,283 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.SendOption(0, 3, this.listContratos[0].contrato);
               this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
               this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              this.dni?.setValue(dni_);
+              this.searchInfoEquipos(dni_).then((result) => {
+              }).catch((err) => {
+                console.log('falló el ingreso de datos del usuario')
+              });
+            }
+
+            if (this.registerPayService.linkedToContractProcess != 'approved') {
+              //Busco su numeros de comprobantes
+              this.registerPayService.getComprobantClient2(dni_)
+                .then((comprobante: any) => {
+
+                  if (comprobante.length > 0) {
+
+                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                    this.AllComprobantesPago = comprobante;
+                    let temp = comprobante.slice().sort((a: any, b: any) => b.Fecha.getTime() - a.Fecha.getTime());
+                    temp = temp.slice(0, 5);
+                    this.ValidateReferenciaLast(temp)
+                  }
+                })
+                .catch((error: any) => console.error(error));
+            }
+
+
+            /*Esto se hacer por si el usuario preciomente selecciona un banco */
+            if (this.BancoNacional(this.banco)) {
+              if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
+
+                if (this.registerPayService.linkedToContractProcess != 'approved') {
+                  // Convertir en una función para que no se repita
+                  this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
+
+                  this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+
+                  this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+                  this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
+                  this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+                } else {
+                  // this.registerPayService.amountCustomerContract
+                  this.validateIfAmountIsNegativer(this.registerPayService.amountCustomerContract, true);
+
+                  this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+
+                  this.saldoUSD = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+                  this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract) * this.cambio_act).toFixed(2);
+                  this.subscription = parseFloat('0').toFixed(2);
+                }
+
+              } else {
+                this.amount?.setValue(0);
+                this.lastAmount = '0';
+              }
+            } else {
+              //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
+              this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
+              this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+              this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
+              this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+            }
+            
+            //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
+            localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
+            localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
+            localStorage.setItem("MontoBs", this._seguridadDatos.encrypt(this.saldoBs));
+            localStorage.setItem("Subscription", this._seguridadDatos.encrypt(this.subscription));
+            localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
+            localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
+            localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+
+            if (this.listContratos.length === 1) {
+              this.listContratos.find((cliente) => {
+                this.verifySaldo(cliente.saldo);
+              });
+            }
+          } else {
+            //this.hcaptcha.reset()
+            this.nameClient = '';
+            this.saldoUSD = '';
+            this.saldoBs = '';
+            this.lastAmount = '';
+            this.dniConsulted = true;
+            this.patchValueAllForm();
+            this.invalidForm('Debe colocar una cédula válida');
+            //this.verifyDNI = false;
+            this.lastDni = "";
+            setTimeout(() => this.closeAlert(), 1000);
+            this.banksFiltered = [...this.bankList];
+            this.listContratos = [];
+            this.banksFiltered = [...this.bankList];
+          }
+        } catch (error) {
+
+          if (this.registerPayService.linkedToContractProcess == 'approved') {
+            this.tasaService.getSaldoBCV().subscribe((res) => {
+              this.tasaCambio = res
+            })
+            this.closeAlert2();
+            this.listContratos = [];
+            this.ComprobantesPago = [];
+            //this.verifyDNI = true;
+            this.SendOption(0, 0, dni_);
+
+            this.dni?.setValue(dni_);
+            // this.searchInfoEquipos(dni_);
+            this.nameClient = String(dni_);
+            this.name?.setValue(String(dni_));
+            this.cambio_act = parseFloat(this.tasaCambio)
+            this.AppFibex = true
+
+            /*Esto se hacer por si el usuario preciomente selecciona un banco */
+            if (this.BancoNacional(this.banco)) {
+              if (!Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
+                // this.registerPayService.amountCustomerContract
+                this.validateIfAmountIsNegativer(this.registerPayService.amountCustomerContract, true);
+                this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+                this.saldoUSD = (parseFloat(this.registerPayService.amountCustomerContract) / this.cambio_act).toFixed(2);
+                this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
+                this.subscription = parseFloat('No aplica').toFixed(2);
+              } else {
+                this.amount?.setValue(0);
+                this.lastAmount = '0';
+              }
+            } else {
+              //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
+              this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
+              this.saldoUSD = (parseFloat(this.registerPayService.amountCustomerContract) / this.cambio_act).toFixed(2);
+              this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
+              this.subscription = parseFloat('No aplica').toFixed(2);
+            }
+            if (NextContrato) {
+              this.AppFibex = true;
+              setTimeout(() => {
+                this.NextMatStepper();
+              }, 300);
+            }
+          }
+          else {
+            this.nameClient = '';
+            this.saldoUSD = '';
+            this.saldoBs = '';
+            this.dniConsulted = true;
+            this.lastDni = "";
+            this.name?.setValue('');
+            this.alertFindDni('Disculpe intente de nuevo', '');
+            setTimeout(() => this.closeAlert(), 1000);
+          }
+
+
+        }
+
+      })
+    } else {
+      // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
+      // Se quedan los valores anteriores de la consulta anterior
+      //this.hcaptcha.reset()
+      this.dni?.setValue('')
+      this.nameClient = '';
+      this.saldoUSD = '';
+      this.saldoBs = '';
+      this.dniConsulted = true;
+      this.lastDni = "";
+      this.name?.setValue('');
+      this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
+      setTimeout(() => this.closeAlert(), 1000);
+    }
+
+
+  }
+
+  searchServicesv2(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
+    this.possibleWithholdingAgent = false
+    this.selectedRetentionOption = null
+    let dni_: string = '';
+
+    if (!fromParmas) {
+      dni_ = dni.value;
+    } else if (fromParmas) {
+      dni_ = dni;
+    }
+
+    if (dni_) {
+      dni_ = this.ClearCedula(dni_);
+    }
+
+    this.banksFiltered = [...this.bankList];
+    if (dni_ === this.lastDni) {
+      return;
+    }
+
+    this.dniConsulted = false;
+    if (dni_.length >= 6) {
+      this.alertFindDniMercantil('Buscando información del cliente', 'Por favor espere...');
+      //Busco el tipo de cliente
+      this.registerPayService.getTypeClient(dni_).then((result: any) => {
+        if (result.length > 0 && result[0].TipoCliente != "NATURAL") {
+          this.possibleWithholdingAgent = true
+        }
+      })
+
+      //Busco por su Cédula
+      this.SearchDataClient(dni_)
+      this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
+        this.lastDni = dni_;
+        this.closeAlert();
+
+        try {
+          if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
+
+            this.listContratos = [];
+            this.ComprobantesPago = [];
+            this.SendOption(0, 0, dni_);
+
+            if (this.registerPayService.linkedToContractProcess != 'approved') {
+              //Valido los estatus de los contratos
+              res.forEach((dataContrato: any) => {
+                var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
+                if (ValidOno) {
+                  this.listContratos.push({
+                    id_contrato: dataContrato.id_contrato,
+                    contrato: dataContrato.nro_contrato,
+                    saldo: dataContrato.saldo,
+                    cliente: dataContrato.cliente,
+                    monto_pend_conciliar: dataContrato.monto_pend_conciliar,
+                    subscription: dataContrato.suscripcion,
+                    franquicia: dataContrato.franquicia,
+                    status_contrato: dataContrato.status_contrato,
+                  });
+                  this.cambio_act = dataContrato.cambio_act;
+                }
+              });
+
+              if (this.listContratos.length == 0) {
+                this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
+                this.lastDni = "";
+              }
+
+              //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
+              if (NextContrato) {
+                if (this.listContratos.length == 1) {
+                  this.AppFibex = true;
+                  setTimeout(() => {
+                    this.NextMatStepper();
+                  }, 300);
+                }
+              }
+            } else {
+              this.dni?.setValue(dni_);
+              this.nameClient = String(dni_);
+              this.name?.setValue(String(dni_));
+              this.cambio_act = Number(this.tasaCambio)
+            }
+
+            /* EMITIR TASA DEL DÍA */
+            if (this.registerPayService.linkedToContractProcess != 'approved') {
+              this.tasaService.tasa.next(this.cambio_act.toString());
+              this.tasaCambio = this.cambio_act.toString();
+
+              if (this.listContratos.length === 0) {
+                this.dni?.setValue('')
+                return;
+              };
+              
+              this.closeAlert2();
+              this.readonlyDNI = true;
+              this.idContrato = this.listContratos[0].id_contrato;
+              this.nameClient = this.listContratos[0].cliente;
+              this.name?.setValue(res[0].cliente);
+              this.nroContrato?.setValue(this.listContratos[0].contrato);
+              this.SendOption(0, 3, this.listContratos[0].contrato);
+              this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+              this.filterBankByFranquicia(this.listContratos[0].franquicia);
+              this.dni?.setValue(dni_);
+              this.searchInfoEquipos(dni_).then((result) => {
+              }).catch((err) => {
+                console.log('falló el ingreso de datos del usuario')
+              });
             }
 
             if (this.registerPayService.linkedToContractProcess != 'approved') {
@@ -1880,6 +2165,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
     this.abonado = this.nroContrato?.value;
+    this.checkLocalStorageData()
     if (ppal) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
