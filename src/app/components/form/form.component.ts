@@ -62,7 +62,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
-  displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
+  // displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
+  displayedColumns: string[] = ['Fecha', 'Status'];
 
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
@@ -2106,7 +2107,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.GetListService(Contrato).then((ResService: any) => {
         if (ResService.length > 0) {
           for (let index = 0; index < ResService.length; index++) {
-            this.AllService.push(ResService[index].nombre_servicio)
+            this.AllService.push(ResService[index].nombre_servicio.replace('FIBEX EXP', 'Fibex Express').replace('_', ' '))
           }
           this.paquete = this.AllService
           localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
@@ -2315,8 +2316,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       showCancelButton: true,
       confirmButtonColor: '#00184E',
       cancelButtonColor: '#f44336',
-      cancelButtonText: 'Editar monto',
-      confirmButtonText: 'Seguir adelante'
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Continuar'
     }).then((result) => {
       if (result.isConfirmed && !use) {
         if (!this.disbaleButtonIfAmountIsInvalid &&
@@ -2693,12 +2694,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
     if (this.BancoNacional('') && this.BancoNacional('') != "EUR" && !this.possibleWithholdingAgent) {
-      this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-        `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
+      this.warnignForm(`¿Reportar pago? Monto en bolívares: ${value}`,
+        `El monto debe ser expresado en BOLíVARES para el ${this.bank?.value}.`, 1);
     }
 
     if (!this.BancoNacional('') && !this.possibleWithholdingAgent) {
-      this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
+      this.warnignForm(`¿Reportar pago? Monto en dólares: ${value}`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
 
@@ -2735,8 +2736,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         })
 
       } else {
-        this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-          `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
+        this.warnignFormGeneral(`¿Reportar pago?`,
+          `Monto en Bolívares: ${value} BOLIVARES`, "Cancelar", "Continuar", Metodo)
       }
     }
   }

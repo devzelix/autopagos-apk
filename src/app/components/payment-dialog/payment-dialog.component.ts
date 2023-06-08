@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+import {MediaMatcher} from '@angular/cdk/layout';
+
 
 @Component({
   selector: 'app-payment-dialog',
   templateUrl: './payment-dialog.component.html',
   styleUrls: ['./payment-dialog.component.scss']
 })
-export class PaymentDialogComponent implements OnInit {
+export class PaymentDialogComponent{
 
-  constructor() { }
+  public mobileQuery: MediaQueryList;
 
-  ngOnInit(): void {
+  constructor(public media: MediaMatcher) {
+    this.mobileQuery = media.matchMedia("(max-width: 600px)");
   }
-
 }

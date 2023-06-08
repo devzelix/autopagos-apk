@@ -178,7 +178,7 @@ export let MetodoDePago3 = [
   {
     idpago:1,
     tipopago:"Crédito Nacional",
-    image:'assets/images/Icono_TDC-PagosFibex.png',
+    image:'assets/images/Tarjeta de Credito Nacional.jpg',
     alt:'Crédito',
     omitir:false,
   },

@@ -166,3 +166,7 @@
     right: 10px;
   }
 }
+
+:host ::ng-deep .mat-horizontal-content-container {
+  padding:0 !important;
+}

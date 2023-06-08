@@ -26,6 +26,7 @@ import { StripeComponent } from './components/stripe/stripe.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { TableReceiptComponent } from './components/table-receipt/table-receipt.component';
 import { PaymentDialogComponent } from './components/payment-dialog/payment-dialog.component';
+import { ReplacePipe } from './pipe/replace.pipe';
 
 
 const routes: Routes = [
@@ -50,6 +51,7 @@ const routes: Routes = [
     NavComponent,
     PaymentDialogComponent,
     NegativeAmountPipe,
+    ReplacePipe,
     DialogDetailComprobantesComponent,
     CoincoinxComponent,
     PaypalComponent,

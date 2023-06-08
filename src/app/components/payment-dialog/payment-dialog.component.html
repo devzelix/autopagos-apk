@@ -1,2 +1,7 @@
-<button mat-button style="position: absolute" mat-dialog-close>X</button>
-<img src="https://crm.thomas-talk.me/newzelle.jpeg" alt="">
+<ng-container *ngIf="!this.mobileQuery.matches; else elseBlock">
+  <button mat-button style="position: absolute" mat-dialog-close>X</button>
+  <img src="https://crm.thomas-talk.me/newzelle.jpeg" alt="">
+</ng-container>
+<ng-template #elseBlock>
+  <img src="../../../assets/images/Formas de Pagos/Formas de Pago App (1).jpg" alt="">
+</ng-template>
