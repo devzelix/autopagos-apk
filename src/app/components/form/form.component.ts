@@ -208,7 +208,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private _seguridadDatos: SeguridadDatos,
     private _helper: HelperService,
     private cacheService: ClearCacheService,
-    public dialogTemplate: MatDialog
+    public dialogTemplate: MatDialog,
+    public helper: HelperService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.cacheService.clear();
@@ -2886,7 +2887,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
-      height: '90vh',
+      maxHeight: '94vh',
+      minHeight: '80vh',
       disableClose: false,
     })
     dialog.afterClosed().subscribe(result => {
