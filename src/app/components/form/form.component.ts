@@ -432,6 +432,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    console.log(event)
     var inp = String.fromCharCode(event.keyCode);
 
     if (TypeFormKey.get(formcontrol)?.value == undefined || TypeFormKey.get(formcontrol)?.value == null || TypeFormKey.get(formcontrol)?.value == '') {
