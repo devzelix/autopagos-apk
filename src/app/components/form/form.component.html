@@ -231,7 +231,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>E-mail</mat-label>
                 <input id="InputEmail" matInput required formControlName="email" #inputEmail
-                  (blur)="SendOption(0,2,inputEmail.value); VerifyEmail()" (keypress)="validateEmail($event)">
+                  (blur)="SendOption(0,2,inputEmail.value); VerifyEmail()" (keyup)="validateEmail($event)">
                 <mat-error *ngIf="firstFormFibex.get('email')?.hasError('required')">El e-mail es requerido</mat-error>
                 <mat-error *ngIf="firstFormFibex.get('email')?.hasError('pattern')">E-mail no es válido</mat-error>
               </mat-form-field>
@@ -668,7 +668,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="tlforiginReg"
-                (keypress)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text"
+                (keyup)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text"
                 placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.errors">
                 <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')">El número es requerido</p>
@@ -733,7 +733,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="tlfdestin"
-                (keypress)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text"
+                (keyup)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text"
                 placeholder="Ejemplo: 584121234567">
               <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
                 <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
