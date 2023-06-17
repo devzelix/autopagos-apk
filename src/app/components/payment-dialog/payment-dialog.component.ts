@@ -13,5 +13,6 @@ export class PaymentDialogComponent{
 
   constructor(public media: MediaMatcher) {
     this.mobileQuery = media.matchMedia("(max-width: 600px)");
+    console.log(this.mobileQuery)
   }
 }
