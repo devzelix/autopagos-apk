@@ -25,7 +25,7 @@ label {
 	&:before {
 		color: $color_2;
 		display: block;
-		background: #fff;
+		background: rgba(255,255,255,.6);
     line-height: 50vh;
 		position: absolute;
 		padding: 1rem;
@@ -41,7 +41,7 @@ label {
 	&:after {
 		color: $color_2;
 		display: block;
-		background: #fff;
+		background: rgba(255,255,255,.6);
     line-height: 50vh;
 		position: absolute;
 		padding: 1rem;
@@ -363,7 +363,6 @@ input {
 .copy{
 	color: black;
     position: absolute;
-    right: 6.4rem;
 	font-size: .8rem;
 	opacity: 0;
 	transition: 1s ease;
