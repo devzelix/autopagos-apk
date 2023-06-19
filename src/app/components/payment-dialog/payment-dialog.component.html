@@ -1,4 +1,4 @@
-<ng-container *ngIf="!this.mobileQuery.matches; else elseBlock">
+<!-- <ng-container *ngIf="!this.mobileQuery.matches; else elseBlock">
   <button mat-button style="position: absolute" mat-dialog-close>X</button>
   <img src="https://crm.thomas-talk.me/newzelle.jpeg" alt="">
 </ng-container>
@@ -17,12 +17,19 @@
     <button mat-button style="position: absolute; top: 10px; right: -2px;" mat-dialog-close>
       <mat-icon><div class="material-icons-outlined">cancel</div></mat-icon>
     </button>
-  </form>
+  </form> -->      
 
-  <!-- <mat-stepper>
+<form>
+  <input type="radio" name="fancy" autofocus value="first" id="first" />
 
-    <mat-step> -->
-      <!-- <div class="container">
+  <input type="radio" name="fancy" value="second" id="second" />
+
+  <label for="first">
+    <!-- <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-02 final.jpg"
+      style="max-height: 37rem !important; max-width: 80rem !important"> -->
+
+      <div class="container">
+
         <section class="section">
   
           <div class="title">
@@ -30,76 +37,93 @@
             <h5>Bancos autorizados pago servicios</h5>
           </div>
   
-          <div class="sub-container1">
-            <h3><strong>ZELLE</strong></h3>
-            
-            <ul>
-              <li>pagos.zelle@fibextelecom.net</li>
-              <li>Fibex Telecom</li>
-            </ul>
-  
+          <div class="content">
+            <mat-icon class="copy">file_copy</mat-icon>
+            <div id="id1" class="sub-container1" (click)="prepareToCopy('id1')">
+              <h3><strong>ZELLE</strong></h3>
+              
+              <ul>
+                <li>pagos.zelle@fibextelecom.net</li>
+                <li>Fibex Telecom</li>
+              </ul>
+    
+            </div>
           </div>
   
-          <div class="sub-container1">
-            <h3><strong>BANK OF AMERICA</strong></h3>
-  
-            <ul>
-              <li>CONEX TELECOM LLC</li>
-              <li>222 Broadway New York, NY 10038</li>
-              <li>ACCOUNT #: 898107524154</li>
-              <li>SWIFT: B0FAUS3N</li>
-              <li>ABA: 26009593</li>
-              <li>ROUTING: 026009593</li>
-            </ul>
-  
+
+          <div class="content">
+            <mat-icon class="copy">file_copy</mat-icon>
+            <div id="id2" class="sub-container1" (click)="prepareToCopy('id2')">
+              <h3><strong>BANK OF AMERICA</strong></h3>
+    
+              <ul>
+                <li>CONEX TELECOM LLC</li>
+                <li>222 Broadway New York, NY 10038</li>
+                <li>ACCOUNT #: 898107524154</li>
+                <li>SWIFT: B0FAUS3N</li>
+                <li>ABA: 26009593</li>
+                <li>ROUTING: 026009593</li>
+              </ul>
+    
+            </div>
           </div>
   
-          <div class="sub-container1">
-            <h3><strong>WELLS FARGO</strong></h3>
-  
-            <ul>
-              <li>Conex Telecom LLC</li>
-              <li>ACCOUNT #: 1161129240</li>
-            </ul>
-  
+          <div class="content">
+            <mat-icon class="copy">file_copy</mat-icon>
+            <div id="id3" class="sub-container1" (click)="prepareToCopy('id3')">
+              <h3><strong>WELLS FARGO</strong></h3>
+    
+              <ul>
+                <li>Conex Telecom LLC</li>
+                <li>ACCOUNT #: 1161129240</li>
+              </ul>
+    
+            </div>
           </div>
   
-          <div class="sub-container1">
-            <h3>CORPORACIÓN FIBEX TELECOM, C.A.</h3>
-            <H5>RIF: J-30818251-6</H5>
-  
-            <ul>
-              <li><strong>BANCO MERCANTIL</strong></li>
-              <li>0105-0652-2816-5202-2163</li>
-              <li><strong>CUENTA USD</strong></li>
-              <li>0105-0652-2956-5201-1351</li>
-              <li><strong>CUENTA EUROS</strong></li>
-              <li>0105-0652-2256-5201-1394</li>
-              <li><strong>PAGO MÓVIL</strong></li>
-              <li>Mercantil a Mercantil</li>
-              <li>0412-9637516 - Rif.J-308182516</li>
-              <li>0105-0652-2816-5202-2163</li>
-              <li><strong>BANCO NACIONAL DE CRÉDITO</strong></li>
-              <li>CUENTA USD</li>
-              <li>0191-0107-0223-0000-7074</li>
-            </ul>
-  
+          <div class="content">
+            <mat-icon class="copy">file_copy</mat-icon>
+            <div id="id4" class="sub-container1" (click)="prepareToCopy('id4')">
+              <h3>CORPORACIÓN FIBEX TELECOM, C.A.</h3>
+    
+              <ul>
+                <li><strong>RIF: J-30818251-6</strong></li>
+                <li><strong>BANCO MERCANTIL</strong></li>
+                <li>0105-0652-2816-5202-2163</li>
+                <li><strong>CUENTA USD</strong></li>
+                <li>0105-0652-2956-5201-1351</li>
+                <li><strong>CUENTA EUROS</strong></li>
+                <li>0105-0652-2256-5201-1394</li>
+                <li><strong>PAGO MÓVIL</strong></li>
+                <li>Mercantil a Mercantil</li>
+                <li>0412-9637516 - Rif.J-308182516</li>
+                <li>0105-0652-2816-5202-2163</li>
+                <li><strong>BANCO NACIONAL DE CRÉDITO</strong></li>
+                <li>CUENTA USD</li>
+                <li>0191-0107-0223-0000-7074</li>
+              </ul>
+    
+            </div>
           </div>
   
+        </section>
+
+      </div>
+  </label>
+
+  <label for="second">
+    <!-- <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-05 final.jpg"
+      style="max-height: 37rem !important; max-width: 80rem !important"> -->
+
+      <div class="container">
+
+        <section class="section">
   
-        </section> -->
-  
-      <!-- </mat-step>
-  
-      <mat-step> -->
-  
-        <!-- <section class="section">
-  
-          <div>
+          <div class="title">
             <h1>CICLOS DE FACTURACIÓN</h1>
           </div>
   
-          <div>
+          <div class="sub-container2">
             <h3>CICLO DE FACTURACIÓN GENERAL</h3>
             
             <ul>
@@ -113,15 +137,11 @@
         </section>
 
       </div>
+  </label>
 
-      <div>
-        <button mat-mini-fab><mat-icon>arrow_back</mat-icon></button>
-        <button mat-mini-fab><mat-icon>arrow_forward</mat-icon></button>
+  <button mat-button style="position: absolute; top: -4px; right: -18px; color: white;" mat-dialog-close>
 
-      </div> -->
-<!-- 
-    </mat-step>
+    <mat-icon><div class="material-icons-outlined">cancel</div></mat-icon>
 
-  </mat-stepper> -->
-
-</ng-template>
+  </button>
+</form>

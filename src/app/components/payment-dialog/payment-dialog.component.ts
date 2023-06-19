@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MediaMatcher} from '@angular/cdk/layout';
-
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-payment-dialog',
@@ -11,8 +11,36 @@ export class PaymentDialogComponent{
 
   public mobileQuery: MediaQueryList;
 
-  constructor(public media: MediaMatcher) {
+  constructor(
+    public media: MediaMatcher,
+    private clipboard: Clipboard
+
+    ) {
     this.mobileQuery = media.matchMedia("(max-width: 600px)");
     console.log(this.mobileQuery)
+  }
+
+  prepareToCopy(id: string){
+    const htmlElement = Array.from(document.querySelectorAll(`#${id}`))
+    const htmlListElement = Array.from(document.querySelectorAll(`#${id} > ul`))
+    const textArea = document.createElement('textarea')
+    textArea.textContent = ''
+
+    textArea.textContent +=  `${htmlElement[0].childNodes[0].textContent}\n`
+
+    if(htmlListElement.length > 0){
+      htmlListElement[0].childNodes.forEach(el => {
+  
+        textArea.textContent += `${el.textContent}\n`
+  
+      })
+
+    }
+
+    this.copy(textArea.textContent)
+  }
+
+  copy(value: string){
+    this.clipboard.copy(value)
   }
 }
