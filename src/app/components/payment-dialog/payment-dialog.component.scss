@@ -25,7 +25,7 @@ label {
 	&:before {
 		color: $color_2;
 		display: block;
-		background: rgba(217, 217, 217, 0.089);
+		background: #fff;
     line-height: 50vh;
 		position: absolute;
 		padding: 1rem;
@@ -41,7 +41,7 @@ label {
 	&:after {
 		color: $color_2;
 		display: block;
-		background: rgba(217, 217, 217, 0.089);
+		background: #fff;
     line-height: 50vh;
 		position: absolute;
 		padding: 1rem;
@@ -259,7 +259,7 @@ input {
 		font-size: 1rem;
 	
 		h3{
-			font-size: 1.2rem;
+			font-size: 1rem;
 		}
 	
 		ul{
@@ -277,7 +277,7 @@ input {
 		padding: 1%;
 		text-align: center;
 		color: #0f2558;
-		font-size: 1rem;
+		font-size: .8rem;
 	
 		h3{
 			font-size: 1rem;
@@ -292,7 +292,7 @@ input {
 			li{
 				font-weight: 700;
 				list-style: none;
-				font-size: .76rem;
+				font-size: .6rem;
 			}
 		}
 	}
@@ -300,11 +300,11 @@ input {
 
 @media (min-width:820px){
 	.container{
-		width: 48%;
+		width: 28%;
 	}
 
 	.title{
-		font-size: 1rem;
+		font-size: .7rem;
 	}
 
 	.sub-container1{
@@ -314,10 +314,10 @@ input {
 		padding: 1%;
 		text-align: center;
 		color: #0f2558;
-		font-size: 1rem;
+		font-size: .7rem;
 
 		h3{
-			font-size: 1.2rem;
+			font-size: .7rem;
 		}
 	
 		ul{
@@ -338,6 +338,7 @@ input {
 		font-size: 1rem;
 	
 		h3{
+			font-size: .7rem;
 			color: white;
 			background: #0f2558;
 			border-radius: 3px;
@@ -349,7 +350,7 @@ input {
 			li{
 				font-weight: 700;
 				list-style: none;
-				font-size: .76rem;
+				font-size: .7rem;
 			}
 		}
 	}
@@ -362,16 +363,20 @@ input {
 .copy{
 	color: black;
     position: absolute;
-    right: 1.6rem;
-    bottom: 0.5rem;
+    right: 6.4rem;
+	font-size: .8rem;
 	opacity: 0;
 	transition: 1s ease;
 }
 
-.content:hover .copy{
-		opacity: 1;
+.textToCopy{
+position: relative;
 }
 
-.content:hover{
+.unorderedList > li:hover{
+	.copy{
+		opacity: 1;
+
+	}
 	cursor: pointer;
 }

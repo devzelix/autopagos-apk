@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {MediaMatcher} from '@angular/cdk/layout';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payment-dialog',
@@ -13,7 +14,8 @@ export class PaymentDialogComponent{
 
   constructor(
     public media: MediaMatcher,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private snack: MatSnackBar
 
     ) {
     this.mobileQuery = media.matchMedia("(max-width: 600px)");
@@ -42,5 +44,9 @@ export class PaymentDialogComponent{
 
   copy(value: string){
     this.clipboard.copy(value)
+    this.snack.open('Copiado en el portapapeles', 'Cerrar', {
+      horizontalPosition: 'center',
+      duration: 3000
+    })
   }
 }
