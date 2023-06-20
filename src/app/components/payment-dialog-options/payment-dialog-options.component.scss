@@ -1,0 +1,170 @@
+.btn-close{
+	position: absolute;
+	right: .5rem;
+	top: .5rem;
+	background: #fff;
+	border-radius: 50%;
+}
+
+.btn-close:hover{
+	cursor: pointer;
+}
+
+.title{
+	background: rgb(39, 63, 116);
+	text-align: center;
+	font-size: 1rem;
+    padding: 0% 5px;
+
+	h1{
+		color: white;
+	}
+
+    h5{
+        color: #15da92;
+    }
+}
+
+.content-relative{
+    position: relative;
+
+    .copy{
+        color: black;
+        position: absolute;
+        font-size: .8rem;
+        opacity: 0;
+        transition: 1s ease;
+        right: 0;
+        bottom: 0;
+    }
+}
+
+.content-relative:hover {
+    cursor:pointer;
+
+    .copy{
+        opacity: 1;
+    }
+}
+
+
+
+.sub-container{
+	border-radius: 5px;
+	margin: 3%;
+	padding: 1%;
+	text-align: center;
+	color: #0f2558;
+
+    h3{
+        color: #fff;
+        background: #0f2558;
+        border-radius: 36px;
+        font-size: .9rem;
+    }
+
+    h5{
+        color: #15da92;
+        background: #0f2558;
+        border-radius: 36px;
+        font-size: .7rem;
+    }
+
+	ul{
+
+		li{
+            font-size: .77rem;
+			font-weight: 700;
+			list-style: none;
+		}
+	}
+}
+
+.copy{
+	color: black;
+    position: absolute;
+	font-size: .8rem;
+	opacity: 0;
+	transition: 1s ease;
+}
+
+.textToCopy{
+position: relative;
+}
+
+.unorderedList > li:hover{
+	.copy{
+		opacity: 1;
+
+	}
+	cursor: pointer;
+}
+.btn-container{
+    padding: 3%;
+
+    button{
+        width: 100%;
+    }
+}
+
+::ng-deep.mat-dialog-container {
+    padding: 0px !important;
+}
+
+@media (max-width:411px){
+
+    .sub-container{
+        border-radius: 5px;
+        margin: 3%;
+        padding: 1%;
+        text-align: center;
+        color: #0f2558;
+    
+        h3{
+            color: #fff;
+            background: #0f2558;
+            border-radius: 36px;
+            font-size: .9rem;
+        }
+    
+        ul{
+    
+            li{
+                font-size: .63rem;
+                font-weight: 700;
+                list-style: none;
+            }
+        }
+    }
+}
+
+// @media (min-width:412px) and (max-width:819px){
+
+//     .sub-container{
+//         border-radius: 5px;
+//         margin: 3%;
+//         padding: 1%;
+//         text-align: center;
+//         color: #0f2558;
+    
+//         h3{
+//             color: #fff;
+//             background: #0f2558;
+//             border-radius: 36px;
+//             font-size: .9rem;
+//         }
+    
+//         ul{
+    
+//             li{
+//                 font-size: .63rem;
+//                 font-weight: 700;
+//                 list-style: none;
+//             }
+//         }
+//     }
+// }
+
+// @media (min-width:820px){
+
+// }

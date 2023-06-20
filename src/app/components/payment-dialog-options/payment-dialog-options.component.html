@@ -1,0 +1,132 @@
+<section>
+    <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
+
+    <ng-container *ngIf="data.option === 'international'; else national">
+        <div class="title">
+            <h1>FORMAS DE PAGO</h1>
+            <h5>INTERNACIONAL</h5>
+        </div>
+
+        <div>
+            <div class="sub-container">
+              <h3><strong>ZELLE</strong></h3>
+              
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('pagos.zelle@fibextelecom.net')">pagos.zelle@fibextelecom.net <mat-icon class="copy">file_copy</mat-icon></li>
+                <li>Fibex Telecom</li>
+              </ul>
+    
+            </div>
+        </div>
+    
+    
+        <div class="content-relative">
+            <mat-icon class="copy" (click)="copyTextBox('id2')">file_copy</mat-icon>
+
+            <div id="id2" class="sub-container">
+
+              <h3><strong>BANK OF AMERICA</strong></h3>
+    
+              <ul>
+                <li>CONEX TELECOM LLC</li>
+                <li>222 Broadway New York, NY 10038</li>
+                <li>ACCOUNT #: 898107524154</li>
+                <li>SWIFT: B0FAUS3N</li>
+                <li>ABA: 26009593</li>
+                <li>ROUTING: 026009593</li>
+              </ul>
+    
+            </div>
+        </div>
+    
+        <div>
+            <div class="sub-container" >
+                <h3><strong>WELLS FARGO</strong></h3>
+
+                <ul class="unorderedList">
+                    <li>Conex Telecom LLC</li>
+                    <li class="textToCopy" (click)="copy('1161129240')">ACCOUNT #: 1161129240 <mat-icon class="copy">file_copy</mat-icon></li>
+                </ul>
+
+            </div>
+        </div>
+
+    </ng-container>
+
+    <ng-template #national>
+        <div class="title">
+            <h1>FORMAS DE PAGO</h1>
+            <h5>NACIONAL</h5>
+        </div>
+        <div>
+            <div class="sub-container">
+              <h3>FIBEX TELECOM, C.A.</h3>
+
+                <div>
+                    <div class="sub-container" >
+                        <h5><strong>RIF</strong></h5>
+        
+                        <ul class="unorderedList">
+                            <li class="textToCopy" (click)="copy('J-30818251-6')"><strong>RIF: J-30818251-6</strong> <mat-icon class="copy">file_copy</mat-icon></li>
+                        </ul>
+        
+                    </div>
+                </div>
+
+                <div>
+                    <div class="sub-container" >
+                        <h3><strong>MERCANTIL</strong></h3>
+        
+                        <ul class="unorderedList">
+                            <li class="textToCopy" (click)="copy('0105-0652-2816-5202-2163')">0105-0652-2816-5202-2163<mat-icon class="copy">file_copy</mat-icon></li>
+                        </ul>
+        
+                    </div>
+                </div>
+
+                <div>
+                    <div class="sub-container" >
+                        <h5><strong>CUENTA USD</strong></h5>
+        
+                        <ul class="unorderedList">
+                            <li class="textToCopy" (click)="copy('0105-0652-2956-5201-1351')">0105-0652-2956-5201-1351<mat-icon class="copy">file_copy</mat-icon></li>
+                        </ul>
+        
+                    </div>
+                </div>
+
+                <div>
+                    <div class="sub-container" >
+                        <h5><strong>CUENTA EUROS</strong></h5>
+        
+                        <ul class="unorderedList">
+                            <li class="textToCopy" (click)="copy('0105-0652-2256-5201-1394')">0105-0652-2256-5201-1394<mat-icon class="copy">file_copy</mat-icon></li>
+                        </ul>
+        
+                    </div>
+                </div>
+
+                <div>
+                    <div class="sub-container">
+                        <h3><strong>NACIONAL DE CRÉDITO</strong></h3>
+        
+                        <div>
+                            <div class="sub-container">
+                                <h5><strong>CUENTA USD</strong></h5>
+                
+                                <ul class="unorderedList">
+                                    <li class="textToCopy" (click)="copy('0191-0107-0223-0000-7074')">0191-0107-0223-0000-7074<mat-icon class="copy">file_copy</mat-icon></li>
+                                </ul>
+                
+                            </div>
+                        </div>
+        
+                    </div>
+                </div>
+    
+            </div>
+          </div>
+
+    </ng-template>
+
+</section>

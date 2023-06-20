@@ -2887,9 +2887,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
-      maxHeight: '94vh',
-      minHeight: '80vh',
-      disableClose: false,
+      maxHeight: '86vh',
+      minHeight: '36vh',
+      // disableClose: false,
     })
     dialog.afterClosed().subscribe(result => {
     });

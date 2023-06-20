@@ -17,131 +17,20 @@
     <button mat-button style="position: absolute; top: 10px; right: -2px;" mat-dialog-close>
       <mat-icon><div class="material-icons-outlined">cancel</div></mat-icon>
     </button>
-  </form> -->      
+  </form> -->
 
-<form>
-  <input type="radio" name="fancy" autofocus value="first" id="first" />
+  <section>
+    <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
 
-  <input type="radio" name="fancy" value="second" id="second" />
+    <div class="title">
+     <h1>FORMAS DE PAGO</h1>
+     <h5>Bancos autorizados pago servicios</h5>
+    </div>
+   
+    <div class="btn-container">
+     <button mat-raised-button color="primary" (click)="openDialog('international')">INTERNACIONAL</button>
+   
+     <button mat-raised-button color="primary" (click)="openDialog('national')">NACIONAL</button>
+    </div>
 
-  <label for="first">
-    <!-- <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-02 final.jpg"
-      style="max-height: 37rem !important; max-width: 80rem !important"> -->
-
-      <div class="container">
-
-        <section class="section">
-  
-          <div class="title">
-            <h1>FORMAS DE PAGO</h1>
-            <h5>Bancos autorizados pago servicios</h5>
-          </div>
-  
-          <div>
-            <div class="sub-container1">
-              <h3><strong>ZELLE</strong></h3>
-              
-              <ul class="unorderedList">
-                <li class="textToCopy" (click)="copy('pagos.zelle@fibextelecom.net')">pagos.zelle@fibextelecom.net <mat-icon class="copy">file_copy</mat-icon></li>
-                <li>Fibex Telecom</li>
-              </ul>
-    
-            </div>
-          </div>
-  
-
-          <div>
-            <div class="sub-container1">
-              <h3><strong>BANK OF AMERICA</strong></h3>
-    
-              <ul class="unorderedList">
-                <li>CONEX TELECOM LLC</li>
-                <li>222 Broadway New York, NY 10038</li>
-                <li class="textToCopy" (click)="copy('898107524154')">ACCOUNT #: 898107524154 <mat-icon class="copy">file_copy</mat-icon></li>
-                <li class="textToCopy" (click)="copy('B0FAUS3N')">SWIFT: B0FAUS3N <mat-icon class="copy">file_copy</mat-icon></li>
-                <li class="textToCopy" (click)="copy('26009593')">ABA: 26009593 <mat-icon class="copy">file_copy</mat-icon></li>
-                <li class="textToCopy" (click)="copy('026009593')">ROUTING: 026009593 <mat-icon class="copy">file_copy</mat-icon></li>
-              </ul>
-    
-            </div>
-          </div>
-  
-          <div>
-            <div class="sub-container1" >
-              <h3><strong>WELLS FARGO</strong></h3>
-    
-              <ul class="unorderedList">
-                <li>Conex Telecom LLC</li>
-                <li class="textToCopy" (click)="copy('1161129240')">ACCOUNT #: 1161129240 <mat-icon class="copy">file_copy</mat-icon></li>
-              </ul>
-    
-            </div>
-          </div>
-  
-          <div>
-            <div class="sub-container1">
-              <h3>CORPORACIÓN FIBEX TELECOM, C.A.</h3>
-    
-              <ul class="unorderedList">
-                <li class="textToCopy" (click)="copy('J-30818251-6')"><strong>RIF: J-30818251-6</strong> <mat-icon class="copy">file_copy</mat-icon></li>
-                <li><strong>BANCO MERCANTIL</strong></li>
-                <li class="textToCopy" (click)="copy('0105-0652-2816-5202-2163')">0105-0652-2816-5202-2163<mat-icon class="copy">file_copy</mat-icon></li>
-                <li><strong>CUENTA USD</strong></li>
-                <li class="textToCopy" (click)="copy('0105-0652-2956-5201-1351')">0105-0652-2956-5201-1351<mat-icon class="copy">file_copy</mat-icon></li>
-                <li><strong>CUENTA EUROS</strong></li>
-                <li class="textToCopy" (click)="copy('0105-0652-2256-5201-1394')">0105-0652-2256-5201-1394<mat-icon class="copy">file_copy</mat-icon></li>
-                <li><strong>PAGO MÓVIL</strong></li>
-                <li>Mercantil a Mercantil</li>
-                <li class="textToCopy" (click)="copy('0412-9637516')">0412-9637516<mat-icon class="copy">file_copy</mat-icon></li>
-                <li class="textToCopy" (click)="copy('J-308182516')">Rif.J-308182516<mat-icon class="copy">file_copy</mat-icon></li>
-                <li class="textToCopy" (click)="copy('0105-0652-2816-5202-2163')">0105-0652-2816-5202-2163<mat-icon class="copy">file_copy</mat-icon></li>
-                <li><strong>BANCO NACIONAL DE CRÉDITO</strong></li>
-                <li>CUENTA USD</li>
-                <li class="textToCopy" (click)="copy('0191-0107-0223-0000-7074')">0191-0107-0223-0000-7074<mat-icon class="copy">file_copy</mat-icon></li>
-              </ul>
-    
-            </div>
-          </div>
-  
-        </section>
-
-      </div>
-  </label>
-
-  <label for="second">
-    <!-- <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-05 final.jpg"
-      style="max-height: 37rem !important; max-width: 80rem !important"> -->
-
-      <div class="container">
-
-        <section class="section">
-  
-          <div class="title">
-            <h1>CICLOS DE FACTURACIÓN</h1>
-          </div>
-  
-          <div class="sub-container2">
-            <h3>CICLO DE FACTURACIÓN GENERAL</h3>
-            
-            <ul>
-              <li>AVISO DE COBRO MES CORRIENTE</li>
-              <li>Día 01 de cada mes</li>
-              <li>FECHA LÍMITE DE PAGO</li>
-              <li>Día 10 de cada mes</li>
-              <LI>FECHA SUSPENSIÓN DE SERVICIOS</LI>
-              <li>Día 15 de cada mes</li>
-            </ul>
-  
-          </div>
-  
-        </section>
-
-      </div>
-  </label>
-
-  <button mat-button style="position: absolute; top: -4px; right: -18px; color: white;" mat-dialog-close>
-
-    <mat-icon><div class="material-icons-outlined">cancel</div></mat-icon>
-
-  </button>
-</form>
+  </section>

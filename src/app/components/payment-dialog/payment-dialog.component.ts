@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {MediaMatcher} from '@angular/cdk/layout';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { PaymentDialogOptionsComponent } from '../payment-dialog-options/payment-dialog-options.component';
 
 @Component({
   selector: 'app-payment-dialog',
@@ -15,38 +17,24 @@ export class PaymentDialogComponent{
   constructor(
     public media: MediaMatcher,
     private clipboard: Clipboard,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    private dialog: MatDialog,
+    private dialogRef: MatDialogRef<PaymentDialogComponent>
 
     ) {
     this.mobileQuery = media.matchMedia("(max-width: 600px)");
-    console.log(this.mobileQuery)
   }
 
-  prepareToCopy(id: string){
-    const htmlElement = Array.from(document.querySelectorAll(`#${id}`))
-    const htmlListElement = Array.from(document.querySelectorAll(`#${id} > ul`))
-    const textArea = document.createElement('textarea')
-    textArea.textContent = ''
-
-    textArea.textContent +=  `${htmlElement[0].childNodes[0].textContent}\n`
-
-    if(htmlListElement.length > 0){
-      htmlListElement[0].childNodes.forEach(el => {
-  
-        textArea.textContent += `${el.textContent}\n`
-  
-      })
-
-    }
-
-    this.copy(textArea.textContent)
-  }
-
-  copy(value: string){
-    this.clipboard.copy(value)
-    this.snack.open('Copiado en el portapapeles', 'Cerrar', {
-      horizontalPosition: 'center',
-      duration: 3000
+  openDialog(option: string){
+    this.dialog.open(PaymentDialogOptionsComponent, {
+      data:{option},
+      maxHeight: '86vh',
+      minHeight: '36vh',
+      minWidth: '28%'
     })
+  }
+
+  dismiss(){
+    this.dialogRef.close()
   }
 }
