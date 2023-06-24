@@ -23,6 +23,10 @@ export class NavComponent implements OnInit {
     })
   }
 
+  reset(){
+    window.location.reload();
+  }
+
   // openDialogPM() {
   //   const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
   //     height: '90vh',
