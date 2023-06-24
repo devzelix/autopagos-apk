@@ -10,14 +10,9 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 
-import { RegisterPayService } from '../../services/register-pay.service';
-import { UplaodImageService } from '../../services/uplaod-image.service';
-import { TasaService } from '../../services/tasa.service';
-import { DataBankService } from '../../services/data-bank.service';
-import { UploadPHPService } from '../../services/UploadPHP.service';
+
 import { isNegativeNumber } from '../../validators/customValidatorAmount';
-import { ConsultasService } from '../../services/consultas.service';
-import { CloudynariService } from '../../services/cloudDinary.service';
+
 import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
@@ -26,19 +21,31 @@ import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, Plant
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-import { SeguridadDatos } from 'src/app/services/bscript.service';
-// import { NgHcaptchaService } from 'ng-hcaptcha';
-
-
 import { MatStepper, StepState } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+//Servicios
+import { SeguridadDatos } from 'src/app/services/bscript.service';
+import { ConsultasService } from '../../services/consultas.service';
+import { CloudynariService } from '../../services/cloudDinary.service';
 import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
 import { ClearCacheService } from 'src/app/services/clear-cache.service';
-import { STEP_STATE } from '@angular/cdk/stepper';
+import { RegisterPayService } from '../../services/register-pay.service';
+import { UplaodImageService } from '../../services/uplaod-image.service';
+import { TasaService } from '../../services/tasa.service';
+import { DataBankService } from '../../services/data-bank.service';
+import { UploadPHPService } from '../../services/UploadPHP.service';
+
+
+
+
+
+//Modal
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
+import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 
 
 
@@ -530,6 +537,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
+    //Modal para pagar Zelle
+    if(x == 10 ) {
+      this.openDialogZelle();
+      return;
+    }
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
     this.RegistrarPagoMovilboolean = false;
@@ -652,7 +664,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Pagar
     if (x == 30) {
+      console.log("Me estoy subscribiendo");
       this.PagoMetodosHTML2 = MetodoDePago3;
+      let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp)=>{
+        this.TipoPago(6);
+        SubscriptionZelle.unsubscribe();
+      })
     }
 
     if (x == 31) {
@@ -2887,6 +2904,16 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
+      maxHeight: '86vh',
+      minHeight: '36vh',
+      // disableClose: false,
+    })
+    dialog.afterClosed().subscribe(result => {
+    });
+  }
+
+  openDialogZelle() {
+    const dialog = this.dialogTemplate.open(PaymenDialogZelleComponent, {
       maxHeight: '86vh',
       minHeight: '36vh',
       // disableClose: false,

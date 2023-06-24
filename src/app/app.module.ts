@@ -27,6 +27,7 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { TableReceiptComponent } from './components/table-receipt/table-receipt.component';
 import { PaymentDialogComponent } from './components/payment-dialog/payment-dialog.component';
 import { PaymentDialogOptionsComponent } from './components/payment-dialog-options/payment-dialog-options.component';
+import { PaymenDialogZelleComponent } from './components/paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ReplacePipe } from './pipe/replace.pipe';
 
 
@@ -52,6 +53,7 @@ const routes: Routes = [
     NavComponent,
     PaymentDialogComponent,
     PaymentDialogOptionsComponent,
+    PaymenDialogZelleComponent,
     NegativeAmountPipe,
     ReplacePipe,
     DialogDetailComprobantesComponent,

@@ -134,6 +134,17 @@
     animation-name: fadeInUp;
   }
 
+  .forma-pago {
+    margin: 10px; 
+    width: 200px;
+  }
+
+  @media screen and (max-width: 280px) {
+    .forma-pago {
+      width: 100%;
+    }
+}
+
 
 
 

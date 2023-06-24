@@ -51,12 +51,14 @@
 
 .sub-container{
 	border-radius: 5px;
-	margin: 3%;
+	margin-top: 3%;
 	padding: 1%;
 	text-align: center;
 	color: #0f2558;
     display: flex;
     flex-direction: column;
+    
+
 
     h3{
         color: #fff;
@@ -75,7 +77,7 @@
 	ul{
 
 		li{
-            font-size: 0.8rem;
+            font-size: 1rem;
 			font-weight: 700;
 			list-style: none;
 		}
@@ -111,6 +113,7 @@ position: relative;
 
 ::ng-deep.mat-dialog-container {
     padding: 0px !important;
+    border-radius: 16px !important;
 }
 
 @media (max-width:411px){
@@ -121,8 +124,34 @@ position: relative;
         padding: 1%;
         text-align: center;
         color: #0f2558;
-        display: flex;
-        flex-direction: column;
+        overflow: hidden;
+    
+        h3{
+            color: #fff;
+            background: #0f2558;
+            border-radius: 36px;
+            font-size: .9rem;
+        }
+    
+        ul{
+    
+            li{
+                font-size: 1rem;
+                font-weight: 700;
+                list-style: none;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width:280px){
+
+    .sub-container{
+        border-radius: 5px;
+        margin: 3%;
+        padding: 1%;
+        text-align: center;
+        color: #0f2558;
         overflow: hidden;
     
         h3{

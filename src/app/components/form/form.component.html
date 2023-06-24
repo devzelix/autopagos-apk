@@ -124,7 +124,7 @@
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
-                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="FormaPago(option.idpago)">
+                   <button class="grid-cards-item forma-pago" (click)="FormaPago(option.idpago)">
                       <h3>
                         {{option.tittle}}
                       </h3>
@@ -134,7 +134,7 @@
 
                 <span *ngSwitchDefault>
 
-                  <mat-card *ngIf="!option.omitir" class="example-card">
+                  <mat-card *ngIf="!option.omitir" class="example-card animated fadeInUp">
                     <mat-card-header>
                       <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
                     </mat-card-header>
