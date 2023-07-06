@@ -26,18 +26,28 @@
 }
 
 .form-login__group {
-    background-color: rgb(255, 251, 251);
+    // background-color: rgb(255, 251, 251);
+    background-color: white;
     width: 92%;
-    padding: 1.2rem;
+    // padding: 1.2rem;
+    @media only screen and (max-width: 520px) {
+      width: 100%;
+    }
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     height: 80%;
     border-radius: 10px;
-    -webkit-box-shadow: 0px 10px 8px -8px #000000; 
-    box-shadow: 0px 10px 8px -8px #000000;
+    // -webkit-box-shadow: 0px 10px 8px -8px #000000;
+    // box-shadow: 0px 10px 8px -8px #000000;
 }
+.fancy_shadow {
+  border: 1px solid rgb(230, 235, 241);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
 
 .paypal__group {
     background-color: rgb(255, 251, 251);
@@ -49,7 +59,7 @@
     flex-direction: column;
     height: 80%;
     border-radius: 10px;
-    -webkit-box-shadow: 0px 10px 8px -8px #000000; 
+    -webkit-box-shadow: 0px 10px 8px -8px #000000;
     box-shadow: 0px 10px 8px -8px #000000;
 }
 
@@ -64,7 +74,7 @@
     flex-direction: column;
     height: 80%;
     border-radius: 10px;
-    -webkit-box-shadow: 0px 10px 8px -8px #000000; 
+    -webkit-box-shadow: 0px 10px 8px -8px #000000;
     box-shadow: 0px 10px 8px -8px #000000;
 }
 
@@ -123,8 +133,13 @@
 
 .mat-stepper-horizontal {
     width: 95%;
-    @include break('x-small') {
-        width: 95%;
+    // @include break('x-small') {
+    //     width: 95%;
+    // }
+    @media only screen and (max-width: 520px) {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 16px;
     }
 }
 
@@ -140,5 +155,5 @@
     display: flex;
     justify-content: center;
     text-align: center;
-    margin-bottom: 12px; 
+    margin-bottom: 12px;
 }

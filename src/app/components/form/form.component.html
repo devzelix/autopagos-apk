@@ -11,7 +11,7 @@
     </span>
   </div>
 
-  <div [className]="nameClient ? 'form-login__group2' : 'form-login__group'" class="form-login__group">
+  <div [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" class="form-login__group fancy_shadow">
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
@@ -48,8 +48,9 @@
           <!-- / Si no tiene contratos activos -->
 
           <!-- Muestra de boton consultar -->
-          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100"
-            mat-raised-button type="button" (click)="searchServicesv2(inputDni,false,true)"
+          <!-- class="button-material-next btn-width-100" -->
+          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="customized_btn_next"
+            type="button" role="button" (click)="searchServicesv2(inputDni,false,true)"
             [disabled]="dni?.invalid || !captchaService.validControl">
             Consultar
           </button>
