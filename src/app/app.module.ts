@@ -25,6 +25,10 @@ import { PaypalComponent } from './components/paypal/paypal.component';
 import { StripeComponent } from './components/stripe/stripe.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { TableReceiptComponent } from './components/table-receipt/table-receipt.component';
+import { PaymentDialogComponent } from './components/payment-dialog/payment-dialog.component';
+import { PaymentDialogOptionsComponent } from './components/payment-dialog-options/payment-dialog-options.component';
+import { PaymenDialogZelleComponent } from './components/paymen-dialog-zelle/paymen-dialog-zelle.component';
+import { ReplacePipe } from './pipe/replace.pipe';
 
 
 const routes: Routes = [
@@ -47,10 +51,14 @@ const routes: Routes = [
     ImageComponent,
     TableReceiptComponent,
     NavComponent,
+    PaymentDialogComponent,
+    PaymentDialogOptionsComponent,
+    PaymenDialogZelleComponent,
     NegativeAmountPipe,
+    ReplacePipe,
     DialogDetailComprobantesComponent,
     CoincoinxComponent,
-    PaypalComponent, 
+    PaypalComponent,
     StripeComponent
   ],
   imports: [

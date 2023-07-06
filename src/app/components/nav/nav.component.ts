@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TasaService } from '../../services/tasa.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 
 
 @Component({
@@ -12,7 +14,7 @@ export class NavComponent implements OnInit {
   public tasa: string = '';
   public tasaExiste: boolean = false
 
-  constructor( private tasaService: TasaService ) { }
+  constructor( private tasaService: TasaService, public dialogTemplate: MatDialog,) { }
 
   ngOnInit(): void {
     this.tasaService.tasa.subscribe((res) => {
@@ -21,4 +23,16 @@ export class NavComponent implements OnInit {
     })
   }
 
+  reset(){
+    window.location.reload();
+  }
+
+  // openDialogPM() {
+  //   const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
+  //     height: '90vh',
+  //     disableClose: false,
+  //   })
+  //   dialog.afterClosed().subscribe(result => {
+  //   });
+  // }
 }

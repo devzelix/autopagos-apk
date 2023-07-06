@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment as env } from '../../environments/environment.prod';
@@ -12,6 +12,7 @@ import { RegisterPayService } from './register-pay.service';
 })
 export class ConsultasService {
 
+  @Output() PagoZelleOb = new EventEmitter<any>();
   // private URLBACK: string = env.urlBackThomas;
   private tokendbfulll: string = env.tokendbFull;
   private URLDBFULL: string = env.urlDBFULL;
@@ -133,4 +134,10 @@ export class ConsultasService {
       }
     })
   }
+
+  PagoZelle(){
+    this.PagoZelleOb.emit(true);
+  }
+
+
 }
