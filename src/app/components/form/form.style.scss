@@ -1,5 +1,7 @@
 $app-dark-blue: rgba(69, 127, 192, 1);
 $app-light-blue: rgba(7, 195, 176, 1);
+$app-light-blue2: rgb(74 159 255);
+
 .basic-container .mat-step-header .mat-step-icon-selected {
   background-color: #6cb73a;
   color: rgba(22, 20, 20, 0.418);
@@ -65,11 +67,13 @@ $app-light-blue: rgba(7, 195, 176, 1);
   display: grid;
   gap: 20px;
   justify-items: center;
+  max-width: 1125px;
+  margin: 20px auto 0;
+  transition: all 0.5s ease-in-out;
 }
 
 .grid-cards-item {
   color: #d6d5ef;
-  border-radius: 9px;
   // filter: drop-shadow(0 0 0.75rem #0b255f);
   height: 100px !important;
   border-radius: 13px;
@@ -197,7 +201,7 @@ $app-light-blue: rgba(7, 195, 176, 1);
   position: relative;
   text-align: center;
   text-decoration: none;
-  transition: background-color .2s, background-position .2s;
+  transition: background-color .2s, background-position .2s, background-image .3s ease-in-out;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -225,13 +229,6 @@ $app-light-blue: rgba(7, 195, 176, 1);
   background-image: #cccccc;
   background: #cccccc;
   color: #666666;
-    position: absolute;
-    display: grid;
-    grid-template-columns: 22% 70%;
-    /* padding: 37px; */
-    gap: 10px;
-    margin-top: 4%;
-    justify-content: center;
   }
 
   @-webkit-keyframes fadeInUp {
@@ -302,6 +299,7 @@ $app-light-blue: rgba(7, 195, 176, 1);
   right: 13px;
   transition: all 300ms ease 0ms;
   z-index: 99;
+  background: $app-light-blue2;
 }
 
 @media only screen and (max-width: 600px) {

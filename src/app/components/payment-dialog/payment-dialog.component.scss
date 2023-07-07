@@ -103,11 +103,14 @@ input {
 }
 
 .btn-close{
-	position: absolute;
-	right: .5rem;
-	top: .5rem;
-	background: #fff;
+	// position: absolute;
+	// right: .5rem;
+	// top: .5rem;
+	// background: #fff;
 	border-radius: 50%;
+  float: right;
+  margin: 7px;
+  color: ghostwhite;
 }
 
 .btn-close:hover{
@@ -125,7 +128,10 @@ input {
 	font-size: .9rem;
 
 	h1{
-		color: white;
+    color: ghostwhite;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 	}
 
 	h5{
