@@ -179,118 +179,68 @@ $app-light-blue2: rgb(74 159 255);
   }
 }
 
-.customized_btn_next {
-  align-items: center;
-  appearance: none;
-  background-color: rgba(7, 195, 176, 1);
-  background-image: linear-gradient(36deg, $app-dark-blue 18%, $app-light-blue 100%);
-  background-size: calc(100% + 20px) calc(100% + 20px);
-  border-radius: 100px;
-  border-width: 0;
-  box-shadow: none;
-  box-sizing: border-box;
-  color: #FFFFFF;
-  cursor: pointer;
-  display: inline-flex;
-  font-family: CircularStd, sans-serif;
-  font-size: 1rem;
-  height: auto;
-  justify-content: center;
-  line-height: 1.5;
-  padding: 6px 20px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color .2s, background-position .2s, background-image .3s ease-in-out;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: top;
-  white-space: nowrap;
-}
 
-.customized_btn_next:active,
-.customized_btn_next:focus {
-  outline: none;
-}
-
-.customized_btn_next:hover {
-  background-position: -20px -20px;
-}
-
-.customized_btn_next:focus:not(:active) {
-  box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
-}
-
-.customized_btn_next:disabled,
-.customized_btn_next[disabled] {
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  background-image: #cccccc;
-  background: #cccccc;
-  color: #666666;
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
   }
 
-  @-webkit-keyframes fadeInUp {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
-    }
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
 
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
   }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      -webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);
-    }
-
-    to {
-      opacity: 1;
-      -webkit-transform: translate3d(0, 0, 0);
-      transform: translate3d(0, 0, 0);
-    }
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
+}
 
-  .fadeInUp {
-    -webkit-animation-name: fadeInUp;
-    animation-name: fadeInUp;
-  }
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+}
 
+.forma-pago {
+  margin: 10px;
+  width: 200px;
+}
+
+@media screen and (max-width: 280px) {
   .forma-pago {
-    margin: 10px;
-    width: 200px;
+    width: 100%;
   }
-
-  @media screen and (max-width: 280px) {
-    .forma-pago {
-      width: 100%;
-    }
 }
 
 
 
 
-  @media screen and (max-width: 930px) {
-    .cardflex{
-        display: block;
-        /* align-items: center;
+@media screen and (max-width: 930px) {
+  .cardflex {
+    display: block;
+    /* align-items: center;
         justify-content: center; */
-        width: 100%;
-        height: 100%;
-    }
-     .unicard{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    width: 100%;
+    height: 100%;
+  }
+
+  .unicard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .btn-flotante {
@@ -310,5 +260,5 @@ $app-light-blue2: rgb(74 159 255);
 }
 
 :host ::ng-deep .mat-horizontal-content-container {
-  padding:0 !important;
+  padding: 0 !important;
 }

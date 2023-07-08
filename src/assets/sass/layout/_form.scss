@@ -70,18 +70,18 @@
 }
 
 .form-login__group2 {
-//   background-color: rgb(255, 251, 251);
-//   width: 92%;
-//   padding: 1.2rem;
-//   margin-top: -3%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   flex-direction: column;
-//   height: 80%;
-//   border-radius: 10px;
-//   -webkit-box-shadow: 0px 10px 8px -8px #000000;
-//   box-shadow: 0px 10px 8px -8px #000000;
+  //   background-color: rgb(255, 251, 251);
+  //   width: 92%;
+  //   padding: 1.2rem;
+  //   margin-top: -3%;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   flex-direction: column;
+  //   height: 80%;
+  //   border-radius: 10px;
+  //   -webkit-box-shadow: 0px 10px 8px -8px #000000;
+  //   box-shadow: 0px 10px 8px -8px #000000;
   margin-top: 10% !important;
 }
 
@@ -172,10 +172,164 @@ div.mat-step-icon {
   background-color: rgb(74 159 255) !important;
 }
 
-.cdk-overlay-pane {
+.cdk-overlay-pane.custom-size-standard {
   height: 50%;
   width: 92% !important;
   max-width: 440px !important;
   border-radius: 16px;
   overflow: hidden;
+}
+
+// Animations
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeOutDown {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+.fadeOutDown {
+  -webkit-animation-name: fadeOutDown;
+  animation-name: fadeOutDown;
+  display: none;
+}
+
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+  display: block;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+}
+
+.customized_btn_next {
+  align-items: center;
+  appearance: none;
+  background-color: rgba(7, 195, 176, 1);
+  background-image: linear-gradient(36deg, $app-dark-blue 18%, $app-light-blue 100%);
+  background-size: calc(100% + 20px) calc(100% + 20px);
+  border-radius: 100px;
+  border-width: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: CircularStd, sans-serif;
+  font-size: 1rem;
+  height: auto;
+  justify-content: center;
+  line-height: 1.5;
+  padding: 6px 20px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color .2s, background-position .2s, background-image .3s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+
+  &:hover,
+  &:active {
+    background-image: linear-gradient(36deg, rgb(87 150 221) 18%, rgb(0 231 207) 100%);
+  }
+}
+
+.customized_btn_next:active,
+.customized_btn_next:focus {
+  outline: none;
+}
+
+.customized_btn_next:hover {
+  background-position: -20px -20px;
+}
+
+.customized_btn_next:focus:not(:active) {
+  box-shadow: rgba(40, 170, 255, 0.25) 0 0 0 .125em;
+}
+
+.customized_btn_next:disabled,
+.customized_btn_next[disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  background-image: #cccccc;
+  background: #cccccc;
+  color: #666666;
 }

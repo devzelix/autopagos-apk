@@ -2412,7 +2412,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(ImageComponent, {
-      panelClass: ['custom-size-standard', 'modal-customized'],
+      // panelClass: 'custom-size-standard',
       data: this.imageUrl
     });
 
@@ -2905,9 +2905,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
-      maxHeight: '86vh',
-      minHeight: '36vh',
+      // maxHeight: '86vh',
+      // minHeight: '36vh',
       // disableClose: false,
+      panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
     })
     dialog.afterClosed().subscribe(result => {
     });
