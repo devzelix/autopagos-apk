@@ -32,12 +32,14 @@
     <div *ngIf="!ReciberPay">
 
       <div *ngIf="!MountNegative">
-        <div class="form"><h4>Monto a pagar USD</h4><br></div>
+        <div class="form">
+          <h4>Monto a pagar USD</h4><br>
+        </div>
         <div class="form">
           <form [formGroup]="MountPaypal">
             <mat-form-field appearance="outline">
               <mat-label><strong>$</strong>
-              </mat-label> 
+              </mat-label>
               <input matInput formControlName="cantidad" required #inputAmount>
               <mat-error *ngIf="MountPaypal.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
               <mat-error *ngIf="MountPaypal.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
@@ -49,25 +51,27 @@
           </form>
         </div>
       </div>
-      
+
 
       <div *ngIf="!ValidoPagoPaypal">
         <div class="monto-comision">
-          <span ><b >NOTA:</b></span>
-          <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar | currency}}</b></small>
+          <span><b>NOTA:</b></span>
+          <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong
+              style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es:
+            <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar |
+              currency}}</b></small>
         </div>
         <div>
           <ngx-paypal class="paypal-container" [config]="payPalConfig">
           </ngx-paypal>
         </div>
       </div>
-      
+
     </div>
     <div *ngIf="ReciberPay">
       <app-table-receipt [cantidad]="MontoCancelar"></app-table-receipt>
     </div>
-    <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
-      mat-raised-button>
+    <button class="customized_btn_next btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()">
       Regresar
     </button>
   </div>

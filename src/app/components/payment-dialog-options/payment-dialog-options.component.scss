@@ -1,3 +1,5 @@
+$light-green: #aeffe2;
+
 .btn-close {
   position: absolute;
   right: .5rem;
@@ -26,7 +28,8 @@
   }
 
   h5 {
-    color: #15da92;
+    // color: #15da92;
+    color: $light-green;
   }
 }
 
@@ -73,7 +76,8 @@
   }
 
   h5 {
-    color: #15da92;
+    // color: #15da92;
+    color: $light-green;
     // background: #0f2558;
     background: rgba(69, 127, 192, 1);
     border-radius: 36px;

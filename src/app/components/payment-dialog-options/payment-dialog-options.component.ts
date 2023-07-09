@@ -24,7 +24,6 @@ export class PaymentDialogOptionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.data.option === this.ENUM_PAYMENT_OPT.INTERNATIONAL)
   }
 
   copyTextBox(id: string) {
