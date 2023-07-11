@@ -554,14 +554,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     //Débito
     if (x == 0) {
-      this.DebitoCreditoboolean = !this.DebitoCreditoboolean
+      this.DebitoCreditoboolean = !this.DebitoCreditoboolean;
       this.PaymenMethod = "tdd";
       this.Debitoboolean = !this.Debitoboolean;
       this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);
+      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);//Validators.required, //this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.maxLength(8)]);
       this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([Validators.required]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();

@@ -157,6 +157,13 @@ export let MetodoDePago3 = [
     image:'assets/images/Coincoinx.png'
   },
   {
+    idpago:10,
+    tipopago:"Zelle",
+    image:'assets/images/Icono_Zelle.png',
+    alt:'Zelle',
+    omitir:false,
+  },
+  {
     idpago:9,
     tipopago:"Paypal",
     omitir:false,
@@ -189,13 +196,7 @@ export let MetodoDePago3 = [
     omitir:false,
     alt:'Pago Móvil'
   },
-  {
-    idpago:10,
-    tipopago:"Zelle",
-    image:'assets/images/Icono_Zelle.png',
-    alt:'Zelle',
-    omitir:false,
-  },
+ 
 ]
 
 export let FormasDePago = [
