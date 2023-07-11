@@ -1,4 +1,4 @@
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -34,10 +34,10 @@ import { ReplacePipe } from './pipe/replace.pipe';
 const routes: Routes = [
   { path: '', component: FormComponent },
   { path: 'pay', component: FormComponent },
-  {  path: 'serial', component: SerialComponent },
+  { path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
-  {path:'stripe', component:StripeComponent},
+  { path: 'stripe', component: StripeComponent },
   //{ path: '',   redirectTo: '/', pathMatch: 'full' }
 ]
 
@@ -85,7 +85,8 @@ const routes: Routes = [
       useClass: GlobalErrorHandler
     }
   ],
-  exports:[MaterialModule],
+  exports: [MaterialModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

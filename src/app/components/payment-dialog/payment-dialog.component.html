@@ -19,18 +19,23 @@
     </button>
   </form> -->
 
-  <section>
-    <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
+<section *ngIf="!showPaymentOpt">
+  <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
 
-    <div class="title">
-     <h1>FORMAS DE PAGO</h1>
-     <h5>Bancos autorizados pago servicios</h5>
-    </div>
-   
-    <div class="btn-container">
-     <button mat-raised-button color="primary" (click)="openDialog('international')">INTERNACIONAL</button>
-   
-     <button mat-raised-button color="primary" (click)="openDialog('national')">NACIONAL</button>
-    </div>
+  <div class="title">
+    <h1>FORMAS DE PAGO</h1>
+    <h5>Bancos autorizados pago servicios</h5>
+  </div>
 
-  </section>
+  <div class="btn-container">
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.INTERNATIONAL)">INTERNACIONAL</button>
+
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.NATIONAL)">NACIONAL</button>
+  </div>
+
+</section>
+
+<app-payment-dialog-options *ngIf="showPaymentOpt" [data]="paymentOptSelected"
+  (close)="handleShowPaymentOpt(false)"></app-payment-dialog-options>

@@ -443,6 +443,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   keypressControPhones(event: any, formcontrol: string, TypeFormKey: FormGroup) {
+    console.log(event)
     var inp = String.fromCharCode(event.keyCode);
 
     if (TypeFormKey.get(formcontrol)?.value == undefined || TypeFormKey.get(formcontrol)?.value == null || TypeFormKey.get(formcontrol)?.value == '') {
@@ -538,7 +539,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   TipoPago(x: number) {
     //Modal para pagar Zelle
-    if(x == 10 ) {
+    if (x == 10) {
       this.openDialogZelle();
       return;
     }
@@ -666,7 +667,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 30) {
       console.log("Me estoy subscribiendo");
       this.PagoMetodosHTML2 = MetodoDePago3;
-      let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp)=>{
+      let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp) => {
         this.TipoPago(6);
         SubscriptionZelle.unsubscribe();
       })
@@ -2411,8 +2412,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(ImageComponent, {
-      width: '300px',
-      data: this.imageUrl,
+      // panelClass: 'custom-size-standard',
+      data: this.imageUrl
     });
 
     dialogRef.afterClosed().subscribe((deleteImage: boolean) => {
@@ -2904,9 +2905,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
-      maxHeight: '86vh',
-      minHeight: '36vh',
+      // maxHeight: '86vh',
+      // minHeight: '36vh',
       // disableClose: false,
+      panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
     })
     dialog.afterClosed().subscribe(result => {
     });

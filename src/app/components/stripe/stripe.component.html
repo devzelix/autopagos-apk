@@ -1,105 +1,103 @@
-
 <div class="form-login " id="form-offer">
 
-    <div class="form-login__offer">
-    
-        <span class="button-link__bold button-link button__secondary btn-width-70">
-          <p>
-            Registre su pago
-          </p> 
-          <p>
-            Servicio de Internet
-          </p>
-        </span>
-        <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
-    </div>
-    
-      <div class="form-login__group" *ngIf="!showReceipt">
-        <div *ngIf="nameClient && saldoUSD" class="desc-stripe">
-          <div>
-            <h4 class="name-client">
-              {{nameClient}}
-            </h4>
-            <h4 class="name-client">
-              {{MontoCancelar | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-            </h4>
-          </div>
-          <div>
-            <h4 class="name-client">
-              Servicio: {{ paquete }}
-            </h4>
-            <h4 class="name-client">
-              Subscripción: {{subscription}} USD
-            </h4>
-          </div>
-        </div>
+  <div class="form-login__offer">
 
-        <div *ngIf="!MountNegative">
-          <div class="form"><h4>Monto a pagar USD</h4><br></div>
-          <div class="form">
-            <form [formGroup]="paymentForm">
-              <mat-form-field appearance="outline">
-                <mat-label><strong>$</strong>
-                </mat-label> 
-                <input matInput formControlName="cantidad" required #inputAmount>
-                <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
-                  separado por punto, ejemplo: 125.00</mat-error>
-                <mat-error
-                  *ngIf="paymentForm.hasError('isNegative') && paymentForm.get('cantidad')?.hasError('required')">El monto
-                  no puede ser negativo</mat-error>
-              </mat-form-field>
-            </form>
-          </div>
-        </div>
-        <div *ngIf="!ValidoPagoStripe">
-          <div>
-            <span ><b >NOTA:</b></span>
-            <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es: <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
-          </div>
-          <br>
-          <div>
-            <div>
-              <mat-card>
-                <mat-card-content>
-                  <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-                    <div class="card">
-                      <ngx-stripe-card
-                      containerClass="example"
-                      [options]="cardOptions"
-                      (on)="onChange($event)"
-                      [elementsOptions]="elementsOptions"
-                      >
-                      </ngx-stripe-card>
-                    </div>
-                  </div>
-                  <div *ngIf="errorPin" class="error-msg">
-                    <span>El PIN ingresado no es valido, espere el tiempo necesario para volver a intentar</span>
-                  </div>
-                </mat-card-content>
-                  <mat-card-footer>
-                    <button [disabled]="pinSend" class="button-material-next btn-width-100" mat-raised-button (click)="ClaveAuthStripe()"
-                      type="button">
-                      Solicitar pin de autorización {{newTime}}
-                    </button>
-                  </mat-card-footer>
-              </mat-card>
-    
-              <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
-                mat-raised-button>
-                Regresar
+    <span class="button-link__bold button-link button__secondary btn-width-70">
+      <p>
+        Registre su pago
+      </p>
+      <p>
+        Servicio de Internet
+      </p>
+    </span>
+    <!-- <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient }}</span> -->
+  </div>
+
+  <div class="form-login__group" *ngIf="!showReceipt">
+    <div *ngIf="nameClient && saldoUSD" class="desc-stripe">
+      <div>
+        <h4 class="name-client">
+          {{nameClient}}
+        </h4>
+        <h4 class="name-client">
+          {{MontoCancelar | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+        </h4>
+      </div>
+      <div>
+        <h4 class="name-client">
+          Servicio: {{ paquete }}
+        </h4>
+        <h4 class="name-client">
+          Subscripción: {{subscription}} USD
+        </h4>
+      </div>
+    </div>
+
+    <div *ngIf="!MountNegative">
+      <div class="form">
+        <h4>Monto a pagar USD</h4><br>
+      </div>
+      <div class="form">
+        <form [formGroup]="paymentForm">
+          <mat-form-field appearance="outline">
+            <mat-label><strong>$</strong>
+            </mat-label>
+            <input matInput formControlName="cantidad" required #inputAmount>
+            <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+            <mat-error *ngIf="paymentForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
+              separado por punto, ejemplo: 125.00</mat-error>
+            <mat-error
+              *ngIf="paymentForm.hasError('isNegative') && paymentForm.get('cantidad')?.hasError('required')">El monto
+              no puede ser negativo</mat-error>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+    <div *ngIf="!ValidoPagoStripe">
+      <div>
+        <span><b>NOTA:</b></span>
+        <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong
+            style="color: red;">comisión</strong> corre por parte del cliente, su monto a pagar es:
+          <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
+      </div>
+      <br>
+      <div>
+        <div>
+          <mat-card>
+            <mat-card-content>
+              <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
+                <div class="card">
+                  <ngx-stripe-card containerClass="example" [options]="cardOptions" (on)="onChange($event)"
+                    [elementsOptions]="elementsOptions">
+                  </ngx-stripe-card>
+                </div>
+              </div>
+              <div *ngIf="errorPin" class="error-msg">
+                <span>El PIN ingresado no es valido, espere el tiempo necesario para volver a intentar</span>
+              </div>
+            </mat-card-content>
+            <mat-card-footer>
+              <button [disabled]="pinSend" class="customized_btn_next btn-width-100" (click)="ClaveAuthStripe()"
+                type="button">
+                Solicitar pin de autorización {{newTime}}
               </button>
-            </div>
-          </div>
+            </mat-card-footer>
+          </mat-card>
+
+          <button class="customized_btn_next btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()">
+            Regresar
+          </button>
         </div>
       </div>
-
-    <div class="form-login__group" *ngIf="showReceipt">
-      <app-table-receipt [cantidad]="saldoUSD"></app-table-receipt>
-
-      <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
-            mat-raised-button>
-            Regresar
-      </button>
     </div>
+  </div>
+
+  <div class="form-login__group" *ngIf="showReceipt">
+    <app-table-receipt [cantidad]="saldoUSD"></app-table-receipt>
+
+    <button class="button-material-back btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()"
+      mat-raised-button>
+      Regresar
+    </button>
+  </div>
 </div>
