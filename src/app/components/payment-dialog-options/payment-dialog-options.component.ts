@@ -24,6 +24,7 @@ export class PaymentDialogOptionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+  
   }
 
   copyTextBox(id: string) {

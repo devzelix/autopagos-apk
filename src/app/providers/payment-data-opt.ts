@@ -1,4 +1,6 @@
 export enum PAYMENT_OPTION {
   INTERNATIONAL = 'international',
-  NATIONAL = 'national'
+  NATIONAL = 'national',
+  HOME = 'home',
+  ENTERPRISE = 'enterprise'
 }

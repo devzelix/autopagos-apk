@@ -13,9 +13,12 @@
 
   <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
   <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
-    <button class="btn-flotante" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
+
+    <!-- FORMAS DE PAGO -->
+    <button *ngIf="AppFibex" class="btn-flotante" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
       <mat-icon><span class="material-icons-outlined">help_outline</span></mat-icon>
     </button>
+
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por

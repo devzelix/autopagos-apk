@@ -193,6 +193,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public Kiosco: boolean = false;
   public abonado: string = '';
   @Input() state: StepState
+  paymentMethod: string = 'standard'
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -1807,6 +1808,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
+                  //! to validate franchise
+                  if(this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+
                   this.AppFibex = true;
                   setTimeout(() => {
                     this.NextMatStepper();
@@ -2064,8 +2068,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       })
       if (index == Data.length - 1) {
         this.ComprobantesPago = Data
-        console.log("Comprobantes Pagos");
-        console.log(this.ComprobantesPago)
       }
     });
   }
@@ -2177,7 +2179,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string }, ppal?: boolean) {
+  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
+    //! to validate franchise
+    if(contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
@@ -2905,6 +2910,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialogPM() {
     const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
+      data: this.paymentMethod,
       // maxHeight: '86vh',
       // minHeight: '36vh',
       // disableClose: false,

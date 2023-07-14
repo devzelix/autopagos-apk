@@ -1,121 +1,265 @@
 <section id="content_scroll">
   <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
 
-  <ng-container *ngIf="data.option === ENUM_PAYMENT_OPT.INTERNATIONAL else national">
-    <div class="title">
-      <h1>FORMAS DE PAGO</h1>
-      <h5>INTERNACIONAL</h5>
-    </div>
-
-    <div class="content-relative border_container">
-      <mat-icon class="copy" (click)="copyTextBox('id1')">file_copy</mat-icon>
-      <div id="id1" class="sub-container">
-        <h3><strong>ZELLE</strong></h3>
-
-        <ul class="unorderedList">
-          <li>pagos.zelle@fibextelecom.net</li>
-          <li>Fibex Telecom</li>
-        </ul>
-
+  <!-- PAGOS INTERNACIONALES STANDARD -->
+  <ng-container [ngSwitch]="data.option">
+    <ng-container *ngSwitchCase="ENUM_PAYMENT_OPT.INTERNATIONAL">
+      <div class="title">
+        <h1>FORMAS DE PAGO</h1>
+        <h5>INTERNACIONAL</h5>
       </div>
-    </div>
-
-
-    <div class="content-relative border_container">
-      <mat-icon class="copy" (click)="copyTextBox('id2')">file_copy</mat-icon>
-
-      <div id="id2" class="sub-container">
-
-        <h3><strong>BANK OF AMERICA</strong></h3>
-
-        <ul>
-          <li>CONEX TELECOM LLC</li>
-          <li>222 Broadway New York, NY 10038</li>
-          <li>ACCOUNT #: 898107524154</li>
-          <li>SWIFT: B0FAUS3N</li>
-          <li>ABA: 26009593</li>
-          <li>ROUTING: 026009593</li>
-        </ul>
-
+  
+      <div class="content-relative border_container">
+        <mat-icon class="copy" (click)="copyTextBox('id1')">file_copy</mat-icon>
+        <div id="id1" class="sub-container">
+          <h3><strong>ZELLE</strong></h3>
+  
+          <ul class="unorderedList">
+            <li>pagos.zelle@fibextelecom.net</li>
+            <li>Fibex Telecom</li>
+          </ul>
+  
+        </div>
       </div>
-    </div>
-
-    <div class="content-relative border_container">
-
-      <mat-icon class="copy" (click)="copyTextBox('id3')">file_copy</mat-icon>
-
-      <div id="id3" class="sub-container">
-        <h3><strong>WELLS FARGO</strong></h3>
-
-        <ul class="unorderedList">
-          <li>Conex Telecom LLC</li>
-          <li>ACCOUNT #: 1161129240</li>
-        </ul>
-
+  
+  
+      <div class="content-relative border_container">
+        <mat-icon class="copy" (click)="copyTextBox('id2')">file_copy</mat-icon>
+  
+        <div id="id2" class="sub-container">
+  
+          <h3><strong>BANK OF AMERICA</strong></h3>
+  
+          <ul>
+            <li>CONEX TELECOM LLC</li>
+            <li>222 Broadway New York, NY 10038</li>
+            <li>ACCOUNT #: 898107524154</li>
+            <li>SWIFT: B0FAUS3N</li>
+            <li>ABA: 26009593</li>
+            <li>ROUTING: 026009593</li>
+          </ul>
+  
+        </div>
       </div>
-    </div>
+  
+      <div class="content-relative border_container">
+  
+        <mat-icon class="copy" (click)="copyTextBox('id3')">file_copy</mat-icon>
+  
+        <div id="id3" class="sub-container">
+          <h3><strong>WELLS FARGO</strong></h3>
+  
+          <ul class="unorderedList">
+            <li>Conex Telecom LLC</li>
+            <li>ACCOUNT #: 1161129240</li>
+          </ul>
+  
+        </div>
+      </div>
+  
+    </ng-container>
 
-  </ng-container>
-
-  <ng-template #national>
-    <div class="title">
-      <h1>FORMAS DE PAGO</h1>
-      <h5>NACIONAL</h5>
-    </div>
-    <div>
-      <div class="sub-container">
-        <div class="border_container">
-          <span class="content-relative">
-            <mat-icon class="copy" (click)="copyTextBox('id4')">file_copy</mat-icon>
-            <div id="id4" class="sub-container">
-              <h3><strong>MERCANTIL</strong></h3>
-
+    <!-- PAGOS NACIONALES STANDARD -->
+    <ng-container *ngSwitchCase="ENUM_PAYMENT_OPT.NATIONAL">
+      <div class="title">
+        <h1>FORMAS DE PAGO</h1>
+        <h5>NACIONAL</h5>
+      </div>
+      <div>
+        <div class="sub-container">
+          <div class="border_container">
+            <span class="content-relative">
+              <mat-icon class="copy" (click)="copyTextBox('id4')">file_copy</mat-icon>
+              <div id="id4" class="sub-container">
+                <h3><strong>MERCANTIL</strong></h3>
+  
+                <ul class="unorderedList">
+                  <li><strong>RIF: J-30818251-6</strong></li>
+                  <li>0105-0652-2816-5202-2163</li>
+                  <li><strong>Fibex Telecom</strong></li>
+                </ul>
+              </div>
+            </span>
+            <div class="sub-container">
+              <h5><strong>CUENTA USD</strong></h5>
+  
               <ul class="unorderedList">
-                <li><strong>RIF: J-30818251-6</strong></li>
-                <li>0105-0652-2816-5202-2163</li>
-                <li><strong>Fibex Telecom</strong></li>
+                <li class="textToCopy" (click)="copy('J-30818251-6,0105-0652-2956-5201-1351,Mercantil,Fibex Telecom')">
+                  0105-0652-2956-5201-1351<mat-icon class="copy">file_copy</mat-icon></li>
               </ul>
             </div>
-          </span>
-          <div class="sub-container">
-            <h5><strong>CUENTA USD</strong></h5>
-
-            <ul class="unorderedList">
-              <li class="textToCopy" (click)="copy('J-30818251-6,0105-0652-2956-5201-1351,Mercantil,Fibex Telecom')">
-                0105-0652-2956-5201-1351<mat-icon class="copy">file_copy</mat-icon></li>
-            </ul>
+            <div class="sub-container">
+              <h5><strong>CUENTA EUROS</strong></h5>
+  
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('J-30818251-6,0105-0652-2256-5201-1394,Mercantil,Fibex Telecom')">
+                  0105-0652-2256-5201-1394<mat-icon class="copy">file_copy</mat-icon></li>
+              </ul>
+            </div>
+  
           </div>
-          <div class="sub-container">
-            <h5><strong>CUENTA EUROS</strong></h5>
-
-            <ul class="unorderedList">
-              <li class="textToCopy" (click)="copy('J-30818251-6,0105-0652-2256-5201-1394,Mercantil,Fibex Telecom')">
-                0105-0652-2256-5201-1394<mat-icon class="copy">file_copy</mat-icon></li>
-            </ul>
+          <div class="content-relative border_container">
+            <mat-icon class="copy" (click)="copyTextBox('id5')">file_copy</mat-icon>
+  
+  
+            <div id="id5" class="sub-container">
+              <h3><strong>NACIONAL DE CRÉDITO USD</strong></h3>
+  
+              <ul class="unorderedList">
+                <li><strong>RIF: J-30818251-6</strong></li>
+                <li>0191-0107-0223-0000-7074</li>
+                <li><strong>Fibex Telecom</strong></li>
+              </ul>
+  
+            </div>
+  
+  
           </div>
-
+  
         </div>
-        <div class="content-relative border_container">
-          <mat-icon class="copy" (click)="copyTextBox('id5')">file_copy</mat-icon>
-
-
-          <div id="id5" class="sub-container">
-            <h3><strong>NACIONAL DE CRÉDITO USD</strong></h3>
-
-            <ul class="unorderedList">
-              <li><strong>RIF: J-30818251-6</strong></li>
-              <li>0191-0107-0223-0000-7074</li>
-              <li><strong>Fibex Telecom</strong></li>
-            </ul>
-
-          </div>
-
-
-        </div>
-
       </div>
-    </div>
+  
+    </ng-container>
 
-  </ng-template>
+    <!-- PAGOS HOGAR ARAGUA -->
+    <ng-container *ngSwitchCase="ENUM_PAYMENT_OPT.HOME">
+      <div class="title">
+        <h1>FORMAS DE PAGO</h1>
+        <h5>HOGAR</h5>
+      </div>
+      <div>
+        <div class="sub-container">
+          <div class="border_container">
+            <span class="content-relative">
+              <mat-icon class="copy" (click)="copyTextBox('id6')">file_copy</mat-icon>
+              <div id="id6" class="sub-container">
+  
+                <ul class="unorderedList">
+                  <li>Las transferencias van destinadas</li>
+                  <li>para la siguiente compañia</li>
+                  <li>FIBEX TELECOM, C.A.</li>
+                  <li>RIF: J-41318652-7</li>
+                </ul>
+              </div>
+            </span>
+            <div class="sub-container">
+              <h3><strong>BANCOS NACIONALES</strong></h3>
+  
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('J-41318652-7,0105-0190-3111-9024-4381,Mercantil,Fibex Telecom')">
+                  Banco Mercantil: 0105 0190 3111 9024 4381<mat-icon class="copy">file_copy</mat-icon></li>
+              </ul>
+            </div>
+            <div class="sub-container">
+  
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('J-41318652-7,0191-0080-4021-8017-6064,Mercantil,Fibex Telecom')">
+                  Banco BNC: 0191 0080 4021 8017 6064<mat-icon class="copy">file_copy</mat-icon></li>
+              </ul>
+            </div>
+            <div class="sub-container">
+  
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('J-41318652-7,0191-0080-4823-8000-6802,Mercantil,Fibex Telecom')">
+                  Banco BNC $: 0191 0080 4823 8000 6802<mat-icon class="copy">file_copy</mat-icon></li>
+              </ul>
+            </div>
+  
+          </div>
+          <div class="content-relative border_container">
+            <mat-icon class="copy" (click)="copyTextBox('id7')">file_copy</mat-icon>
+  
+  
+            <div id="id7" class="sub-container">
+              <h3><strong>PAGO MÓVIL</strong></h3>
+  
+              <ul class="unorderedList">
+                <li><strong>FIBEX TELECOM, C.A.</strong></li>
+                <li>RIF: J-41318652-7</li>
+                <li><strong>0424 3690736</strong></li>
+                <li>Banco Mercantil</li>
+              </ul>
+  
+            </div>
+  
+  
+          </div>
 
+          <div class="content-relative border_container">
+            <mat-icon class="copy" (click)="copyTextBox('id8')">file_copy</mat-icon>
+  
+  
+            <div id="id8" class="sub-container">
+              <h3><strong>ZELLE</strong></h3>
+  
+              <ul class="unorderedList">
+                <li><strong>FIBEX TELECOM, LLC</strong></li>
+                <li>pagos@fibextelecom.com</li>
+              </ul>
+  
+            </div>
+  
+  
+          </div>
+  
+        </div>
+      </div>
+  
+    </ng-container>
+
+<!-- PAGOS EMPRESAS ARAGUA -->
+    <ng-container *ngSwitchCase="ENUM_PAYMENT_OPT.ENTERPRISE">
+      
+      <div class="title">
+        <h1>FORMAS DE PAGO</h1>
+        <h5>EMPRESAS</h5>
+      </div>
+      <div>
+        <div class="sub-container">
+          <div class="border_container">
+            <span class="content-relative">
+              <mat-icon class="copy" (click)="copyTextBox('id9')">file_copy</mat-icon>
+              <div id="id9" class="sub-container">
+  
+                <ul class="unorderedList">
+                  <li>Las transferencias van destinadas</li>
+                  <li>para la siguiente compañia</li>
+                  <li>FIBEX TELECOM, C.A.</li>
+                  <li>RIF: J-30818251-6</li>
+                </ul>
+              </div>
+            </span>
+            <div class="sub-container">
+              <h3><strong>BANCOS NACIONALES</strong></h3>
+  
+              <ul class="unorderedList">
+                <li class="textToCopy" (click)="copy('J-30818251-6,0105-0652-2816-5202-2163,Mercantil,Fibex Telecom')">
+                  Banco Mercantil: 0105 0652 2816 5202 2163<mat-icon class="copy">file_copy</mat-icon></li>
+              </ul>
+            </div>
+  
+          </div>
+
+          <div class="content-relative border_container">
+            <mat-icon class="copy" (click)="copyTextBox('id8')">file_copy</mat-icon>
+  
+  
+            <div id="id8" class="sub-container">
+              <h3><strong>ZELLE</strong></h3>
+  
+              <ul class="unorderedList">
+                <li><strong>FIBEX TELECOM, LLC</strong></li>
+                <li>pagos@fibextelecom.com</li>
+              </ul>
+  
+            </div>
+  
+  
+          </div>
+  
+        </div>
+      </div>
+  
+    </ng-container>
+  </ng-container>
 </section>
