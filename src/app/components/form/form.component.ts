@@ -1873,7 +1873,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
                 if (this.registerPayService.linkedToContractProcess != 'approved') {
-                  // Convertir en una función para que no se repita
                   this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
 
                   this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
@@ -2462,13 +2461,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
-
+    let saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
     if (national) {
-      if (parseInt(amount) <= 0) {
+      if ( (Number(saldoUSD)) <= 0 ) {
         this.amount?.setValue('');
         this.saldoText = 'SALDO A FAVOR';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-      } else if (parseInt(amount) > 0) {
+      } else if (Number(saldoUSD) > 0) {
         this.saldoText = 'SALDO';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
         this.amount?.setValue('');
@@ -2477,11 +2476,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       return;
     }
 
-    if (parseInt(amount) <= 0) {
+    if (Number(saldoUSD) <= 0) {
       this.amount?.setValue('');
       this.saldoText = 'SALDO A FAVOR';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-    } else if (parseInt(amount) > 0) {
+    } else if (Number(saldoUSD) > 0) {
       this.saldoText = 'SALDO';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       this.amount?.setValue('');
