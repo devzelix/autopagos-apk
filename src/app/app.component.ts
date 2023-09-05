@@ -13,4 +13,9 @@ import { HelperService } from './services/helper.service';
 })
 export class AppComponent {
   constructor(public helper: HelperService) { }
+
+  public handleShowScrollArrow = (event: Event) => {
+    console.log('event', event)
+  }
+
 }

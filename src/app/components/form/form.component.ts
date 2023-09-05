@@ -1809,7 +1809,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
                   //! to validate franchise
-                  if(this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+                  if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
                   this.AppFibex = true;
                   setTimeout(() => {
@@ -2180,7 +2180,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
     //! to validate franchise
-    if(contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+    if (contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
@@ -2463,7 +2463,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
     let saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
     if (national) {
-      if ( (Number(saldoUSD)) <= 0 ) {
+      if ((Number(saldoUSD)) <= 0) {
         this.amount?.setValue('');
         this.saldoText = 'SALDO A FAVOR';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));

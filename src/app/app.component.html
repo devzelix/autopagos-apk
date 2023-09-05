@@ -1,6 +1,6 @@
 <div class="container">
   <app-nav *ngIf="!helper.view"></app-nav>
-  <div ngClass="{{ helper.view ? 'bg-app' : 'default-bg' }}">
+  <div ngClass="{{ helper.view ? 'bg-app' : 'default-bg' }}" (scroll)="handleShowScrollArrow($event)">
     <router-outlet></router-outlet>
   </div>
 
