@@ -12,10 +12,18 @@ import { HelperService } from './services/helper.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
+  public showScrollArrow: boolean = false;
+
   constructor(public helper: HelperService) { }
 
   public handleShowScrollArrow = (event: Event) => {
-    console.log('event', event)
+    this.showScrollArrow = ((event.target as HTMLDivElement).scrollTop > 0)
+  }
+
+  public scrollToTop = () => {
+    const scrollElement: HTMLElement | null = document.getElementById('content-scrollable')
+    scrollElement?.scrollTo({top: 0, behavior: 'smooth'});
   }
 
 }
