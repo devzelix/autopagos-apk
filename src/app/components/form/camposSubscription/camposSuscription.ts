@@ -149,12 +149,19 @@ export let MetodoDePago2 = [
   }
 ]
 export let MetodoDePago3 = [
-  
+
   {
     idpago:5,
     tipopago:"Criptomoneda",
     omitir:true,
     image:'assets/images/Coincoinx.png'
+  },
+  {
+    idpago:10,
+    tipopago:"Zelle",
+    image:'assets/images/Icono_Zelle.png',
+    alt:'Zelle',
+    omitir:false,
   },
   {
     idpago:9,
@@ -164,21 +171,21 @@ export let MetodoDePago3 = [
   },
   {
     idpago:28,
-    tipopago:"Crédito Internacional",
+    tipopago:"T.C. Internacional",
     omitir:false,
-    image:'assets/images/Stripe.png'
+    image:'assets/images/Tarjetas de Credito_Mesa de trabajo 1.jpg',
   },
   {
     idpago:0,
-    tipopago:"Débito Mercantil",
+    tipopago:"Débito",
     image:'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
     alt:'Débito Mercantil',
     omitir:false,
   },
   {
     idpago:1,
-    tipopago:"Crédito Nacional",
-    image:'assets/images/Icono_TDC-PagosFibex.png',
+    tipopago:"T.C. Nacional",
+    image:'assets/images/Tarjeta de Credito Nacional.jpg',
     alt:'Crédito',
     omitir:false,
   },
@@ -189,6 +196,7 @@ export let MetodoDePago3 = [
     omitir:false,
     alt:'Pago Móvil'
   },
+ 
 ]
 
 export let FormasDePago = [

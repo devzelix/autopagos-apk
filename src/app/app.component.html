@@ -1,8 +1,8 @@
 <div class="container">
-  <app-nav *ngIf="!this.view"></app-nav>
-  <div ngClass="{{ view ? 'bg-app' : 'default-bg' }}">
+  <app-nav *ngIf="!helper.view"></app-nav>
+  <div ngClass="{{ helper.view ? 'bg-app' : 'default-bg' }}">
     <router-outlet></router-outlet>
   </div>
 
-  <app-footer *ngIf="!this.view"></app-footer>
+  <app-footer *ngIf="!helper.view"></app-footer>
 </div>

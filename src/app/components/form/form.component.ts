@@ -10,14 +10,9 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { ImageComponent } from '../image/image.component';
 import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 
-import { RegisterPayService } from '../../services/register-pay.service';
-import { UplaodImageService } from '../../services/uplaod-image.service';
-import { TasaService } from '../../services/tasa.service';
-import { DataBankService } from '../../services/data-bank.service';
-import { UploadPHPService } from '../../services/UploadPHP.service';
+
 import { isNegativeNumber } from '../../validators/customValidatorAmount';
-import { ConsultasService } from '../../services/consultas.service';
-import { CloudynariService } from '../../services/cloudDinary.service';
+
 import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
@@ -26,18 +21,31 @@ import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, Plant
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-import { SeguridadDatos } from 'src/app/services/bscript.service';
-// import { NgHcaptchaService } from 'ng-hcaptcha';
-
-
 import { MatStepper, StepState } from '@angular/material/stepper';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { environment } from 'src/environments/environment';
+
+//Servicios
+import { SeguridadDatos } from 'src/app/services/bscript.service';
+import { ConsultasService } from '../../services/consultas.service';
+import { CloudynariService } from '../../services/cloudDinary.service';
 import { CaptchaThomasService } from 'captcha-thomas';
 import { HelperService } from 'src/app/services/helper.service';
 import { ClearCacheService } from 'src/app/services/clear-cache.service';
-import { STEP_STATE } from '@angular/cdk/stepper';
+import { RegisterPayService } from '../../services/register-pay.service';
+import { UplaodImageService } from '../../services/uplaod-image.service';
+import { TasaService } from '../../services/tasa.service';
+import { DataBankService } from '../../services/data-bank.service';
+import { UploadPHPService } from '../../services/UploadPHP.service';
+
+
+
+
+
+//Modal
+import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
+import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 
 
 
@@ -61,7 +69,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   animal: string;
   name2: string;
   fecha: string = 'sssssssssssssss';
-  displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
+  // displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
+  displayedColumns: string[] = ['Fecha', 'Status'];
 
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
@@ -184,6 +193,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public Kiosco: boolean = false;
   public abonado: string = '';
   @Input() state: StepState
+  paymentMethod: string = 'standard'
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -205,7 +215,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
     private _helper: HelperService,
-    private cacheService: ClearCacheService
+    private cacheService: ClearCacheService,
+    public dialogTemplate: MatDialog,
+    public helper: HelperService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.cacheService.clear();
@@ -527,6 +539,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
+    //Modal para pagar Zelle
+    if (x == 10) {
+      this.openDialogZelle();
+      return;
+    }
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
     this.RegistrarPagoMovilboolean = false;
@@ -539,14 +556,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     //Débito
     if (x == 0) {
-      this.DebitoCreditoboolean = !this.DebitoCreditoboolean
+      this.DebitoCreditoboolean = !this.DebitoCreditoboolean;
       this.PaymenMethod = "tdd";
       this.Debitoboolean = !this.Debitoboolean;
       this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);
+      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);//Validators.required, //this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.maxLength(8)]);
       this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([Validators.required]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
@@ -649,7 +666,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Pagar
     if (x == 30) {
+      console.log("Me estoy subscribiendo");
       this.PagoMetodosHTML2 = MetodoDePago3;
+      let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp) => {
+        this.TipoPago(6);
+        SubscriptionZelle.unsubscribe();
+      })
     }
 
     if (x == 31) {
@@ -1517,7 +1539,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //   this.name?.setValue(res[0].cliente);
               //   // this.SearchEmailContra(this.listContratos[0].contrato)
               // }
-              
+
             } else {
 
               this.dni?.setValue(dni_);
@@ -1606,7 +1628,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
-            
+
             //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
@@ -1786,6 +1808,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
+                  //! to validate franchise
+                  if(this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+
                   this.AppFibex = true;
                   setTimeout(() => {
                     this.NextMatStepper();
@@ -1808,7 +1833,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                 this.dni?.setValue('')
                 return;
               };
-              
+
               this.closeAlert2();
               this.readonlyDNI = true;
               this.idContrato = this.listContratos[0].id_contrato;
@@ -1848,7 +1873,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
                 if (this.registerPayService.linkedToContractProcess != 'approved') {
-                  // Convertir en una función para que no se repita
                   this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
 
                   this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
@@ -1878,7 +1902,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.saldoBs = (parseFloat(this.listContratos[0].saldo) * this.cambio_act).toFixed(2);
               this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
             }
-            
+
             //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
             localStorage.setItem("Name", this._seguridadDatos.encrypt(this.nameClient));
             localStorage.setItem("Monto", this._seguridadDatos.encrypt(this.saldoUSD));
@@ -2043,8 +2067,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       })
       if (index == Data.length - 1) {
         this.ComprobantesPago = Data
-        console.log("Comprobantes Pagos");
-        console.log(this.ComprobantesPago)
       }
     });
   }
@@ -2105,7 +2127,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.GetListService(Contrato).then((ResService: any) => {
         if (ResService.length > 0) {
           for (let index = 0; index < ResService.length; index++) {
-            this.AllService.push(ResService[index].nombre_servicio)
+            this.AllService.push(ResService[index].nombre_servicio.replace('FIBEX EXP', 'Fibex Express').replace('_', ' '))
           }
           this.paquete = this.AllService
           localStorage.setItem("Service", this._seguridadDatos.encrypt(JSON.stringify(this.paquete)));
@@ -2156,7 +2178,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string }, ppal?: boolean) {
+  contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
+    //! to validate franchise
+    if(contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
@@ -2314,8 +2339,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       showCancelButton: true,
       confirmButtonColor: '#00184E',
       cancelButtonColor: '#f44336',
-      cancelButtonText: 'Editar monto',
-      confirmButtonText: 'Seguir adelante'
+      cancelButtonText: 'Cancelar',
+      confirmButtonText: 'Continuar'
     }).then((result) => {
       if (result.isConfirmed && !use) {
         if (!this.disbaleButtonIfAmountIsInvalid &&
@@ -2391,8 +2416,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(ImageComponent, {
-      width: '300px',
-      data: this.imageUrl,
+      // panelClass: 'custom-size-standard',
+      data: this.imageUrl
     });
 
     dialogRef.afterClosed().subscribe((deleteImage: boolean) => {
@@ -2436,13 +2461,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
-
+    let saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
     if (national) {
-      if (parseInt(amount) <= 0) {
+      if ( (Number(saldoUSD)) <= 0 ) {
         this.amount?.setValue('');
         this.saldoText = 'SALDO A FAVOR';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-      } else if (parseInt(amount) > 0) {
+      } else if (Number(saldoUSD) > 0) {
         this.saldoText = 'SALDO';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
         this.amount?.setValue('');
@@ -2451,11 +2476,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       return;
     }
 
-    if (parseInt(amount) <= 0) {
+    if (Number(saldoUSD) <= 0) {
       this.amount?.setValue('');
       this.saldoText = 'SALDO A FAVOR';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-    } else if (parseInt(amount) > 0) {
+    } else if (Number(saldoUSD) > 0) {
       this.saldoText = 'SALDO';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       this.amount?.setValue('');
@@ -2692,12 +2717,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
     if (this.BancoNacional('') && this.BancoNacional('') != "EUR" && !this.possibleWithholdingAgent) {
-      this.warnignForm(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-        `El monto debe ser expresado en BOLIVARES para el ${this.bank?.value}.`, 1);
+      this.warnignForm(`¿Reportar pago? Monto en bolívares: ${value}`,
+        `El monto debe ser expresado en BOLíVARES para el ${this.bank?.value}.`, 1);
     }
 
     if (!this.BancoNacional('') && !this.possibleWithholdingAgent) {
-      this.warnignForm(`Está a punto de reportar ${value} DÓLARES, ¿estas seguro?`,
+      this.warnignForm(`¿Reportar pago? Monto en dólares: ${value}`,
         `El monto debe ser expresado en DÓLARES para el ${this.bank?.value}.`, 1);
     }
 
@@ -2734,8 +2759,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         })
 
       } else {
-        this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
-          `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
+        this.warnignFormGeneral(`¿Reportar pago?`,
+          `Monto en Bolívares: ${value} BOLIVARES`, "Cancelar", "Continuar", Metodo)
       }
     }
   }
@@ -2880,6 +2905,28 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   copyText(textToCopy: string) {
     this.clipboard.copy(textToCopy);
+  }
+
+  openDialogPM() {
+    const dialog = this.dialogTemplate.open(PaymentDialogComponent, {
+      data: this.paymentMethod,
+      // maxHeight: '86vh',
+      // minHeight: '36vh',
+      // disableClose: false,
+      panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
+    })
+    dialog.afterClosed().subscribe(result => {
+    });
+  }
+
+  openDialogZelle() {
+    const dialog = this.dialogTemplate.open(PaymenDialogZelleComponent, {
+      maxHeight: '86vh',
+      minHeight: '36vh',
+      // disableClose: false,
+    })
+    dialog.afterClosed().subscribe(result => {
+    });
   }
 }
 

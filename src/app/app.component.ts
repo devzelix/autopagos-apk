@@ -1,21 +1,16 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HelperService } from './services/helper.service';
+// import function to register Swiper custom elements
+//import { register } from 'swiper/element/bundle';
+// register Swiper custom elements
+//register();
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent { 
-
-  public view:boolean=false;
-
-  constructor( private activatedRoute: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((parameter: any) => {
-      const { app } = parameter;
-      if (app !== undefined && app !== null) this.view = !this.view;
-    })
-  }
+export class AppComponent {
+  constructor(public helper: HelperService) { }
 }

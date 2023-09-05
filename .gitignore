@@ -41,5 +41,13 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# dotenv environment variables file
+.env
+
+.angular
+
+# enviroments
+src/environments
+
 # Environments
 /src/environments/**

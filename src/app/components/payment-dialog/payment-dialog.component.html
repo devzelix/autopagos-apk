@@ -1,0 +1,48 @@
+<!-- <ng-container *ngIf="!this.mobileQuery.matches; else elseBlock">
+  <button mat-button style="position: absolute" mat-dialog-close>X</button>
+  <img src="https://crm.thomas-talk.me/newzelle.jpeg" alt="">
+</ng-container>
+<ng-template #elseBlock>
+  <form>
+    <input type="radio" name="fancy" autofocus value="first" id="first" />
+    <input type="radio" name="fancy" value="second" id="second" />
+    <label for="first">
+      <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-02 final.jpg"
+        style="max-height: 37rem !important; max-width: 80rem !important">
+    </label>
+    <label for="second">
+      <img src="../../../assets/images/Formas de Pagos/Formas de Pago App-05 final.jpg"
+        style="max-height: 37rem !important; max-width: 80rem !important">
+    </label>
+    <button mat-button style="position: absolute; top: 10px; right: -2px;" mat-dialog-close>
+      <mat-icon><div class="material-icons-outlined">cancel</div></mat-icon>
+    </button>
+  </form> -->
+
+<section *ngIf="!showPaymentOpt">
+  <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
+
+  <div class="title">
+    <h1>FORMAS DE PAGO</h1>
+    <h5>Bancos autorizados pago servicios</h5>
+  </div>
+
+  <div class="btn-container" *ngIf="dialogData === 'standard'">
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.INTERNATIONAL)">INTERNACIONAL</button>
+
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.NATIONAL)">NACIONAL</button>
+  </div>
+
+  <div class="btn-container" *ngIf="dialogData === 'aragua'">
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.HOME)">HOGAR</button>
+
+    <button class="customized_btn_next"
+      (click)="handleShowPaymentOpt(true, ENUM_PAYMENT_OPTION.ENTERPRISE)">EMPRESAS</button>
+  </div>
+
+</section>
+
+<app-payment-dialog-options *ngIf="showPaymentOpt" [data]="paymentOptSelected" (close)="handleShowPaymentOpt(false)"></app-payment-dialog-options>

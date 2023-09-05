@@ -1,7 +1,7 @@
 <form class="form-login" id="form-offer">
 
-  <div class="form-login__offer">
-    <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
+  <div *ngIf="!nameClient" class="form-login__offer">
+    <span class="button-link__bold button-link button__secondary btn-width-70 fancy_shadow">
       <p>
         Registre su pago
       </p>
@@ -11,7 +11,14 @@
     </span>
   </div>
 
-  <div [className]="nameClient ? 'form-login__group2' : 'form-login__group'" class="form-login__group">
+  <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
+  <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
+
+    <!-- FORMAS DE PAGO -->
+    <button *ngIf="AppFibex" class="btn-flotante" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
+      <mat-icon><span class="material-icons-outlined">help_outline</span></mat-icon>
+    </button>
+
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
@@ -24,7 +31,8 @@
     </div>
     <!-- / Mensajes de alerta -->
 
-    <mat-stepper [linear]="true" #stepper *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
+    <mat-stepper [linear]="true" #stepper
+      *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
 
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
@@ -32,7 +40,7 @@
 
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
-            <mat-label>Cédula/RIF del Cliente</mat-label>
+            <mat-label>Cédula/RIF del cliente</mat-label>
             <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni
               [readonly]="readonlyDNI">
             <mat-icon matSuffix style="cursor: pointer"
@@ -48,8 +56,9 @@
           <!-- / Si no tiene contratos activos -->
 
           <!-- Muestra de boton consultar -->
-          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="button-material-next btn-width-100"
-            mat-raised-button type="button" (click)="searchServicesv2(inputDni,false,true)"
+          <!-- class="button-material-next btn-width-100" -->
+          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="customized_btn_next" type="button"
+            role="button" (click)="searchServicesv2(inputDni,false,true)"
             [disabled]="dni?.invalid || !captchaService.validControl">
             Consultar
           </button>
@@ -116,43 +125,32 @@
 
         <ng-template matStepLabel>Tipo de pago</ng-template>
         <div class="cardflex">
-          <div *ngFor="let option of PagoMetodosHTML2" class="unicard">
+          <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
+            [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
             <span [ngSwitch]="option.tipopago">
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
-                   <button class="grid-cards-item" style="margin: 10px; width: 200px;" (click)="FormaPago(option.idpago)">
-                      <h3>
-                        {{option.tittle}}
-                      </h3>
-                    </button>
+                <button class="grid-cards-item forma-pago" (click)="FormaPago(option.idpago)">
+                  <h3>
+                    {{option.tittle}}
+                  </h3>
+                </button>
 
-                </span>
+              </span>
 
-                <span *ngSwitchDefault>
+              <span *ngSwitchDefault class="flex_center">
 
-                  <mat-card *ngIf="!option.omitir" class="example-card">
-                    <mat-card-header>
-                      <mat-card-title class="TitlePerson">{{option.tipopago}}</mat-card-title>
-                    </mat-card-header>
-                    <img mat-card-image src="{{option.image}}" alt="{{option.alt}}">
-
-                    <mat-card-actions>
-                      <button mat-button *ngIf="option.tipopago !='Criptomoneda' && option.tipopago !='Otros'"
-                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100"
-                        matStepperNext>SELECCIONAR
-                      </button>
-                      <button mat-button *ngIf="option.tipopago =='Criptomoneda' || option.tipopago =='Otros'"
-                        (click)="TipoPago(option.idpago)" class="button-material-next btn-width-100">SELECCIONAR
-                      </button>
-                    </mat-card-actions>
-                  </mat-card>
-                </span>
+                <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp" (click)="TipoPago(option.idpago)">
+                  <h5 class=" TitlePerson">{{option.tipopago}}</h5>
+                  <img style="width: 100%;" src="{{option.image}}" alt="{{option.alt}}">
+                </button>
+              </span>
 
             </span>
           </div>
         </div>
-        <button *ngIf="BackFormaPago" class="button-material-back btn-width-100 animated fadeInUp" (click)="FormaPago(31)" mat-raised-button>
+        <button *ngIf="BackFormaPago" class="customized_btn_next width_full" (click)="FormaPago(31)">
           REGRESAR
         </button>
       </mat-step>
@@ -205,17 +203,18 @@
             <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
 
               <mat-form-field appearance="outline">
-                <mat-label>Cédula/RIF del Cliente</mat-label>
+                <mat-label>Cédula/RIF del cliente</mat-label>
                 <input type="number" matInput required formControlName="dni" NumbersOnly="true" #inputDni
                   (blur)="searchServicesv2(inputDni)">
-                <mat-icon matSuffix (click)="searchServicesv2(inputDni, false)" style="cursor: pointer">search</mat-icon>
+                <mat-icon matSuffix (click)="searchServicesv2(inputDni, false)"
+                  style="cursor: pointer">search</mat-icon>
                 <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
                   La cédula requerida
                 </mat-error>
               </mat-form-field>
-              <p style="text-align:center;">Seleccione Banco Receptor (FIBEX)</p>
+              <p style="text-align:center;">Seleccione banco receptor (Fibex)</p>
               <mat-form-field appearance="outline">
-                <mat-label>Banco Receptor (FIBEX)</mat-label>
+                <mat-label>Banco receptor (Fibex)</mat-label>
                 <mat-select formControlName="bank">
                   <mat-option *ngFor="let bank of banksFiltered" [value]="bank.Banco" (click)="bankSelected(bank)"
                     (blur)="SendOption(0,1,bank.Banco)">
@@ -260,10 +259,10 @@
               </ng-container>
 
               <mat-form-field appearance="outline">
-                <mat-label>Monto Pagado
-                  <strong><span *ngIf="BancoNacional('') && BancoNacional('') !='EUR'">En Bolivares</span></strong>
-                  <strong><span *ngIf="!BancoNacional('')">En Dólares</span></strong>
-                  <strong><span *ngIf="BancoNacional('') =='EUR'">En Euros</span></strong>
+                <mat-label>Monto acreditado
+                  <strong><span *ngIf="BancoNacional('') && BancoNacional('') !='EUR'">en Bolívares</span></strong>
+                  <strong><span *ngIf="!BancoNacional('')">en Dólares</span></strong>
+                  <strong><span *ngIf="BancoNacional('') =='EUR'">en Euros</span></strong>
                 </mat-label>
                 <input matInput formControlName="amount" required #inputAmount
                   (blur)="incorrectBankAndAmount(inputAmount.value)">
@@ -337,13 +336,17 @@
                 </mat-error>
               </mat-form-field>
 
-              <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos realizados</h3><br>
+              <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos:</h3><br>
               <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago"
                 class="mat-elevation-z8">
 
-                <ng-container matColumnDef="Comprobante">
+                <!-- <ng-container matColumnDef="Comprobante">
                   <th mat-header-cell *matHeaderCellDef> Comprobante </th>
                   <td mat-cell *matCellDef="let element"> {{element.Referencia}} </td>
+                </ng-container> -->
+                <ng-container matColumnDef="Fecha">
+                  <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                  <td mat-cell *matCellDef="let element"> {{element.Fecha | date: 'dd/MM/yyyy'}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Status">
@@ -351,10 +354,6 @@
                   <td mat-cell *matCellDef="let element"> {{element.Status}} </td>
                 </ng-container>
 
-                <ng-container matColumnDef="Fecha">
-                  <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                  <td mat-cell *matCellDef="let element"> {{element.Fecha | date: 'dd/MM/yyyy'}} </td>
-                </ng-container>
                 <!-- <ng-container matColumnDef="buttons">
                   <mat-header-cell *matHeaderCellDef></mat-header-cell> -->
                 <!-- <mat-cell *matCellDef="let element"> -->
@@ -781,13 +780,12 @@
 
         <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
           class="btn-flex-center">
-          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="button-material-next btn-width-70"
-            mat-raised-button type="button"
-            (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
+          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
+            type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
             Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
-          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
-            type="button" matStepperPrevious>
+          <button class="customized_btn_next btn-width-30" (click)="ScrollUp($event); ResetFormCD()" type="button"
+            matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -953,8 +951,8 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <!-- Debito -->
-          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="button-material-next btn-width-70"
-            id="PagoDC" mat-raised-button type="button"
+          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="customized_btn_next btn-width-70"
+            id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             <span *ngIf="!Creditoboolaean">Pagar</span>
           </button>
@@ -962,14 +960,14 @@
 
           <!-- Credito -->
           <button *ngIf="Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado"
-            class="button-material-next btn-width-70" id="PagoDC" mat-raised-button type="button"
+            class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
           <!-- / Fin Credito -->
 
-          <button class="button-material-back btn-width-30" (click)="ScrollUp($event); ResetFormCD()" mat-raised-button
-            type="button" matStepperPrevious>
+          <button class="customized_btn_next btn-width-30" (click)="ScrollUp($event); ResetFormCD()" type="button"
+            matStepperPrevious>
             Regresar
           </button>
         </div>

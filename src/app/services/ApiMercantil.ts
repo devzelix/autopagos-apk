@@ -306,6 +306,8 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
+                  console.log("Respondio");
+                  console.log(data);
                     resolve(data);
                 },
                 error: error => {
@@ -321,7 +323,84 @@ export class ApiMercantilService implements  OnInit {
     })
   }
 
+  GetAuthTDDv2(Datos:any){
+    return new Promise((resolve,reject)=>{
+      try {
+
+        Datos ={
+          "ipaddress": Datos.AddresIp,
+          "browser_agent": Datos.Browser,
+          "card_number":Datos.Ncard,
+          "customer_id":Datos.c_iDC
+        }
+
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{
+        const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+            this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC`, resp,{headers:headers}).subscribe({
+                next: data => {
+                  console.log("Respondio");
+                  console.log(data);
+                    resolve(data);
+                },
+                error: error => {
+                    console.error('There was an error!', error);
+                    reject(error);
+                }
+            })
+       })
+      .catch((error:any)=>console.error(error));
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+  
   CompraTDD(Datos:any){
+    console.log("CompraTDD");
+    return new Promise((resolve,reject)=>{
+      try {
+        Datos ={
+          "ipaddress": Datos.AddresIp,
+          "browser_agent": Datos.Browser,
+          "card_number":Datos.Ncard,
+          "customer_id":Datos.c_iDC,
+          "invoice_number": Datos.invoice,
+          "cvv": Datos.ccv,
+          "twofactor_auth": Datos.Clavetlfonica,
+          "expiration_date": Datos.vencmto,
+          "amount": Datos.cantidadDC,
+          "payment_method": Datos.PaymenMethod,
+          "account_type": Datos.typeCuenta,
+          "Name": Datos.Name,
+          "abonado": Datos.Abonado,
+          "idcontrato": Datos.idContrato,
+          "client": Datos.Cliente
+        }
+
+        this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
+       .then((resp:any)=>{ //PayTDC
+          this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
+                  next: data => {
+                    console.log("Respondio");
+                    console.log(data);
+                      resolve(data);
+                  },
+                  error: error => {
+                      console.error('There was an error!', error);
+                      reject(error);
+                  }
+              })
+        })
+      .catch((error:any)=>console.error(error));
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+
+  CompraTDDv2(Datos:any){
+    console.log("CompraTDD");
     return new Promise((resolve,reject)=>{
       try {
         Datos ={
@@ -344,8 +423,11 @@ export class ApiMercantilService implements  OnInit {
 
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
-            this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
+        const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+            this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC`, resp,{headers:headers}).subscribe({
                 next: data => {
+                  console.log("Respondio");
+                  console.log(data);
                     resolve(data);
                 },
                 error: error => {

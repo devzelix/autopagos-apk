@@ -13,7 +13,8 @@
 }
 
 .default-bg {
-  background-image: linear-gradient($back-ground-fibex 30%, whitesmoke 30%);
+  // background-image: linear-gradient($back-ground-fibex 30%, whitesmoke 30%);
+  background-image: linear-gradient(rgba(69, 127, 192, 1) 11%, rgba(7, 195, 176, 1) 36%, whitesmoke 30%);
   width: 100%;
   background-repeat: no-repeat;
   min-height: 100vh;

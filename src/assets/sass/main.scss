@@ -1,27 +1,46 @@
-// BREAKPOINTS
-@import './abstracts/breakpoints';
-@import './abstracts/variables';
+  body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+    border-radius: 10px;
+  }
 
-// BASE
-@import './base/reset';
-@import './base/typography';
+  body::-webkit-scrollbar {
+    width: 10px;
+    background-color: #F5F5F5;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-image: -webkit-gradient(linear,
+        left bottom,
+        left top,
+        color-stop(0.44, rgb(122, 153, 217)),
+        color-stop(0.72, rgb(73, 125, 189)),
+        color-stop(0.86, rgb(28, 58, 148)));
+  }
+
+  // BREAKPOINTS
+  @import './abstracts/breakpoints';
+  @import './abstracts/variables';
+
+  // BASE
+  @import './base/reset';
+  @import './base/typography';
 
 
-// COMPONENTS
-@import './components/buttons';
-@import './components/icon';
-@import './components/imagePay';
-@import './components/invoice';
-@import './components/spinner';
+  // COMPONENTS
+  @import './components/buttons';
+  @import './components/icon';
+  @import './components/imagePay';
+  @import './components/invoice';
+  @import './components/spinner';
 
-// LAYOUT
-@import './layout/footer';
-@import './layout/form';
-@import './layout/title';
-@import './layout/nav';
-
-
-// PAGES
-@import './pages/login';
+  // LAYOUT
+  @import './layout/footer';
+  @import './layout/form';
+  @import './layout/title';
+  @import './layout/nav';
 
 
+  // PAGES
+  @import './pages/login';
