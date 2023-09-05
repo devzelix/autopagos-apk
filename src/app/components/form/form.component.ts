@@ -1773,6 +1773,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
+        console.log("saldo");
+        console.log(res);
 
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
@@ -2191,6 +2193,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
     this.abonado = this.nroContrato?.value;
+    this.validateIfAmountIsNegativer(contrato.saldo, true);
     this.checkLocalStorageData()
     if (ppal) {
       this.AppFibex = true;
@@ -2461,7 +2464,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
-    let saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(2);
+    let saldoUSD = parseFloat(amount).toFixed(2);
+    console.log("SaldoUSD");
+    console.log(saldoUSD);
+    console.log("Amount");
+    console.log(amount);
     if (national) {
       if ((Number(saldoUSD)) <= 0) {
         this.amount?.setValue('');
