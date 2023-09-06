@@ -39,6 +39,7 @@ const routes: Routes = [
   { path: 'paypal', component: PaypalComponent },
   { path: 'stripe', component: StripeComponent },
   //{ path: '',   redirectTo: '/', pathMatch: 'full' }
+  { path: '**', redirectTo: '', pathMatch: 'full' }
 ]
 
 

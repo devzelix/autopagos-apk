@@ -1773,6 +1773,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
+        console.log("saldo");
+        console.log(res);
 
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
@@ -1809,7 +1811,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
                   //! to validate franchise
-                  if(this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+                  if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
                   this.AppFibex = true;
                   setTimeout(() => {
@@ -1873,7 +1875,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
                 if (this.registerPayService.linkedToContractProcess != 'approved') {
-                  // Convertir en una función para que no se repita
                   this.validateIfAmountIsNegativer(this.listContratos[0].saldo, true);
 
                   this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(2);
@@ -2181,7 +2182,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
     //! to validate franchise
-    if(contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+    if (contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
     this.verifySaldo(contrato.saldo);
@@ -2192,6 +2193,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.nroContrato?.setValue(contrato.contrato);
     this.SearchServiceClient(this.idContrato);
     this.abonado = this.nroContrato?.value;
+    this.validateIfAmountIsNegativer(contrato.saldo, true);
     this.checkLocalStorageData()
     if (ppal) {
       this.AppFibex = true;
@@ -2475,13 +2477,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
-
+    let saldoUSD = parseFloat(amount).toFixed(2);
+    console.log("SaldoUSD");
+    console.log(saldoUSD);
+    console.log("Amount");
+    console.log(amount);
     if (national) {
-      if (parseInt(amount) <= 0) {
+      if ((Number(saldoUSD)) <= 0) {
         this.amount?.setValue('');
         this.saldoText = 'SALDO A FAVOR';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-      } else if (parseInt(amount) > 0) {
+      } else if (Number(saldoUSD) > 0) {
         this.saldoText = 'SALDO';
         localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
         this.amount?.setValue('');
@@ -2490,11 +2496,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       return;
     }
 
-    if (parseInt(amount) <= 0) {
+    if (Number(saldoUSD) <= 0) {
       this.amount?.setValue('');
       this.saldoText = 'SALDO A FAVOR';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
-    } else if (parseInt(amount) > 0) {
+    } else if (Number(saldoUSD) > 0) {
       this.saldoText = 'SALDO';
       localStorage.setItem("Saldo", this._seguridadDatos.encrypt(this.saldoText));
       this.amount?.setValue('');

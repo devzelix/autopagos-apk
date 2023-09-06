@@ -1,0 +1,19 @@
+.arrow_up {
+  position: fixed;
+  bottom: calc(3% + 60px);
+  right: 8%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-content: center;
+  background: linear-gradient(36deg, rgba(69, 127, 192, 1) 18%, rgba(7, 195, 176, 1) 100%);
+  border-radius: 50%;
+  color: ghostwhite;
+  font-size: 27px;
+  border: none;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
+}

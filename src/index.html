@@ -20,6 +20,36 @@
 
   gtag('config', 'G-1F242955XN');
 </script>
+
+  <!-- ! Cancela click derecho, tecla f12 y Ctrl -->
+  <script>
+    function disableIE() {
+      if (document.all) return false;
+    }
+    function disableNS(e) {
+      if (document.layers || (document.getElementById && !document.all)) {
+        if (e.which == 2 || e.which == 3) return false;
+      }
+    }
+    function disableButtons(e) {// Desabilita f12 y ctrl
+    let tecla = e.which || e.keyCode;
+    if ( tecla === 123 || e.ctrlKey ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+    if (document.layers) {
+      document.captureEvents(Event.MOUSEDOWN);
+      document.onmousedown = disableNS;
+    }
+    else {
+      document.onmouseup = disableNS;
+      document.oncontextmenu = disableIE;
+    }
+    document.oncontextmenu = new Function("return false");
+    document.onkeydown = disableButtons;
+  </script>
+
 </head>
 <body>
   <app-root></app-root>
