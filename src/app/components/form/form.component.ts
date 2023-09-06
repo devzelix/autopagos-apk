@@ -2388,6 +2388,19 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }).then((result) => {
       if (result.isConfirmed) {
         //Metodo que voy a llamar
+        switch (NameMetodo) {
+          case 'this.ClaveAuthPgoMovil()':
+            this.ClaveAuthPgoMovil();
+            break;
+          case 'this.PagoDebito()':
+            this.PagoDebito();
+            break;
+            case 'this.PagoDebito()':
+              this.PagoDebito();
+              break;
+          default:
+            break;
+        }
         eval(NameMetodo);
       }
     })
@@ -2762,6 +2775,37 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       } else {
         this.warnignFormGeneral(`¿Reportar pago?`,
           `Monto en Bolívares: ${value} BOLIVARES`, "Cancelar", "Continuar", Metodo)
+      }
+    }
+  }
+
+  AmountIncorrectConfirmv2(value: string, Metodo: string, type?: string) {
+    if (Number(value) === 0) {
+      this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
+      this.cantidadDC?.reset();
+      return
+    } else if (!this.invalidAmount) {
+      let saldobs = Number(this.saldoBs) - Number(value);
+      if (saldobs < 0) saldobs = saldobs * (-1);
+
+      if (type != undefined && type != null && type != "") {
+
+
+        let PlantillaPago: any = this.PlantillaTempPago.filter((plantilla: any) => plantilla.tipo == type);
+        PlantillaPago[0].replace.forEach((replaceRem: any, index: number) => {
+
+          PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem, String(eval(PlantillaPago[0].campos[index])))
+
+          if (index == PlantillaPago[0].replace.length - 1) {
+
+            this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
+              PlantillaPago[0].html, "Editar Datos", "Procesar Pago", Metodo);
+          }
+        })
+
+      } else {
+        this.warnignFormGeneral(`Está a punto de reportar ${value} BOLIVARES, ¿estas seguro?`,
+          `El monto debe ser expresado en BOLIVARES.`, "Editar Monto", "Seguir adelante", Metodo)
       }
     }
   }
