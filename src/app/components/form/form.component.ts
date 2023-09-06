@@ -1131,7 +1131,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) => {
               this.uploadingImg = false;
               imageBase64 = '';
-
               this.imageUrl = res.secure_url;
               this.SendOption(2, 0, res.url);
               this.imageUploaded = true;
@@ -2207,7 +2206,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR')) {
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE')){
       if (this.bank?.value.includes('EUR')) return 'EUR'
       else return false
     } else return true
