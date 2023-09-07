@@ -8,7 +8,7 @@ if (environment.production) {
   enableProdMode();
   console.log = function() {}
   console.error =  function() {}
-  console.warn = function() {}
+  console.warn = function() {} 
 }
 
 // // CANCELA TODOS LOS MENSAJES DE LA CONSOLA
