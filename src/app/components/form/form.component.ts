@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy, OnChanges, AfterViewInit, Input } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormBuilder, Validators, AbstractControl, FormControl, NgControlStatus, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -35,6 +35,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { ClearCacheService } from 'src/app/services/clear-cache.service';
 import { RegisterPayService } from '../../services/register-pay.service';
 import { UplaodImageService } from '../../services/uplaod-image.service';
+import { BankEmisorS } from '../../interfaces/bankList';
 import { TasaService } from '../../services/tasa.service';
 import { DataBankService } from '../../services/data-bank.service';
 import { UploadPHPService } from '../../services/UploadPHP.service';
@@ -72,6 +73,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   // displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
   displayedColumns: string[] = ['Fecha', 'Status'];
 
+  public BankEmisor = BankEmisorS
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
@@ -227,10 +229,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.cacheService.clear();
 
     this.dataBankService.bankList.subscribe((banks) => {
-      this.bankList = banks;
+      this.bankList = banks.sort((a, b) => a.Banco.localeCompare(b.Banco));;
       this.banksFiltered = [...this.bankList];
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
-
     });
   }
 
@@ -264,10 +265,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }, { validator: isNegativeNumber });
 
     this.secondFormFibex = this.fb.group({
-      voucher: ['', [Validators.required]],
+      voucher: ['', [Validators.required, Validators.maxLength(30)]],
       nameTitular: [''],
       dniTitular: [''],
       emailTitular: [''],
+      BancoEmisor: ['']
     });
 
     this.thirdFormFibex = this.fb.group({
@@ -329,9 +331,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       c_i_Cripto: ['', [Validators.required, Validators.minLength(6)]],
       Pref_ci_Cripto: ['', [Validators.required]]
     });
-
-
-
+    
     this.name?.disable();
   }
 
@@ -444,6 +444,63 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       } catch (error) {
         console.error(error)
       }
+    }
+  }
+
+  BancoEmisor(Bank:any){
+    switch (Bank.Banco) {
+      case 'USD BANCO MERCANTIL':
+      case 'EUR BANCO MERCANTIL':
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(10),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.updateValueAndValidity();
+        break;
+
+      case 'ZELLE WELL FARGO pagos.zelle@fibextelecom.net':
+      case 'USD BANK OF AMERICA TRANSFERENCIA':
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.updateValueAndValidity();
+        break;
+    
+      default:
+        if(Bank.hasOwnProperty('Max')){
+          this.secondFormFibex.get('BancoEmisor')?.setValue(Bank.Banco)
+          this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(Bank.Max),Validators.required,Validators.minLength(4),this.NumericReference()]);
+          this.secondFormFibex.get('voucher')?.updateValueAndValidity();
+        }
+        break;
+    }
+    
+  }
+
+  //Contraseña Alfanumerica echo por Michel C. 
+  NumericReference(): ValidatorFn {
+    return (control:AbstractControl) : ValidationErrors | null => {
+
+        const value = control.value;
+
+        if (!value) {
+            return null;
+        }
+        const hasNumeric = /^[0-9]+$/.test(value);
+
+        const NumericVAlid = hasNumeric 
+
+        return !NumericVAlid ? {NumericRefence:true}: null;
+    }
+  }
+
+  CharacterSpecial(): ValidatorFn {
+    return (control:AbstractControl) : ValidationErrors | null => {
+
+        const value = control.value;
+
+        if (!value) {
+            return null;
+        }
+
+        const hasCaracteresSpecial =  /^[\w\-\.]+$/i.test(value);
+
+        return !hasCaracteresSpecial ? {CaracterInvalid:true}: null;
     }
   }
 
@@ -2262,23 +2319,34 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   BancoNacional(StrBanco: string) {
     if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE')) {
+      this.secondFormFibex.get('BancoEmisor')?.setValidators([]);
+      this.secondFormFibex.get('BancoEmisor')?.updateValueAndValidity();
       if (this.bank?.value.includes('EUR')) return 'EUR'
       else return false
-    } else return true
+    } else {
+      this.secondFormFibex.get('BancoEmisor')?.setValidators([Validators.required]);
+      this.secondFormFibex.get('BancoEmisor')?.updateValueAndValidity();
+      return true
+    }
   }
 
   bankSelected(bank: any) {
+    console.log(bank)
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
-    if (this.BancoNacional(this.banco)) {
-
+    if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !=='EUR') {
+      console.log("por aqui")
       if (!Number.isNaN(Math.round(parseFloat(this.lastAmount)))) {
         this.validateIfAmountIsNegativer(this.lastAmount, true);
       }
     } else {
+      console.log(bank)
       this.validateIfAmountIsNegativer(this.lastAmount);
+      this.BancoEmisor(bank)
     }
   }
+
+  
 
   alertFindDni(title: string, message: string) {
     Swal.fire({
@@ -2772,6 +2840,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       nameTitular: '',
       dniTitular: '',
       emailTitular: '',
+      BancoEmisor: '',
     })
     this.thirdFormFibex.patchValue({
       img: '',

@@ -9,7 +9,9 @@ import { RegisterPayService } from './register-pay.service';
 export class DataBankService {
   ListBanco: any = []
   BankExclu: any = ["01720110711106019647", "01720110721105997686", "01720110701106017088", "01050652211652024484", "01750365160080076155", "01150047130470052498", "0134049768497102010", "01560027640000479832", "01020453410000103758", "01050039721039372414", "1190244381", "0771587208", "00000001942492809086", "0012345678", "01560012890201743177", "1520036821", "01050039781039372392", "0000069363", "2180176064", "6011305590098", "01010101010101010101", "898120456788", "1678910978", "01280050925009019129", "01050652211652024484", "01050039781039372392", '000000000001', '00000007850', '1161129240', '0000069363']//'1520036821'
+  BankIncluir: any = ["01050652281652022163","01050039781039372392","01050652211652024484","01340330943301034295","01340330983301036531","01910107042100062614","01050652295652011351","01050652225652011394","898107524154","898120456788","00000000101"]
   BankAragua: any = ["1190244381", "2180176064", "01050652281652022163", "01090080482380006802", "898120456788", "01010101010101010101", "0030049359", "01910080402180176064"]
+ 
   public bankList = new Subject<BankList[]>();
 
   BankDollar: any = []
@@ -23,8 +25,10 @@ export class DataBankService {
   GetList() {
     try {
       this.registerPayService.getNewBankList().then((ResSae: any) => {
+        console.log("Bancos del SAE");
+        console.log(ResSae);
         for (let indexSae = 0; indexSae < ResSae.length; indexSae++) {
-          if (!this.BankExclu.includes(ResSae[indexSae].numero_cuenta)) {
+          if (this.BankIncluir.includes(ResSae[indexSae].numero_cuenta)) {
 
             this.ListBanco.push({
               Banco: this.DictionaryBank(ResSae[indexSae].banco, "ALL", ResSae[indexSae].numero_cuenta),

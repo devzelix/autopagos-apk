@@ -326,6 +326,19 @@
                 <input matInput formControlName="emailTitular" #inputEmailT (blur)="SendOption(1,1,inputEmailT.value)">
               </mat-form-field>
 
+              <!-- <span *ngIf="BancoNacional(banco)"> -->
+                <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
+                <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' " >
+                  <mat-label>Banco emisor</mat-label>
+                  <mat-select formControlName="bank">
+                    <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
+                      {{banka.Banco}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              <!-- </span> -->
+              
+
               <p>Es el número de referencia del BANCO</p>
               <mat-form-field appearance="outline">
                 <mat-label>Número de comprobante</mat-label>
@@ -333,6 +346,14 @@
                   (blur)="SendOption(1,2,inputVouche.value);">
                 <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es
                   requerido
+                </mat-error>
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('maxlength')">Supero el máximo de números
+                </mat-error>
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('minlength')">El minimo de número es 4
+                </mat-error>
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe tener letras o carácteres especiales
+                </mat-error>
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no válido
                 </mat-error>
               </mat-form-field>
 
