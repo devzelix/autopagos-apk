@@ -12,7 +12,7 @@ module.exports = {
     //       'abc': 'C:/Proyectos/pro/PagosMercantil/dist/form-pay-fibex/main.e5a662245f8e641e.js',
     //   },
     output: {
-        path: 'C:/Proyectos/pro/PagosMercantil/dist/form-pay-fibex/form-pay-fibex.js',
+        path: __dirname+'/dist/form-pay-fibex/form-pay-fibex.js',
         filename: '[name].[contenthash].js', // output: abc.js, cde.js
         chunkFilename: '[name].[contenthash].js',
     },
@@ -34,6 +34,3 @@ module.exports = {
         }, ['main.js'])
     ]
 };
-
-
-

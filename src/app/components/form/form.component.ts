@@ -1074,11 +1074,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   uploadImagePayment2($event: any) {
+    const fileBlood = $event.target.files[0];
     this.uploadingImg = true;
     let reader = new FileReader();
-    reader.readAsDataURL($event.target.files[0]);
+    reader.readAsBinaryString(fileBlood);
     reader.onload = (_event) => {
-      let imageBase64: any = reader.result
+      let imageBase64: any = `data:${fileBlood.type};base64,${btoa(reader.result as string)}`
       const fileList: FileList = $event.target.files;
       //Extraigo la extension del arhivo que subio
       this.extn = fileList[0].name.split(".").pop();
@@ -1128,14 +1129,20 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
           //NEW SERVICE TO CONVERT IMG//PDF FILES
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) => {
-              this.uploadingImg = false;
-              imageBase64 = '';
-              this.imageUrl = res.secure_url;
-              this.SendOption(2, 0, res.url);
-              this.imageUploaded = true;
-
-            })
+            this._Cloudinary.upload_images(imageBase64, NameCloud)
+              .then((url) => {
+                imageBase64 = '';
+                this.uploadingImg = false;
+                this.imageUrl = url;
+                // this.imageUrl = res.url;
+                this.SendOption(2, 0, url);
+                this.imageUploaded = true;
+              })
+              .catch((err) => {
+                console.error(err);
+                this.countErrorUploadImage(imageBase64, NameCloud)
+                this.uploadingImg = false;
+              })
 
           } catch (error) {
             console.error(error);
@@ -1238,14 +1245,18 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           //NEW SERVICE TO CONVERT IMG//PDF FILES
 
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud).subscribe((res: any) => {
-              this.uploadingRetentionImg = false;
-              imageBase64 = '';
-              this.retentionImageUrl = res.secure_url;
-              this.SendOption(2, 0, res.url);
-              this.retentionimageUploaded = true;
-
-            })
+            this._Cloudinary.upload_images(imageBase64, NameCloud)
+              .then((url) => {
+                imageBase64 = '';
+                this.uploadingRetentionImg = false;
+                this.retentionImageUrl = url;
+                this.SendOption(2, 0, url);
+                this.retentionimageUploaded = true;
+              })
+              .catch((err) => {
+                console.error(err);
+                this.countErrorUploadImage(imageBase64, NameCloud);
+              })
 
           } catch (error) {
             console.error(error);
