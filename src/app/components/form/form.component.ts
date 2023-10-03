@@ -309,7 +309,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       typeCuenta: ['', [Validators.required]],
       Ncard: ['', [Validators.required, Validators.maxLength(18)]],
-      Clavetlfonica: ['', [Validators.required, Validators.maxLength(4)]],
+      Clavetlfonica: [''],
       fvncmtoMes: ['', [Validators.required]],
       fvncmtoAno: ['', [Validators.required]],
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
@@ -563,8 +563,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.DebitoCredito.get('typeCuenta')?.setValue('Corriente');
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);//Validators.required, //this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.maxLength(8)]);
-      this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
+      // this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.required, Validators.maxLength(4)]);//Validators.required, //this.DebitoCredito.get('Clavetlfonica')?.setValidators([Validators.maxLength(8)]);
+      // this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([Validators.required]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Otros = true;
@@ -836,6 +836,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   PagoDebito() {
+    console.log("Pase")
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
@@ -845,7 +846,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       vencmto: this.fvncmtoAno?.value + '/' + this.fvncmtoMes?.value,
       cantidadDC: this.cantidadDC?.value,
       c_iDC: this.pref_ciDC?.value + this.c_iDC?.value,
-      Clavetlfonica: this.Clavetlfonica?.value,
       invoice: "", //El nro de factura se asigna en el backend
       PaymenMethod: this.PaymenMethod,
       Name: this.name?.value,
@@ -853,20 +853,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       idContrato: this.idContrato,
       Cliente: this.idContrato != "" ? true : false
     }
-
-    console.log("DatosUserAgent");
-    console.log(DatosUserAgent);
     //Si es Debito debo autoriza el pago en caso contrario no debo hacerlo
     if (!this.Creditoboolaean) {
       try {
         this.alertFindDniMercantil('Autorizando su pago', 'Por favor espere...');
         //Primero debo autorizar el pago
-        this._ApiMercantil.GetAuthTDD(DatosUserAgent)
+        this._ApiMercantil.GetAuthTDDv2(DatosUserAgent)
           .then((resp: any) => {
             if (resp.hasOwnProperty('error_list')) {
               this.invalidForm(`${resp.error_list[0].description}`, '');
             } else if (resp.hasOwnProperty('authentication_info')) {
-              if (resp.authentication_info.trx_status == "approved") {
+                this.PinEnviado = true;
+                this.ReenvioMethod(1, 59);
+                this.ButtonGetAuthDebito(DatosUserAgent);
+             
+              /*if (resp.authentication_info.trx_status == "approved") {
                 //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
                 this._ApiMercantil.CompraTDD(DatosUserAgent)
                   .then((resp: any) => {
@@ -891,7 +892,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   })
               } else {
                 this.invalidForm(`Tu transacción fue rechazada por el banco, valide los datos ingresados`);
-              }
+              }*/
             } else if (resp.hasOwnProperty('status')) {
               this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
             } else {
@@ -920,7 +921,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                 .then((resp) => {
                   if (resp) {
                     this.alertFindDniMercantil('Realizando su pago', 'Por favor espere...');
-                    this._ApiMercantil.CompraTDD(DatosUserAgent)
+                    this._ApiMercantil.CompraTDDv2(DatosUserAgent)
                       .then((resp: any) => {
                         if (resp.hasOwnProperty('error_list')) {
                           this.invalidForm(`${resp.error_list[0].description}`, '');
@@ -955,6 +956,32 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.invalidForm(`Error por favor intente más tarde!`)
       }
     }
+  }
+
+  ConfirmPagoDebito(DatosUserAgent:any):void{
+    DatosUserAgent.Clavetlfonica = this.Clavetlfonica?.value;
+    this._ApiMercantil.CompraTDDv2(DatosUserAgent)
+    .then((resp: any) => {
+      console.log(resp);
+      if (resp.hasOwnProperty('error_list')) {
+        this.invalidForm(`${resp.error_list[0].description}`, '');
+      } else if (resp.hasOwnProperty('transaction_response')) {
+        if (resp.transaction_response.trx_status == "approved") {
+          this.alertexit("Pago realizado exitosamente");
+          this.ReciboPay = true;
+          this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+        } else {
+          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+        }
+      } else if (resp.hasOwnProperty('status')) {
+        this.invalidForm(`${resp.status.description}`);
+      } else {
+        this.invalidForm(`Error intente más tarde!`);
+      }
+    })
+    .catch((error: any) => {
+      console.log(error);
+    })
   }
 
   ReenvioMethod(Minute: number, Seconds: number) {
@@ -2294,6 +2321,42 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
   }
 
+  ButtonGetAuthDebito(DatosUserAgent:any) {
+
+    Swal.fire({
+      title: 'Clave de autorización',
+      text: "Enviado vía sms",
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      showLoaderOnConfirm: true,
+      preConfirm: (authClave) => {
+        if (authClave && authClave.length === 8) {
+          this.DebitoCredito.controls['Clavetlfonica'].setValue(authClave);
+          return authClave
+        } else {
+          ++this.PinError
+          if (this.PinError === 3) {
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000);
+          }
+          return Swal.showValidationMessage(
+            `Longitud de pin es incorrecto deben ser 8 carácteres máximo`
+          )
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.ConfirmPagoDebito(DatosUserAgent);
+      }
+    })
+  }
+
   alertDniAmount(title: string, message: string) {
     Swal.fire({
       title,
@@ -2763,6 +2826,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   AmountIncorrectConfirm(value: string, Metodo: string, type?: string) {
+    console.log("AmountIncorrectConfirm");
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();

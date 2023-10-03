@@ -925,13 +925,13 @@
                 </mat-error>
               </mat-form-field>
 
-              <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
+              <!-- <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Clave telefónica</mat-label>
                 <input type="password" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
                 <mat-error *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
                   El número de tarjeta es requerido
                 </mat-error>
-              </mat-form-field>
+              </mat-form-field> -->
             </div>
           </form>
         </div>
@@ -952,10 +952,10 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <!-- Debito -->
-          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid" class="customized_btn_next btn-width-70"
+          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado" class="customized_btn_next btn-width-70"
             id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            <span *ngIf="!Creditoboolaean">Pagar</span>
+            <span *ngIf="!Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
           <!-- / Fin Debito -->
 
