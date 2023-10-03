@@ -579,8 +579,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
       this.DebitoCredito.get('c_i')?.setValue(this.dni?.value);
       this.DebitoCredito.get('pref_ci')?.setValue('V');
-      this.DebitoCredito.get('Clavetlfonica')?.setValidators([]);
-      this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
+      // this.DebitoCredito.get('Clavetlfonica')?.setValidators([]);
+      // this.DebitoCredito.get('Clavetlfonica')?.updateValueAndValidity();
       this.DebitoCredito.get('typeCuenta')?.setValidators([]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Creditoboolaean = !this.Creditoboolaean;
@@ -960,6 +960,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   ConfirmPagoDebito(DatosUserAgent:any):void{
     DatosUserAgent.Clavetlfonica = this.Clavetlfonica?.value;
+    this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.CompraTDDv2(DatosUserAgent)
     .then((resp: any) => {
       console.log(resp);
@@ -981,6 +982,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
     .catch((error: any) => {
       console.log(error);
+      this.invalidForm(`Error intente más tarde!`);
     })
   }
 
