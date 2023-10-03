@@ -2407,9 +2407,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           case 'this.PagoDebito()':
             this.PagoDebito();
             break;
-            case 'this.PagoDebito()':
-              this.PagoDebito();
-              break;
           default:
             break;
         }
