@@ -1952,7 +1952,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Busco su numeros de comprobantes
               this.registerPayService.getComprobantClient2(dni_)
                 .then((comprobante: any) => {
-
+                  console.log(comprobante);
                   if (comprobante.length > 0) {
 
                     //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
