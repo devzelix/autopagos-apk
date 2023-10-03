@@ -2408,9 +2408,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.PagoDebito();
             break;
           default:
+            eval(NameMetodo);
             break;
         }
-        eval(NameMetodo);
+        
       }
     })
       .catch((error: any) => {
