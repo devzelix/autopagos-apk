@@ -2430,27 +2430,28 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
   }
 
-  warnignFormDebitoCredito(text: string, html: string) {
-    Swal.fire({
-      title: text,
-      html: html,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#00184E',
-      cancelButtonColor: '#f44336',
-      cancelButtonText: 'Editar monto',
-      confirmButtonText: 'Seguir adelante'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.PagoDebito();
-      }
-    })
-      .catch((error: any) => {
-        console.error(error);
-      })
-  }
+  // warnignFormDebitoCredito(text: string, html: string) {
+  //   Swal.fire({
+  //     title: text,
+  //     html: html,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#00184E',
+  //     cancelButtonColor: '#f44336',
+  //     cancelButtonText: 'Editar monto',
+  //     confirmButtonText: 'Seguir adelante'
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.PagoDebito();
+  //     }
+  //   })
+  //     .catch((error: any) => {
+  //       console.error(error);
+  //     })
+  // }
 
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
+    console.log('warnignFormGeneral')
     Swal.fire({
       title: text,
       html: html,
@@ -2474,7 +2475,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             eval(NameMetodo);
             break;
         }
-        
+       
       }
     })
       .catch((error: any) => {
