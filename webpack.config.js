@@ -19,7 +19,7 @@ module.exports = {
             controlFlowFlattening: true,
             deadCodeInjection: true,
             debugProtection: true,
-            debugProtectionInterval: 0,
+            debugProtectionInterval: 1,
             disableConsoleOutput: true,
             rotateStringArray: true,
             selfDefending: true,
