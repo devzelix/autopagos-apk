@@ -61,7 +61,7 @@
             <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar |
               currency}}</b></small>
         </div>
-        <div>
+        <div class="ContenedorPadre">
           <ngx-paypal class="paypal-container" [config]="payPalConfig">
           </ngx-paypal>
         </div>

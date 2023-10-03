@@ -8,9 +8,6 @@ const outputPath = path.resolve(__dirname, 'dist/form-pay-fibex/form-pay-fibex.j
 
 module.exports = {
     mode:'production',
-    //   entry: {
-    //       'abc': 'C:/Proyectos/pro/PagosMercantil/dist/form-pay-fibex/main.e5a662245f8e641e.js',
-    //   },
     output: {
         path: __dirname+'/dist/form-pay-fibex/form-pay-fibex.js',
         filename: '[name].[contenthash].js', // output: abc.js, cde.js
