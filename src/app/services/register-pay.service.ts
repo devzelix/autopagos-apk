@@ -7,6 +7,7 @@ import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
 import { StripeData } from '../interfaces/stripeData';
+import { info } from 'console';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class RegisterPayService {
   private stripeAPI=env.ApiMercantil //Esto luego lo metes en un environment
 
   private URLGRAPH: string = env.urlGraphql;
+  private URLTRASNF: string = env.ApiTransf;
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
   // private URLAPITHOMAS: string = env.urlThomasApi;
   private URLDBFULL: string = env.urlDBFULL;
@@ -152,6 +154,71 @@ export class RegisterPayService {
           reject(error)
         })
 
+      } catch (error) {
+        console.log("Hubo un error");
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
+  registerPayClientv2(infoClient: any) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
+        infoClient.name=infoClient.name.replace(/["]+/g, '');
+        console.log(infoClient);
+        const DataQuery = {
+            Nombre:infoClient.name,
+            Cedula:infoClient.dni,
+            Email:infoClient.email,
+            Motivo:"Pago",
+            Fecha:infoClient.date,
+            Nota:infoClient.note,
+            Imagen:infoClient.img,
+            Banco:infoClient.bank,
+            id_Cuba:infoClient.id_Cuba,
+            Monto:infoClient.amount,
+            IdContrato:infoClient.IdContrato,
+            comprobante:infoClient.voucher,
+            NombreTitular:infoClient.nameTitular || "",
+            CedulaTitula:infoClient.dniTitular || "",
+            EmailTitular:infoClient.emailTitular || "",
+            Tipo:"Pago",
+            BancoEmisor:infoClient.BancoEmisor,
+            ipaddress:infoClient.AddresIp,
+            browser_agent:infoClient.Browser
+        }
+
+        this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
+          console.log("Respuesta del SAE");
+          console.log(Response);
+          resolve(Response)
+        }, (error) => {
+          reject(error)
+        })
+      } catch (error) {
+        console.log("Hubo un error");
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
+  StatusPayAbonado(Abonado: string) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        const DataQuery = {
+          Abonado:Abonado
+        }
+
+        this.http.post(this.URLTRASNF+"StatusPay", DataQuery).subscribe((Response: any) => {
+          console.log("Respuesta del SAE");
+          console.log(Response);
+          resolve(Response)
+        }, (error) => {
+          reject(error)
+        })
       } catch (error) {
         console.log("Hubo un error");
         console.log(error);

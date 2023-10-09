@@ -723,7 +723,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Pagar
     if (x == 30) {
-      console.log("Me estoy subscribiendo");
       this.PagoMetodosHTML2 = MetodoDePago3;
       let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp) => {
         this.TipoPago(6);
@@ -1407,51 +1406,56 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       name: contractInfo?.cliente,
       amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
       date,
-      id_Cuba: this.BancoSelect.id_cuba
+      id_Cuba: this.BancoSelect.id_cuba,
+      Browser: this.TypeNavegador,
+      AddresIp: this.IpAddress.ip,
     }
 
     const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
 
     if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
       DataForRegister.IdContrato = ContratoActual.id_contrato
-      this.registerPayService.registerPayClient(DataForRegister)
+      this.registerPayService.registerPayClientv2(DataForRegister)
         .then((res: any) => {
+          console.log("RESPONDIO registerPayClientv2");
+          console.log(res);
           this.DisableReg = false
           if (res) {
 
             this.sendingPay = false;
-            if (res.data.ReportePago_Falla && res.data.ReportePago_Falla.length > 0) {
+            if (res && res.length > 0) {
               try {
-                res.data.ReportePago_Falla.forEach((Data: any) => {
-                  if (Data.to == "DUPLICADO") {
+                console.log(res);
+               // res.data.forEach((Data: any) => {
+                  if (res[0].to == "DUPLICADO") {
                     this.playDuplicated = true;
                     this.payReported = false;
-                  } else if (Data.to.includes('Error')) {
+                  } else if (res[0].to.includes('Error')) {
                     this.ErrorRegistrando = true;
-                    this.MessageErrorRegistrado = Data.to;
+                    this.MessageErrorRegistrado = res[0].to;
                   } else {
                     this.SendOption(3, 0, true);
                     this.payReported = true;
                     this.playDuplicated = false;
                   }
-                });
+               // });
 
               } catch (error) {
                 this.payReported = true;
               }
 
-              if (this.payReported) {
-                const DataContra = this.AllDataClient.find((DC: any) => DC.idCliente === this.nroContrato?.value)
+             // if (this.payReported) {
+                //const DataContra = this.AllDataClient.find((DC: any) => DC.idCliente === this.nroContrato?.value)
 
-                if (DataContra && DataContra.email) {
+               /* if (DataContra && DataContra.email) {
 
                   if (this.email?.value.toLowerCase() != DataContra.email.toLowerCase()) {
                     const content = `El cliente *${this.listContratos[0].cliente}* con cédula: ${this.dni?.value} y *Nro. Abonado:* ${DataContra.idCliente || this.nroContrato?.value}, ha reportado un pago con un correo distinto al registrado en SAE.\n\n*Correo registrado en SAE:* ${DataContra.email.toLowerCase()}\n\n*Correo al registrar pago:* ${this.email?.value.toLowerCase()}`
                     this.registerPayService.SendWaNotif(content)
                   }
 
-                }
-              }
+                }*/
+            //  }
 
               this.ScrollUp()
               this.Contar = 10;
@@ -2139,7 +2143,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Elimino todos los ceros a la izquierda
     NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+    const INDEX =this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {
     //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
