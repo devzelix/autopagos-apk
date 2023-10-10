@@ -15,7 +15,7 @@
   <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
 
     <!-- FORMAS DE PAGO -->
-    <button *ngIf="AppFibex" class="btn-flotante left" mat-mini-fab matTooltip="Formas de Pago" (click)="openInfoPayDialog()">
+    <button *ngIf="AppFibex" class="btn-flotante left" mat-mini-fab matTooltip="Últimos pagos" (click)="openInfoPayDialog()">
       <mat-icon><span class="material-symbols-outlined">list</span></mat-icon>
     </button>
     <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">

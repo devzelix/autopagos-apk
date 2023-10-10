@@ -1,0 +1,71 @@
+section {
+  padding: 0 20px 20px;
+}
+.header {
+  position: sticky;
+  top: 0;
+  background: white;
+}
+.title {
+  padding: 14px 0 17px;
+  text-align: center;
+  background-color: white;
+}
+table {
+  width: 100%;
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+
+    tr {
+      display: flex;
+      justify-content: space-around;
+      background: #f0f0f0;
+      border-radius: 16px;
+
+      &.table-header {
+        padding: 13px;
+      }
+
+      &.bg-dark {
+        td {
+          background: #85bdca !important;
+        }
+      }
+
+      td {
+        padding: 13px;
+        background: #40b9d4;
+        color: white;
+      }
+    }
+  }
+}
+.btn-close {
+  border-radius: 50%;
+  float: right;
+  margin: 7px;
+  color: black;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+@media only screen and (max-width: 426px) {
+  section {
+    padding: 0;
+
+    .title {
+      font-size: 18px;
+    }
+    table {
+      font-size: 14px;
+
+      td, th {
+        padding: 9px;
+      }
+    }
+  }
+}
