@@ -30,6 +30,7 @@ import { PaymentDialogOptionsComponent } from './components/payment-dialog-optio
 import { PaymenDialogZelleComponent } from './components/paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ReplacePipe } from './pipe/replace.pipe';
 import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component'
+import { InfoPayComponent } from './components/info-pay/info-pay.component';
 
 
 const routes: Routes = [
@@ -62,7 +63,8 @@ const routes: Routes = [
     CoincoinxComponent,
     PaypalComponent,
     StripeComponent,
-    DetallePayComponent
+    DetallePayComponent,
+    InfoPayComponent
   ],
   imports: [
     BrowserModule,
