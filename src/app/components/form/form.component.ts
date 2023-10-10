@@ -3122,7 +3122,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   openInfoPayDialog() {
     const dialog = this.dialogTemplate.open(InfoPayComponent, {
-      panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
+      panelClass: ['custom-size-lg', 'animated', 'fadeInUp']
     })
     dialog.afterClosed().subscribe(result => {
     });

@@ -1,16 +1,20 @@
 <section>
-      <span matColumnDef="Fecha">
-        <th mat-header-cell *matHeaderCellDef> Fecha </th>
-        <td mat-cell *matCellDef="let element"> {{element.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-      </span>
-
-      <span matColumnDef="Comprobante">
-          <th mat-header-cell *matHeaderCellDef> Comprobante </th>
-          <td mat-cell *matCellDef="let element"> {{element.numero_ref}} </td>
-        </span>
-
-      <span matColumnDef="Status">
-        <th mat-header-cell *matHeaderCellDef> Estado Comprobante </th>
-        <td mat-cell *matCellDef="let element"> {{element.status_pd}} </td>
-      </span>
+  <span class="header">
+    <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
+    <h1 class="title">Información de sus últimos pagos</h1>
+  </span>
+  <table>
+    <tbody>
+      <tr class="table-header">
+        <th>Fecha</th>
+        <th>Comprobante</th>
+        <th>Estado</th>
+      </tr>
+       <tr *ngFor="let item of tableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
+         <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
+         <td> {{item.numero_ref}} </td>
+         <td> {{item.status_pd}} </td>
+       </tr>
+    </tbody>
+  </table>
 </section>
