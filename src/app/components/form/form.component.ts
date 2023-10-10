@@ -48,7 +48,7 @@ import { UploadPHPService } from '../../services/UploadPHP.service';
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ResponseMethod } from 'src/app/interfaces/response';
-
+import { InfoPayComponent } from '../info-pay/info-pay.component';
 
 
 
@@ -335,7 +335,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       c_i_Cripto: ['', [Validators.required, Validators.minLength(6)]],
       Pref_ci_Cripto: ['', [Validators.required]]
     });
-    
+
     this.name?.disable();
   }
 
@@ -464,7 +464,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
-    
+
       default:
         if(Bank.hasOwnProperty('Max')){
           this.secondFormFibex.get('BancoEmisor')?.setValue(Bank.Banco)
@@ -473,10 +473,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         }
         break;
     }
-    
+
   }
 
-  //Contraseña Alfanumerica echo por Michel C. 
+  //Contraseña Alfanumerica echo por Michel C.
   NumericReference(): ValidatorFn {
     return (control:AbstractControl) : ValidationErrors | null => {
 
@@ -487,7 +487,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         }
         const hasNumeric = /^[0-9]+$/.test(value);
 
-        const NumericVAlid = hasNumeric 
+        const NumericVAlid = hasNumeric
 
         return !NumericVAlid ? {NumericRefence:true}: null;
     }
@@ -742,7 +742,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.PagoMetodosHTML2 = MetodoDePago2;
         }
       }).catch((err:any)=>{this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;;})
-      
+
     }
     //Pagar
     if (x == 30) {
@@ -946,9 +946,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             if (resp.hasOwnProperty('error_list')) {
               this.invalidForm(`${resp.error_list[0].description}`, '');
             } else if (resp.hasOwnProperty('authentication_info')) {
-              this.PinEnviado = true;
-              this.ReenvioMethod(1, 59);
-              this.ButtonGetAuthDebito(DatosUserAgent);
+                this.PinEnviado = true;
+                this.ReenvioMethod(1, 59);
+                this.ButtonGetAuthDebito(DatosUserAgent);
 
               /*if (resp.authentication_info.trx_status == "approved") {
                 //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
@@ -2352,7 +2352,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  
+
 
   alertFindDni(title: string, message: string) {
     Swal.fire({
@@ -3129,6 +3129,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       // maxHeight: '86vh',
       // minHeight: '36vh',
       // disableClose: false,
+      panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
+    })
+    dialog.afterClosed().subscribe(result => {
+    });
+  }
+
+  openInfoPayDialog() {
+    const dialog = this.dialogTemplate.open(InfoPayComponent, {
       panelClass: ['custom-size-standard', 'animated', 'fadeInUp']
     })
     dialog.afterClosed().subscribe(result => {
