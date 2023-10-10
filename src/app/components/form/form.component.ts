@@ -47,6 +47,7 @@ import { UploadPHPService } from '../../services/UploadPHP.service';
 //Modal
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
+import { ResponseMethod } from 'src/app/interfaces/response';
 
 
 
@@ -198,6 +199,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   private CountCompReport: number = 0;
   public Kiosco: boolean = false;
   public abonado: string = '';
+  public PagoPendiente:boolean = false;
+  public DataPagoPendiente:any="";
+  public LoadingPagoPendiente:boolean = false;
   @Input() state: StepState
   paymentMethod: string = 'standard'
 
@@ -721,11 +725,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   FormaPago(x: number) {
-    console.log("FormaPago");
     this.BackFormaPago = !this.BackFormaPago;
     //Reportar
     if (x == 29) {
-      this.PagoMetodosHTML2 = MetodoDePago2;
+      this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
+      this.registerPayService.StatusPayAbonado(this.abonado)
+      .then((response:any)=>{
+        this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
+        let Response:ResponseMethod = response;
+        if(Response && Response.codigo==1002){
+          //Pago en el lapso de 72 horas
+          this.PagoPendiente=true;
+          this.DataPagoPendiente=JSON.parse(Response.data);
+          this.DataPagoPendiente.Pendiente = this.PagoPendiente;
+        }else{
+          this.PagoMetodosHTML2 = MetodoDePago2;
+        }
+      }).catch((err:any)=>{this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;;})
+      
     }
     //Pagar
     if (x == 30) {
@@ -737,6 +754,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
     if (x == 31) {
+      this.PagoPendiente=false;
       this.PagoMetodosHTML2 = FormasDePago;
     }
   }
@@ -1426,15 +1444,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       DataForRegister.IdContrato = ContratoActual.id_contrato
       this.registerPayService.registerPayClientv2(DataForRegister)
         .then((res: any) => {
-          console.log("RESPONDIO registerPayClientv2");
-          console.log(res);
           this.DisableReg = false
           if (res) {
 
             this.sendingPay = false;
             if (res && res.length > 0) {
               try {
-                console.log(res);
                // res.data.forEach((Data: any) => {
                   if (res[0].to == "DUPLICADO") {
                     this.playDuplicated = true;
@@ -1452,19 +1467,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               } catch (error) {
                 this.payReported = true;
               }
-
-             // if (this.payReported) {
-                //const DataContra = this.AllDataClient.find((DC: any) => DC.idCliente === this.nroContrato?.value)
-
-               /* if (DataContra && DataContra.email) {
-
-                  if (this.email?.value.toLowerCase() != DataContra.email.toLowerCase()) {
-                    const content = `El cliente *${this.listContratos[0].cliente}* con cédula: ${this.dni?.value} y *Nro. Abonado:* ${DataContra.idCliente || this.nroContrato?.value}, ha reportado un pago con un correo distinto al registrado en SAE.\n\n*Correo registrado en SAE:* ${DataContra.email.toLowerCase()}\n\n*Correo al registrar pago:* ${this.email?.value.toLowerCase()}`
-                    this.registerPayService.SendWaNotif(content)
-                  }
-
-                }*/
-            //  }
 
               this.ScrollUp()
               this.Contar = 10;

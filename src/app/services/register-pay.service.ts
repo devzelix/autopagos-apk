@@ -6,6 +6,7 @@ import { environment as env } from '../../environments/environment.prod';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
+import { ResponseMethod } from '../interfaces/response';
 import { StripeData } from '../interfaces/stripeData';
 import { info } from 'console';
 
@@ -208,13 +209,13 @@ export class RegisterPayService {
   StatusPayAbonado(Abonado: string) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
+        console.log("Me llego esto");
+        console.log(Abonado);
         const DataQuery = {
           Abonado:Abonado
         }
 
         this.http.post(this.URLTRASNF+"StatusPay", DataQuery).subscribe((Response: any) => {
-          console.log("Respuesta del SAE");
-          console.log(Response);
           resolve(Response)
         }, (error) => {
           reject(error)
