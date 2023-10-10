@@ -124,7 +124,10 @@
         </div>
 
         <ng-template matStepLabel>Tipo de pago</ng-template>
-        <div class="cardflex">
+        <div class="spinner-pay">
+          <mat-spinner *ngIf="LoadingPagoPendiente"></mat-spinner>
+        </div>
+        <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
             <span [ngSwitch]="option.tipopago">
@@ -150,7 +153,10 @@
             </span>
           </div>
         </div>
-        <button *ngIf="BackFormaPago" class="customized_btn_next width_full" (click)="FormaPago(31)">
+        <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
+          <app-detalle-pay [DataPagoPendiente]="DataPagoPendiente"></app-detalle-pay>
+        </div>
+        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full" (click)="FormaPago(31)">
           REGRESAR
         </button>
       </mat-step>

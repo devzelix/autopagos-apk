@@ -1,0 +1,44 @@
+<div *ngIf="DataPagoPendiente.Pendiente">
+    <label> 
+        <p class="name-client" style="color: rgb(255, 0, 0);">
+            <strong>Pago Pendiente</strong>
+        </p>
+    </label>
+      <div style="margin-left: 2%; margin-right: 2%; margin-bottom: 2%;">
+        <mat-list style="display: grid; align-items: baseline;">
+          <mat-list-item style="margin-bottom: 1%;">
+            <label> <strong>Nro. Referencia:</strong> {{DataPagoPendiente.numero_ref}} </label>
+          </mat-list-item>
+          <mat-list-item style="margin-bottom: 1%;">
+            <label><strong>Fecha de pago:</strong> {{DataPagoPendiente.fecha_reg}}</label>
+          </mat-list-item>
+          <mat-list-item style="margin-bottom: 1%;">
+            <label><strong>Nota:</strong> Este pago reflejado se encuentra en las 72 horas hábiles para que sea procesado.</label>
+          </mat-list-item>
+        </mat-list>
+      </div>
+</div>
+
+<!-- <div *ngIf="DataPagoPendiente.EstatusPagos">
+    <table mat-table [dataSource]="DataPagoPendiente"
+        class="mat-elevation-z8">
+        <ng-container matColumnDef="Fecha">
+          <th mat-header-cell *matHeaderCellDef> Fecha </th>
+          <td mat-cell *matCellDef="let element"> {{element.fecha_reg | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Comprobante">
+            <th mat-header-cell *matHeaderCellDef> Comprobante </th>
+            <td mat-cell *matCellDef="let element"> {{element.numero_ref}} </td>
+          </ng-container>
+
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef> Estado Comprobante </th>
+          <td mat-cell *matCellDef="let element"> {{element.status_pd}} </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+</div> -->
