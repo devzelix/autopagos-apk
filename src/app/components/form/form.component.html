@@ -695,7 +695,7 @@
             <br><br>
           </p>
           <p style="color:red; text-align: center;">
-            <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.
+            <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en elformulario presentado.
             <br><br>
           </p>
         </div>
@@ -824,18 +824,21 @@
 
         <!-- regreso al stepper anteriror de pago movil-->
         <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
-          (click)=" BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
+          (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+          type="button" matStepperPrevious>
           REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
 
         <div *ngIf="BankSelectPagoMovil && ShowalertBankNationals && !ReciboPay" fxLayout="row"
           fxLayoutAlign="center center" class="btn-flex-center">
-          <button class="customized_btn_next btn-width-70" (click)="SelectedPagoC2P({'_value': 'otros'})">
-            REPORTAR PAGO
+          <button class="customized_btn_next btn-width-70" mat-raised-button type="button"
+            (click)="SelectedPagoC2P({'_value': 'otros'})">
+            Llenar formulario
           </button>
           <button class="customized_btn_next btn-width-30"
-            (click)="BankSelectPagoMovil = false; ShowalertBankNationals = false">
+            (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+            type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -856,7 +859,8 @@
             Procesar orden
           </button>
           <button class="customized_btn_next btn-width-30"
-            (click)="BankSelectPagoMovil = true; ShowalertBankNationals = true; ConsultarPagoMovilboolean = false">
+            (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+            type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -868,7 +872,8 @@
             Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button class="customized_btn_next btn-width-30"
-            (click)="ResetFormCD(); ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowalertBankNationals = false; RegistrarPagoMovilboolean = false">
+            (click)="ScrollUp($event); ResetFormCD(); BankSelectPagoMovil = false; ShowalertBankNationals = false"
+            type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
