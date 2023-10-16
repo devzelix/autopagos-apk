@@ -17,7 +17,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPagoMovil } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -154,9 +154,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   enableBtn: Boolean = false
   totalAmount: number = 0;
   PagoMetodosHTML2: any = FormasDePago;
+  MetodosPagoMovil: any = ListBankPagoMovil
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
+  BankSelectPagoMovil: boolean = false //creado por juan para saber si la persona selecciono un pago o no
+  ShowalertBankNationals: boolean = false //creado por juan 
+  ShowOptionPagoMovil: boolean = false //creado por juan
   DebitoCreditoboolean: boolean = false;
   Criptomoneda: boolean = false;
   Otros: boolean = false;
@@ -656,7 +660,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       //Por default selecciono el Pago Móvil para Mercantil
       this.TypeForm = this.PgMovilRegForm;
       this.SelectPagoc2p = "mercantil";
-      this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean;
+      //this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean; //comentado por juan 
+      this.ShowOptionPagoMovil = true
       this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
@@ -886,9 +891,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   SelectedPagoC2P(value: any) {
+    console.log("Value SelectpagoC2P ")
+    console.log(value)
     let Valor = value._value;
     this.SelectPagoc2p = value._value;
     if (Valor == "otros") {
+      this.ShowalertBankNationals = false
       this.ConsultarPagoMovilboolean = true;
       this.RegistrarPagoMovilboolean = false;
       this.TypeForm = this.PgMovilForm;
@@ -896,8 +904,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.PgMovilRegForm.get('amountPm')?.setValue('');
       this.PgMovilForm.get('prec_i')?.setValue('V');
       this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
-      this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
-        `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, '');
+      /* this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
+        `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, ''); */
     } else if (Valor == "mercantil") {
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
@@ -1032,32 +1040,32 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  ConfirmPagoDebito(DatosUserAgent:any):void{
+  ConfirmPagoDebito(DatosUserAgent: any): void {
     DatosUserAgent.Clavetlfonica = this.Clavetlfonica?.value;
     this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...');
     this._ApiMercantil.CompraTDDv2(DatosUserAgent)
-    .then((resp: any) => {
-      console.log(resp);
-      if (resp.hasOwnProperty('error_list')) {
-        this.invalidForm(`${resp.error_list[0].description}`, '');
-      } else if (resp.hasOwnProperty('transaction_response')) {
-        if (resp.transaction_response.trx_status == "approved") {
-          this.alertexit("Pago realizado exitosamente");
-          this.ReciboPay = true;
-          this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+      .then((resp: any) => {
+        console.log(resp);
+        if (resp.hasOwnProperty('error_list')) {
+          this.invalidForm(`${resp.error_list[0].description}`, '');
+        } else if (resp.hasOwnProperty('transaction_response')) {
+          if (resp.transaction_response.trx_status == "approved") {
+            this.alertexit("Pago realizado exitosamente");
+            this.ReciboPay = true;
+            this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+          } else {
+            this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+          }
+        } else if (resp.hasOwnProperty('status')) {
+          this.invalidForm(`${resp.status.description}`);
         } else {
-          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+          this.invalidForm(`Error intente más tarde!`);
         }
-      } else if (resp.hasOwnProperty('status')) {
-        this.invalidForm(`${resp.status.description}`);
-      } else {
+      })
+      .catch((error: any) => {
+        console.log(error);
         this.invalidForm(`Error intente más tarde!`);
-      }
-    })
-    .catch((error: any) => {
-      console.log(error);
-      this.invalidForm(`Error intente más tarde!`);
-    })
+      })
   }
 
   ReenvioMethod(Minute: number, Seconds: number) {
@@ -2397,7 +2405,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
   }
 
-  ButtonGetAuthDebito(DatosUserAgent:any) {
+  ButtonGetAuthDebito(DatosUserAgent: any) {
 
     Swal.fire({
       title: 'Clave de autorización',

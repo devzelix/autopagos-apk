@@ -65,6 +65,17 @@ $app-light-blue2: rgb(74 159 255);
   transition: all 0.5s ease-in-out;
 }
 
+.cardflexPagoMovil {
+  width: 48%;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+  max-width: 1125px;
+  margin: 20px auto;
+  transition: all 0.5s ease-in-out;
+}
+
 .captcha-box {
   margin-bottom: 1rem;
   display: flex;
