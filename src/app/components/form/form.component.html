@@ -590,7 +590,8 @@
       <!-- / Fin de Transferencias -->
 
       <!-- Pago Móvil -->
-      <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">
+      <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">  Version original-->
+      <mat-step *ngIf="ShowOptionPagoMovil" [stepControl]="TypeForm">
         <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
             class="desc-user">
@@ -632,15 +633,46 @@
           </div>
         </div>
 
-        <mat-form-field *ngIf="!ReciboPay" appearance="outline">
+        <!-- Botones lista de bancos pago Movil -->
+        <div class="cardflexPagoMovil" *ngIf="!ReciboPay && !BankSelectPagoMovil">
+          <div *ngFor="let option of MetodosPagoMovil" class="unicard width_full">
+            <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp"
+              (click)="option.opcion === 'otros' ? ShowalertBankNationals = true : SelectedPagoC2P({'_value':option.opcion}); BankSelectPagoMovil = true">
+              <h5 class=" TitlePerson">{{option.tittle}}</h5>
+              <img style="width: 100%;" src="{{option.image}}">
+            </button>
+          </div>
+        </div>
+        <!-- /Botones lista de bancos pago Movil -->
+        <!-- <p>ConsultarPagoMovilboolean {{ConsultarPagoMovilboolean}} <br>
+          RegistrarPagoMovilboolean {{RegistrarPagoMovilboolean}} <br>
+          ReciboPay {{ReciboPay}} <br>
+          BankSelectPagoMovil {{BankSelectPagoMovil}}</p> -->
+        <!-- <mat-form-field *ngIf="!ReciboPay" appearance="outline">
           <mat-label>Banco</mat-label>
           <mat-select [value]=SelectPagoc2p #valor>
             <mat-option (click)="SelectedPagoC2P(valor)" value="mercantil">Mercantil</mat-option>
-            <!-- <mat-option (click)="SelectedPagoC2P('otros')" value="mercantil">Nacional</mat-option> -->
+            <mat-option (click)="SelectedPagoC2P(valor)" value="otros">Nacional</mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
 
-        <form *ngIf="ConsultarPagoMovilboolean && !ReciboPay" [formGroup]="PgMovilForm">
+        <!-- informacion antes de motrar el formulario -->
+        <div *ngIf="ShowalertBankNationals">
+          <h3 style="text-align: center;">Debes realizar un Pago Móvil con los datos a continuación:</h3>
+          <p style="text-align: center;">
+            <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
+            <strong>Banco:</strong> Mercantil(0105)
+            <br><br>
+          </p>
+          <p style="color:red; text-align: center;">
+            <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en elformulario presentado.
+            <br><br>
+          </p>
+        </div>
+        <!-- /informacion antes de motrar el formulario -->
+
+        <form *ngIf="ConsultarPagoMovilboolean && BankSelectPagoMovil && !ShowalertBankNationals && !ReciboPay"
+          [formGroup]="PgMovilForm">
           <mat-label>Cédula de identidad</mat-label><br>
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="prec_i">
@@ -705,7 +737,8 @@
           </div>
         </form>
 
-        <form *ngIf="RegistrarPagoMovilboolean && !ReciboPay" [formGroup]="PgMovilRegForm">
+        <form *ngIf="RegistrarPagoMovilboolean && BankSelectPagoMovil && !ShowalertBankNationals && !ReciboPay"
+          [formGroup]="PgMovilRegForm">
           <mat-label>Cédula de identidad</mat-label><br>
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="pref_ci">
@@ -758,6 +791,28 @@
           <app-table-receipt [amountPm]="amountPm" [cantidad]="cantidad"></app-table-receipt>
         </div>
 
+
+        <!-- regreso al stepper anteriror de pago movil-->
+        <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
+          (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+          type="button" matStepperPrevious>
+          REGRESAR
+        </button>
+        <!-- /regreso al stepper anteriror de pago movil -->
+
+        <div *ngIf="BankSelectPagoMovil && ShowalertBankNationals && !ReciboPay" fxLayout="row"
+          fxLayoutAlign="center center" class="btn-flex-center">
+          <button class="customized_btn_next btn-width-70" mat-raised-button type="button"
+            (click)="SelectedPagoC2P({'_value': 'otros'})">
+            Llenar formulario
+          </button>
+          <button class="customized_btn_next btn-width-30"
+            (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+            type="button" matStepperPrevious>
+            Regresar
+          </button>
+        </div>
+
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
         <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <button class="button-material-back btn-width-30"
@@ -773,8 +828,9 @@
             type="button" (click)="AmountIncorrectConfirm(cantidad?.value,'this.ComprobarPgoMovil()','c2pnacional')">
             Procesar orden
           </button>
-          <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button type="button"
-            matStepperPrevious>
+          <button class="customized_btn_next btn-width-30"
+            (click)="ScrollUp($event); BankSelectPagoMovil = false; ShowalertBankNationals = false" mat-raised-button
+            type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -785,8 +841,9 @@
             type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
             Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
-          <button class="customized_btn_next btn-width-30" (click)="ScrollUp($event); ResetFormCD()" type="button"
-            matStepperPrevious>
+          <button class="customized_btn_next btn-width-30"
+            (click)="ScrollUp($event); ResetFormCD(); BankSelectPagoMovil = false; ShowalertBankNationals = false"
+            type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
@@ -952,8 +1009,8 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <!-- Debito -->
-          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado" class="customized_btn_next btn-width-70"
-            id="PagoDC" type="button"
+          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado"
+            class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             <span *ngIf="!Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
