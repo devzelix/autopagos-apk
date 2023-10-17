@@ -1786,6 +1786,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   searchServicesv2(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
+    //agreago por juan
+    this.BankSelectPagoMovil = false
+    this.ShowalertBankNationals = false
+    this.ShowOptionPagoMovil = false
+    //
+
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
