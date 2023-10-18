@@ -228,6 +228,28 @@ export class RegisterPayService {
     })
   }
 
+  StatusPayAbonadoTeen(Abonado: string) {
+    return new Promise(async (resolve: any, reject: any) => {
+      try {
+        console.log("Me llego esto");
+        console.log(Abonado);
+        const DataQuery = {
+          Abonado:Abonado
+        }
+
+        this.http.post(this.URLTRASNF+"StatusPaysTeen", DataQuery).subscribe((Response: any) => {
+          resolve(Response)
+        }, (error) => {
+          reject(error)
+        })
+      } catch (error) {
+        console.log("Hubo un error");
+        console.log(error);
+        reject(error)
+      }
+    })
+  }
+
   paySubs(payObj: any, dni: any) {
 
     let statusPay: any

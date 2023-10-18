@@ -3,18 +3,24 @@
     <mat-icon class="btn-close" (click)="dismiss()">close</mat-icon>
     <h1 class="title">Información de sus últimos pagos</h1>
   </span>
-  <table>
-    <tbody>
-      <tr class="table-header">
-        <th>Fecha</th>
-        <th>Comprobante</th>
-        <th>Estado</th>
-      </tr>
-       <tr *ngFor="let item of tableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
-         <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-         <td> {{item.numero_ref}} </td>
-         <td> {{item.status_pd}} </td>
-       </tr>
-    </tbody>
-  </table>
+  <span *ngIf="data && data.length>0">
+    <table>
+      <tbody>
+        <tr class="table-header">
+          <th>Fecha</th>
+          <th>Comprobante</th>
+          <th>Estado</th>
+        </tr>
+         <tr *ngFor="let item of data; let i = index" [ngClass]="{'bg-dark':i%2===0}">
+           <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
+           <td> {{item.numero_ref}} </td>
+           <td> {{item.status_pd}} </td>
+         </tr>
+      </tbody>
+    </table>
+  </span>
+  <span *ngIf="data.length == 0">
+    <h3 style="text-align: center;">No tienes pagos para mostrar</h3>
+  </span>
+ 
 </section>

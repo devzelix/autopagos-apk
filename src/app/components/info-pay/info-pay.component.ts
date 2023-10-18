@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-info-pay',
@@ -7,8 +7,9 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./info-pay.component.scss']
 })
 export class InfoPayComponent implements OnInit {
-
-  @Input() tableData: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = [
+  @Inject(MAT_DIALOG_DATA) public dialogData: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []
+  @Input() tableData: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []/*[
+    
     {
       fecha_reg: new Date(),
       numero_ref: 565415656,
@@ -64,14 +65,17 @@ export class InfoPayComponent implements OnInit {
       numero_ref: 565415656,
       status_pd: 'PROCESADO'
     },
-  ]
+  ]*/
 
   constructor(
     private dialogRef: MatDialogRef<InfoPayComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: {fecha_reg:Date,numero_ref:number,status_pd:string}[]
   ) {
   }
 
   ngOnInit(): void {
+    console.log("dialogData");
+    console.log(this.data)
   }
 
   public dismiss = (): void => {
