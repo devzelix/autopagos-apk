@@ -7,7 +7,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./info-pay.component.scss']
 })
 export class InfoPayComponent implements OnInit {
-  @Inject(MAT_DIALOG_DATA) public dialogData: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []
   @Input() tableData: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []/*[
     
     {
