@@ -729,10 +729,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Reportar
     if (x == 29) {
       this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
-      this.registerPayService.StatusPayAbonado(this.abonado)
+      this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
       .then((response:any)=>{
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
         let Response:ResponseMethod = response;
+        console.log(response);
         if(Response && Response.codigo==1002){
           //Pago en el lapso de 72 horas
           this.PagoPendiente=true;
@@ -741,7 +742,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         }else{
           this.PagoMetodosHTML2 = MetodoDePago2;
         }
-      }).catch((err:any)=>{this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;;})
+      }).catch((err:any)=>{ console.log(err);this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;})
 
     }
     //Pagar
@@ -1560,7 +1561,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     return this.nroContrato?.value.length === 0;
   }
 
-  searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
+  /*searchServices(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
     this.possibleWithholdingAgent = false
     this.selectedRetentionOption = null
     let dni_: string = '';
@@ -1586,7 +1587,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         }
       })
       //Busco por su Cédula
-      this.SearchDataClient(dni_)
+      //this.SearchDataClient(dni_)
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
@@ -1660,7 +1661,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.cambio_act = Number(this.tasaCambio)
             }
 
-            /* EMITIR TASA DEL DÍA */
+            // EMITIR TASA DEL DÍA 
             if (this.registerPayService.linkedToContractProcess != 'approved') {
               this.tasaService.tasa.next(this.cambio_act.toString());
               this.tasaCambio = this.cambio_act.toString();
@@ -1704,7 +1705,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             }
 
 
-            /*Esto se hacer por si el usuario preciomente selecciona un banco */
+            //Esto se hacer por si el usuario preciomente selecciona un banco 
             if (this.BancoNacional(this.banco)) {
               if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
@@ -1789,7 +1790,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.cambio_act = parseFloat(this.tasaCambio)
             this.AppFibex = true
 
-            /*Esto se hacer por si el usuario preciomente selecciona un banco */
+            //Esto se hacer por si el usuario preciomente selecciona un banco 
             if (this.BancoNacional(this.banco)) {
               if (!Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
                 // this.registerPayService.amountCustomerContract
@@ -1803,7 +1804,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                 this.lastAmount = '0';
               }
             } else {
-              //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
               this.lastAmount = parseFloat(this.registerPayService.amountCustomerContract).toFixed(2);
               this.saldoUSD = (parseFloat(this.registerPayService.amountCustomerContract) / this.cambio_act).toFixed(2);
               this.saldoBs = (parseFloat(this.registerPayService.amountCustomerContract)).toFixed(2);
@@ -1847,7 +1847,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
 
-  }
+  }*/
 
   searchServicesv2(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
     //agreago por juan
@@ -1886,7 +1886,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       })
 
       //Busco por su Cédula
-      this.SearchDataClient(dni_)
+      //this.SearchDataClient(dni_)
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
@@ -1928,6 +1928,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
                   //! to validate franchise
+                  this.abonado = this.listContratos[0].contrato
                   if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
                   this.AppFibex = true;
@@ -2140,7 +2141,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     return ContratosAccept.includes(Status);
   }
 
-  SearchDataClient(Cedula: any) {
+  /*SearchDataClient(Cedula: any) {
     try {
 
       this.registerPayService.GetDataClient(Cedula).then((Res: any) => {
@@ -2154,7 +2155,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     } catch (error) {
       console.error(error)
     }
-  }
+  }*/
 
   ValidateLastReferencia(NroRef: any) {
     //Elimino todos los ceros a la izquierda
@@ -3136,11 +3137,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   openInfoPayDialog() {
-    const dialog = this.dialogTemplate.open(InfoPayComponent, {
-      panelClass: ['custom-size-lg', 'animated', 'fadeInUp']
-    })
-    dialog.afterClosed().subscribe(result => {
-    });
+    console.log(this.nroContrato?.value);
+    this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
+    .then((response:any)=>{
+      const dialog = this.dialogTemplate.open(InfoPayComponent, {
+        panelClass: ['custom-size-lg', 'animated', 'fadeInUp'],
+        data: response.data.length>0 ? JSON.parse(response.data):[]
+      })
+      dialog.afterClosed().subscribe(result => {
+      });
+    }).catch((err:any)=>console.error(err));
+    
   }
 
   openDialogZelle() {
