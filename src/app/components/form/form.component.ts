@@ -551,6 +551,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
     this.RegistrarPagoMovilboolean = false;
+    this.ShowOptionPagoMovil = false;
     this.DebitoCreditoboolean = false;
     this.Debitoboolean = false;
     this.Creditoboolaean = false;
