@@ -159,7 +159,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
   BankSelectPagoMovil: boolean = false //creado por juan para saber si la persona selecciono un pago o no
-  ShowalertBankNationals: boolean = false //creado por juan 
+  ShowalertBankNationals: boolean = false //creado por juan
   ShowOptionPagoMovil: boolean = false //creado por juan
   DebitoCreditoboolean: boolean = false;
   Criptomoneda: boolean = false;
@@ -204,6 +204,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public LoadingPagoPendiente:boolean = false;
   @Input() state: StepState
   paymentMethod: string = 'standard'
+  public showStateTable: boolean = false;
+  public stateTableData: {fecha_reg:Date,numero_ref:number,status_pd:string}[];
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -660,7 +662,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       //Por default selecciono el Pago Móvil para Mercantil
       this.TypeForm = this.PgMovilRegForm;
       this.SelectPagoc2p = "mercantil";
-      //this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean; //comentado por juan 
+      //this.RegistrarPagoMovilboolean = !this.RegistrarPagoMovilboolean; //comentado por juan
       this.ShowOptionPagoMovil = true
       this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
@@ -1660,7 +1662,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.cambio_act = Number(this.tasaCambio)
             }
 
-            // EMITIR TASA DEL DÍA 
+            // EMITIR TASA DEL DÍA
             if (this.registerPayService.linkedToContractProcess != 'approved') {
               this.tasaService.tasa.next(this.cambio_act.toString());
               this.tasaCambio = this.cambio_act.toString();
@@ -1704,7 +1706,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             }
 
 
-            //Esto se hacer por si el usuario preciomente selecciona un banco 
+            //Esto se hacer por si el usuario preciomente selecciona un banco
             if (this.BancoNacional(this.banco)) {
               if (!Number.isNaN(parseFloat(this.listContratos[0].saldo)) || !Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
 
@@ -1789,7 +1791,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.cambio_act = parseFloat(this.tasaCambio)
             this.AppFibex = true
 
-            //Esto se hacer por si el usuario preciomente selecciona un banco 
+            //Esto se hacer por si el usuario preciomente selecciona un banco
             if (this.BancoNacional(this.banco)) {
               if (!Number.isNaN(parseFloat(this.registerPayService.amountCustomerContract))) {
                 // this.registerPayService.amountCustomerContract
@@ -3146,7 +3148,78 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       dialog.afterClosed().subscribe(result => {
       });
     }).catch((err:any)=>console.error(err));
-    
+  }
+
+  public openInfoPay(): void {
+    try {
+      console.log('openInfoPay')
+      this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
+      .then((response:any) => {
+        console.log('response', response)
+        this.showStateTable = true;
+        this.stateTableData = response.data.length>0 ? JSON.parse(response.data):[]
+        // this.stateTableData = [
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'REGISTRADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'RECHAZADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'RECHAZADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        //   {
+        //     fecha_reg: new Date(),
+        //     numero_ref: 565415656,
+        //     status_pd: 'PROCESADO'
+        //   },
+        // ]
+        console.log('this.stateTableData', this.stateTableData)
+      })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   openDialogZelle() {
