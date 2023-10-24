@@ -206,6 +206,21 @@ export class RegisterPayService {
     })
   }
 
+  ReferenciaMes(Referencia:any){
+    return new Promise(async (resolve: any, reject: any) => {
+      let DataQuery= {
+        "Referencia":Referencia
+      }
+      this.http.post(this.URLTRASNF+"SeaRefMs", DataQuery).subscribe((Response: any) => {
+        console.log("Repondio");
+        console.log(Response);
+        resolve(Response)
+      }, (error) => {
+        reject(error)
+      })
+    })
+  }
+
   StatusPayAbonado(Abonado: string) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
