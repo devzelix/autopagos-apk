@@ -31,6 +31,7 @@ import { PaymenDialogZelleComponent } from './components/paymen-dialog-zelle/pay
 import { ReplacePipe } from './pipe/replace.pipe';
 import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component'
 import { InfoPayComponent } from './components/info-pay/info-pay.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 
 const routes: Routes = [
@@ -77,6 +78,7 @@ const routes: Routes = [
     NgxStripeModule.forRoot(environment.TokenStripe),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
+    QRCodeModule,
     NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language
