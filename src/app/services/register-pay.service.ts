@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { environment as env } from '../../environments/environment.prod';
+import { environment as env } from '../../environments/environment';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
