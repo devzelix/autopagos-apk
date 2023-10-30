@@ -69,12 +69,18 @@
 
           <!-- En caso de tener dos o más abonados -->
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
-          <div *ngIf="listContratos.length>1" class="grid-cards animated fadeInUp">
+          <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards animated fadeInUp">
             <button *ngFor="let contrato of listContratos" class="grid-cards-item"
               (click)="contractSelected(contrato,true)">
               <h3>
                 {{contrato.contrato}}
               </h3>
+              <p *ngIf="contrato.sector">
+                {{contrato.sector}}
+              </p>
               <p>
                 {{contrato.status_contrato}}
               </p>

@@ -221,6 +221,21 @@ export class RegisterPayService {
     })
   }
 
+  AbonadoSearchSector(abonado:any){
+    return new Promise(async (resolve: any, reject: any) => {
+      let DataQuery= {
+        "abonado":abonado
+      }
+      this.http.post(this.URLTRASNF+"SearchSector", DataQuery).subscribe((Response: any) => {
+        console.log("Repondio");
+        console.log(Response);
+        resolve(Response)
+      }, (error) => {
+        reject(error)
+      })
+    })
+  }
+
   StatusPayAbonado(Abonado: string) {
     return new Promise(async (resolve: any, reject: any) => {
       try {

@@ -147,6 +147,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] | any = [];
   public BancoDefault: string = "Mercantil"
+  public LoadingLengthAbonado: boolean = false;
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
   ListService: any = []
@@ -1961,19 +1962,23 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (this.listContratos.length == 0) {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
+                return;
               }
 
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
+                  
                   //! to validate franchise
                   this.abonado = this.listContratos[0].contrato
                   if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
-                  this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
+                  //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
                   this.AppFibex = true;
                   setTimeout(() => {
                     this.NextMatStepper();
                   }, 300);
+                }else{
+                  this.SearchSectorAbonado();
                 }
               }
             } else {
@@ -2176,6 +2181,39 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.AppFibex = !this.AppFibex
   }
 
+  SearchSectorAbonado(){
+
+    this.LoadingLengthAbonado= true;
+    let Value:any= "";
+    this.listContratos.forEach((element:any,index:number) => {
+        Object.entries(element).forEach(([key,value])=>{
+            if(key =="contrato" && index < this.listContratos.length-1){
+                Value +=`'${value}',`;
+            }else if(key =="contrato"){
+                Value+=`'${value}'`
+            }
+        })
+    })
+
+    this.registerPayService.AbonadoSearchSector(Value)
+    .then((resp:any)=>{
+      this.LoadingLengthAbonado= false;
+      if(resp && resp.codigo == 1010){  
+        let SectorAbonado: any[] = JSON.parse(resp.data);
+        SectorAbonado.forEach((element:any) => {
+          let index =this.listContratos.findIndex((data:any)=>data.contrato==element.nro_contrato)
+          if(index != -1){
+            this.listContratos[index].sector = element.sector;
+          }
+        });
+      }
+    })
+    .catch((error:any)=>{
+      this.LoadingLengthAbonado= false;
+      console.error(error);
+    })
+  }
+
   ValidStatusContrato(Status: string) {
     var ContratosAccept = ['ACTIVO', 'POR CORTAR', 'POR INSTALAR', 'CORTADO', 'SUSPENDIDO'];
     return ContratosAccept.includes(Status);
@@ -2332,7 +2370,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.verifySaldo(contrato.saldo);
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
-    this.DataPagoMovilPublic.length>3 ? this.DataPagoMovilPublic.pop() : this.DataPagoMovilPublic.push(this.saldoBs)
+    //this.DataPagoMovilPublic.length>3 ? this.DataPagoMovilPublic.pop() : this.DataPagoMovilPublic.push(this.saldoBs)
     this.idContrato = contrato.id_contrato;
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.nroContrato?.setValue(contrato.contrato);
