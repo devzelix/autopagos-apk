@@ -6,5 +6,6 @@ export interface Contratos {
     monto_pend_conciliar: number, 
     subscription: string, 
     franquicia: string,
-    status_contrato: string
+    status_contrato: string,
+    sector?:string
 }
