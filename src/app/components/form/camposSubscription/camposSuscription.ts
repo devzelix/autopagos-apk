@@ -130,7 +130,7 @@ export let DataSlide = [
   }
 ]
 
-export let DatosPagoMovil = ['584129637516, 308182516, 0105,']
+export let DatosPagoMovil = ['584129637516, 308182516, 0105']
 
 export let MetodoDePago2 = [
   {
