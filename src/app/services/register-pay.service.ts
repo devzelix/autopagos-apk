@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { environment as env } from '../../environments/environment.prod';
+import { environment as env } from '../../environments/environment';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
@@ -203,6 +203,36 @@ export class RegisterPayService {
         console.log(error);
         reject(error)
       }
+    })
+  }
+
+  ReferenciaMes(Referencia:any){
+    return new Promise(async (resolve: any, reject: any) => {
+      let DataQuery= {
+        "Referencia":Referencia
+      }
+      this.http.post(this.URLTRASNF+"SeaRefMs", DataQuery).subscribe((Response: any) => {
+        console.log("Repondio");
+        console.log(Response);
+        resolve(Response)
+      }, (error) => {
+        reject(error)
+      })
+    })
+  }
+
+  AbonadoSearchSector(abonado:any){
+    return new Promise(async (resolve: any, reject: any) => {
+      let DataQuery= {
+        "abonado":abonado
+      }
+      this.http.post(this.URLTRASNF+"SearchSector", DataQuery).subscribe((Response: any) => {
+        console.log("Repondio");
+        console.log(Response);
+        resolve(Response)
+      }, (error) => {
+        reject(error)
+      })
     })
   }
 

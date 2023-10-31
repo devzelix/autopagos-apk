@@ -105,6 +105,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public ValidRetentionImgExtension: boolean = true;
   public possibleWithholdingAgent: boolean = false
   public selectedRetentionOption: number | null
+  public DataPagoMovilPublic: any =DatosPagoMovil;
 
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
@@ -146,6 +147,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] | any = [];
   public BancoDefault: string = "Mercantil"
+  public LoadingLengthAbonado: boolean = false;
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
   ListService: any = []
@@ -202,6 +204,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public PagoPendiente:boolean = false;
   public DataPagoPendiente:any="";
   public LoadingPagoPendiente:boolean = false;
+  public LoadingCheckReferencia: boolean = false;
   @Input() state: StepState
   paymentMethod: string = 'standard'
   public showStateTable: boolean = false;
@@ -729,21 +732,30 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.BackFormaPago = !this.BackFormaPago;
     //Reportar
     if (x == 29) {
-      this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
-      this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
-      .then((response:any)=>{
+      
+      console.log("SaldoUSD")
+      console.log(this.saldoUSD);
+      
+      if(Number(this.saldoUSD) < 0){
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
-        let Response:ResponseMethod = response;
-        console.log(response);
-        if(Response && Response.codigo==1002){
-          //Pago en el lapso de 72 horas
-          this.PagoPendiente=true;
-          this.DataPagoPendiente=JSON.parse(Response.data);
-          this.DataPagoPendiente.Pendiente = this.PagoPendiente;
-        }else{
-          this.PagoMetodosHTML2 = MetodoDePago2;
-        }
-      }).catch((err:any)=>{ console.log(err);this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;})
+        this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
+        .then((response:any)=>{
+          this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
+          let Response:ResponseMethod = response;
+          console.log(response);
+          if(Response && Response.codigo==1002){
+            //Pago en el lapso de 72 horas
+            this.PagoPendiente=true;
+            this.DataPagoPendiente=JSON.parse(Response.data);
+            this.DataPagoPendiente.Pendiente = this.PagoPendiente;
+          }else{
+            this.PagoMetodosHTML2 = MetodoDePago2;
+          }
+        }).catch((err:any)=>{ console.log(err);this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;})
+      }else{
+        this.PagoMetodosHTML2 = MetodoDePago2;
+      }
+      
 
     }
     //Pagar
@@ -1272,11 +1284,38 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   VerifyRefencia(NroRef?: any) {
     try {
-      if (NroRef || this.voucher?.value) {
+      this.LoadingCheckReferencia = true
+      this.registerPayService.ReferenciaMes(NroRef)
+      .then((response:any)=>{
+        this.LoadingCheckReferencia = false
+        if(response && response.codigo === 1000){
+          this.secondFormFibex = this.fb.group({
+            voucher: ['', [Validators.required]],
+          });
+
+          this.ExitRef = false
+
+          this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+        }else{
+          this.voucher?.setValue(NroRef);
+          this.NextMatStepper()
+        }
+      })
+      .catch((error:any)=>{
+        this.LoadingCheckReferencia = false
+        this.secondFormFibex = this.fb.group({
+          voucher: ['', [Validators.required]],
+        });
+
+        this.ExitRef = false
+
+        this.invalidForm('Error al intentar validar su referencia, por favor intente más tarde.');
+      });
+      /*if (NroRef || this.voucher?.value) {
         // console.log("Pase1")
         this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
-          // console.log(ResDeposito)
-          // if (ResDeposito == undefined)   this.NextMatStepper()   // temporal porque esta fallando Jhonattan
+          console.log(ResDeposito)
+          if (ResDeposito == undefined)   this.NextMatStepper()   // temporal porque esta fallando Jhonattan
 
           if ((ResDeposito && ResDeposito.success === "true") || ResDeposito.success === true) {
 
@@ -1296,7 +1335,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
       } else {
         this.ExitRef = false
-      }
+      }*/
 
     } catch (error) {
       console.error(error)
@@ -1923,19 +1962,23 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               if (this.listContratos.length == 0) {
                 this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
                 this.lastDni = "";
+                return;
               }
 
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
+                  
                   //! to validate franchise
                   this.abonado = this.listContratos[0].contrato
                   if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
-
+                  //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
                   this.AppFibex = true;
                   setTimeout(() => {
                     this.NextMatStepper();
                   }, 300);
+                }else{
+                  this.SearchSectorAbonado();
                 }
               }
             } else {
@@ -2032,6 +2075,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
             localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
             localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
+            
 
             if (this.listContratos.length === 1) {
               this.listContratos.find((cliente) => {
@@ -2137,26 +2181,43 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.AppFibex = !this.AppFibex
   }
 
+  SearchSectorAbonado(){
+
+    this.LoadingLengthAbonado= true;
+    let Value:any= "";
+    this.listContratos.forEach((element:any,index:number) => {
+        Object.entries(element).forEach(([key,value])=>{
+            if(key =="contrato" && index < this.listContratos.length-1){
+                Value +=`'${value}',`;
+            }else if(key =="contrato"){
+                Value+=`'${value}'`
+            }
+        })
+    })
+
+    this.registerPayService.AbonadoSearchSector(Value)
+    .then((resp:any)=>{
+      this.LoadingLengthAbonado= false;
+      if(resp && resp.codigo == 1010){  
+        let SectorAbonado: any[] = JSON.parse(resp.data);
+        SectorAbonado.forEach((element:any) => {
+          let index =this.listContratos.findIndex((data:any)=>data.contrato==element.nro_contrato)
+          if(index != -1){
+            this.listContratos[index].sector = element.sector;
+          }
+        });
+      }
+    })
+    .catch((error:any)=>{
+      this.LoadingLengthAbonado= false;
+      console.error(error);
+    })
+  }
+
   ValidStatusContrato(Status: string) {
     var ContratosAccept = ['ACTIVO', 'POR CORTAR', 'POR INSTALAR', 'CORTADO', 'SUSPENDIDO'];
     return ContratosAccept.includes(Status);
   }
-
-  /*SearchDataClient(Cedula: any) {
-    try {
-
-      this.registerPayService.GetDataClient(Cedula).then((Res: any) => {
-        if (Res) {
-          this.AllDataClient = Res
-          this.abonado = Res[0].idCliente
-          localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
-        }
-      })
-
-    } catch (error) {
-      console.error(error)
-    }
-  }*/
 
   ValidateLastReferencia(NroRef: any) {
     //Elimino todos los ceros a la izquierda
@@ -2300,6 +2361,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
+    this.BackFormaPago= false
+    this.PagoMetodosHTML2 = FormasDePago;
     //! to validate franchise
     if (contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
 
@@ -2307,6 +2370,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.verifySaldo(contrato.saldo);
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
+    //this.DataPagoMovilPublic.length>3 ? this.DataPagoMovilPublic.pop() : this.DataPagoMovilPublic.push(this.saldoBs)
     this.idContrato = contrato.id_contrato;
     this.subscription = parseFloat(contrato.subscription).toFixed(2);
     this.nroContrato?.setValue(contrato.contrato);
@@ -2523,26 +2587,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
   }
 
-  // warnignFormDebitoCredito(text: string, html: string) {
-  //   Swal.fire({
-  //     title: text,
-  //     html: html,
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#00184E',
-  //     cancelButtonColor: '#f44336',
-  //     cancelButtonText: 'Editar monto',
-  //     confirmButtonText: 'Seguir adelante'
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       this.PagoDebito();
-  //     }
-  //   })
-  //     .catch((error: any) => {
-  //       console.error(error);
-  //     })
-  // }
-
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
     console.log('warnignFormGeneral')
     Swal.fire({
@@ -2610,16 +2654,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
   }
 
-  // openDialogCmprobante(dataC: any): void {
-  //   const dialogRef = this.dialog.open(DialogDetailComprobantesComponent, {
-  //     width: '300px',
-  //     data: dataC,
-  //   });
-
-  //   dialogRef.afterClosed().subscribe((dataC2: boolean) => {
-  //   });
-  // }
-
   verifySaldo(saldo: string) {
     if (parseFloat(saldo) <= 0) {
       this.alertDniAmount('Usted no posee deuda pendiente', 'Tiene un saldo a favor de: ' + (parseFloat(saldo) * -1).toFixed(2) + ' REGISTRO PAGO ADELANTADO');
@@ -2643,10 +2677,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
     let saldoUSD = parseFloat(amount).toFixed(2);
-    console.log("SaldoUSD");
-    console.log(saldoUSD);
-    console.log("Amount");
-    console.log(amount);
     if (national) {
       if ((Number(saldoUSD)) <= 0) {
         this.amount?.setValue('');

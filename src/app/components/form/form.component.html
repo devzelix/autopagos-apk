@@ -69,12 +69,18 @@
 
           <!-- En caso de tener dos o más abonados -->
           <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
-          <div *ngIf="listContratos.length>1" class="grid-cards animated fadeInUp">
+          <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
+            <mat-spinner></mat-spinner>
+          </div>
+          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards animated fadeInUp">
             <button *ngFor="let contrato of listContratos" class="grid-cards-item"
               (click)="contractSelected(contrato,true)">
               <h3>
                 {{contrato.contrato}}
               </h3>
+              <p *ngIf="contrato.sector">
+                {{contrato.sector}}
+              </p>
               <p>
                 {{contrato.status_contrato}}
               </p>
@@ -408,7 +414,7 @@
               </table>
 
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+            <div *ngIf="!LoadingCheckReferencia" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
               <button class="button-material-next btn-width-70" (click)="ValidateLastReferencia(inputVouche.value)"
                 mat-raised-button type="button" [disabled]="this.secondFormFibex.invalid">
                 Siguiente
@@ -419,6 +425,9 @@
                 Regresar
               </button>
 
+            </div>
+            <div *ngIf="LoadingCheckReferencia" class="spinner-pay">
+              <mat-spinner></mat-spinner>
             </div>
           </form>
         </mat-step>
@@ -689,11 +698,21 @@
         <!-- informacion antes de motrar el formulario -->
         <div *ngIf="ShowalertBankNationals">
           <h3 style="text-align: center;">Debes realizar un Pago Móvil con los datos a continuación:</h3>
-          <p style="text-align: center;">
-            <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
-            <strong>Banco:</strong> Mercantil(0105)
-            <br><br>
-          </p>
+            <p style="text-align: center;">
+              <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
+              <strong>Banco:</strong> Mercantil(0105) <br />
+              <strong>Monto:</strong> {{saldoBs | negativeAmount}} Bs
+              
+              
+            </p>
+            <div>
+
+            </div>
+            <div class="spinner-pay">
+              <qrcode [qrdata]="DataPagoMovilPublic" [width]="180"
+            [margin]="1" [errorCorrectionLevel]="'M'"></qrcode>
+            </div>
+          <br><br>
           <p style="color:red; text-align: center;">
             <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.
             <br><br>
