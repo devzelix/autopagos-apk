@@ -297,16 +297,41 @@ $app-light-blue2: rgb(74 159 255);
   display: none;
 }
 
+@media only screen and (max-width: 594px) {
+  .header-info-pay {
+    display: flex;
+    flex-direction: column;
+
+    .btn-close {
+      color: black;
+      padding: 10px 10px 0;
+      font-weight: 600;
+      font-size: 30px;
+      position: initial;
+    }
+    .title-info-pay {
+      padding: 0 0 14px;
+    }
+  }
+}
+
 section.info-pay-container {
   padding: 0 20px 20px;
-  width: calc(100% - 20px * 2);
+  /* width: calc(100% - 40px); */
   background: white;
-  height: calc(100vh - 75px);
+  /* height: calc(100vh - 75px); */
+  margin-top: 20px !important;
+  width: 90%;
+  margin: auto;
+  max-width: 835px;
+  @media only screen and (max-width: 566px) {
+    padding: 0 !important;
+  }
 }
 .header-info-pay {
-  position: sticky;
-  top: 0;
-  background: white;
+  // position: sticky;
+  // top: 0;
+  width: 100%;
 }
 .title-info-pay {
   padding: 14px 0 17px;
@@ -346,7 +371,24 @@ table.info-pay-table {
     }
   }
 }
+
+@media only screen and (max-width: 362px) {
+  table.info-pay-table tbody tr {
+    &.table-header {
+      padding: 7px !important;
+    }
+    td {
+      padding: 10px 5px !important;
+    }
+    th {
+      padding: 4px !important;
+    }
+  }
+}
+
 .btn-close {
+  font-weight: 600;
+  font-size: 30px;
   border-radius: 50%;
   // float: right;
   margin: 7px;
@@ -360,7 +402,7 @@ table.info-pay-table {
 
 @media only screen and (max-width: 426px) {
   section {
-    padding: 0;
+    padding: 0 !important;
 
     .title {
       font-size: 18px;
