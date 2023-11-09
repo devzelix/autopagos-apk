@@ -929,6 +929,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.PgMovilForm.get('cantidad')?.setValue('');
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+    }else if (Valor == "100% Banco") {
+      this.TypeForm = this.PgMovilRegForm;
+      this.ConsultarPagoMovilboolean = false;
+      this.RegistrarPagoMovilboolean = true;
+      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+      this.PgMovilForm.get('cantidad')?.setValue('');
+      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
     }
   }
 

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto-js';
+import { environment } from 'src/environments/environment';
 export class SeguridadDatos {
 
     //Encripta la los datos
@@ -49,6 +50,19 @@ export class SeguridadDatos {
                 reject(error);
             }
         })
+    }
+
+
+    EncryptData100x100(Text: any) {
+        console.log(Text)
+        if (typeof Text != "number" && Text != '' && Text != null && Text != undefined) {
+            return CryptoJS.AES.encrypt(Text, environment.SecuryEncrypt100x100Banco, {
+                keySize: 16,
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7,
+            }).toString();
+        }
+        return Text;
     }
 
     DesEncrypDataHash(Key:string,Datos:any){

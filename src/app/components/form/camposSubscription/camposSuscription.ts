@@ -226,6 +226,12 @@ export const ListBankPagoMovil = [
     image: 'assets/images/Logo_OtrosBancos.png',
     omitir: false,
     opcion:'otros'
+  },
+  {
+    tittle: "100% Banco",
+    image: 'assets/images/Logo100x100Banco.jpg',
+    omitir: false,
+    opcion:'100% Banco'
   }
 ]
 
