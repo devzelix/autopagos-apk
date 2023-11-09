@@ -226,9 +226,13 @@ export class RegisterPayService {
       let DataQuery= {
         "abonado":abonado
       }
-      this.http.post(this.URLTRASNF+"SearchSector", DataQuery).subscribe((Response: any) => {
-        console.log("Repondio");
-        console.log(Response);
+
+      const headersData: any = {
+        "TokenAuth": env.TokenCheckDigital,
+        'Authorization': env.authdbCheckDigital
+      }
+
+      this.http.post(this.URLTRASNF+"SearchSector", DataQuery,{headers:headersData}).subscribe((Response: any) => {
         resolve(Response)
       }, (error) => {
         reject(error)

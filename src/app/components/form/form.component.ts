@@ -1931,8 +1931,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
-        console.log("saldo");
-        console.log(res);
 
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
@@ -1943,7 +1941,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
             if (this.registerPayService.linkedToContractProcess != 'approved') {
               //Valido los estatus de los contratos
-              res.forEach((dataContrato: any) => {
+              res.forEach((dataContrato: any,index:number) => {
                 var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
                 if (ValidOno) {
                   this.listContratos.push({
@@ -1958,6 +1956,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   });
                   this.cambio_act = dataContrato.cambio_act;
                 }
+                 if(dataContrato.franquicia.includes('FIBEX ARAGUA')) {this.paymentMethod = 'aragua'}
+                 if(index == res.length-1 && this.paymentMethod != 'aragua') {
+                   this.AppFibex = true;
+                 }
               });
 
               if (this.listContratos.length == 0) {
@@ -2019,7 +2021,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Busco su numeros de comprobantes
               this.registerPayService.getComprobantClient2(dni_)
                 .then((comprobante: any) => {
-                  console.log(comprobante);
                   if (comprobante.length > 0) {
 
                     //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
