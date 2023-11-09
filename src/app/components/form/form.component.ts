@@ -554,6 +554,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   get nameTitular() { return this.secondFormFibex.get('nameTitular'); }
   get dniTitular() { return this.secondFormFibex.get('dniTitular'); }
   get emailTitular() { return this.secondFormFibex.get('emailTitular'); }
+  get BankUser() { return this.secondFormFibex.get('BancoEmisor'); }
 
   get note() { return this.thirdFormFibex.get('note'); }
   get img() { return this.thirdFormFibex.get('img'); }
@@ -1286,7 +1287,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   VerifyRefencia(NroRef?: any) {
     try {
       this.LoadingCheckReferencia = true
-      this.registerPayService.ReferenciaMes(NroRef)
+      let Data ={
+        Referencia: NroRef,
+        Fecha: this.date?.value,
+        Monto: this.amount?.value,
+        BancoEmisor: this.BankUser?.value,
+        BancoReceptor: this.BancoSelect
+      }
+      this.registerPayService.ReferenciaMes(Data)
       .then((response:any)=>{
         this.LoadingCheckReferencia = false
         if(response && response.codigo === 1000){

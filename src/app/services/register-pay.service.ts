@@ -7,7 +7,7 @@ import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
 import { ResponseMethod } from '../interfaces/response';
-import { StripeData } from '../interfaces/stripeData';
+import { SearchReference } from '../interfaces/searchreference';
 import { info } from 'console';
 
 @Injectable({
@@ -206,14 +206,12 @@ export class RegisterPayService {
     })
   }
 
-  ReferenciaMes(Referencia:any){
+  ReferenciaMes(DataReference:SearchReference){
     return new Promise(async (resolve: any, reject: any) => {
-      let DataQuery= {
-        "Referencia":Referencia
-      }
-      this.http.post(this.URLTRASNF+"SeaRefMs", DataQuery).subscribe((Response: any) => {
-        console.log("Repondio");
-        console.log(Response);
+      //console.log(DataReference);
+      this.http.post(this.URLTRASNF+"SeaRefMs", DataReference).subscribe((Response: any) => {
+        // console.log("Repondio");
+        // console.log(Response);
         resolve(Response)
       }, (error) => {
         reject(error)

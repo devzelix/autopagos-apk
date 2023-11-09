@@ -345,7 +345,7 @@
                 <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
                 <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' " >
                   <mat-label>Banco emisor</mat-label>
-                  <mat-select formControlName="bank">
+                  <mat-select formControlName="BancoEmisor">
                     <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
                       {{banka.Banco}}
                     </mat-option>
