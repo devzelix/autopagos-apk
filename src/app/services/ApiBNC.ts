@@ -1,0 +1,79 @@
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from "src/environments/environment";
+import { SeguridadDatos } from './bcryptjs'
+import * as CryptoJS from 'crypto-js';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ApiBNCService {
+
+    GlobalHeader: any = {
+        //origin: 'www.domain.com',
+        accion: '',
+        wt: '',
+    }
+
+    constructor(
+        private http: HttpClient,
+        private _EncrypD: SeguridadDatos,
+    ) { }
+
+    EncryptDatos(Data: any) {
+        return CryptoJS.AES.encrypt(Data, environment.securityEncrt, {
+            keySize: 16,
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7,
+        }).toString();
+    }
+
+    MasterPost(Data: any, Headers: any) {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+                let MsgError: string
+                this.http.post('http://localhost:3000/', Data, { headers: Headers }).subscribe((Res: any) => {
+                    console.log("Res BNC")
+                    if (Res && Res.status === true) {
+                        console.log("Tengo la respuesta true de BNC")
+                        resolve(Res)
+                    } else if (Res && Res.Error) {
+                        console.log("entre en el else de error")
+                        const TipoError: any = Res.Error
+                        console.log(TipoError)
+                        console.log(typeof TipoError)
+                        if (typeof TipoError === 'object') {
+                            for (var key in TipoError) { MsgError = TipoError[key][0] }
+                        } else { console.log(TipoError) }
+                        resolve({ status: false, MsgError, message: Res.message })
+                    }
+                }, (err: any) => {
+                    console.error("err BNC")
+                    console.error(err)
+                    reject(err)
+                })
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+    PayP2P(DatosPay: any) {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+                console.log(DatosPay)
+                console.log(DatosPay)
+                this.GlobalHeader.accion = this.EncryptDatos('MobilePayment')
+                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
+                this.MasterPost(DatosPay, this.GlobalHeader).then((Res: any) => {
+                    resolve(Res)
+                }).catch((err: any) => {
+                    reject(err)
+                })
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+}

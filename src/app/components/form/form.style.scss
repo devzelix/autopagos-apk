@@ -66,8 +66,8 @@ $app-light-blue2: rgb(74 159 255);
 }
 
 .cardflexPagoMovil {
-  width: 48%;
-  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  width: 58%;
+  grid-template-columns: repeat(auto-fit, minmax(min(107px, 100%), 1fr));
   display: grid;
   gap: 20px;
   justify-items: center;

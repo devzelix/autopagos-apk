@@ -18,7 +18,8 @@
     <button *ngIf="AppFibex" class="btn-flotante left" mat-mini-fab matTooltip="Últimos pagos" (click)="openInfoPay()">
       <mat-icon><span class="material-symbols-outlined">list</span></mat-icon>
     </button>
-    <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
+    <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago"
+      (click)="openDialogPM()">
       <mat-icon><span class="material-icons-outlined">help_outline</span></mat-icon>
     </button>
 
@@ -165,7 +166,8 @@
         <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
           <app-detalle-pay [DataPagoPendiente]="DataPagoPendiente"></app-detalle-pay>
         </div>
-        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full" (click)="FormaPago(31)">
+        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full"
+          (click)="FormaPago(31)">
           REGRESAR
         </button>
       </mat-step>
@@ -342,15 +344,15 @@
               </mat-form-field>
 
               <!-- <span *ngIf="BancoNacional(banco)"> -->
-                <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
-                <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' " >
-                  <mat-label>Banco emisor</mat-label>
-                  <mat-select formControlName="bank">
-                    <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
-                      {{banka.Banco}}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
+              <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
+              <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' ">
+                <mat-label>Banco emisor</mat-label>
+                <mat-select formControlName="bank">
+                  <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
+                    {{banka.Banco}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
               <!-- </span> -->
 
 
@@ -366,9 +368,11 @@
                 </mat-error>
                 <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('minlength')">El minimo de número es 4
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe tener letras o carácteres especiales
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe
+                  tener letras o carácteres especiales
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no válido
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no
+                  válido
                 </mat-error>
               </mat-form-field>
 
@@ -695,23 +699,88 @@
           </mat-select>
         </mat-form-field> -->
 
+        <!-- BNC -->
+        <div *ngIf="ShowOptionBNCPagoMovil">
+          <!-- <app-payment-mobile-bnc [saldoBs]="saldoBs" [dni]="dni?.value" [PinEnviado]="PinEnviado" [Minutes]="Minutes" [ConcatenaTimer]="ConcatenaTimer" [Second]="Second" (BackEvents)="GetEventsBNCPagoMovil($event)"></app-payment-mobile-bnc> -->
+          <form [formGroup]="PgMovilBNCForm">
+            <mat-label>Cédula de identidad</mat-label><br>
+            <mat-form-field appearance="outline" class="Prefc_i">
+              <mat-select formControlName="pref_ci">
+                <mat-option value="V">V</mat-option>
+                <mat-option value="E">E</mat-option>
+                <mat-option value="J">J</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+              <mat-error *ngIf="PgMovilBNCForm.get('c_i')?.hasError('minlength')">
+                La cédula debe contener al menos 6 carácteres
+              </mat-error>
+              <mat-error *ngIf="PgMovilBNCForm.get('c_i')?.hasError('required')">
+                La cédula es requerida
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-login__item">
+              <ng-template matStepLabel>Pago Móvil</ng-template>
+              <mat-form-field appearance="outline">
+                <mat-label>Descripción</mat-label>
+                <input matInput formControlName="Desciption" placeholder="Ejemplo: pago servicio">
+                <mat-error *ngIf="PgMovilBNCForm.get('Desciption')?.errors">
+                  <p *ngIf="PgMovilBNCForm.get('Desciption')?.hasError('required')">La descripción es requerida</p>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Cantidad a pagar
+                  <strong><span>En Bolivares</span></strong>
+                </mat-label>
+                <input matInput formControlName="amountPm" required #inputAmount>
+                <mat-error *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
+                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                <mat-error
+                  *ngIf="PgMovilBNCForm.hasError('isNegative') && PgMovilBNCForm.get('amountPm')?.hasError('required')">El
+                  monto no puede ser negativo</mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+
+          <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+            <!-- <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
+              type="button"
+              (click)="AmountIncorrectConfirm(this.amountPm?.value, 'this.ClaveAuthPgoMovilBNC()', 'c2pmercantil')">
+              Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
+            </button> -->
+            <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
+              type="button" (click)="PagoP2PBNC()">
+              Pagar
+            </button>
+            <button class="customized_btn_next btn-width-30"
+              (click)="ResetFormCD();ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowOptionBNCPagoMovil = false; ReciboPay = false;">
+              Regresar
+            </button>
+          </div>
+
+        </div>
+        <!-- /BNC -->
+
         <!-- informacion antes de motrar el formulario -->
         <div *ngIf="ShowalertBankNationals">
           <h3 style="text-align: center;">Debes realizar un Pago Móvil con los datos a continuación:</h3>
-            <p style="text-align: center;">
-              <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
-              <strong>Banco:</strong> Mercantil(0105) <br />
-              <strong>Monto:</strong> {{saldoBs | negativeAmount}} Bs
-              
-              
-            </p>
-            <div>
+          <p style="text-align: center;">
+            <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
+            <strong>Banco:</strong> Mercantil(0105) <br />
+            <strong>Monto:</strong> {{saldoBs | negativeAmount}} Bs
 
-            </div>
-            <div class="spinner-pay">
-              <qrcode [qrdata]="DataPagoMovilPublic" [width]="180"
-            [margin]="1" [errorCorrectionLevel]="'M'"></qrcode>
-            </div>
+
+          </p>
+          <div>
+
+          </div>
+          <div class="spinner-pay">
+            <qrcode [qrdata]="DataPagoMovilPublic" [width]="180" [margin]="1" [errorCorrectionLevel]="'M'"></qrcode>
+          </div>
           <br><br>
           <p style="color:red; text-align: center;">
             <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.
@@ -1082,7 +1151,8 @@
 
 </form>
 
-<section *ngIf="showStateTable" class="info-pay-container form-login__group fancy_shadow form-login__group2 animated fadeIn">
+<section *ngIf="showStateTable"
+  class="info-pay-container form-login__group fancy_shadow form-login__group2 animated fadeIn">
   <span class="header-info-pay">
     <mat-icon class="btn-close" (click)="showStateTable=false">arrow_back</mat-icon>
     <h1 class="title-info-pay">Información de sus últimos pagos</h1>
@@ -1095,27 +1165,33 @@
           <th>Comprobante</th>
           <th>Estado</th>
         </tr>
-         <tr *ngFor="let item of stateTableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
-           <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-           <td> {{item.numero_ref}} </td>
-           <td>
+        <tr *ngFor="let item of stateTableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
+          <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
+          <td> {{item.numero_ref}} </td>
+          <td>
             <div *ngIf="item.status_pd === 'PROCESADO'" class="pay-icon-checked">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
               </svg>
             </div>
-             <div *ngIf="item.status_pd === 'RECHAZADO'" class="pay-icon-rejected">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-              </svg>
-             </div>
-            <div *ngIf="item.status_pd === 'REGISTRADO'" class="pay-icon-registered" >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+            <div *ngIf="item.status_pd === 'RECHAZADO'" class="pay-icon-rejected">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
               </svg>
             </div>
-           </td>
-         </tr>
+            <div *ngIf="item.status_pd === 'REGISTRADO'" class="pay-icon-registered">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                class="bi bi-clock-fill" viewBox="0 0 16 16">
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+              </svg>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   </span>

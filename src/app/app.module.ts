@@ -32,6 +32,7 @@ import { ReplacePipe } from './pipe/replace.pipe';
 import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component'
 import { InfoPayComponent } from './components/info-pay/info-pay.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { PaymentMobileBNCComponent } from './components/BNC/payment-mobile-bnc/payment-mobile-bnc.component';
 
 
 const routes: Routes = [
@@ -65,7 +66,8 @@ const routes: Routes = [
     PaypalComponent,
     StripeComponent,
     DetallePayComponent,
-    InfoPayComponent
+    InfoPayComponent,
+    PaymentMobileBNCComponent
   ],
   imports: [
     BrowserModule,

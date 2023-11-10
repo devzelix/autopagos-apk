@@ -222,10 +222,16 @@ export const ListBankPagoMovil = [
     opcion: 'mercantil'
   },
   {
+    tittle: "BNC",
+    image: 'assets/images/Logo_BNC.png',
+    omitir: false,
+    opcion: 'BNC'
+  },
+  {
     tittle: "Nacional",
     image: 'assets/images/Logo_OtrosBancos.png',
     omitir: false,
-    opcion:'otros'
+    opcion: 'otros'
   }
 ]
 

@@ -39,7 +39,7 @@ import { BankEmisorS } from '../../interfaces/bankList';
 import { TasaService } from '../../services/tasa.service';
 import { DataBankService } from '../../services/data-bank.service';
 import { UploadPHPService } from '../../services/UploadPHP.service';
-
+import { ApiBNCService } from 'src/app/services/ApiBNC';
 
 
 
@@ -85,6 +85,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public fourthFormFibex: UntypedFormGroup;
   public PgMovilForm: FormGroup;
   public PgMovilRegForm: FormGroup;
+  public PgMovilBNCForm: FormGroup;
   public DebitoCredito: FormGroup;
   public TypeForm: FormGroup;
   public CriptomonedaForm: FormGroup;
@@ -105,7 +106,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public ValidRetentionImgExtension: boolean = true;
   public possibleWithholdingAgent: boolean = false
   public selectedRetentionOption: number | null
-  public DataPagoMovilPublic: any =DatosPagoMovil;
+  public DataPagoMovilPublic: any = DatosPagoMovil;
 
   public listContratos: Contratos[] = [];
   public paquetesContratos: { id_contrato: string, paquete: string }[] = [];
@@ -164,6 +165,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ShowalertBankNationals: boolean = false //creado por juan
   ShowOptionPagoMovil: boolean = false //creado por juan
   DebitoCreditoboolean: boolean = false;
+  ShowOptionBNCPagoMovil: boolean = false
   Criptomoneda: boolean = false;
   Otros: boolean = false;
   tipo_pago: any;
@@ -201,14 +203,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   private CountCompReport: number = 0;
   public Kiosco: boolean = false;
   public abonado: string = '';
-  public PagoPendiente:boolean = false;
-  public DataPagoPendiente:any="";
-  public LoadingPagoPendiente:boolean = false;
+  public PagoPendiente: boolean = false;
+  public DataPagoPendiente: any = "";
+  public LoadingPagoPendiente: boolean = false;
   public LoadingCheckReferencia: boolean = false;
   @Input() state: StepState
   paymentMethod: string = 'standard'
   public showStateTable: boolean = false;
-  public stateTableData: {fecha_reg:Date,numero_ref:number,status_pd:string}[];
+  public stateTableData: { fecha_reg: Date, numero_ref: number, status_pd: string }[];
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -232,7 +234,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private _helper: HelperService,
     private cacheService: ClearCacheService,
     public dialogTemplate: MatDialog,
-    public helper: HelperService
+    public helper: HelperService,
+    public _ApiBNC: ApiBNCService
     //private hcaptchaService: NgHcaptchaService
   ) {
     this.cacheService.clear();
@@ -311,6 +314,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       tlfdestin: ['', [Validators.required, Validators.pattern(this.RegexPhone)]],
       auth: [''],
+      amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
+
+    this.PgMovilBNCForm = this.fb.group({
+      pref_ci: ['', [Validators.required]],
+      c_i: ['', [Validators.required, Validators.minLength(6)]],
+      Desciption: ['', [Validators.required, Validators.minLength(4)]],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
         [
@@ -456,24 +470,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  BancoEmisor(Bank:any){
+  BancoEmisor(Bank: any) {
     switch (Bank.Banco) {
       case 'USD BANCO MERCANTIL':
       case 'EUR BANCO MERCANTIL':
-        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(10),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(10), Validators.required, Validators.minLength(4), this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
 
       case 'ZELLE WELL FARGO pagos.zelle@fibextelecom.net':
       case 'USD BANK OF AMERICA TRANSFERENCIA':
-        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14), Validators.required, Validators.minLength(4), this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
 
       default:
-        if(Bank.hasOwnProperty('Max')){
+        if (Bank.hasOwnProperty('Max')) {
           this.secondFormFibex.get('BancoEmisor')?.setValue(Bank.Banco)
-          this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(Bank.Max),Validators.required,Validators.minLength(4),this.NumericReference()]);
+          this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(Bank.Max), Validators.required, Validators.minLength(4), this.NumericReference()]);
           this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         }
         break;
@@ -483,33 +497,33 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   //Contraseña Alfanumerica echo por Michel C.
   NumericReference(): ValidatorFn {
-    return (control:AbstractControl) : ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
 
-        const value = control.value;
+      const value = control.value;
 
-        if (!value) {
-            return null;
-        }
-        const hasNumeric = /^[0-9]+$/.test(value);
+      if (!value) {
+        return null;
+      }
+      const hasNumeric = /^[0-9]+$/.test(value);
 
-        const NumericVAlid = hasNumeric
+      const NumericVAlid = hasNumeric
 
-        return !NumericVAlid ? {NumericRefence:true}: null;
+      return !NumericVAlid ? { NumericRefence: true } : null;
     }
   }
 
   CharacterSpecial(): ValidatorFn {
-    return (control:AbstractControl) : ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
 
-        const value = control.value;
+      const value = control.value;
 
-        if (!value) {
-            return null;
-        }
+      if (!value) {
+        return null;
+      }
 
-        const hasCaracteresSpecial =  /^[\w\-\.]+$/i.test(value);
+      const hasCaracteresSpecial = /^[\w\-\.]+$/i.test(value);
 
-        return !hasCaracteresSpecial ? {CaracterInvalid:true}: null;
+      return !hasCaracteresSpecial ? { CaracterInvalid: true } : null;
     }
   }
 
@@ -572,6 +586,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   get tlfdestin() { return this.PgMovilRegForm.get('tlfdestin'); }
   get auth() { return this.PgMovilRegForm.get('auth'); }
   get amountPm() { return this.PgMovilRegForm.get('amountPm'); }
+  // Pago Movil BNC
+  get pref_ci_bnc() { return this.PgMovilBNCForm.get('pref_ci') }
+  get c_i_bnc() { return this.PgMovilBNCForm.get('c_i') }
+  get Desciption_bnc() { return this.PgMovilBNCForm.get('Desciption') }
+  get amountPm_bnc() { return this.PgMovilBNCForm.get('amountPm') }
   //Debito o Credito
   get ccv() { return this.DebitoCredito.get('ccv'); }
   get typeCuenta() { return this.DebitoCredito.get('typeCuenta'); }
@@ -609,6 +628,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
+    this.ShowOptionPagoMovil = false
     //Modal para pagar Zelle
     if (x == 10) {
       this.openDialogZelle();
@@ -732,30 +752,30 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.BackFormaPago = !this.BackFormaPago;
     //Reportar
     if (x == 29) {
-      
+
       console.log("SaldoUSD")
       console.log(this.saldoUSD);
-      
-      if(Number(this.saldoUSD) < 0){
+
+      if (Number(this.saldoUSD) < 0) {
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
         this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
-        .then((response:any)=>{
-          this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
-          let Response:ResponseMethod = response;
-          console.log(response);
-          if(Response && Response.codigo==1002){
-            //Pago en el lapso de 72 horas
-            this.PagoPendiente=true;
-            this.DataPagoPendiente=JSON.parse(Response.data);
-            this.DataPagoPendiente.Pendiente = this.PagoPendiente;
-          }else{
-            this.PagoMetodosHTML2 = MetodoDePago2;
-          }
-        }).catch((err:any)=>{ console.log(err);this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente;})
-      }else{
+          .then((response: any) => {
+            this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
+            let Response: ResponseMethod = response;
+            console.log(response);
+            if (Response && Response.codigo == 1002) {
+              //Pago en el lapso de 72 horas
+              this.PagoPendiente = true;
+              this.DataPagoPendiente = JSON.parse(Response.data);
+              this.DataPagoPendiente.Pendiente = this.PagoPendiente;
+            } else {
+              this.PagoMetodosHTML2 = MetodoDePago2;
+            }
+          }).catch((err: any) => { console.log(err); this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente; })
+      } else {
         this.PagoMetodosHTML2 = MetodoDePago2;
       }
-      
+
 
     }
     //Pagar
@@ -768,7 +788,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
     if (x == 31) {
-      this.PagoPendiente=false;
+      this.PagoPendiente = false;
       this.PagoMetodosHTML2 = FormasDePago;
     }
   }
@@ -879,7 +899,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   }
 
-  ClaveAuthPgoMovil() {
+  ClaveAuthPgoMovil(Tipo?: string) {
     //Clave de Autorización Pgo Móvil
     let DatosUserAgent = {
       browser_agent: this.TypeNavegador,
@@ -888,48 +908,98 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       destination_mobile_number: this.tlfdestin?.value.toString(),
     }
     this.alertFindDni('Enviando clave de autorización', 'Por favor espere...');
-    this._ApiMercantil.C2PClave(DatosUserAgent)
-      .then((resp: any) => {
-        if (resp.hasOwnProperty('error_list')) {
-          this.invalidForm(`${resp.error_list[0].description}`, '');
-        } else if (resp.hasOwnProperty('transactionScpInfoResponse')) {
-          this.PinEnviado = true;
-          this.ReenvioMethod(1, 59);
-          this.ButtonGetAuthMercantil();
-        } else if (resp.hasOwnProperty('status')) {
-          this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
-        } else {
-          this.invalidForm(`Error intente mas tarde!`);
-        }
-      })
-      .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+    switch (Tipo) {
+      case "BNC":
+        console.log("Se debe llamar el metodo para generar el pin")
+        break;
+      default:
+        this._ApiMercantil.C2PClave(DatosUserAgent)
+          .then((resp: any) => {
+            if (resp.hasOwnProperty('error_list')) {
+              this.invalidForm(`${resp.error_list[0].description}`, '');
+            } else if (resp.hasOwnProperty('transactionScpInfoResponse')) {
+              this.PinEnviado = true;
+              this.ReenvioMethod(1, 59);
+              this.ButtonGetAuthMercantil();
+            } else if (resp.hasOwnProperty('status')) {
+              this.invalidForm(`${resp.status.description}`, 'Contacte a un asesor!');
+            } else {
+              this.invalidForm(`Error intente mas tarde!`);
+            }
+          })
+          .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
+        break;
+    }
   }
 
-  SelectedPagoC2P(value: any) {
+  SelectedPagoC2P(value?: any) {
     console.log("Value SelectpagoC2P ")
     console.log(value)
     let Valor = value._value;
     this.SelectPagoc2p = value._value;
-    if (Valor == "otros") {
-      this.ShowalertBankNationals = false
-      this.ConsultarPagoMovilboolean = true;
-      this.RegistrarPagoMovilboolean = false;
-      this.TypeForm = this.PgMovilForm;
-      this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
-      this.PgMovilRegForm.get('amountPm')?.setValue('');
-      this.PgMovilForm.get('prec_i')?.setValue('V');
-      this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
-      /* this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
-        `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, ''); */
-    } else if (Valor == "mercantil") {
-      this.TypeForm = this.PgMovilRegForm;
-      this.ConsultarPagoMovilboolean = false;
-      this.RegistrarPagoMovilboolean = true;
-      this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
-      this.PgMovilForm.get('cantidad')?.setValue('');
-      this.PgMovilRegForm.get('pref_ci')?.setValue('V');
-      this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+    switch (Valor) {
+      case "otros":
+        this.ShowalertBankNationals = false
+        this.ConsultarPagoMovilboolean = true;
+        this.RegistrarPagoMovilboolean = false;
+        this.TypeForm = this.PgMovilForm;
+        this.PgMovilForm.get('cantidad')?.setValue(this.saldoBs);
+        this.PgMovilRegForm.get('amountPm')?.setValue('');
+        this.PgMovilForm.get('prec_i')?.setValue('V');
+        this.PgMovilForm.get('c_i')?.setValue(this.dni?.value);
+        /* this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
+          `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, ''); */
+        break;
+      case "mercantil":
+        this.TypeForm = this.PgMovilRegForm;
+        this.ConsultarPagoMovilboolean = false;
+        this.RegistrarPagoMovilboolean = true;
+        this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
+        this.PgMovilForm.get('cantidad')?.setValue('');
+        this.PgMovilRegForm.get('pref_ci')?.setValue('V');
+        this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
+        break;
+      case "BNC":
+        this.TypeForm = this.PgMovilRegForm;
+        this.ShowOptionBNCPagoMovil = true
+        this.PgMovilBNCForm.get('amountPm')?.setValue(this.saldoBs);
+        this.PgMovilBNCForm.get('cantidad')?.setValue('');
+        this.PgMovilBNCForm.get('pref_ci')?.setValue('V');
+        this.PgMovilBNCForm.get('c_i')?.setValue(this.dni?.value);
+        break;
     }
+  }
+
+  GetEventsBNCPagoMovil(Dato: any) {
+    console.log(Dato)
+    switch (Dato) {
+      case "BackToList":
+        this.ShowOptionPagoMovil = true
+        this.BankSelectPagoMovil = false
+        this.ShowOptionBNCPagoMovil = false
+        this.ReciboPay = false;
+        break;
+      case "Solicitar Pin":
+        this.AmountIncorrectConfirm(this.amountPm?.value, 'this.ClaveAuthPgoMovilBNC()', 'c2pBNC')
+        break
+    }
+  }
+
+  PagoP2PBNC() {
+    const Datospago = {
+      "Abonado": this.nroContrato?.value,
+      "IdContrato": this.idContrato,
+      "ChildClientID": this.pref_ci?.value + this.c_i_bnc?.value,
+      "Amount": this.amountPm_bnc?.value,
+      "Description": this.Desciption_bnc?.value
+    }
+
+    this._ApiBNC.PayP2P(Datospago).then((ResPay: any) => {
+      if (ResPay && ResPay.status === true) {
+        this.ShowOptionBNCPagoMovil = false
+        this.ReciboPay = true
+      } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+    }).catch(err => console.error(err))
   }
 
   PagoDebito() {
@@ -960,9 +1030,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             if (resp.hasOwnProperty('error_list')) {
               this.invalidForm(`${resp.error_list[0].description}`, '');
             } else if (resp.hasOwnProperty('authentication_info')) {
-                this.PinEnviado = true;
-                this.ReenvioMethod(1, 59);
-                this.ButtonGetAuthDebito(DatosUserAgent);
+              this.PinEnviado = true;
+              this.ReenvioMethod(1, 59);
+              this.ButtonGetAuthDebito(DatosUserAgent);
 
               /*if (resp.authentication_info.trx_status == "approved") {
                 //Luego debo realizar la compra o retiro del dinero solicitado por el cliente
@@ -1286,31 +1356,31 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     try {
       this.LoadingCheckReferencia = true
       this.registerPayService.ReferenciaMes(NroRef)
-      .then((response:any)=>{
-        this.LoadingCheckReferencia = false
-        if(response && response.codigo === 1000){
+        .then((response: any) => {
+          this.LoadingCheckReferencia = false
+          if (response && response.codigo === 1000) {
+            this.secondFormFibex = this.fb.group({
+              voucher: ['', [Validators.required]],
+            });
+
+            this.ExitRef = false
+
+            this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+          } else {
+            this.voucher?.setValue(NroRef);
+            this.NextMatStepper()
+          }
+        })
+        .catch((error: any) => {
+          this.LoadingCheckReferencia = false
           this.secondFormFibex = this.fb.group({
             voucher: ['', [Validators.required]],
           });
 
           this.ExitRef = false
 
-          this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
-        }else{
-          this.voucher?.setValue(NroRef);
-          this.NextMatStepper()
-        }
-      })
-      .catch((error:any)=>{
-        this.LoadingCheckReferencia = false
-        this.secondFormFibex = this.fb.group({
-          voucher: ['', [Validators.required]],
+          this.invalidForm('Error al intentar validar su referencia, por favor intente más tarde.');
         });
-
-        this.ExitRef = false
-
-        this.invalidForm('Error al intentar validar su referencia, por favor intente más tarde.');
-      });
       /*if (NroRef || this.voucher?.value) {
         // console.log("Pase1")
         this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
@@ -1491,19 +1561,19 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.sendingPay = false;
             if (res && res.length > 0) {
               try {
-               // res.data.forEach((Data: any) => {
-                  if (res[0].to == "DUPLICADO") {
-                    this.playDuplicated = true;
-                    this.payReported = false;
-                  } else if (res[0].to.includes('Error')) {
-                    this.ErrorRegistrando = true;
-                    this.MessageErrorRegistrado = res[0].to;
-                  } else {
-                    this.SendOption(3, 0, true);
-                    this.payReported = true;
-                    this.playDuplicated = false;
-                  }
-               // });
+                // res.data.forEach((Data: any) => {
+                if (res[0].to == "DUPLICADO") {
+                  this.playDuplicated = true;
+                  this.payReported = false;
+                } else if (res[0].to.includes('Error')) {
+                  this.ErrorRegistrando = true;
+                  this.MessageErrorRegistrado = res[0].to;
+                } else {
+                  this.SendOption(3, 0, true);
+                  this.payReported = true;
+                  this.playDuplicated = false;
+                }
+                // });
 
               } catch (error) {
                 this.payReported = true;
@@ -1562,6 +1632,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ResetFormCD() {
     this.DebitoCredito.reset();
     this.PgMovilRegForm.reset();
+    this.PgMovilBNCForm.reset();
     //this.firstFormFibex.reset();
     this.PgMovilForm.reset();
     this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
@@ -1968,7 +2039,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
-                  
+
                   //! to validate franchise
                   this.abonado = this.listContratos[0].contrato
                   if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
@@ -1977,7 +2048,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   setTimeout(() => {
                     this.NextMatStepper();
                   }, 300);
-                }else{
+                } else {
                   this.SearchSectorAbonado();
                 }
               }
@@ -2075,7 +2146,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
             localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
             localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
-            
+
 
             if (this.listContratos.length === 1) {
               this.listContratos.find((cliente) => {
@@ -2181,37 +2252,37 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.AppFibex = !this.AppFibex
   }
 
-  SearchSectorAbonado(){
+  SearchSectorAbonado() {
 
-    this.LoadingLengthAbonado= true;
-    let Value:any= "";
-    this.listContratos.forEach((element:any,index:number) => {
-        Object.entries(element).forEach(([key,value])=>{
-            if(key =="contrato" && index < this.listContratos.length-1){
-                Value +=`'${value}',`;
-            }else if(key =="contrato"){
-                Value+=`'${value}'`
-            }
-        })
+    this.LoadingLengthAbonado = true;
+    let Value: any = "";
+    this.listContratos.forEach((element: any, index: number) => {
+      Object.entries(element).forEach(([key, value]) => {
+        if (key == "contrato" && index < this.listContratos.length - 1) {
+          Value += `'${value}',`;
+        } else if (key == "contrato") {
+          Value += `'${value}'`
+        }
+      })
     })
 
     this.registerPayService.AbonadoSearchSector(Value)
-    .then((resp:any)=>{
-      this.LoadingLengthAbonado= false;
-      if(resp && resp.codigo == 1010){  
-        let SectorAbonado: any[] = JSON.parse(resp.data);
-        SectorAbonado.forEach((element:any) => {
-          let index =this.listContratos.findIndex((data:any)=>data.contrato==element.nro_contrato)
-          if(index != -1){
-            this.listContratos[index].sector = element.sector;
-          }
-        });
-      }
-    })
-    .catch((error:any)=>{
-      this.LoadingLengthAbonado= false;
-      console.error(error);
-    })
+      .then((resp: any) => {
+        this.LoadingLengthAbonado = false;
+        if (resp && resp.codigo == 1010) {
+          let SectorAbonado: any[] = JSON.parse(resp.data);
+          SectorAbonado.forEach((element: any) => {
+            let index = this.listContratos.findIndex((data: any) => data.contrato == element.nro_contrato)
+            if (index != -1) {
+              this.listContratos[index].sector = element.sector;
+            }
+          });
+        }
+      })
+      .catch((error: any) => {
+        this.LoadingLengthAbonado = false;
+        console.error(error);
+      })
   }
 
   ValidStatusContrato(Status: string) {
@@ -2223,7 +2294,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Elimino todos los ceros a la izquierda
     NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-    const INDEX =this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {
     //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
@@ -2361,7 +2432,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   contractSelected(contrato: { contrato: string, saldo: string, id_contrato: string, subscription: string, franquicia: string }, ppal?: boolean) {
-    this.BackFormaPago= false
+    this.BackFormaPago = false
     this.PagoMetodosHTML2 = FormasDePago;
     //! to validate franchise
     if (contrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
@@ -2406,7 +2477,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     console.log(bank)
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
-    if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !=='EUR') {
+    if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !== 'EUR') {
       console.log("por aqui")
       if (!Number.isNaN(Math.round(parseFloat(this.lastAmount)))) {
         this.validateIfAmountIsNegativer(this.lastAmount, true);
@@ -2417,8 +2488,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.BancoEmisor(bank)
     }
   }
-
-
 
   alertFindDni(title: string, message: string) {
     Swal.fire({
@@ -2604,6 +2673,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         switch (NameMetodo) {
           case 'this.ClaveAuthPgoMovil()':
             this.ClaveAuthPgoMovil();
+            break;
+          case 'this.ClaveAuthPgoMovilBNC()':
+            this.ClaveAuthPgoMovil('BNC');
             break;
           case 'this.PagoDebito()':
             this.PagoDebito();
@@ -2861,7 +2933,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
   }
-
 
   patchValueAllForm() {
     this.firstFormFibex.patchValue({
@@ -3170,83 +3241,83 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   openInfoPayDialog() {
     console.log(this.nroContrato?.value);
     this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
-    .then((response:any)=>{
-      const dialog = this.dialogTemplate.open(InfoPayComponent, {
-        panelClass: ['custom-size-lg', 'animated', 'fadeInUp'],
-        data: response.data.length>0 ? JSON.parse(response.data):[]
-      })
-      dialog.afterClosed().subscribe(result => {
-      });
-    }).catch((err:any)=>console.error(err));
+      .then((response: any) => {
+        const dialog = this.dialogTemplate.open(InfoPayComponent, {
+          panelClass: ['custom-size-lg', 'animated', 'fadeInUp'],
+          data: response.data.length > 0 ? JSON.parse(response.data) : []
+        })
+        dialog.afterClosed().subscribe(result => {
+        });
+      }).catch((err: any) => console.error(err));
   }
 
   public openInfoPay(): void {
     try {
       console.log('openInfoPay')
       this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
-      .then((response:any) => {
-        console.log('response', response)
-        this.showStateTable = true;
-        this.stateTableData = response.data.length>0 ? JSON.parse(response.data):[]
-        // this.stateTableData = [
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'REGISTRADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'RECHAZADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'RECHAZADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        // ]
-        console.log('this.stateTableData', this.stateTableData)
-      })
+        .then((response: any) => {
+          console.log('response', response)
+          this.showStateTable = true;
+          this.stateTableData = response.data.length > 0 ? JSON.parse(response.data) : []
+          // this.stateTableData = [
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'REGISTRADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'RECHAZADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'RECHAZADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          //   {
+          //     fecha_reg: new Date(),
+          //     numero_ref: 565415656,
+          //     status_pd: 'PROCESADO'
+          //   },
+          // ]
+          console.log('this.stateTableData', this.stateTableData)
+        })
     } catch (error) {
       console.error(error)
     }

@@ -1,0 +1,62 @@
+<div>
+    <form [formGroup]="PgMovilRegForm">
+        <mat-label>Cédula de identidad</mat-label><br>
+        <mat-form-field appearance="outline" class="Prefc_i">
+            <mat-select formControlName="pref_ci">
+                <mat-option value="V">V</mat-option>
+                <mat-option value="E">E</mat-option>
+                <mat-option value="J">J</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+            <mat-error *ngIf="PgMovilRegForm.get('c_i')?.hasError('minlength')">
+                La cédula debe contener al menos 6 carácteres
+            </mat-error>
+            <mat-error *ngIf="PgMovilRegForm.get('c_i')?.hasError('required')">
+                La cédula es requerida
+            </mat-error>
+        </mat-form-field>
+
+        <div class="form-login__item">
+            <ng-template matStepLabel>Pago Móvil</ng-template>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="tlfdestin"
+                    (keyup)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text"
+                    placeholder="Ejemplo: 584121234567">
+                <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
+                    <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
+                    <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo:
+                        584241234567
+                    </p>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Cantidad a pagar
+                    <strong><span>En Bolivares</span></strong>
+                </mat-label>
+                <input matInput formControlName="amountPm" required #inputAmount>
+                <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
+                    decimales separado por punto, ejemplo: 125.00</mat-error>
+                <mat-error
+                    *ngIf="PgMovilRegForm.hasError('isNegative') && PgMovilRegForm.get('amountPm')?.hasError('required')">El
+                    monto no puede ser negativo</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+
+    <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+        <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" type="button"
+            (click)="EmitEvent('Pin')">
+            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
+        </button>
+        <button class="customized_btn_next btn-width-30" (click)="EmitEvent('Regresar')">
+            Regresar
+        </button>
+    </div>
+
+</div>
