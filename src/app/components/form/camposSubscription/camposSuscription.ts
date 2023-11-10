@@ -214,6 +214,22 @@ export let FormasDePago = [
   }
 ]
 
+export const ListBankdebit = [
+  {
+    tittle: "Mercantil",
+    image: 'assets/images/Logo_Mercantil.png',
+    omitir: false,
+    opcion: 'mercantil'
+  },
+  {
+    tittle: "100% Banco",
+    image: 'assets/images/Logo100x100Banco.jpg',
+    omitir: false,
+    opcion:'100% Banco'
+  }
+]
+
+
 export const ListBankPagoMovil = [
   {
     tittle: "Mercantil",

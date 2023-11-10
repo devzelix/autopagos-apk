@@ -17,7 +17,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPagoMovil, ListBankdebit } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -157,6 +157,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   totalAmount: number = 0;
   PagoMetodosHTML2: any = FormasDePago;
   MetodosPagoMovil: any = ListBankPagoMovil
+  MetodoDebito: any = ListBankdebit
+  metodoDebitoCredito : boolean = false;
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
