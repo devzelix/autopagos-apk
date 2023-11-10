@@ -56,10 +56,10 @@ export class SeguridadDatos {
     EncryptData100x100(Text: any) {
         console.log(Text)
         if (typeof Text != "number" && Text != '' && Text != null && Text != undefined) {
-            return CryptoJS.AES.encrypt(Text, environment.SecuryEncrypt100x100Banco, {
+            return crypto.AES.encrypt(Text, environment.SecuryEncrypt100x100Banco, {
                 keySize: 16,
-                mode: CryptoJS.mode.ECB,
-                padding: CryptoJS.pad.Pkcs7,
+                mode: crypto.mode.ECB,
+                padding: crypto.pad.Pkcs7,
             }).toString();
         }
         return Text;

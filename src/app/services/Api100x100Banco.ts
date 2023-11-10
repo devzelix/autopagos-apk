@@ -1,13 +1,14 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, NgZone, OnInit } from "@angular/core";
 import { environment } from "src/environments/environment";
 import { SeguridadDatos } from "./bcryptjs";
 
 
+
 @Injectable({
     providedIn: 'root'
   })
-  export class ApiMercantilService implements  OnInit {
+  export class Api100x100Service implements  OnInit {
 
   private title: string;
   private RegPagosFallidos: any =[];
@@ -41,8 +42,8 @@ import { SeguridadDatos } from "./bcryptjs";
       }
 
        this._EncrypD.EncryptData100x100(DatosC2P)
-       .then((resp:any)=>{
-            this.http.post<any>(`${this.URLAPIMERCANTIL}c2p/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
+       .then((resp: any) => {
+        this.http.post<any>(`${this.URLAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
                     resolve(data)
                 },

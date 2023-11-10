@@ -269,4 +269,11 @@ export const PlantillaConfirmPago = [
     campos: ['this.prec_i?.value+this.c_iPagMovil?.value', 'this.referenciapm?.value', 'this.cantidad?.value'],
     replace: ['#CEDULA', '#REFERENCIA', '#BOLIVARES'],
     html: `<div align="left"><strong>Cedula:</strong> #CEDULA <br>  <strong>Comprobante:</strong> #REFERENCIA <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
+  },
+  {
+    id: 5,
+    tipo: "c2p100x100Banco",
+    campos: ['this.prec_i?.value+this.c_iPagMovil?.value', 'this.referenciapm?.value', 'this.cantidad?.value'],
+    replace: ['#CEDULA', '#REFERENCIA', '#BOLIVARES'],
+    html: `<div align="left"><strong>Cedula:</strong> #CEDULA <br>  <strong>Comprobante:</strong> #REFERENCIA <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
   }]

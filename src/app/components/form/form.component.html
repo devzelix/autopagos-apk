@@ -843,7 +843,7 @@
 
         <!-- regreso al stepper anteriror de pago movil-->
         <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
-          (click)=" BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
+          (click)=" ShowOptionPagoMovil = false; BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
           REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
