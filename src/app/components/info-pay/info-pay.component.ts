@@ -9,64 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class InfoPayComponent implements OnInit {
 
   @Output() closeEmit: EventEmitter<void> = new EventEmitter<void>()
-  @Input() data: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []/*[
-
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'REGISTRADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'RECHAZADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'RECHAZADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-    {
-      fecha_reg: new Date(),
-      numero_ref: 565415656,
-      status_pd: 'PROCESADO'
-    },
-  ]*/
+  @Input() data: {fecha_reg:Date,numero_ref:number,status_pd:string}[] = []
 
   constructor(
     private dialogRef: MatDialogRef<InfoPayComponent>,

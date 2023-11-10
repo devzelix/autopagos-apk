@@ -631,6 +631,7 @@
       <!-- Pago Móvil -->
       <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">  Version original-->
       <mat-step *ngIf="ShowOptionPagoMovil" [stepControl]="TypeForm">
+        <ng-template matStepLabel>Pago Móvil</ng-template>
         <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
             class="desc-user">
@@ -843,7 +844,7 @@
 
         <!-- regreso al stepper anteriror de pago movil-->
         <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
-          (click)=" BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
+          (click)="TipoPago(30)" matStepperPrevious>
           REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
@@ -1098,7 +1099,8 @@
          <tr *ngFor="let item of stateTableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
            <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
            <td> {{item.numero_ref}} </td>
-           <td>
+           <td> {{item.status_pd}} </td>
+           <!-- <td>
             <div *ngIf="item.status_pd === 'PROCESADO'" class="pay-icon-checked">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -1114,7 +1116,7 @@
                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
               </svg>
             </div>
-           </td>
+           </td> -->
          </tr>
       </tbody>
     </table>

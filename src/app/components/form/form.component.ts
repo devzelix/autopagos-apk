@@ -625,6 +625,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.Criptomoneda = false;
     this.Otros = false;
     this.PrimeraVez = false;
+    this.ShowalertBankNationals = false;
+    this.BankSelectPagoMovil = false;
+    this.ShowOptionPagoMovil = false
 
     //Débito
     if (x == 0) {
