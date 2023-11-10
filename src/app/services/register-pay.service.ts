@@ -166,8 +166,15 @@ export class RegisterPayService {
   registerPayClientv2(infoClient: any) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
-        infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
-        infoClient.name=infoClient.name.replace(/["]+/g, '');
+
+        if(infoClient.bank == "ZELLE WELL FARGO pagos.zelle@fibextelecom.net"){
+          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img + ' nameTitular: '+ infoClient.nameTitular + ' emailTitular: '+ infoClient.emailTitular
+          infoClient.name=infoClient.name.replace(/["]+/g, '');
+        }else{
+          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
+          infoClient.name=infoClient.name.replace(/["]+/g, '');
+        }
+        
         console.log(infoClient);
         const DataQuery = {
             Nombre:infoClient.name,
@@ -190,8 +197,7 @@ export class RegisterPayService {
             ipaddress:infoClient.AddresIp,
             browser_agent:infoClient.Browser
         }
-
-        this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
+       this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
           console.log("Respuesta del SAE");
           console.log(Response);
           resolve(Response)
