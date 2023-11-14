@@ -164,6 +164,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   BankSelectPagoMovil: boolean = false //creado por juan para saber si la persona selecciono un pago o no
   ShowalertBankNationals: boolean = false //creado por juan
   ShowOptionPagoMovil: boolean = false //creado por juan
+  ShowFormDebitoCredito: Boolean = false
   DebitoCreditoboolean: boolean = false;
   ShowOptionBNCPagoMovil: boolean = false
   Criptomoneda: boolean = false;
@@ -333,6 +334,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
 
     this.DebitoCredito = this.fb.group({
+      BancoSeleccionado: ['', [Validators.required]],
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
@@ -592,6 +594,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   get Desciption_bnc() { return this.PgMovilBNCForm.get('Desciption') }
   get amountPm_bnc() { return this.PgMovilBNCForm.get('amountPm') }
   //Debito o Credito
+  get BancoSeleccionado() { return this.DebitoCredito.get('BancoSeleccionado') }
   get ccv() { return this.DebitoCredito.get('ccv'); }
   get typeCuenta() { return this.DebitoCredito.get('typeCuenta'); }
   get pref_ciDC() { return this.DebitoCredito.get('pref_ci'); }
@@ -929,6 +932,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           })
           .catch((error: any) => console.error(error)) //Tengo que decirle al usuario que paso con la el pago que realizo
         break;
+    }
+  }
+
+  TipoBankSelect(Evento: any) {
+    console.log("Evento TipoBankSelect")
+    console.log(Evento)
+    switch (Evento.Tipo) {
+      case "PagoMovil":
+        if (Evento.Opcion === 'otros') { this.ShowalertBankNationals = true } else { this.SelectedPagoC2P({ '_value': Evento.Opcion }); }
+        this.BankSelectPagoMovil = true
+        break;
+      case "DebitoCredito":
+        this.DebitoCredito.get('BancoSeleccionado')?.setValue(Evento.Opcion);
+        this.ShowFormDebitoCredito = true
+        break
     }
   }
 
@@ -1637,6 +1655,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.PgMovilForm.reset();
     this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
+    this.ShowFormDebitoCredito = false
     this.ReciboPay = false;
   }
 

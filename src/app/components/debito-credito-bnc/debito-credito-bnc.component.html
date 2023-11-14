@@ -1,0 +1,107 @@
+<div>
+
+    <!-- POS Virtual -->
+    <form [formGroup]="POS_VirtualForm">
+        <div>
+            <mat-label>Cédula de identidad</mat-label><br>
+            <mat-form-field appearance="outline" class="Prefc_i">
+                <mat-select formControlName="pref_ci">
+                    <mat-option value="V">V</mat-option>
+                    <mat-option value="E">E</mat-option>
+                    <mat-option value="J">J</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+                <mat-error *ngIf="POS_VirtualForm.get('c_i')?.hasError('minlength')">
+                    La cédula debe contener al menos 6 carácteres
+                </mat-error>
+                <mat-error *ngIf="POS_VirtualForm.get('c_i')?.hasError('required')">
+                    La cédula es requerida
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
+        <div class="form-login__item">
+            <!-- <mat-form-field *ngIf="!Creditoboolaean" appearance="outline"> -->
+            <mat-form-field  appearance="outline">
+                <mat-label>Tipo de cuenta</mat-label>
+                <mat-select formControlName="typeCuenta">
+                    <mat-option *ngFor="let Acount of TypeAcountDC" [value]="Acount.type">
+                        {{Acount.cuenta}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="POS_VirtualForm.get('typeCuenta')?.hasError('required')">La cuenta es
+                    obligatoria</mat-error>
+                <mat-error *ngIf="POS_VirtualForm.get('typeCuenta')?.hasError('maxlength')">La tarjeta no debe ser mayor
+                    a
+                    18 dígitos</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Nro. de tarjeta</mat-label>
+                <input matInput required formControlName="Ncard" NumbersOnly="true">
+                <mat-error *ngIf="POS_VirtualForm.get('Ncard')?.hasError('required')">
+                    El número de tarjeta es requerido
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
+                <input type="password" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
+                <mat-error *ngIf="POS_VirtualForm.get('ccv')?.hasError('required')">
+                    El número cvv es requerido
+                </mat-error>
+                <mat-error *ngIf="POS_VirtualForm.get('ccv')?.hasError('pattern')">
+                    Escriba el CVV con solo números ejemplo: 123
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <mat-label>Fecha de Vencimiento</mat-label><br>
+            <mat-form-field appearance="outline" class="Prefc_i">
+                <mat-select formControlName="fvncmtoMes">
+                    <mat-option *ngFor="let option of Months" [value]="option.month">
+                        {{option.month}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="Prefc_i2">
+                <mat-select formControlName="fvncmtoAno">
+                    <mat-option *ngFor="let option of Anos" [value]="option.ano">
+                        {{option.ano}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="form-login__item">
+            <mat-form-field appearance="outline">
+                <mat-label>Cantidad a pagar
+                    <strong><span>En Bolivares</span></strong>
+                </mat-label>
+                <input matInput formControlName="cantidad" required #inputAmount>
+                <mat-error *ngIf="POS_VirtualForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="POS_VirtualForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
+                    decimales separado por punto, ejemplo: 125.00
+                </mat-error>
+                <mat-error
+                    *ngIf="POS_VirtualForm.hasError('isNegative') && POS_VirtualForm.get('cantidad')?.hasError('required')">El
+                    monto no puede ser negativo
+                </mat-error>
+            </mat-form-field>
+
+            <!-- <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
+            <mat-label>Clave telefónica</mat-label>
+            <input type="password" matInput formControlName="Clavetlfonica" NumbersOnly="true" #inputDni>
+            <mat-error *ngIf="DebitoCredito.get('Clavetlfonica')?.hasError('required')">
+              El número de tarjeta es requerido
+            </mat-error>
+          </mat-form-field> -->
+        </div>
+    </form>
+    <!-- /POS Virtual -->
+
+</div>

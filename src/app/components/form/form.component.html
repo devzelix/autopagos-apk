@@ -677,7 +677,10 @@
         </div>
 
         <!-- Botones lista de bancos pago Movil -->
-        <div class="cardflexPagoMovil" *ngIf="!ReciboPay && !BankSelectPagoMovil">
+        <app-list-bank *ngIf="!ReciboPay && !BankSelectPagoMovil" [Tipo]="'PagoMovil'"
+          (BankSelect)="TipoBankSelect($event)"></app-list-bank>
+
+        <!-- <div class="cardflexPagoMovil" *ngIf="!ReciboPay && !BankSelectPagoMovil">
           <div *ngFor="let option of MetodosPagoMovil" class="unicard width_full">
             <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp"
               (click)="option.opcion === 'otros' ? ShowalertBankNationals = true : SelectedPagoC2P({'_value':option.opcion}); BankSelectPagoMovil = true">
@@ -685,7 +688,7 @@
               <img style="width: 100%;" src="{{option.image}}">
             </button>
           </div>
-        </div>
+        </div> -->
         <!-- /Botones lista de bancos pago Movil -->
         <!-- <p>ConsultarPagoMovilboolean {{ConsultarPagoMovilboolean}} <br>
           RegistrarPagoMovilboolean {{RegistrarPagoMovilboolean}} <br>
@@ -1004,8 +1007,15 @@
               </h4>
             </div>
           </div>
+          {{BancoSeleccionado?.value}}
+          <app-list-bank *ngIf="!ShowFormDebitoCredito" [Tipo]="'DebitoCredito'"
+            (BankSelect)="TipoBankSelect($event)"></app-list-bank>
+
           <ng-template matStepLabel>Datos de pago</ng-template>
-          <form [formGroup]="DebitoCredito">
+
+          <app-debito-credito-bnc></app-debito-credito-bnc>
+
+          <form *ngIf="ShowFormDebitoCredito" [formGroup]="DebitoCredito">
             <div>
               <mat-label>Cédula de identidad</mat-label><br>
               <mat-form-field appearance="outline" class="Prefc_i">
@@ -1122,7 +1132,7 @@
         <!-- /Form Para Debito o Credito  -->
         <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
           <!-- Debito -->
-          <button *ngIf="!Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado"
+          <button *ngIf="!Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
             class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             <span *ngIf="!Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
@@ -1130,15 +1140,20 @@
           <!-- / Fin Debito -->
 
           <!-- Credito -->
-          <button *ngIf="Creditoboolaean" [disabled]="!DebitoCredito.valid || PinEnviado"
+          <button *ngIf="Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
             class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
             <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
           <!-- / Fin Credito -->
 
-          <button class="customized_btn_next btn-width-30" (click)="ScrollUp($event); ResetFormCD()" type="button"
+          <!-- <button class="customized_btn_next btn-width-30" (click)="ScrollUp($event); ResetFormCD()" type="button"
             matStepperPrevious>
+            Regresar
+          </button> -->
+          <button
+            class="customized_btn_next" [ngClass]="{'btn-width-30':ShowFormDebitoCredito, 'width_full': !ShowFormDebitoCredito}"
+            (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
             Regresar
           </button>
         </div>
