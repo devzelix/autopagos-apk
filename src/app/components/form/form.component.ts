@@ -17,7 +17,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPagoMovil } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPago } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -157,7 +157,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   enableBtn: Boolean = false
   totalAmount: number = 0;
   PagoMetodosHTML2: any = FormasDePago;
-  MetodosPagoMovil: any = ListBankPagoMovil
+  MetodosPagoMovil: any = ListBankPago
   //sPagoMercantilBCO:any =[];
   ConsultarPagoMovilboolean: boolean = false;
   RegistrarPagoMovilboolean: boolean = false;
@@ -165,6 +165,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ShowalertBankNationals: boolean = false //creado por juan
   ShowOptionPagoMovil: boolean = false //creado por juan
   ShowFormDebitoCredito: Boolean = false
+  ShowFormDebitoCreditoBNC: Boolean = false
   DebitoCreditoboolean: boolean = false;
   ShowOptionBNCPagoMovil: boolean = false
   Criptomoneda: boolean = false;
@@ -944,9 +945,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.BankSelectPagoMovil = true
         break;
       case "DebitoCredito":
-        this.DebitoCredito.get('BancoSeleccionado')?.setValue(Evento.Opcion);
-        this.ShowFormDebitoCredito = true
+        if (Evento.Opcion === "BNC") {
+          this.ShowFormDebitoCreditoBNC = true
+        } else {
+          this.ShowFormDebitoCredito = true
+        }
         break
+    }
+  }
+
+  OutputCreditoDebitoBNC(Event: any) {
+    switch (Event.Tipo) {
+      case "Regresar":
+        this.ResetFormCD()
+        this.ScrollUp()
+        break;
     }
   }
 
@@ -1656,6 +1669,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.PgMovilForm.get('tlfdestinReg')?.setValue('584129637516');
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ShowFormDebitoCredito = false
+    this.ShowFormDebitoCreditoBNC = false
     this.ReciboPay = false;
   }
 

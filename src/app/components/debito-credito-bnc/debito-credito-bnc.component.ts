@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscription';
+import { ApiBNCService } from 'src/app/services/ApiBNC';
 
 @Component({
   selector: 'app-debito-credito-bnc',
@@ -8,11 +9,17 @@ import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscri
   styleUrls: ['./debito-credito-bnc.component.scss']
 })
 export class DebitoCreditoBNCComponent implements OnInit {
+  @Input() DNI: string;
+  @Input() SaldoBS: string;
+  @Input() TypePay: string;
+  @Input() Abonado: string;
+  @Input() Contrato: string;
+  @Output() OutputResponse = new EventEmitter<any>();
 
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
   public regexCCV: RegExp = /^\d*$/;
 
-  public TypeAcountDC: any[] = TypeAccount;
+  public TypeAcountDC: any[] = [{ id: 0, cuenta: "Principal" }, { id: 10, cuenta: "Ahorro" }, { id: 20, cuenta: "Corriente" }]//TypeAccount;
   public Months = Month;
   public Anos = Ano;
 
@@ -21,9 +28,10 @@ export class DebitoCreditoBNCComponent implements OnInit {
 
   constructor(
     private fb: UntypedFormBuilder,
+    private apiBNC: ApiBNCService
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
 
     this.POS_VirtualForm = this.fb.group({
       pref_ci: ['', [Validators.required]],
@@ -36,11 +44,65 @@ export class DebitoCreditoBNCComponent implements OnInit {
       fvncmtoMes: ['', [Validators.required]],
       fvncmtoAno: ['', [Validators.required]],
       AccountType: ['', [Validators.required]],
-      CardType: ['', [Validators.required]],
+      CardType: [''],
       Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       identifierTransaction: ['']
     })
 
+    this.CreditoForm = this.fb.group({
+      pref_ci: ['', [Validators.required]],
+      CI: ['', [Validators.required, Validators.minLength(6)]],
+      CardName: ['', [Validators.required, Validators.minLength(6)]],
+      CardNumber: ['', [Validators.required, Validators.minLength(10)]],
+      Description: ['', [Validators.required, Validators.minLength(6)]],
+      Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+    })
+
+    this.POS_VirtualForm.get('pref_ci')?.setValue('V')
+    this.POS_VirtualForm.get('CI')?.setValue(this.DNI)
+    this.POS_VirtualForm.get('Amount')?.setValue(this.SaldoBS)
+    //this.POS_VirtualForm.get('CardType')?.setValue(this.TypePay)
+
+    this.CreditoForm.get('pref_ci')?.setValue('V')
+    this.CreditoForm.get('CI')?.setValue(this.DNI)
+    this.CreditoForm.get('Amount')?.setValue(this.SaldoBS)
+
   }
+
+  ProcesarPago() {
+    console.log("Datos POS Virtual")
+    let DatosJson: any
+    switch (this.TypePay) {
+      case "Débito Maestro":
+        DatosJson = this.POS_VirtualForm.value
+        this.apiBNC.Pay_POs_Virtual({
+          ...DatosJson,
+          TipoPago: this.TypePay,
+          Abonado: this.Abonado,
+          Contrato: this.Contrato
+        })
+        break;
+      case "Credito":
+        DatosJson = this.CreditoForm.value
+        this.apiBNC.Pay_Credit({
+          ...DatosJson,
+          TipoPago: this.TypePay,
+          Abonado: this.Abonado,
+          Contrato: this.Contrato
+        })
+        break
+    }
+    console.log(this.TypePay)
+    console.log(DatosJson)
+  }
+
+  ResetForm() {
+    this.POS_VirtualForm.reset()
+    this.CreditoForm.reset()
+    this.OutputResponse.emit({
+      Tipo: "Regresar"
+    })
+  }
+
 
 }

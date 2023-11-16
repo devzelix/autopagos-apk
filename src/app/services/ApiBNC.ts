@@ -61,7 +61,7 @@ export class ApiBNCService {
     PayP2P(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
             try {
-                console.log(DatosPay)
+                console.log("DatosPay")
                 console.log(DatosPay)
                 this.GlobalHeader.accion = this.EncryptDatos('MobilePayment')
                 this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
@@ -70,6 +70,73 @@ export class ApiBNCService {
                 }).catch((err: any) => {
                     reject(err)
                 })
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+    Pay_POs_Virtual(DatosPay: any) {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+                this.GlobalHeader.accion = this.EncryptDatos('VirtualPos')
+                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
+
+                const Data: any = {
+                    "Abonado": DatosPay.Abonado,
+                    "IdContrato": DatosPay.Contrato,
+                    "Amount": DatosPay.Amount,
+                    "Name": DatosPay.CardName,
+                    "ChildClientID": DatosPay.pref_ci + DatosPay.CI,
+                    "AccountType": DatosPay.AccountType,
+                    "CardHolderID": DatosPay.CardHolderId,
+                    "CardNumber": DatosPay.CardNumber,
+                    "CardPIN": DatosPay.CardPIN,
+                    "CVV": DatosPay.CVV,
+                    "dtExpiration": DatosPay.fvncmtoMes + DatosPay.fvncmtoAno,
+                    "idCardType": DatosPay.TipoPago,
+                    "TransactionIdentifier": "Prueba",
+                }
+
+                console.log(Data)
+
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => {
+                    resolve(Res)
+                }).catch((err: any) => {
+                    reject(err)
+                })
+
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+    Pay_Credit(DatosPay: any) {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+
+                this.GlobalHeader.accion = this.EncryptDatos('Credit')
+                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
+
+                const Data: any = {
+                    "Abonado": DatosPay.Abonado,
+                    "IdContrato": DatosPay.Contrato,
+                    "Amount": DatosPay.Amount,
+                    "Name": DatosPay.CardName,
+                    "ChildClientID": DatosPay.pref_ci + DatosPay.CI,
+                    "Description": DatosPay.Description,
+                    "CardNumber": DatosPay.CardNumber
+                }
+
+                console.log(Data)
+
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => {
+                    resolve(Res)
+                }).catch((err: any) => {
+                    reject(err)
+                })
+
             } catch (error) {
                 console.error(error)
             }

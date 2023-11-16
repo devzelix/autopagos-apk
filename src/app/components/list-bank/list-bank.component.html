@@ -1,6 +1,6 @@
 <div class="cardflexPagoMovil">
-    <div *ngFor="let option of MetodosPagoMovil" class="unicard width_full">
-        <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp"
+    <div *ngFor="let option of MetodosPago" class="unicard width_full">
+        <button *ngIf="!option.omitir" class=" fancy_card animated fadeInUp"
             (click)="OpcionSelect({'_value':option.opcion})">
             <h5 class=" TitlePerson">{{option.tittle}}</h5>
             <img style="width: 100%;" src="{{option.image}}">

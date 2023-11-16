@@ -1008,12 +1008,21 @@
             </div>
           </div>
           {{BancoSeleccionado?.value}}
-          <app-list-bank *ngIf="!ShowFormDebitoCredito" [Tipo]="'DebitoCredito'"
+          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC" [Tipo]="'DebitoCredito'"
             (BankSelect)="TipoBankSelect($event)"></app-list-bank>
 
           <ng-template matStepLabel>Datos de pago</ng-template>
 
-          <app-debito-credito-bnc></app-debito-credito-bnc>
+          <div *ngIf="ShowFormDebitoCreditoBNC">
+            <!-- <app-debito-credito-bnc [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
+              [TypePay]="'Débito Maestro'" [Abonado]="nroContrato?.value"
+              [Contrato]="idContrato"></app-debito-credito-bnc> -->
+
+            <app-debito-credito-bnc [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
+              [TypePay]="Creditoboolaean ? 'Credito':'Débito Maestro'" [Abonado]="nroContrato?.value"
+              [Contrato]="idContrato" (OutputResponse)="OutputCreditoDebitoBNC($event)"></app-debito-credito-bnc>
+          </div>
+
 
           <form *ngIf="ShowFormDebitoCredito" [formGroup]="DebitoCredito">
             <div>
@@ -1151,8 +1160,8 @@
             matStepperPrevious>
             Regresar
           </button> -->
-          <button
-            class="customized_btn_next" [ngClass]="{'btn-width-30':ShowFormDebitoCredito, 'width_full': !ShowFormDebitoCredito}"
+          <button *ngIf="!ShowFormDebitoCreditoBNC" class="customized_btn_next"
+            [ngClass]="{'btn-width-30':ShowFormDebitoCredito, 'width_full': !ShowFormDebitoCredito}"
             (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
             Regresar
           </button>

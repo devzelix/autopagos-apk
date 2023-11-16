@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ListBankPagoMovil } from '../form/camposSubscription/camposSuscription';
+import { ListBankPago } from '../form/camposSubscription/camposSuscription';
 
 
 @Component({
@@ -11,11 +11,19 @@ export class ListBankComponent implements OnInit {
   @Input() Tipo: string;
   @Output() BankSelect = new EventEmitter<any>();
 
-  MetodosPagoMovil: any = ListBankPagoMovil
+  MetodosPago: any = []
 
   constructor() { }
 
   ngOnInit(): void {
+    console.log("entre en el ngOninit de list bank " + this.Tipo)
+    console.log(ListBankPago)
+    if (this.Tipo === 'DebitoCredito') {
+      this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros')
+    } else {
+      this.MetodosPago = ListBankPago
+    }
+
   }
 
   OpcionSelect(Valor: any) {

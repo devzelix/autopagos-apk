@@ -214,7 +214,7 @@ export let FormasDePago = [
   }
 ]
 
-export const ListBankPagoMovil = [
+export const ListBankPago = [
   {
     tittle: "Mercantil",
     image: 'assets/images/Logo_Mercantil.png',
