@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from "src/environments/environment";
-import { SeguridadDatos } from './bcryptjs'
 import * as CryptoJS from 'crypto-js';
 
 @Injectable({
@@ -15,10 +14,7 @@ export class ApiBNCService {
         wt: '',
     }
 
-    constructor(
-        private http: HttpClient,
-        private _EncrypD: SeguridadDatos,
-    ) { }
+    constructor(private http: HttpClient) { }
 
     EncryptDatos(Data: any) {
         return CryptoJS.AES.encrypt(Data, environment.securityEncrt, {
@@ -40,8 +36,6 @@ export class ApiBNCService {
                     } else if (Res && Res.Error) {
                         console.log("entre en el else de error")
                         const TipoError: any = Res.Error
-                        console.log(TipoError)
-                        console.log(typeof TipoError)
                         if (typeof TipoError === 'object') {
                             for (var key in TipoError) { MsgError = TipoError[key][0] }
                         } else { console.log(TipoError) }
@@ -61,15 +55,9 @@ export class ApiBNCService {
     PayP2P(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
             try {
-                console.log("DatosPay")
-                console.log(DatosPay)
                 this.GlobalHeader.accion = this.EncryptDatos('MobilePayment')
                 this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
-                this.MasterPost(DatosPay, this.GlobalHeader).then((Res: any) => {
-                    resolve(Res)
-                }).catch((err: any) => {
-                    reject(err)
-                })
+                this.MasterPost(DatosPay, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
             } catch (error) {
                 console.error(error)
             }
@@ -98,13 +86,7 @@ export class ApiBNCService {
                     "TransactionIdentifier": "Prueba",
                 }
 
-                console.log(Data)
-
-                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => {
-                    resolve(Res)
-                }).catch((err: any) => {
-                    reject(err)
-                })
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
 
             } catch (error) {
                 console.error(error)
@@ -115,7 +97,6 @@ export class ApiBNCService {
     Pay_Credit(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
             try {
-
                 this.GlobalHeader.accion = this.EncryptDatos('Credit')
                 this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
 
@@ -129,13 +110,7 @@ export class ApiBNCService {
                     "CardNumber": DatosPay.CardNumber
                 }
 
-                console.log(Data)
-
-                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => {
-                    resolve(Res)
-                }).catch((err: any) => {
-                    reject(err)
-                })
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
 
             } catch (error) {
                 console.error(error)

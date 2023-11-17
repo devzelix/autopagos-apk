@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscription';
 import { ApiBNCService } from 'src/app/services/ApiBNC';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-debito-credito-bnc',
@@ -80,7 +81,13 @@ export class DebitoCreditoBNCComponent implements OnInit {
           TipoPago: this.TypePay,
           Abonado: this.Abonado,
           Contrato: this.Contrato
-        })
+        }).then((ResPay: any) => {
+          if (ResPay && ResPay.status === true) {
+            this.OutputResponse.emit({
+              Tipo: "Pago Realizado"
+            })
+          } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+        }).catch(err => console.error(err))
         break;
       case "Credito":
         DatosJson = this.CreditoForm.value
@@ -89,7 +96,13 @@ export class DebitoCreditoBNCComponent implements OnInit {
           TipoPago: this.TypePay,
           Abonado: this.Abonado,
           Contrato: this.Contrato
-        })
+        }).then((ResPay: any) => {
+          if (ResPay && ResPay.status === true) {
+            this.OutputResponse.emit({
+              Tipo: "Pago Realizado"
+            })
+          } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+        }).catch(err => console.error(err))
         break
     }
     console.log(this.TypePay)
@@ -104,5 +117,12 @@ export class DebitoCreditoBNCComponent implements OnInit {
     })
   }
 
+  invalidForm(text: string, optionalText: string = '') {
+    Swal.fire({
+      title: text,
+      html: optionalText,
+      icon: 'error'
+    })
+  }
 
 }

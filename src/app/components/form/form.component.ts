@@ -937,8 +937,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoBankSelect(Evento: any) {
-    console.log("Evento TipoBankSelect")
-    console.log(Evento)
     switch (Evento.Tipo) {
       case "PagoMovil":
         if (Evento.Opcion === 'otros') { this.ShowalertBankNationals = true } else { this.SelectedPagoC2P({ '_value': Evento.Opcion }); }
@@ -959,6 +957,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       case "Regresar":
         this.ResetFormCD()
         this.ScrollUp()
+        break;
+      case "Pago Realizado":
+        this.ShowFormDebitoCreditoBNC = false
+        this.ReciboPay = true
         break;
     }
   }
