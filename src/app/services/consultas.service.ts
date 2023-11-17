@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BanksDays } from '../interfaces/banksDays';
 import * as CryptoJS from 'crypto-js';
 import { RegisterPayService } from './register-pay.service';
+import { EncryptService } from './encrypt.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +18,12 @@ export class ConsultasService {
   private tokendbfulll: string = env.tokendbFull;
   private URLDBFULL: string = env.urlDBFULL;
   private ApiKeySSL: string =env.ApiKeyApissl
-  private ApiSSLURL: string = env.urlApisslThomasSolo
+  private ApiTLS: string = env.urlApiTLS;
 
   constructor(
     private http: HttpClient,
     private registerPayService: RegisterPayService,
+    private enc: EncryptService
   ) {
   }
 
@@ -92,15 +94,17 @@ export class ConsultasService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         // Encabezados de la petición
-        const headers = {
+        const headers = ({
+          directory: "Consultas",
           method: `GenerarPin`,
           token: this.ApiKeySSL,
           platform: "pagos",
           id: Cedula,
           tipo: tipo
-        };
+        });
 
-        this.registerPayService.MasterGETPOST(headers, this.ApiSSLURL+"Consultas").then((data) => {
+        this.registerPayService.MasterGETPOST(headers, this.ApiTLS + "?data=1").then((data: any) => {
+          // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
           resolve(data);
         }).catch((error: any) => {
           reject(error)
@@ -115,15 +119,17 @@ export class ConsultasService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         // Encabezados de la petición
-        const headers = {
+        const headers = ({
+          directory: "Consultas",
           method: `VerificarPin`,
           token: this.ApiKeySSL,
           platform: "FibexPlay",
           id: Cedula,
           pin: Pin
-        };
+        });
 
-        this.registerPayService.MasterGETPOST(headers, this.ApiSSLURL+"Consultas").then((data) => {
+        this.registerPayService.MasterGETPOST(headers, this.ApiTLS + "?data=2").then((data: any) => {
+          // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
           resolve(data);
         }).catch((error: any) => {
           reject(error)
