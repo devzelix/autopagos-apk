@@ -255,6 +255,7 @@ export class ApiMercantilService implements  OnInit {
        .then((resp:any)=>{
             this.http.post<any>(`${this.URLAPIMERCANTIL}c2p/${this.TOKENAPIMERCANTIL}`, resp).subscribe({
                 next: data => {
+                    console.log("Respondio",data);
                     resolve(data)
                 },
                 error: error => {
@@ -337,6 +338,7 @@ export class ApiMercantilService implements  OnInit {
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
         const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+        console.log("GetAuthTDDv2",headers);
             this.http.post<any>(`${this.URLAPIMERCANTIL}GetAuthTDC`, resp,{headers:headers}).subscribe({
                 next: data => {
                   console.log("Respondio");
@@ -424,6 +426,7 @@ export class ApiMercantilService implements  OnInit {
         this._EncrypD.EncrypDataHash(env.KeyEncrypt,Datos)
        .then((resp:any)=>{
         const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+        console.log("CompraTDDv22",headers);
             this.http.post<any>(`${this.URLAPIMERCANTIL}PayTDC`, resp,{headers:headers}).subscribe({
                 next: data => {
                   console.log("Respondio");
@@ -487,6 +490,7 @@ export class ApiMercantilService implements  OnInit {
        this._EncrypD.EncrypDataHash(env.KeyEncrypt,body)
        .then((resp:any)=>{
         const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+        console.log("RegPay",headers);
             this.http.post<any>(`${this.URLAPIMERCANTIL}RegPaypal`, resp,{headers:headers}).subscribe({
                 next: data => {
                     resolve(data)

@@ -49,6 +49,7 @@ import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.compone
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ResponseMethod } from 'src/app/interfaces/response';
 import { InfoPayComponent } from '../info-pay/info-pay.component';
+import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 
 
 
@@ -226,6 +227,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private _Cloudinary: CloudynariService,
     private _UploadPHP: UploadPHPService,
     private _ApiMercantil: ApiMercantilService,
+    private _Api100x100: Api100x100Service,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
     public captchaService: CaptchaThomasService,
@@ -879,6 +881,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.invalidForm(`Error debe colocar la clave de autorización!`);
     }
 
+  }
+
+  Prueba() {
+    console.log("entre aqui 1")
+
+    this._Api100x100.C2PCompra(this.nroContrato?.value).then((resp: any) => {
+      console.log("contrato",this.nroContrato?.value)
+      console.log(resp)
+    }).catch((error: any) => console.error(error))
   }
 
   ClaveAuthPgoMovil() {
