@@ -882,9 +882,13 @@
 
         <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
           class="btn-flex-center">
-          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
-            type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil')">
+          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='Mercantil'"
+          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
             Solicitar pin de autorización1 {{Minutes}}{{ConcatenaTimer}}{{Second}}
+          </button>
+          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='100x100 Banco'"
+          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.Prueba()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
+            Pagar con 100% banco {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button class="customized_btn_next btn-width-30"
             (click)="ResetFormCD(); ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowalertBankNationals = false; RegistrarPagoMovilboolean = false">

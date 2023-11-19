@@ -76,6 +76,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   displayedColumns: string[] = ['Fecha', 'Status'];
 
   public BankEmisor = BankEmisorS
+  public bancoSeleccionado : string = ""
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
@@ -148,6 +149,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] | any = [];
   public BancoDefault: string = "Mercantil"
+  public bancooo : string = "100x100Banco"
   public LoadingLengthAbonado: boolean = false;
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
@@ -886,7 +888,51 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   Prueba() {
     console.log("entre aqui 1")
 
-    this._Api100x100.C2PCompra(this.nroContrato?.value).then((resp: any) => {
+        //console.log("tlforigin:", this.tlforigin?.value)
+        console.log("c_i:", this.pref_ci?.value + this.c_iRegPgoMvil?.value)
+        console.log("tlfdestin:", this.tlfdestin?.value.toString())
+        console.log("cantidad:", this.amountPm?.value)
+        console.log("Abonado:", this.nroContrato?.value)
+        console.log("idContrato:", this.idContrato)
+        //console.log("Cliente:", this.idContrato )
+        //console.log("Browser:", this.TypeNavegador)
+        //console.log("AddresIp:", this.IpAddress.ip)
+        //console.log("auth:", this.auth?.value)
+        //console.log("Name:", this.name?.value)
+        //console.log("invoice:", "")
+
+        let datosPago = {
+          c_i: this.pref_ci?.value + this.c_iRegPgoMvil?.value,
+          tlfdestin: this.tlfdestin?.value.toString(),
+          cantidad: this.amountPm?.value,
+          Abonado: this.nroContrato?.value,
+          idContrato: this.idContrato,
+        }
+
+
+    this._Api100x100.C2PCompra(datosPago).then((resp: any) => {
+      console.log("contrato",this.nroContrato?.value)
+      console.log(resp.hasOwnProperty('status'))
+      if (resp.hasOwnProperty('error')) {
+        // this.alertFindDni(`${resp.error_list[0].description}`,'');
+        this.invalidForm(`${resp.error}`)
+      } else if (resp.hasOwnProperty('status')) {
+        if (resp.status == true) {
+          this.ReciboPay = true;
+          this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
+          this.alertexit("Pago aprobado");
+        } else {
+          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+        }
+      } else {
+        this.invalidForm(`Error intente mas tarde!`);
+      }
+
+    }).catch((error: any) => console.error(error))
+  }
+
+  PruebaDebito() {
+    this._Api100x100.CompraDebito(this.nroContrato?.value).then((resp: any) => {
       console.log("contrato",this.nroContrato?.value)
       console.log(resp)
     }).catch((error: any) => console.error(error))
@@ -935,6 +981,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       /* this.warningSimpleFormMercantilConButton(`Debes realizar un Pago Móvil con los datos a continuación:`,
         `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, ''); */
     } else if (Valor == "mercantil") {
+      this.bancoSeleccionado = "Mercantil";
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
       this.RegistrarPagoMovilboolean = true;
@@ -943,6 +990,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
     }else if (Valor == "100% Banco") {
+      this.bancoSeleccionado = "100x100 Banco";
       this.TypeForm = this.PgMovilRegForm;
       this.ConsultarPagoMovilboolean = false;
       this.RegistrarPagoMovilboolean = true;
@@ -2610,6 +2658,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
     console.log('warnignFormGeneral')
+    console.log("metodo",NameMetodo)
     Swal.fire({
       title: text,
       html: html,
@@ -2629,6 +2678,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           case 'this.PagoDebito()':
             this.PagoDebito();
             break;
+          case 'this.Prueba()':
+            this.Prueba();
+            break;  
           default:
             eval(NameMetodo);
             break;
@@ -2973,6 +3025,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   AmountIncorrectConfirm(value: string, Metodo: string, type?: string) {
     console.log("AmountIncorrectConfirm");
+    console.log("value",value)
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();
@@ -3199,6 +3252,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       dialog.afterClosed().subscribe(result => {
       });
     }).catch((err:any)=>console.error(err));
+  }
+
+  logMensaje(mensaje: string) {
+    console.log("mensaje",mensaje);
   }
 
   public openInfoPay(): void {
