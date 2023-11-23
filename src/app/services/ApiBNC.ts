@@ -9,7 +9,7 @@ import * as CryptoJS from 'crypto-js';
 export class ApiBNCService {
 
     GlobalHeader: any = {
-        //origin: 'www.domain.com',
+        origin: 'https://pagos.thomas-talk.me/',
         accion: '',
         wt: '',
     }
@@ -28,7 +28,10 @@ export class ApiBNCService {
         return new Promise(async (resolve: any, reject: any) => {
             try {
                 let MsgError: string
-                this.http.post('http://localhost:3000/', Data, { headers: Headers }).subscribe((Res: any) => {
+                Data.ChildClientID = ''
+                console.log(Data)
+                console.log(Headers)
+                this.http.post(/* 'http://localhost:3000/' */ 'https://apitest3.thomas-talk.me/', Data, { headers: Headers }).subscribe((Res: any) => {
                     console.log("Res BNC")
                     if (Res && Res.status === true) {
                         console.log("Tengo la respuesta true de BNC")
