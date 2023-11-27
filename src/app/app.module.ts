@@ -32,6 +32,8 @@ import { ReplacePipe } from './pipe/replace.pipe';
 import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component'
 import { InfoPayComponent } from './components/info-pay/info-pay.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { ListBankComponent } from './components/list-bank/list-bank.component';
+import { DebitoCreditoBNCComponent } from './components/debito-credito-bnc/debito-credito-bnc.component';
 
 
 const routes: Routes = [
@@ -65,7 +67,9 @@ const routes: Routes = [
     PaypalComponent,
     StripeComponent,
     DetallePayComponent,
-    InfoPayComponent
+    InfoPayComponent,
+    ListBankComponent,
+    DebitoCreditoBNCComponent,
   ],
   imports: [
     BrowserModule,

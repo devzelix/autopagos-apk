@@ -473,8 +473,6 @@ export class RegisterPayService {
     // }
   }
 
-
-
   /* SendDataConciliar(Data: any) {
     try {
 
@@ -575,7 +573,6 @@ export class RegisterPayService {
     })
 
   }
-
 
   getNewBankList() {
     
@@ -722,7 +719,6 @@ export class RegisterPayService {
 
   }
 
-
   getTypeClient(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = {
@@ -738,7 +734,6 @@ export class RegisterPayService {
       })
     })
   }
-
 
   infoEquiposClientes(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
@@ -816,7 +811,5 @@ export class RegisterPayService {
       }
     })
   }
-
-
 
 }
