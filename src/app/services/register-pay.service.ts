@@ -530,16 +530,20 @@ export class RegisterPayService {
   getStripePayment(data: any){
     return new Promise((resolve,reject)=>{
       const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-      this.http.post(`${env.ApiMercantil}RegStr`, data,{headers:headers}).subscribe({
-        next: data => {
-          console.log(data);
-            resolve(data)
-        },
-        error: error => {
-          console.log(error);
-            reject(error);
-        }
-    });
+      this.security.EncrypDataHash(data)
+      .then((resp:any)=>{
+         this.http.post(`${env.ApiMercantil}RegStr`, resp,{headers:headers}).subscribe({
+           next: data => {
+             console.log(data);
+               resolve(data)
+           },
+           error: error => {
+             console.log(error);
+               reject(error);
+           }
+         });
+      })
+      .catch((error:any)=>console.error(error));
     });
   }
 
@@ -578,12 +582,15 @@ export class RegisterPayService {
     console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
     const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-    this.http.post(`${env.ApiMercantil}SavStr`, DataUSer,{headers:headers}).subscribe({
-      error: error => {
-        console.log(error);
-      }
+    this.security.EncrypDataHash(DataUSer)
+    .then((resp:any)=>{
+       this.http.post(`${env.ApiMercantil}SavStr`, resp,{headers:headers}).subscribe({
+         error: error => {
+           console.log(error);
+         }
+       })
     })
-
+    .catch((error:any)=>console.error(error));
   }
 
 
