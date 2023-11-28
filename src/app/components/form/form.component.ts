@@ -995,7 +995,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         if (Evento.Opcion === 'otros') { this.ShowalertBankNationals = true } else { this.SelectedPagoC2P({ '_value': Evento.Opcion }); }
         this.BankSelectPagoMovil = true
         break;
-      case "DebitoCredito":
+      case "Debito":
         if (Evento.Opcion === "BNC") {
           this.ShowFormDebitoCreditoBNC = true
         } else if (Evento.Opcion === "100% Banco") {
@@ -1004,6 +1004,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.ShowFormDebitoCredito = true
         }
         break
+        case "Credito":
+          if (Evento.Opcion === "BNC") {
+            this.ShowFormDebitoCreditoBNC = true
+          }else {
+            this.ShowFormDebitoCredito = true
+          }
+          break  
     }
   }
 
