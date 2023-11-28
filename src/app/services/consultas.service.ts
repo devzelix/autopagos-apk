@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment as env } from '../../environments/environment.prod';
+import { environment as env } from '../../environments/environment';
 import axios from 'axios';
 import { BanksDays } from '../interfaces/banksDays';
 import * as CryptoJS from 'crypto-js';
@@ -123,7 +123,7 @@ export class ConsultasService {
           directory: "Consultas",
           method: `VerificarPin`,
           token: this.ApiKeySSL,
-          platform: "FibexPlay",
+          platform: "pagos",
           id: Cedula,
           pin: Pin
         });
