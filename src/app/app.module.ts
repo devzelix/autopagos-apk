@@ -34,6 +34,7 @@ import { InfoPayComponent } from './components/info-pay/info-pay.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { ListBankComponent } from './components/list-bank/list-bank.component';
 import { DebitoCreditoBNCComponent } from './components/debito-credito-bnc/debito-credito-bnc.component';
+import { Debit100x100 } from './components/debito-100%/debito-100%';
 
 
 const routes: Routes = [
@@ -70,6 +71,7 @@ const routes: Routes = [
     InfoPayComponent,
     ListBankComponent,
     DebitoCreditoBNCComponent,
+    Debit100x100,
   ],
   imports: [
     BrowserModule,

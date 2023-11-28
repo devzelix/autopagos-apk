@@ -958,8 +958,8 @@
           type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
             Solicitar pin de autorización1 {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
-          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='100x100 Banco'"
-          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.Prueba()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
+          <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='100x100 Banco'"
+          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
             Pagar con 100% banco {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button class="customized_btn_next btn-width-30"
@@ -1012,7 +1012,7 @@
             </div>
           </div>
           {{BancoSeleccionado?.value}}
-          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC" [Tipo]="'DebitoCredito'"
+          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100" [Tipo]="'DebitoCredito'"
             (BankSelect)="TipoBankSelect($event)"></app-list-bank>
 
           <ng-template matStepLabel>Datos de pago</ng-template>
@@ -1025,6 +1025,13 @@
             <app-debito-credito-bnc [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
               [TypePay]="Creditoboolaean ? 'Credito':'Débito Maestro'" [Abonado]="nroContrato?.value"
               [Contrato]="idContrato" (OutputResponse)="OutputCreditoDebitoBNC($event)"></app-debito-credito-bnc>
+          </div>
+
+          <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
+          <div *ngIf="ShowFormDebito100x100 "> 
+            <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
+              [Abonado]="nroContrato?.value"
+              [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
           </div>
 
 
@@ -1164,7 +1171,7 @@
             matStepperPrevious>
             Regresar
           </button> -->
-          <button *ngIf="!ShowFormDebitoCreditoBNC" class="customized_btn_next"
+          <button *ngIf="!ShowFormDebitoCreditoBNC  && !ShowFormDebito100x100" class="customized_btn_next"
             [ngClass]="{'btn-width-30':ShowFormDebitoCredito, 'width_full': !ShowFormDebitoCredito}"
             (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
             Regresar

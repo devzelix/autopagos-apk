@@ -169,6 +169,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ShowOptionPagoMovil: boolean = false //creado por juan
   ShowFormDebitoCredito: Boolean = false
   ShowFormDebitoCreditoBNC: Boolean = false
+  ShowFormDebito100x100: Boolean = false
   DebitoCreditoboolean: boolean = false;
   ShowOptionBNCPagoMovil: boolean = false
   Criptomoneda: boolean = false;
@@ -907,7 +908,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   }
 
-  Prueba() {
+  PagoC2P100x100() {
     console.log("entre aqui 1")
 
         //console.log("tlforigin:", this.tlforigin?.value)
@@ -944,19 +945,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
           this.alertexit("Pago aprobado");
         } else {
-          this.invalidForm(`Tu transacción fue rechazada por el banco, valide el monto ingresado`);
+          this.invalidForm(`Tu transacción fue rechazada por el banco`);
         }
       } else {
         this.invalidForm(`Error intente mas tarde!`);
       }
 
-    }).catch((error: any) => console.error(error))
-  }
-
-  PruebaDebito() {
-    this._Api100x100.CompraDebito(this.nroContrato?.value).then((resp: any) => {
-      console.log("contrato",this.nroContrato?.value)
-      console.log(resp)
     }).catch((error: any) => console.error(error))
   }
 
@@ -995,6 +989,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoBankSelect(Evento: any) {
+    console.log("TipoBankSelect",Evento)
     switch (Evento.Tipo) {
       case "PagoMovil":
         if (Evento.Opcion === 'otros') { this.ShowalertBankNationals = true } else { this.SelectedPagoC2P({ '_value': Evento.Opcion }); }
@@ -1003,7 +998,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       case "DebitoCredito":
         if (Evento.Opcion === "BNC") {
           this.ShowFormDebitoCreditoBNC = true
-        } else {
+        } else if (Evento.Opcion === "100% Banco") {
+          this.ShowFormDebito100x100 = true
+        }else {
           this.ShowFormDebitoCredito = true
         }
         break
@@ -1018,6 +1015,21 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         break;
       case "Pago Realizado":
         this.ShowFormDebitoCreditoBNC = false
+        this.ReciboPay = true
+        break;
+    }
+  }
+
+  OutputDebito100x100(Event: any) {
+    console.log("OutputDebito100x100",Event)
+    switch (Event.Tipo) {
+      case "Regresar":
+        this.ResetFormCD()
+        this.ScrollUp()
+        break;
+      case "Pago Realizado":
+        this.ShowFormDebito100x100 = false
+        this.alertexit("Pago aprobado");
         this.ReciboPay = true
         break;
     }
@@ -1042,6 +1054,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           `<strong> Teléfono: </strong> 584129637516  <br/>  <strong>Rif: </strong> J-30818251-6  <br/> <strong> Banco:</strong> Mercantil(0105)<br><br> <p style="color:red"><strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.</p>`, ''); */
         break;
       case "mercantil":
+        this.bancoSeleccionado = "Mercantil";
         this.TypeForm = this.PgMovilRegForm;
         this.ConsultarPagoMovilboolean = false;
         this.RegistrarPagoMovilboolean = true;
@@ -1059,6 +1072,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.PgMovilBNCForm.get('c_i')?.setValue(this.dni?.value);
         break;
       case "100% Banco":
+        this.bancoSeleccionado = "100x100 Banco";
         this.TypeForm = this.PgMovilRegForm;
         this.ConsultarPagoMovilboolean = false;
         this.RegistrarPagoMovilboolean = true;
@@ -1738,6 +1752,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.PgMovilRegForm.get('tlforigin')?.setValue('584129637516');
     this.ShowFormDebitoCredito = false
     this.ShowFormDebitoCreditoBNC = false
+    this.ShowFormDebito100x100 = false
     this.ReciboPay = false;
   }
 
@@ -2782,8 +2797,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           case 'this.PagoDebito()':
             this.PagoDebito();
             break;
-          case 'this.Prueba()':
-            this.Prueba();
+          case 'this.PagoC2P100x100()':
+            this.PagoC2P100x100();
             break;  
           default:
             eval(NameMetodo);

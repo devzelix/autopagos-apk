@@ -1,0 +1,66 @@
+<div>
+
+    <!-- POS Virtual -->
+    <form [formGroup]="Debito100x100">
+        <div>
+            <mat-label>Cédula de identidad</mat-label><br>
+            <mat-form-field appearance="outline" class="Prefc_i">
+                <mat-select formControlName="pref_ci">
+                    <mat-option value="V">V</mat-option>
+                    <mat-option value="E">E</mat-option>
+                    <mat-option value="J">J</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <input type="number" matInput required formControlName="CI" NumbersOnly="true" #inputDni>
+                <mat-error *ngIf="Debito100x100.get('CI')?.hasError('minlength')">
+                    La cédula debe contener al menos 6 carácteres
+                </mat-error>
+                <mat-error *ngIf="Debito100x100.get('CI')?.hasError('required')">
+                    La cédula es requerida
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
+        <div class="form-login__item">
+            <mat-form-field appearance="outline">
+                <mat-label>Nro. de cuenta</mat-label>
+                <input matInput required formControlName="CountNumber" NumbersOnly="true">
+                <mat-error *ngIf="Debito100x100.get('CuntNumber')?.hasError('required')">
+                    El número de cuenta es requerido
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="form-login__item">
+            <mat-form-field appearance="outline">
+                <mat-label>Cantidad a pagar
+                    <strong><span>En Bolivares</span></strong>
+                </mat-label>
+                <input matInput formControlName="Amount" required #inputAmount>
+                <mat-error *ngIf="Debito100x100.get('Amount')?.hasError('required')">Monto requerido</mat-error>
+                <mat-error *ngIf="Debito100x100.get('Amount')?.hasError('pattern')">Escriba el monto seguido dos
+                    decimales separado por punto, ejemplo: 125.00
+                </mat-error>
+                <mat-error
+                    *ngIf="Debito100x100.hasError('isNegative') && Debito100x100.get('Amount')?.hasError('required')">El
+                    monto no puede ser negativo
+                </mat-error>
+            </mat-form-field>
+
+        </div>
+
+        <!-- Botones -->
+        <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+            <button [disabled]="!Debito100x100.valid " class="customized_btn_next btn-width-70" id="PagoDC"
+                type="button" (click)="PagoDebito100x100()">
+                Pagar
+            </button>
+            <button class="customized_btn_next btn-width-30" (click)="ResetForm()" type="button" matStepperPrevious>
+                Regresar
+            </button>
+        </div>
+        <!-- /Botones -->
+    </form>
+    <!-- /POS Virtual -->
+
+</div>
