@@ -340,7 +340,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
 
     this.DebitoCredito = this.fb.group({
-      BancoSeleccionado: ['', [Validators.required]],
+      BancoSeleccionado: [''],
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
