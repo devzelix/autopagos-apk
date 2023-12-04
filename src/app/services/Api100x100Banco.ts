@@ -84,15 +84,18 @@ import axios, { Axios } from "axios";
     CompraDebito(Datos:any){
       console.log("CompraTDD");
       return new Promise((resolve,reject)=>{
+        console.log("entre aqui 2",Datos)
         try {
           Datos ={
-            "Abonado": "C8641",
-            "IdContrato": "CONTCAB369BF0FD11696",
-            "sBankId": "0108",
-            "sDocumentId": "11366811",
-            "sPhoneNumber": "584164169696",
-            "nAmount":12.21
+            "Abonado": Datos.Abonado,
+            "IdContrato": Datos.Contrato,
+            "sBankId": "0108", //Nose si mercantil o 100x100 banco
+            "sDocumentId": Datos.pref_ci+Datos.CI,
+            "sPhoneNumber": Datos.CountNumber,//numero de cuenta
+            "nAmount":Datos.Amount,
           }
+
+          console.log("CompraTDDv22",Datos)
 
           const url = 'http://localhost:8888/';
         const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),

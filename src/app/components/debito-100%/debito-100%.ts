@@ -54,18 +54,19 @@ export class Debit100x100 implements OnInit {
     this._Api100x100.CompraDebito({...datosPago,
         Abonado: this.Abonado,
         Contrato: this.Contrato}).then((resp: any) => {
+          console.log("entre aqui 2",resp.hasOwnProperty('status')) 
           if (resp.hasOwnProperty('status')){
             if (resp.status == true) {
             console.log("entre aqui 2",resp.hasOwnProperty('status')) 
               this.OutputResponse.emit({
                 Tipo: "Pago Realizado"
               })
-              console.log(resp)
+              console.log(resp)        
             }else {
               this.invalidForm(`Hubo un problema`,`${resp.description}`);
             }
           }else{
-            this.invalidForm("Error",resp.message)
+            this.invalidForm("Error",`${resp.error}`)
           }
     }).catch((error: any) => console.error(error))
   }
