@@ -31,7 +31,7 @@ export class ApiBNCService {
                 Data.ChildClientID = ''
                 console.log(Data)
                 console.log(Headers)
-                this.http.post('http://localhost:3000/'  /* 'https://apitest3.thomas-talk.me/' */, Data, { headers: Headers }).subscribe((Res: any) => {
+                this.http.post('http://localhost:9005/'  /* 'https://apitest3.thomas-talk.me/' */, Data, { headers: Headers }).subscribe((Res: any) => {
                     console.log("Res BNC")
                     if (Res && Res.status === true) {
                         console.log("Tengo la respuesta true de BNC")

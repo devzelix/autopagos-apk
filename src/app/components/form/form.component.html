@@ -726,6 +726,15 @@
 
             <div class="form-login__item">
               <ng-template matStepLabel>Pago Móvil</ng-template>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="phone" placeholder="Ejemplo: 584120202020">
+                <mat-error *ngIf="PgMovilBNCForm.get('phone')?.errors">
+                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('required')">El número es requerido</p>
+                </mat-error>
+              </mat-form-field>
+
               <mat-form-field appearance="outline">
                 <mat-label>Descripción</mat-label>
                 <input matInput formControlName="Desciption" placeholder="Ejemplo: pago servicio">
@@ -733,7 +742,7 @@
                   <p *ngIf="PgMovilBNCForm.get('Desciption')?.hasError('required')">La descripción es requerida</p>
                 </mat-error>
               </mat-form-field>
-
+              
               <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>

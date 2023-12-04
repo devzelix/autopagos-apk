@@ -331,6 +331,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.PgMovilBNCForm = this.fb.group({
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
+      phone: ['', [Validators.required, Validators.minLength(11)]],
       Desciption: ['', [Validators.required, Validators.minLength(4)]],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
