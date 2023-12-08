@@ -1260,20 +1260,27 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
           //NEW SERVICE TO CONVERT IMG//PDF FILES
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud)
-              .then((url) => {
-                imageBase64 = '';
-                this.uploadingImg = false;
-                this.imageUrl = url;
-                // this.imageUrl = res.url;
-                this.SendOption(2, 0, url);
-                this.imageUploaded = true;
-              })
-              .catch((err) => {
-                console.error(err);
-                this.countErrorUploadImage(imageBase64, NameCloud)
-                this.uploadingImg = false;
-              })
+            setTimeout(() => {
+              this.CloudNameComprobante = NameCloud;
+              this.uploadingImg = false;
+              this.imageUrl = imageBase64;
+              this.imageUploaded = true;
+            }, 300);
+            
+            // this._Cloudinary.upload_images(imageBase64, NameCloud)
+            //   .then((url) => {
+            //     imageBase64 = '';
+            //     this.uploadingImg = false;
+            //     this.imageUrl = url;
+            //     // this.imageUrl = res.url;
+            //     this.SendOption(2, 0, url);
+            //     this.imageUploaded = true;
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     this.countErrorUploadImage(imageBase64, NameCloud)
+            //     this.uploadingImg = false;
+            //   })
 
           } catch (error) {
             console.error(error);
@@ -1358,6 +1365,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.stepper.next();
   }
 
+  private CloudNameComprobante: string = "";
+  private CloudNameRetencion: string = "";
+
   uploadRetentionImagePayment2($event: any) {
     this.uploadingRetentionImg = true;
     let reader = new FileReader();
@@ -1410,18 +1420,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           //NEW SERVICE TO CONVERT IMG//PDF FILES
 
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud)
-              .then((url) => {
-                imageBase64 = '';
-                this.uploadingRetentionImg = false;
-                this.retentionImageUrl = url;
-                this.SendOption(2, 0, url);
-                this.retentionimageUploaded = true;
-              })
-              .catch((err) => {
-                console.error(err);
-                this.countErrorUploadImage(imageBase64, NameCloud);
-              })
+            setTimeout(() => {
+              this.CloudNameRetencion = NameCloud;
+              this.uploadingRetentionImg = false;
+              this.retentionImageUrl = imageBase64;
+              this.retentionimageUploaded = true;
+            }, 300);
+            // this._Cloudinary.upload_images(imageBase64, NameCloud)
+            //   .then((url) => {
+            //     imageBase64 = '';
+            //     this.uploadingRetentionImg = false;
+            //     this.retentionImageUrl = url;
+            //     this.SendOption(2, 0, url);
+            //     this.retentionimageUploaded = true;
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     this.countErrorUploadImage(imageBase64, NameCloud);
+            //   })
 
           } catch (error) {
             console.error(error);
@@ -1435,6 +1451,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
+  private imageComprobanteURL: string | undefined;
+  private imageRetencionURL: string | undefined;
+  
   savePayment() {
     this.DisableReg = true
     if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && (this.possibleWithholdingAgent && this.selectedRetentionOption == 2))) {
@@ -1540,6 +1559,191 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.Contador()
     }
 
+  }
+  
+  savePaymentV2() {
+    // console.log("this.firstFormFibex.invalid", this.firstFormFibex.invalid, this.firstFormFibex.value);
+    // console.log("this.secondFormFibex.invalid", this.secondFormFibex.invalid, this.secondFormFibex.value);
+    // console.log("this.thirdFormFibex.invalid", this.thirdFormFibex.invalid, this.thirdFormFibex.value);
+    // console.log("this.fourthFormFibex.invalid", this.fourthFormFibex.invalid, this.fourthFormFibex.value);
+  
+    const promiseList: Promise<void>[] = [];
+    
+    /******************************************
+     * Subir imagen
+     ******************************************/
+    if(!this.imageComprobanteURL && this.imageUrl) {
+      /**
+       * Subir imagen de pago
+       */
+      Swal.fire({
+        title: "Subiendo comprobante",
+        text: "Espere unos momentos, estamos subiendo su comprobante de pago",
+        footer: "Este proceso puede tardar unos momentos",
+        showConfirmButton: false,
+        allowEnterKey: false,
+        allowEscapeKey: false
+      });
+      Swal.showLoading();
+
+      const promise = this._Cloudinary.upload_images(this.imageUrl, this.CloudNameComprobante)
+        .then((url) => {
+          this.imageComprobanteURL = url;
+          Swal.close();
+        })
+        .catch((err) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Lo sentimos, pero no pudimos subir su comprobante de pago.",
+            footer: "Verifique su conexión a internet e intentelo nuevamente"
+          });
+        });
+
+      promiseList.push(promise);
+    }
+
+    if(!this.imageRetencionURL && this.retentionImageUrl) {
+      /**
+       * Subir imagen de retención
+       */
+      Swal.fire({
+        title: "Subiendo retención",
+        text: "Espere unos momentos, estamos subiendo su retención",
+        footer: "Este proceso puede tardar unos momentos",
+        showConfirmButton: false,
+        allowEnterKey: false,
+        allowEscapeKey: false
+      });
+      Swal.showLoading();
+      
+      const promise = this._Cloudinary.upload_images(this.retentionImageUrl, this.CloudNameRetencion)
+      .then((url) => {
+        this.imageRetencionURL = url;
+        Swal.close();
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Lo sentimos, pero no pudimos subir su retención.",
+          footer: "Verifique su conexión a internet e intentelo nuevamente"
+        });
+      });
+
+      promiseList.push(promise);
+    }
+
+    Promise.all(promiseList)
+      .then(this.saveRegisterPayment.bind(this))
+      .catch((err) => console.log(err));
+  }
+
+  saveRegisterPayment() {
+    this.DisableReg = true
+      if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && (this.possibleWithholdingAgent && this.selectedRetentionOption == 2))) {
+        if (!this.regexUrl.test(this.imageUrl)) {
+          this.invalidForm('La imagen de pago es requerida');
+          this.closeAlert();
+          this.DisableReg = false
+          return;
+        }
+        if (!this.regexUrl.test(this.retentionImageUrl) && this.possibleWithholdingAgent && this.selectedRetentionOption == 2) {
+          this.invalidForm('La imagen de pago del comprobante por ser agente de retención es requerida');
+          this.closeAlert();
+          this.DisableReg = false
+          return;
+        }
+        this.invalidForm('Existen campos requeridos que no fueron llenados correctamente');
+        this.closeAlert();
+        this.DisableReg = false
+        return;
+      }
+      let contractInfo = this.listContratos.find((info) => {
+        if (this.nroContrato) {
+          return this.nroContrato.value === info.contrato;
+        }
+        return {};
+      })
+      var saldo = "0";
+  
+      if (this.BancoNacional(this.banco) && contractInfo?.saldo != undefined) {
+        saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
+      } else {
+        if (contractInfo?.saldo != undefined) {
+          saldo = parseFloat(contractInfo?.saldo).toFixed(2)
+        }
+      }
+  
+      var dt = new Date(this.date?.value);
+      let year = dt.getFullYear();
+      let month = (dt.getMonth() + 1).toString().padStart(2, "0");
+      let day = dt.getDate().toString().padStart(2, "0");
+      let date = year + "/" + month + "/" + day;
+  
+      this.sendingPay = true;
+      const DataForRegister = {
+        ...this.firstFormFibex.value,
+        ...this.secondFormFibex.value,
+        ...this.thirdFormFibex.value,
+        img: this.selectedRetentionOption == 2 ? this.imageComprobanteURL + ' -Retención:' + this.imageRetencionURL + ' -Monto:' + this.retentionAmount?.value : this.imageComprobanteURL,
+        name: contractInfo?.cliente,
+        amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
+        date,
+        id_Cuba: this.BancoSelect.id_cuba,
+        Browser: this.TypeNavegador,
+        AddresIp: this.IpAddress.ip,
+      }
+  
+      const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
+  
+      if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
+        DataForRegister.IdContrato = ContratoActual.id_contrato;
+
+        this.registerPayService.registerPayClientv2(DataForRegister)
+          .then((res: any) => {
+            this.DisableReg = false
+            if (res) {
+  
+              this.sendingPay = false;
+              if (res && res.length > 0) {
+                try {
+                 // res.data.forEach((Data: any) => {
+                    if (res[0].to == "DUPLICADO") {
+                      this.playDuplicated = true;
+                      this.payReported = false;
+                    } else if (res[0].to.includes('Error')) {
+                      this.ErrorRegistrando = true;
+                      this.MessageErrorRegistrado = res[0].to;
+                    } else {
+                      this.SendOption(3, 0, true);
+                      this.payReported = true;
+                      this.playDuplicated = false;
+                    }
+                 // });
+  
+                } catch (error) {
+                  this.payReported = true;
+                }
+  
+                this.ScrollUp()
+                this.Contar = 10;
+                this.Contador();
+  
+              }
+            }
+          })
+          .catch((error: any) => {
+            console.error(error);
+          })
+  
+      } else {
+        this.CuentaAnulada = true;
+        this.playDuplicated = false;
+        this.ScrollUp()
+        this.Contar = 10;
+        this.Contador()
+      }
   }
 
   ScrollUp(Eventd?: any) {
@@ -2679,6 +2883,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.img?.setValue('');
     this.imageUrl = '';
     this.imageUploaded = false;
+    this.imageComprobanteURL = '';
     this.SendOption(2, 0, "deleteimage");
   }
 
@@ -2686,6 +2891,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.retentionImg?.setValue('');
     this.retentionImageUrl = '';
     this.retentionimageUploaded = false;
+    this.imageRetencionURL = '';
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
