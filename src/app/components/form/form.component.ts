@@ -48,7 +48,7 @@ import { UploadPHPService } from '../../services/UploadPHP.service';
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ResponseMethod } from 'src/app/interfaces/response';
-import { InfoPayComponent } from '../info-pay/info-pay.component';
+// import { InfoPayComponent } from '../info-pay/info-pay.component';
 
 
 
@@ -737,10 +737,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.BackFormaPago = !this.BackFormaPago;
     //Reportar
     if (x == 29) {
-      
+
       console.log("SaldoUSD")
       console.log(this.saldoUSD);
-      
+
       if(Number(this.saldoUSD) < 0){
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
         this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
@@ -760,7 +760,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       }else{
         this.PagoMetodosHTML2 = MetodoDePago2;
       }
-      
+
 
     }
     //Pagar
@@ -1266,7 +1266,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.imageUrl = imageBase64;
               this.imageUploaded = true;
             }, 300);
-            
+
             // this._Cloudinary.upload_images(imageBase64, NameCloud)
             //   .then((url) => {
             //     imageBase64 = '';
@@ -1453,7 +1453,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   private imageComprobanteURL: string | undefined;
   private imageRetencionURL: string | undefined;
-  
+
   savePayment() {
     this.DisableReg = true
     if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && (this.possibleWithholdingAgent && this.selectedRetentionOption == 2))) {
@@ -1560,15 +1560,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
 
   }
-  
+
   savePaymentV2() {
     // console.log("this.firstFormFibex.invalid", this.firstFormFibex.invalid, this.firstFormFibex.value);
     // console.log("this.secondFormFibex.invalid", this.secondFormFibex.invalid, this.secondFormFibex.value);
     // console.log("this.thirdFormFibex.invalid", this.thirdFormFibex.invalid, this.thirdFormFibex.value);
     // console.log("this.fourthFormFibex.invalid", this.fourthFormFibex.invalid, this.fourthFormFibex.value);
-  
+
     const promiseList: Promise<void>[] = [];
-    
+
     /******************************************
      * Subir imagen
      ******************************************/
@@ -1616,7 +1616,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         allowEscapeKey: false
       });
       Swal.showLoading();
-      
+
       const promise = this._Cloudinary.upload_images(this.retentionImageUrl, this.CloudNameRetencion)
       .then((url) => {
         this.imageRetencionURL = url;
@@ -1666,7 +1666,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         return {};
       })
       var saldo = "0";
-  
+
       if (this.BancoNacional(this.banco) && contractInfo?.saldo != undefined) {
         saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
       } else {
@@ -1674,13 +1674,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           saldo = parseFloat(contractInfo?.saldo).toFixed(2)
         }
       }
-  
+
       var dt = new Date(this.date?.value);
       let year = dt.getFullYear();
       let month = (dt.getMonth() + 1).toString().padStart(2, "0");
       let day = dt.getDate().toString().padStart(2, "0");
       let date = year + "/" + month + "/" + day;
-  
+
       this.sendingPay = true;
       const DataForRegister = {
         ...this.firstFormFibex.value,
@@ -1694,9 +1694,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         Browser: this.TypeNavegador,
         AddresIp: this.IpAddress.ip,
       }
-  
+
       const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
-  
+
       if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
         DataForRegister.IdContrato = ContratoActual.id_contrato;
 
@@ -1704,7 +1704,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           .then((res: any) => {
             this.DisableReg = false
             if (res) {
-  
+
               this.sendingPay = false;
               if (res && res.length > 0) {
                 try {
@@ -1721,22 +1721,22 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                       this.playDuplicated = false;
                     }
                  // });
-  
+
                 } catch (error) {
                   this.payReported = true;
                 }
-  
+
                 this.ScrollUp()
                 this.Contar = 10;
                 this.Contador();
-  
+
               }
             }
           })
           .catch((error: any) => {
             console.error(error);
           })
-  
+
       } else {
         this.CuentaAnulada = true;
         this.playDuplicated = false;
@@ -2186,7 +2186,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
-                  
+
                   //! to validate franchise
                   this.abonado = this.listContratos[0].contrato
                   if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
@@ -2292,7 +2292,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             localStorage.setItem("idContrato", this._seguridadDatos.encrypt(this.idContrato));
             localStorage.setItem("dni", this._seguridadDatos.encrypt(this.dni?.value));
             localStorage.setItem("Abonado", this._seguridadDatos.encrypt(this.abonado));
-            
+
 
             if (this.listContratos.length === 1) {
               this.listContratos.find((cliente) => {
@@ -2415,7 +2415,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.registerPayService.AbonadoSearchSector(Value)
     .then((resp:any)=>{
       this.LoadingLengthAbonado= false;
-      if(resp && resp.codigo == 1010){  
+      if(resp && resp.codigo == 1010){
         let SectorAbonado: any[] = JSON.parse(resp.data);
         SectorAbonado.forEach((element:any) => {
           let index =this.listContratos.findIndex((data:any)=>data.contrato==element.nro_contrato)
@@ -3386,7 +3386,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
   }
 
-  openInfoPayDialog() {
+  /* openInfoPayDialog() {
     console.log(this.nroContrato?.value);
     this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
     .then((response:any)=>{
@@ -3397,74 +3397,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       dialog.afterClosed().subscribe(result => {
       });
     }).catch((err:any)=>console.error(err));
-  }
+  } */
 
   public openInfoPay(): void {
     try {
-      console.log('openInfoPay')
+      console.log('in openInfoPay')
       this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
       .then((response:any) => {
-        console.log('response', response)
         this.showStateTable = true;
-        this.stateTableData = response.data.length>0 ? JSON.parse(response.data):[]
-        // this.stateTableData = [
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'REGISTRADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'RECHAZADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'RECHAZADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        //   {
-        //     fecha_reg: new Date(),
-        //     numero_ref: 565415656,
-        //     status_pd: 'PROCESADO'
-        //   },
-        // ]
-        console.log('this.stateTableData', this.stateTableData)
+        this.stateTableData = response.data.length ? JSON.parse(response.data):[]
       })
     } catch (error) {
       console.error(error)

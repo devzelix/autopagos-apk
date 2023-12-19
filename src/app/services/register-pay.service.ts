@@ -174,7 +174,7 @@ export class RegisterPayService {
           infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
           infoClient.name=infoClient.name.replace(/["]+/g, '');
         }
-        
+
         console.log(infoClient);
         const DataQuery = {
             Nombre:infoClient.name,
@@ -375,10 +375,12 @@ export class RegisterPayService {
   }
 
   MasterGETDBFULL(headersData: any, url: string) {
+    console.log('in MasterGETDBFULL')
     return new Promise(async (resolve: any, reject: any) => {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
         headers.TokenAuthPlataform = this.tokendbfulll
         headers.Authorization = this.authDBFULL
+        console.log('headers:', headers, 'url:', url )
         this.http.get(url, { headers }).subscribe((res: any) => {
           let jsonres;
           resolve(res);
@@ -595,7 +597,7 @@ export class RegisterPayService {
 
 
   getNewBankList() {
-    
+
     return new Promise(async (resolve: any, reject: any) => {
       const headersData = ({
         directory: "SAE",
@@ -640,7 +642,7 @@ export class RegisterPayService {
         console.log(url, "RESPONSE ERROR:", e);
         _reject(e);
       }
-      
+
       if (post) {
         console.log(headersData);
         console.log(body);
@@ -673,7 +675,7 @@ export class RegisterPayService {
               } else {
                 jsonres = res
               }
-              
+
               resolve(jsonres);
             } catch (error) {
               console.log(error)

@@ -139,7 +139,7 @@
         <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
-            <span [ngSwitch]="option.tipopago">
+            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size">
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
@@ -703,8 +703,8 @@
               <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
               <strong>Banco:</strong> Mercantil(0105) <br />
               <strong>Monto:</strong> {{saldoBs | negativeAmount}} Bs
-              
-              
+
+
             </p>
             <div>
 
@@ -1083,46 +1083,4 @@
 
 </form>
 
-<section *ngIf="showStateTable" class="info-pay-container form-login__group fancy_shadow form-login__group2 animated fadeIn">
-  <span class="header-info-pay">
-    <mat-icon class="btn-close" (click)="showStateTable=false">arrow_back</mat-icon>
-    <h1 class="title-info-pay">Información de sus últimos pagos</h1>
-  </span>
-  <span *ngIf="stateTableData && stateTableData.length>0">
-    <table class="info-pay-table">
-      <tbody>
-        <tr class="table-header">
-          <th>Fecha</th>
-          <th>Comprobante</th>
-          <th>Estado</th>
-        </tr>
-         <tr *ngFor="let item of stateTableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
-           <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-           <td> {{item.numero_ref}} </td>
-           <td> {{item.status_pd}} </td>
-           <!-- <td>
-            <div *ngIf="item.status_pd === 'PROCESADO'" class="pay-icon-checked">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </svg>
-            </div>
-             <div *ngIf="item.status_pd === 'RECHAZADO'" class="pay-icon-rejected">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-              </svg>
-             </div>
-            <div *ngIf="item.status_pd === 'REGISTRADO'" class="pay-icon-registered" >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-              </svg>
-            </div>
-           </td> -->
-         </tr>
-      </tbody>
-    </table>
-  </span>
-  <span *ngIf="stateTableData.length == 0">
-    <h3 style="text-align: center;">No tienes pagos para mostrar</h3>
-  </span>
-
-</section>
+<app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable" (closeEvent)="showStateTable=false"></app-info-pay>

@@ -64,6 +64,11 @@ export const BankEmisorS  = [
         Cero: false,
         regex:"/^([0-9])*$/"
     }
-    
+
   ]
-  
+
+export interface IPayInfoData {
+  fecha_reg: Date;
+  numero_ref:number
+  status_pd:string;
+}

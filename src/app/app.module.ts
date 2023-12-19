@@ -41,7 +41,6 @@ const routes: Routes = [
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
   { path: 'stripe', component: StripeComponent },
-  //{ path: '',   redirectTo: '/', pathMatch: 'full' }
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ]
 
@@ -93,7 +92,7 @@ const routes: Routes = [
     }
   ],
   exports: [MaterialModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  // schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
