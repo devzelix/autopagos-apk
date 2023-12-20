@@ -503,4 +503,23 @@ export class ApiMercantilService implements  OnInit {
       }
     })
   }
+
+  getStripePayment(data: any){
+    return new Promise((resolve,reject)=>{
+      this._EncrypD.EncrypDataHash(env.KeyEncrypt,data)
+       .then((resp:any)=>{
+        const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+            this.http.post<any>(`${this.URLAPIMERCANTIL}RegStr`, resp,{headers:headers}).subscribe({
+                next: data => {
+                    resolve(data);
+                },
+                error: error => {
+                    console.error('There was an error!', error);
+                    reject(error);
+                }
+            })
+       })
+      .catch((error:any)=>console.error(error));
+    });
+  }
 }

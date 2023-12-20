@@ -191,8 +191,6 @@ export class StripeComponent implements OnInit {
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
-        // this.newAmount = {cantidad: result.amount}
-        console.log(result);
         resultTok=result.token
             let data={
               token:result?.token?.id,
@@ -200,12 +198,10 @@ export class StripeComponent implements OnInit {
               paquete: this.paquete
             }
             //Aqui
-            this.registerPayService.getStripePayment(data)
+            this._ApiMercantil.getStripePayment(data)
             .then((res:any)=>{
                 if(res.pago){
-                    // console.log("Stripe registerPayService");
                     let client_secret=res.pago.client_secret
-                    // console.log(4000000000009995)
                     this.stripeService.confirmCardPayment(client_secret, 
                       {
                         payment_method: { card: this.card.getCard() },

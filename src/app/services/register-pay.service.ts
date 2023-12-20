@@ -529,26 +529,6 @@ export class RegisterPayService {
     );
   }
 
-  getStripePayment(data: any){
-    return new Promise((resolve,reject)=>{
-      const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-      this.security.EncrypDataHash(data)
-      .then((resp:any)=>{
-         this.http.post(`${env.ApiMercantil}RegStr`, resp,{headers:headers}).subscribe({
-           next: data => {
-             console.log(data);
-               resolve(data)
-           },
-           error: error => {
-             console.log(error);
-               reject(error);
-           }
-         });
-      })
-      .catch((error:any)=>console.error(error));
-    });
-  }
-
   confirmPaymen(data: any){
     return new Promise((resolve,reject)=>{
       this.http.post(`${env.ApiMercantil}payment`, data).subscribe({
@@ -594,8 +574,7 @@ export class RegisterPayService {
     })
     .catch((error:any)=>console.error(error));
   }
-
-
+  
   getNewBankList() {
 
     return new Promise(async (resolve: any, reject: any) => {

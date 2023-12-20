@@ -20,7 +20,18 @@ export class SeguridadDatos {
     //   console.log(str)
       return encrypted.toString();
     }
-    Desencrypt2(str:any){;
+
+    encrypt2(key:string,str:any){
+      let encrypted = CryptoJS.AES.encrypt(str, key, {
+        keySize: 16,
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7,
+      });
+    //   console.log(str)
+      return encrypted.toString();
+    }
+    
+    Desencrypt2(str:any){
         let decrypted = CryptoJS.AES.decrypted(str, this.key, {
             keySize: 16,
             mode: CryptoJS.mode.ECB,
@@ -28,7 +39,7 @@ export class SeguridadDatos {
         });
   
         return decrypted;
-      }
+    };
 
     decrypt(str: string) {
       let decrypted = CryptoJS.AES.decrypt(str, this.key, {
@@ -42,11 +53,11 @@ export class SeguridadDatos {
     private EncrypObj(obj: any) {
         const newObj: any = {};
 
-        for(let keyName in obj) {
+        for(let keyName in obj) {      
             if(obj[keyName] instanceof Array || obj[keyName] instanceof Object) {
                 obj[keyName] = this.EncrypObj(obj[keyName]);
-            }
-            else newObj[keyName] = String(this.encrypt(obj[keyName]));
+            }       
+            else newObj[keyName] = String(this.encrypt(obj[keyName]))
         }
         return newObj;
     }
