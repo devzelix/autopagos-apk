@@ -90,7 +90,15 @@ $app-light-blue2: rgb(74 159 255);
   // grid-gap: 4%;
   // grid-auto-rows: minmax(100px, auto);
   width: 100%;
-  grid-template-columns: repeat(auto-fit, minmax(min(80px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(87px, 100%), 1fr));
+  &.cards-abonados {
+    @media only screen and (max-width: 597px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media only screen and (max-width: 360px) {
+      grid-template-columns: 1fr;
+    }
+  }
   display: grid;
   gap: 20px;
   justify-items: center;

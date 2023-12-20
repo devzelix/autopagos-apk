@@ -39,6 +39,10 @@ table.info-pay-table {
         padding: 13px;
       }
 
+      th {
+        line-height: 1;
+      }
+
       // &.bg-dark {
         // td {
         //   background: #85bdca !important;
@@ -51,6 +55,8 @@ table.info-pay-table {
         padding: 20px 0px;
         color: rgb(65, 65, 65);
         text-align: center;
+        text-wrap: balance;
+        line-height: 1;
       }
     }
   }

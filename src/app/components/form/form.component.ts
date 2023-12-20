@@ -3421,6 +3421,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     dialog.afterClosed().subscribe(result => {
     });
   }
+
+  public showConsole = (log:unknown) => {
+    try {
+      console.log('log', log)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 }
 
 

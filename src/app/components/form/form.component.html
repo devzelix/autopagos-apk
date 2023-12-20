@@ -72,7 +72,7 @@
           <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
             <mat-spinner></mat-spinner>
           </div>
-          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards animated fadeInUp">
+          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards cards-abonados  animated fadeInUp">
             <button *ngFor="let contrato of listContratos" class="grid-cards-item"
               (click)="contractSelected(contrato,true)">
               <h3>
@@ -139,7 +139,7 @@
         <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
-            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size">
+            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size" (click)="showConsole(option)">
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
