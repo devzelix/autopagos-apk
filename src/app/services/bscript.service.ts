@@ -66,17 +66,17 @@ export class SeguridadDatos {
     public EncrypDataHash(Datos:any){
         return new Promise((resolve,reject)=>{
             try {
-                resolve(this.EncrypObj(Datos));
-                // Object.entries(Datos).forEach(([keyOriginal, valueKey]: any ,index:number) => {
-                //     var Tamano= Object.keys(Datos);
-                //     if(typeof valueKey !="number" && valueKey !=""&& valueKey !=undefined && valueKey !=null){
-                //         const Encrypt = this.encrypt(valueKey); //Encripto
-                //         Datos[keyOriginal] = Encrypt;
-                //     }
-                //     if(index == Tamano.length-1){
-                //         resolve(Datos)
-                //     }
-                // })
+                //resolve(this.EncrypObj(Datos));
+                Object.entries(Datos).forEach(([keyOriginal, valueKey]: any ,index:number) => {
+                    var Tamano= Object.keys(Datos);
+                    if(typeof valueKey !="number" && valueKey !=""&& valueKey !=undefined && valueKey !=null){
+                        const Encrypt = this.encrypt(valueKey); //Encripto
+                        Datos[keyOriginal] = Encrypt;
+                    }
+                    if(index == Tamano.length-1){
+                        resolve(Datos)
+                    }
+                })
             } catch (error) {
                 reject(error);
             }

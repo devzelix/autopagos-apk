@@ -3071,12 +3071,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.openSnackBar('Error al subir la imagen, intente nuevamente');
           this.counterErrors++;
           this.img?.setValue('');
+          return
         });
     } else {
       this.img?.setValue('');
       this.openSnackBar('Error al subir la imagen, intente nuevamente');
       this.counterErrors++;
       this.uploadingImg = false;
+      return
     }
 
   }
@@ -3287,7 +3289,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         if (this.BancoNacional('')) {
           if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
@@ -3295,7 +3297,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         if (!this.BancoNacional('')) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 6) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
@@ -3310,7 +3312,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       next: (value) => {
         if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
           this.invalidAmount = true;
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
           this.cantidadDC?.setValue('');
           return;
         }
@@ -3321,7 +3323,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.cantidad?.valueChanges.subscribe({
       next: (value) => {
         if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
           this.cantidad?.setValue('');
           this.invalidAmount = true;
           return;
@@ -3333,7 +3335,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.amountPm?.valueChanges.subscribe({
       next: (value) => {
         if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
           this.amountPm?.setValue('');
           this.invalidAmount = true;
           return;

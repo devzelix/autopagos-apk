@@ -77,7 +77,7 @@ export class PaypalComponent implements OnInit {
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
             this.ValidoPagoPaypal = true;
-            this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 3 meses de su suscripción`, ``);
             this.cantidadPaypal?.setValue('');
             return;
           }else{

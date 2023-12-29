@@ -157,7 +157,7 @@ export class StripeComponent implements OnInit {
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
             this.ValidoPagoStripe = true;
-            this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 3 meses de su suscripción`, ``);
             this.cantidadStripe?.setValue('');
             return;
           }else{
@@ -301,7 +301,7 @@ export class StripeComponent implements OnInit {
       ...DataStripe
     }
 
-    this.registerPayService.stripePost(DatosUserAgent)
+    this._ApiMercantil.stripePost(DatosUserAgent)
   }
 
   Countdown(Minute: number, Seconds: number) {

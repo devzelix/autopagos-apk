@@ -169,12 +169,12 @@ export let MetodoDePago3 = [
     omitir: false,
     image: 'assets/images/Paypal_2014_logo.png'
   },
-  {
-    idpago: 28,
-    tipopago: "T.C. Internacional",
-    omitir: false,
-    image: 'assets/images/Tarjetas de Credito_Mesa de trabajo 1.jpg',
-  },
+  // {
+  //   idpago: 28,
+  //   tipopago: "T.C. Internacional",
+  //   omitir: false,
+  //   image: 'assets/images/Tarjetas de Credito_Mesa de trabajo 1.jpg',
+  // },
   {
     idpago: 0,
     tipopago: "Débito",

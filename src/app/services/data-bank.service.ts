@@ -25,8 +25,6 @@ export class DataBankService {
   GetList() {
     try {
       this.registerPayService.getNewBankList().then((ResSae: any) => {
-        console.log("Bancos del SAE");
-        console.log(ResSae);
         for (let indexSae = 0; indexSae < ResSae.length; indexSae++) {
           if (this.BankIncluir.includes(ResSae[indexSae].numero_cuenta)) {
 
@@ -95,7 +93,7 @@ export class DataBankService {
           return "USD BANCO NACIONAL CREDITO"
           break;
         case "00000000101":
-          return "ZELLE WELL FARGO pagos.zelle@fibextelecom.net"
+          return "ZELLE WELL FARGO pagos.zelle2@fibextelecom.net"
           break;
         case "01050652295652011351":
           return "USD BANCO MERCANTIL "

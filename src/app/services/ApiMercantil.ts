@@ -522,4 +522,34 @@ export class ApiMercantilService implements  OnInit {
       .catch((error:any)=>console.error(error));
     });
   }
+
+  stripePost(data: any) {
+
+    let DataUSer={
+      "name_user": data.Name,
+      "customer_id": data.c_iDC,
+      "stripe_id": data.id,
+      "payment_reference": data.payment_method,
+      "browser_agent": data.browser_agent,
+      "ipaddress": data.ipaddress,
+      "abonado": data.Abonado,
+      "id_contrato": data.idContrato,
+      "amount": data.neto,
+      "description": data.description,
+      "currency": data.currency,
+      "processing_date": data.created,
+      "status": data.status
+    }
+ 
+    const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+    this._EncrypD.EncrypDataHash(env.KeyEncrypt,DataUSer)
+    .then((resp:any)=>{
+       this.http.post(`${env.ApiMercantil}SavStr`, resp,{headers:headers}).subscribe({
+         error: error => {
+           console.log(error);
+         }
+       })
+    })
+    .catch((error:any)=>console.error(error));
+  }
 }

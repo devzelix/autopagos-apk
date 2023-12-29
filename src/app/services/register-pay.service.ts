@@ -175,7 +175,6 @@ export class RegisterPayService {
           infoClient.name=infoClient.name.replace(/["]+/g, '');
         }
 
-        console.log(infoClient);
         const DataQuery = {
             Nombre:infoClient.name,
             Cedula:infoClient.dni,
@@ -566,6 +565,7 @@ export class RegisterPayService {
     const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
     this.security.EncrypDataHash(DataUSer)
     .then((resp:any)=>{
+      console.log(resp);
        this.http.post(`${env.ApiMercantil}SavStr`, resp,{headers:headers}).subscribe({
          error: error => {
            console.log(error);
