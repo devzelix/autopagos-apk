@@ -3262,9 +3262,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         if (value) {
           let date = new Date(value).getTime()
           const { days } = this.miceService.timeDifference(new Date().getTime(), date);
-          if (days > 182) {
+          if (days > 250) {
 
-            this.invalidForm('No puede reportar un pago con más de 6 meses', 'Por favor diríjase a una oficina comercial');
+            this.invalidForm('No puede reportar un pago con más de 8 meses', 'Por favor diríjase a una oficina comercial');
             this.firstFormFibex.get('date')?.setValue('');
             this.dateInvalid = true;
             this.errorDate = !this.errorDate;
@@ -3287,17 +3287,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.amount?.valueChanges.subscribe({
       next: (value) => {
         if (this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
         }
         if (!this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 6) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 8) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
@@ -3310,9 +3310,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   amountInvalidCreditoDebitoPagoMovil() {
     this.cantidadDC?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
           this.invalidAmount = true;
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.cantidadDC?.setValue('');
           return;
         }
@@ -3322,8 +3322,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     this.cantidad?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.cantidad?.setValue('');
           this.invalidAmount = true;
           return;
@@ -3334,8 +3334,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     this.amountPm?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su suscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.amountPm?.setValue('');
           this.invalidAmount = true;
           return;
