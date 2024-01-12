@@ -29,7 +29,6 @@ import axios, { Axios } from "axios";
 
    C2PCompra(Datos: any) {
     return new Promise((resolve, reject) => {
-      console.log("entre aqui 2")
       try {
         let DatosC2P = {
           "Bank": "0105",
@@ -38,30 +37,20 @@ import axios, { Axios } from "axios";
           "Amount": Datos.cantidad,
           "Abonado": Datos.Abonado,
           "IdContrato": Datos.idContrato,
-        }
-
-        console.log("DatosC2P",DatosC2P);
+          "name_user": Datos.name_user
+        };
   
             const url = 'http://localhost:8888/';
-            
-            
-            
             const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
             'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
             'accion':this._EncrypD.EncryptData100x100('MobilePayment'),
             'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
-
             });
-            
-            
-            console.log('Headers:', headers);
-              
+
             this.http.post<any>(url,DatosC2P,{headers:headers}).subscribe({
               next: data => {
-                console.log("Respondio");
-                console.log(data);
                   resolve(data);
               },
               error: error => {
@@ -82,11 +71,10 @@ import axios, { Axios } from "axios";
 
 
     CompraDebito(Datos:any){
-      console.log("CompraTDD");
       return new Promise((resolve,reject)=>{
-        console.log("entre aqui 2",Datos)
         try {
           Datos ={
+            "name_user": Datos.name_user,
             "Abonado": Datos.Abonado,
             "IdContrato": Datos.Contrato,
             "sBankId": "0108", //Nose si mercantil o 100x100 banco
@@ -95,33 +83,28 @@ import axios, { Axios } from "axios";
             "nAmount":Datos.Amount,
           }
 
-          console.log("CompraTDDv22",Datos)
-
           const url = 'http://localhost:8888/';
-        const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
-            'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
-            'accion':this._EncrypD.EncryptData100x100('DebitPayment'),
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+          const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
+              'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
+              'accion':this._EncrypD.EncryptData100x100('DebitPayment'),
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
 
-            });
-            
-            
-            console.log('Headers:', headers);
-  
-          console.log("CompraTDDv22",headers);
-              this.http.post<any>(url, Datos,{headers:headers}).subscribe({
-                  next: data => {
-                    console.log("Respondio");
-                    console.log(data);
-                      resolve(data);
-                  },
-                  error: error => {
-                      console.error('There was an error!', error);
-                      reject(error);
-                  }
-              })
+          });
+
+          this.http.post<any>(url, Datos,{headers:headers}).subscribe({
+              next: data => {
+                console.log("Respondio");
+                console.log(data);
+                  resolve(data);
+              },
+              error: error => {
+                  console.error('There was an error!', error);
+                  reject(error);
+              }
+          })
+
         } catch (error) {
           reject(error);
         }

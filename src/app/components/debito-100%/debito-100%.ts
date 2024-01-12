@@ -4,6 +4,7 @@ import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscri
 import { ApiBNCService } from 'src/app/services/ApiBNC';
 import Swal from 'sweetalert2';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
+import { SeguridadDatos } from 'src/app/services/bscript.service';
 
 @Component({
   selector: 'app-debito-100x100',
@@ -24,7 +25,8 @@ export class Debit100x100 implements OnInit {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private _Api100x100: Api100x100Service
+    private _Api100x100: Api100x100Service,
+    private _seguridadDatos: SeguridadDatos
   ) { }
 
   ngOnInit() {
@@ -45,30 +47,37 @@ export class Debit100x100 implements OnInit {
   }
 
   PagoDebito100x100() {
-
+    this.alertFind("Procesando su pago", "Por favor espere") 
     let datosPago :any
-
+    
     datosPago = this.Debito100x100.value
+    let name_user = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!): "";
 
-    console.log("entre aqui 1",datosPago)
-    this._Api100x100.CompraDebito({...datosPago,
-        Abonado: this.Abonado,
-        Contrato: this.Contrato}).then((resp: any) => {
-          console.log("entre aqui 2",resp.hasOwnProperty('status')) 
-          if (resp.hasOwnProperty('status')){
-            if (resp.status == true) {
-            console.log("entre aqui 2",resp.hasOwnProperty('status')) 
-              this.OutputResponse.emit({
-                Tipo: "Pago Realizado"
-              })
-              console.log(resp)        
-            }else {
-              this.invalidForm(`Hubo un problema`,`${resp.description}`);
-            }
-          }else{
-            this.invalidForm("Error",`${resp.error}`)
+    this._Api100x100.CompraDebito({...datosPago,Abonado: this.Abonado,Contrato: this.Contrato,name_user: name_user})
+    .then((resp: any) => {
+        if (resp.hasOwnProperty('status')){
+          if (resp.status == true) {
+            this.OutputResponse.emit({
+              Tipo: "Pago Realizado"
+            })     
+          }else {
+            this.invalidForm(`Hubo un problema`,`${resp.description}`);
           }
-    }).catch((error: any) => console.error(error))
+        }else{
+          this.invalidForm("Error",`${resp.error}`)
+        }
+  }).catch((error: any) => console.error(error))
+  }
+
+  alertFind(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      //timer: 5000,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
   }
 
 

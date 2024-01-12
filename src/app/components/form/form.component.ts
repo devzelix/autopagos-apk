@@ -909,33 +909,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   PagoC2P100x100() {
-    console.log("entre aqui 1")
-
-        //console.log("tlforigin:", this.tlforigin?.value)
-        console.log("c_i:", this.pref_ci?.value + this.c_iRegPgoMvil?.value)
-        console.log("tlfdestin:", this.tlfdestin?.value.toString())
-        console.log("cantidad:", this.amountPm?.value)
-        console.log("Abonado:", this.nroContrato?.value)
-        console.log("idContrato:", this.idContrato)
-        //console.log("Cliente:", this.idContrato )
-        //console.log("Browser:", this.TypeNavegador)
-        //console.log("AddresIp:", this.IpAddress.ip)
-        //console.log("auth:", this.auth?.value)
-        //console.log("Name:", this.name?.value)
-        //console.log("invoice:", "")
-
-        let datosPago = {
-          c_i: this.pref_ci?.value + this.c_iRegPgoMvil?.value,
-          tlfdestin: this.tlfdestin?.value.toString(),
-          cantidad: this.amountPm?.value,
-          Abonado: this.nroContrato?.value,
-          idContrato: this.idContrato,
-        }
-
+    this.alertFindDniMercantil("Procesando su pago", "Por favor espere");
+    let datosPago = {
+      c_i: this.pref_ci?.value + this.c_iRegPgoMvil?.value,
+      tlfdestin: this.tlfdestin?.value.toString(),
+      cantidad: this.amountPm?.value,
+      Abonado: this.nroContrato?.value,
+      idContrato: this.idContrato,
+      name_user:this.nameClient
+    }
 
     this._Api100x100.C2PCompra(datosPago).then((resp: any) => {
-      console.log("contrato",this.nroContrato?.value)
-      console.log(resp.hasOwnProperty('status'))
       if (resp.hasOwnProperty('error')) {
         // this.alertFindDni(`${resp.error_list[0].description}`,'');
         this.invalidForm(`${resp.error}`)

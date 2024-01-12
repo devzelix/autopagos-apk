@@ -916,7 +916,7 @@
         <!-- regreso al stepper anteriror de pago movil-->
         <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
           (click)=" ShowOptionPagoMovil = false; BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
-          REGRESAR5
+          REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
 
@@ -927,7 +927,7 @@
           </button>
           <button class="customized_btn_next btn-width-30"
             (click)="BankSelectPagoMovil = false; ShowalertBankNationals = false">
-            Regresar6
+            Regresar
           </button>
         </div>
 
@@ -936,7 +936,7 @@
           <button class="button-material-back btn-width-30"
             (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
             matStepperPrevious>
-            Regresar7
+            Regresar
           </button>
         </div>
 
@@ -948,7 +948,7 @@
           </button>
           <button class="customized_btn_next btn-width-30"
             (click)="BankSelectPagoMovil = true; ShowalertBankNationals = true; ConsultarPagoMovilboolean = false">
-            Regresar8
+            Regresar
           </button>
         </div>
 
@@ -956,7 +956,7 @@
           class="btn-flex-center">
           <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='Mercantil'"
           type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
-            Solicitar pin de autorización1 {{Minutes}}{{ConcatenaTimer}}{{Second}}
+            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='100x100 Banco'"
           type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
@@ -964,7 +964,7 @@
           </button>
           <button class="customized_btn_next btn-width-30"
             (click)="ResetFormCD(); ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowalertBankNationals = false; RegistrarPagoMovilboolean = false">
-            Regresar9
+            Regresar
           </button>
         </div>
       </mat-step>
@@ -1011,11 +1011,14 @@
               </h4>
             </div>
           </div>
-          {{BancoSeleccionado?.value}}
+
           <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && !Creditoboolaean" [Tipo]="'Debito'"
-            (BankSelect)="TipoBankSelect($event)"></app-list-bank>
-            <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && Creditoboolaean" [Tipo]="'Credito'"
-            (BankSelect)="TipoBankSelect($event)"></app-list-bank>
+            (BankSelect)="TipoBankSelect($event)">
+          </app-list-bank>
+
+          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && Creditoboolaean" [Tipo]="'Credito'"
+            (BankSelect)="TipoBankSelect($event)">
+          </app-list-bank>
 
           <ng-template matStepLabel>Datos de pago</ng-template>
 
