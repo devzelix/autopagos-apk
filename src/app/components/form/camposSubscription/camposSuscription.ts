@@ -178,7 +178,7 @@ export let MetodoDePago3 = [
   {
     idpago: 0,
     tipopago: "Débito",
-    image: 'assets/images/Icono TDD_Mercantil-Pagos Fibex.png',
+    image: 'assets/images/Icono TDD_Mercantil-Pagos Fibex.jpeg',
     alt: 'Débito Mercantil',
     omitir: false,
   },

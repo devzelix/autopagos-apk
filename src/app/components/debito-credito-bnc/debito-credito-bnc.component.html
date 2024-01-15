@@ -39,20 +39,20 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-                <mat-label>Nombre de la tarjeta</mat-label>
+                <mat-label>Nombre de tarjeta habiente</mat-label>
                 <input matInput required formControlName="CardName">
                 <mat-error *ngIf="POS_VirtualForm.get('CardName')?.hasError('required')">
                     El nombre de tarjeta es requerido
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <!-- <mat-form-field appearance="outline">
                 <mat-label>Nro. de tarjeta habiente</mat-label>
                 <input matInput required formControlName="CardHolderId" NumbersOnly="true">
                 <mat-error *ngIf="POS_VirtualForm.get('CardHolderId')?.hasError('required')">
                     El número de tarjeta habiente es requerido
                 </mat-error>
-            </mat-form-field>
+            </mat-form-field> -->
 
             <mat-form-field appearance="outline">
                 <mat-label>Nro. de tarjeta</mat-label>
@@ -111,7 +111,7 @@
 
             <!-- <mat-form-field *ngIf="!Creditoboolaean" appearance="outline"> -->
             <mat-form-field appearance="outline">
-                <mat-label>Clave telefónica</mat-label>
+                <mat-label>Clave</mat-label>
                 <input type="password" matInput formControlName="CardPIN" NumbersOnly="true" #inputDni>
                 <mat-error *ngIf="POS_VirtualForm.get('CardPIN')?.hasError('required')">
                     El número de tarjeta es requerido

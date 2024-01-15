@@ -1090,21 +1090,54 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  PagoP2PBNC() {
-    const Datospago = {
-      "Abonado": this.nroContrato?.value,
-      "IdContrato": this.idContrato,
-      "ChildClientID": this.pref_ci?.value + this.c_i_bnc?.value,
-      "Amount": this.amountPm_bnc?.value,
-      "Description": this.Desciption_bnc?.value
-    }
+  async PagoP2PBNC() {
+    const { value: token } = await Swal.fire({
+      title: "Ingresa el token de autorización",
+      input: "number",
+      inputLabel: "token de autorización",
+      inputPlaceholder: "token de autorización",
+      validationMessage: "Debes ingresar un token valido.",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Pagar",
+      inputAttributes: {
+        maxlength: "6",
+        autocapitalize: "off",
+        autocorrect: "off"
+      },
+      inputValidator(value) {
+        return new Promise((resolve) => {
+          if (value.length == 6) {
+            resolve(null);
+          } else {
+            resolve("Tu token no es valido");
+          }
+        })
+      },
+    });
 
-    this._ApiBNC.PayP2P(Datospago).then((ResPay: any) => {
-      if (ResPay && ResPay.status === true) {
-        this.ShowOptionBNCPagoMovil = false
-        this.ReciboPay = true
-      } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
-    }).catch(err => console.error(err))
+    if (token) {
+      const Datospago = {
+        "Abonado": this.nroContrato?.value,
+        "IdContrato": this.idContrato,
+        "ChildClientID": this.pref_ci?.value + this.c_i_bnc?.value,
+        "Amount": this.amountPm_bnc?.value,
+        "Description": this.Desciption_bnc?.value
+      }
+
+      this._ApiBNC.PayP2P(Datospago).then((ResPay: any) => {
+        if (ResPay && ResPay.status === true) {
+          this.ShowOptionBNCPagoMovil = false
+          this.ReciboPay = true
+          Swal.fire({
+            icon: "success",
+            title: "Pago Móvil procesado correctamente.",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+      }).catch(err => console.error(err))
+    }
   }
 
   PagoDebito() {
