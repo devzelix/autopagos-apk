@@ -76,7 +76,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   displayedColumns: string[] = ['Fecha', 'Status'];
 
   public BankEmisor = BankEmisorS
-  public bancoSeleccionado : string = ""
+  public bancoSeleccionado: string = ""
   public RegexPhone = /^(412|414|424|416|426|0412|0414|0424|0416|0426|58412|58414|58424|58416|58426)[0-9]{7}$/gm
   private idUnicoClient: any = nanoid(10);
   public bankList: BankList[] = [];
@@ -150,7 +150,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public errorDate: boolean = false;
   public daysFeriados: BanksDays[] | any = [];
   public BancoDefault: string = "Mercantil"
-  public bancooo : string = "100x100Banco"
+  public bancooo: string = "100x100Banco"
   public LoadingLengthAbonado: boolean = false;
   ExitRef: Boolean = true //para saber si el campo de comprobante esta vacio o no
   AllService: any = []
@@ -217,6 +217,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   paymentMethod: string = 'standard'
   public showStateTable: boolean = false;
   public stateTableData: { fecha_reg: Date, numero_ref: number, status_pd: string }[];
+  banksListBNC: any[] = [];
+  ReciboPayBNC: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -252,6 +254,16 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.banksFiltered = [...this.bankList];
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
     });
+
+
+    this._ApiBNC.listBanks().then((res: any) => {
+      console.log({ res: res });
+      if (res.status == true) {
+        this.banksListBNC = res.Bancos;
+      }
+    }).catch((err) => {
+      console.log(err);
+    })
   }
 
   ngOnChanges() {
@@ -332,6 +344,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       pref_ci: ['', [Validators.required]],
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       phone: ['', [Validators.required, Validators.minLength(11)]],
+      codeBank: ['', [Validators.required, Validators.minLength(4)]],
       Desciption: ['', [Validators.required, Validators.minLength(4)]],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
@@ -619,6 +632,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   //Retencion
   get retentionAmount() { return this.fourthFormFibex.get('retentionAmount'); }
   get retentionImg() { return this.fourthFormFibex.get('retentionImg'); }
+  get codeBank() { return this.PgMovilBNCForm.get('codeBank'); }
 
 
   ClearCedula(Cedula: any) {
@@ -917,7 +931,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       cantidad: this.amountPm?.value,
       Abonado: this.nroContrato?.value,
       idContrato: this.idContrato,
-      name_user:this.nameClient
+      name_user: this.nameClient
     }
 
     this._Api100x100.C2PCompra(datosPago).then((resp: any) => {
@@ -974,7 +988,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoBankSelect(Evento: any) {
-    console.log("TipoBankSelect",Evento)
+    console.log("TipoBankSelect", Evento)
     switch (Evento.Tipo) {
       case "PagoMovil":
         if (Evento.Opcion === 'otros') { this.ShowalertBankNationals = true } else { this.SelectedPagoC2P({ '_value': Evento.Opcion }); }
@@ -985,17 +999,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.ShowFormDebitoCreditoBNC = true
         } else if (Evento.Opcion === "100% Banco") {
           this.ShowFormDebito100x100 = true
-        }else {
+        } else {
           this.ShowFormDebitoCredito = true
         }
         break
-        case "Credito":
-          if (Evento.Opcion === "BNC") {
-            this.ShowFormDebitoCreditoBNC = true
-          }else {
-            this.ShowFormDebitoCredito = true
-          }
-          break  
+      case "Credito":
+        if (Evento.Opcion === "BNC") {
+          this.ShowFormDebitoCreditoBNC = true
+        } else {
+          this.ShowFormDebitoCredito = true
+        }
+        break
     }
   }
 
@@ -1013,7 +1027,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   OutputDebito100x100(Event: any) {
-    console.log("OutputDebito100x100",Event)
+    console.log("OutputDebito100x100", Event)
     switch (Event.Tipo) {
       case "Regresar":
         this.ResetFormCD()
@@ -1071,7 +1085,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.PgMovilRegForm.get('amountPm')?.setValue(this.saldoBs);
         this.PgMovilForm.get('cantidad')?.setValue('');
         this.PgMovilRegForm.get('pref_ci')?.setValue('V');
-        this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);  
+        this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
     }
   }
 
@@ -1090,7 +1104,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  async PagoP2PBNC() {
+  async PagoC2PBNC() {
     const { value: token } = await Swal.fire({
       title: "Ingresa el token de autorización",
       input: "number",
@@ -1117,24 +1131,22 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
 
     if (token) {
+      this.alertFindDniMercantil('Comprobando pago', 'Por favor espere...'); // Mostrar el loading
+
       const Datospago = {
         "Abonado": this.nroContrato?.value,
         "IdContrato": this.idContrato,
+        "CodeBank": this.codeBank?.value,
         "ChildClientID": this.pref_ci?.value + this.c_i_bnc?.value,
         "Amount": this.amountPm_bnc?.value,
         "Description": this.Desciption_bnc?.value
       }
 
-      this._ApiBNC.PayP2P(Datospago).then((ResPay: any) => {
+      this._ApiBNC.PayC2P(Datospago).then((ResPay: any) => {
         if (ResPay && ResPay.status === true) {
           this.ShowOptionBNCPagoMovil = false
-          this.ReciboPay = true
-          Swal.fire({
-            icon: "success",
-            title: "Pago Móvil procesado correctamente.",
-            showConfirmButton: false,
-            timer: 1500
-          });
+          this.ReciboPayBNC = true
+          this.alertexit("Pago Móvil procesado exitosamente.");
         } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
       }).catch(err => console.error(err))
     }
@@ -2799,7 +2811,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
     console.log('warnignFormGeneral')
-    console.log("metodo",NameMetodo)
+    console.log("metodo", NameMetodo)
     Swal.fire({
       title: text,
       html: html,
@@ -2824,7 +2836,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             break;
           case 'this.PagoC2P100x100()':
             this.PagoC2P100x100();
-            break;  
+            break;
           default:
             eval(NameMetodo);
             break;
@@ -3168,7 +3180,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   AmountIncorrectConfirm(value: string, Metodo: string, type?: string) {
     console.log("AmountIncorrectConfirm");
-    console.log("value",value)
+    console.log("value", value)
     if (Number(value) === 0) {
       this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
       this.cantidadDC?.reset();
@@ -3398,7 +3410,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   logMensaje(mensaje: string) {
-    console.log("mensaje",mensaje);
+    console.log("mensaje", mensaje);
   }
 
   public openInfoPay(): void {

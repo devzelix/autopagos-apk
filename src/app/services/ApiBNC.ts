@@ -14,7 +14,7 @@ export class ApiBNCService {
         wt: '',
     }
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {}
 
     EncryptDatos(Data: any) {
         return CryptoJS.AES.encrypt(Data, environment.securityEncrt, {
@@ -55,7 +55,35 @@ export class ApiBNCService {
         })
     }
 
-    PayP2P(DatosPay: any) {
+    MasterGet(Headers: any) {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+                let MsgError: string
+                this.http.get('http://localhost:9005/'  /* 'https://apitest3.thomas-talk.me/' */, { headers: Headers }).subscribe((Res: any) => {
+                    console.log("Res BNC")
+                    if (Res && Res.status === true) {
+                        console.log(Res)
+                        resolve(Res)
+                    } else if (Res && Res.Error) {
+                        console.log("entre en el else de error")
+                        const TipoError: any = Res.Error
+                        if (typeof TipoError === 'object') {
+                            for (var key in TipoError) { MsgError = TipoError[key][0] }
+                        } else { console.log(TipoError) }
+                        resolve({ status: false, MsgError, message: Res.message })
+                    }
+                }, (err: any) => {
+                    console.error("err BNC")
+                    console.error(err)
+                    reject(err)
+                })
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+    PayC2P(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
             try {
                 this.GlobalHeader.accion = this.EncryptDatos('MobilePayment')
@@ -114,6 +142,20 @@ export class ApiBNCService {
                 }
 
                 this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
+
+            } catch (error) {
+                console.error(error)
+            }
+        })
+    }
+
+    listBanks() {
+        return new Promise(async (resolve: any, reject: any) => {
+            try {
+                this.GlobalHeader.accion = this.EncryptDatos('Bank_List')
+                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
+
+                this.MasterGet(this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
 
             } catch (error) {
                 console.error(error)

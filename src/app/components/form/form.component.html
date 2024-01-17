@@ -736,13 +736,25 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
+                <mat-label>Banco emisor</mat-label>
+                <mat-select formControlName="codeBank" placeholder="Banco emisor">
+                  <mat-option *ngFor="let bank of banksListBNC" [value]="bank.Code">
+                    {{ bank.Name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="PgMovilBNCForm.get('codeBank')?.errors">
+                  <p *ngIf="PgMovilBNCForm.get('codeBank')?.hasError('required')">El Banco emisor es requerido</p>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
                 <mat-label>Descripción</mat-label>
                 <input matInput formControlName="Desciption" placeholder="Ejemplo: pago servicio">
                 <mat-error *ngIf="PgMovilBNCForm.get('Desciption')?.errors">
                   <p *ngIf="PgMovilBNCForm.get('Desciption')?.hasError('required')">La descripción es requerida</p>
                 </mat-error>
               </mat-form-field>
-              
+
               <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>
@@ -765,15 +777,21 @@
               Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
             </button> -->
             <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
-              type="button" (click)="PagoP2PBNC()">
+              type="button" (click)="PagoC2PBNC()">
               Pagar
             </button>
             <button class="customized_btn_next btn-width-30"
-              (click)="ResetFormCD();ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowOptionBNCPagoMovil = false; ReciboPay = false;">
+              (click)="ResetFormCD();ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowOptionBNCPagoMovil = false; ReciboPayBNC = false;">
               Regresar
             </button>
           </div>
 
+          {{ amountPm }}
+
+        </div>
+
+        <div *ngIf="ReciboPayBNC">
+          <app-table-receipt [amountPm]="amountPm"></app-table-receipt>
         </div>
         <!-- /BNC -->
 
@@ -924,7 +942,8 @@
 
         <!-- regreso al stepper anteriror de pago movil-->
         <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
-          (click)=" ShowOptionPagoMovil = false; BankSelectPagoMovil = false; ShowalertBankNationals = false" matStepperPrevious>
+          (click)=" ShowOptionPagoMovil = false; BankSelectPagoMovil = false; ShowalertBankNationals = false"
+          matStepperPrevious>
           REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
@@ -963,12 +982,14 @@
 
         <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
           class="btn-flex-center">
-          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='Mercantil'"
-          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
+          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
+            *ngIf="bancoSeleccionado==='Mercantil'" type="button"
+            (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
             Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
-          <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70" *ngIf="bancoSeleccionado==='100x100 Banco'"
-          type="button" (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
+          <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70"
+            *ngIf="bancoSeleccionado==='100x100 Banco'" type="button"
+            (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
             Pagar con 100% banco {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button class="customized_btn_next btn-width-30"
@@ -1021,12 +1042,14 @@
             </div>
           </div>
 
-          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && !Creditoboolaean" [Tipo]="'Debito'"
-            (BankSelect)="TipoBankSelect($event)">
+          <app-list-bank
+            *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && !Creditoboolaean"
+            [Tipo]="'Debito'" (BankSelect)="TipoBankSelect($event)">
           </app-list-bank>
 
-          <app-list-bank *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && Creditoboolaean" [Tipo]="'Credito'"
-            (BankSelect)="TipoBankSelect($event)">
+          <app-list-bank
+            *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && Creditoboolaean"
+            [Tipo]="'Credito'" (BankSelect)="TipoBankSelect($event)">
           </app-list-bank>
 
           <ng-template matStepLabel>Datos de pago</ng-template>
@@ -1042,9 +1065,8 @@
           </div>
 
           <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
-          <div *ngIf="ShowFormDebito100x100 "> 
-            <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
-              [Abonado]="nroContrato?.value"
+          <div *ngIf="ShowFormDebito100x100 ">
+            <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
               [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
           </div>
 
