@@ -611,8 +611,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   // Pago Movil BNC
   get pref_ci_bnc() { return this.PgMovilBNCForm.get('pref_ci') }
   get c_i_bnc() { return this.PgMovilBNCForm.get('c_i') }
+  get phoneBeneficiary() { return this.PgMovilBNCForm.get('phone') }
   get Desciption_bnc() { return this.PgMovilBNCForm.get('Desciption') }
   get amountPm_bnc() { return this.PgMovilBNCForm.get('amountPm') }
+  get codeBank() { return this.PgMovilBNCForm.get('codeBank'); }
   //Debito o Credito
   get BancoSeleccionado() { return this.DebitoCredito.get('BancoSeleccionado') }
   get ccv() { return this.DebitoCredito.get('ccv'); }
@@ -632,7 +634,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   //Retencion
   get retentionAmount() { return this.fourthFormFibex.get('retentionAmount'); }
   get retentionImg() { return this.fourthFormFibex.get('retentionImg'); }
-  get codeBank() { return this.PgMovilBNCForm.get('codeBank'); }
 
 
   ClearCedula(Cedula: any) {
@@ -1121,7 +1122,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       },
       inputValidator(value) {
         return new Promise((resolve) => {
-          if (value.length == 6) {
+          if (value.length == 8) {
             resolve(null);
           } else {
             resolve("Tu token no es valido");
@@ -1136,11 +1137,28 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       const Datospago = {
         "Abonado": this.nroContrato?.value,
         "IdContrato": this.idContrato,
+        "PhoneBeneficiary": this.phoneBeneficiary?.value,
         "CodeBank": this.codeBank?.value,
-        "ChildClientID": this.pref_ci?.value + this.c_i_bnc?.value,
+        "ChildClientID": this.pref_ci_bnc?.value == 'J' ? this.pref_ci_bnc?.value + this.c_i_bnc?.value : null,
         "Amount": this.amountPm_bnc?.value,
-        "Description": this.Desciption_bnc?.value
+        "Description": this.Desciption_bnc?.value,
+        "tokenC2P": token,
+        "BeneficiaryID": this.pref_ci_bnc?.value + this.c_i_bnc?.value
       }
+
+      console.log(this.amountPm_bnc?.value);
+
+
+      /* BeneficiaryBankCode: this.global_ser.ValidateCodeBank(DatosBody.CodeBank, 'Mobile_Payment'),
+      BeneficiaryCellPhone: DatosBody.PhoneBeneficiary,
+      BeneficiaryEmail: DatosBody.EmailBeneficiary || null,
+      BeneficiaryID: this.global_ser.ValidateDNI(DatosBody.IdBeneficiary),
+      BeneficiaryName: DatosBody.Name,
+      ChildClientID: DatosBody.ChildClientID ? this.global_ser.ValidateDNI(DatosBody.ChildClientID) : "",
+      Description: DatosBody.Description,
+      tokenC2P: DatosBody.tokenC2P */
+
+      console.log(Datospago);
 
       this._ApiBNC.PayC2P(Datospago).then((ResPay: any) => {
         if (ResPay && ResPay.status === true) {
@@ -2732,6 +2750,42 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }).then((result) => {
       if (result.isConfirmed) {
         this.ConfirmPagoDebito(DatosUserAgent);
+      }
+    })
+  }
+
+  ButtonGetAuthBNC() {
+
+    Swal.fire({
+      title: 'Clave de autorización',
+      text: "Debes generar la clave C2P de tu banco.",
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      showLoaderOnConfirm: true,
+      preConfirm: (authClave) => {
+        if (authClave && authClave.length === 8) {
+          this.PgMovilRegForm.controls['auth'].setValue(authClave);
+          return authClave
+        } else {
+          ++this.PinError
+          if (this.PinError === 3) {
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000);
+          }
+          return Swal.showValidationMessage(
+            `Longitud de pin es incorrecto deben ser 8 carácteres máximo`
+          )
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.RegistrarPgoMovil();
       }
     })
   }

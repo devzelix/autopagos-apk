@@ -729,9 +729,11 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>Teléfono</mat-label>
-                <input matInput formControlName="phone" placeholder="Ejemplo: 584120202020">
+                <input matInput (keyup)="keypressControPhones($event, 'phone', PgMovilBNCForm)" formControlName="phone" placeholder="Ejemplo: 584120202020">
                 <mat-error *ngIf="PgMovilBNCForm.get('phone')?.errors">
                   <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('required')">El número es requerido</p>
+                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                  </p>
                 </mat-error>
               </mat-form-field>
 
@@ -764,18 +766,13 @@
                 <mat-error *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
                   decimales separado por punto, ejemplo: 125.00</mat-error>
                 <mat-error
-                  *ngIf="PgMovilBNCForm.hasError('isNegative') && PgMovilBNCForm.get('amountPm')?.hasError('required')">El
+                  *ngIf="PgMovilBNCForm.hasError('isNegative') && PgMovilBNCForm.get('amountPm_bnc')?.hasError('required')">El
                   monto no puede ser negativo</mat-error>
               </mat-form-field>
             </div>
           </form>
 
           <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <!-- <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
-              type="button"
-              (click)="AmountIncorrectConfirm(this.amountPm?.value, 'this.ClaveAuthPgoMovilBNC()', 'c2pmercantil')">
-              Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
-            </button> -->
             <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
               type="button" (click)="PagoC2PBNC()">
               Pagar
@@ -785,13 +782,10 @@
               Regresar
             </button>
           </div>
-
-          <!-- {{ amountPm }} -->
-
         </div>
 
         <div *ngIf="ReciboPayBNC">
-          <app-table-receipt [amountPm]="amountPm"></app-table-receipt>
+          <app-table-receipt [amountPm]="amountPm_bnc"></app-table-receipt>
         </div>
         <!-- /BNC -->
 

@@ -28,10 +28,10 @@ export class ApiBNCService {
         return new Promise(async (resolve: any, reject: any) => {
             try {
                 let MsgError: string
-                Data.ChildClientID = ''
+                //Data.ChildClientID = ''
                 console.log(Data)
                 console.log(Headers)
-                this.http.post('http://localhost:9005/'  /* 'https://apitest3.thomas-talk.me/' */, Data, { headers: Headers }).subscribe((Res: any) => {
+                this.http.post(environment.apiBNC, Data, { headers: Headers }).subscribe((Res: any) => {
                     console.log("Res BNC")
                     if (Res && Res.status === true) {
                         console.log("Tengo la respuesta true de BNC")
@@ -48,7 +48,7 @@ export class ApiBNCService {
                     console.error("err BNC")
                     console.error(err)
                     reject(err)
-                })
+                });
             } catch (error) {
                 console.error(error)
             }
@@ -59,10 +59,9 @@ export class ApiBNCService {
         return new Promise(async (resolve: any, reject: any) => {
             try {
                 let MsgError: string
-                this.http.get('http://localhost:9005/'  /* 'https://apitest3.thomas-talk.me/' */, { headers: Headers }).subscribe((Res: any) => {
+                this.http.get(environment.apiBNC, { headers: Headers }).subscribe((Res: any) => {
                     console.log("Res BNC")
                     if (Res && Res.status === true) {
-                        console.log(Res)
                         resolve(Res)
                     } else if (Res && Res.Error) {
                         console.log("entre en el else de error")
@@ -76,7 +75,7 @@ export class ApiBNCService {
                     console.error("err BNC")
                     console.error(err)
                     reject(err)
-                })
+                });
             } catch (error) {
                 console.error(error)
             }
