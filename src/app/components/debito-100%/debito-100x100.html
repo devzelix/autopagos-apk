@@ -52,7 +52,7 @@
         <!-- Botones -->
         <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button [disabled]="!Debito100x100.valid " class="customized_btn_next btn-width-70" id="PagoDC"
-                type="button" (click)="PagoDebito100x100()">
+                type="button" (click)="AmountIncorrectConfirm(Amount?.value,'this.ButtonGetAuthC2P()','debito100porciento');">
                 Pagar
             </button>
             <button class="customized_btn_next btn-width-30" (click)="ResetForm()" type="button" matStepperPrevious>

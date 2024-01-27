@@ -282,4 +282,13 @@ export const PlantillaConfirmPago = [
     campos: ['this.bancooo', 'this.pref_ci?.value+this.c_iRegPgoMvil?.value', 'this.tlfdestin?.value', 'this.amountPm?.value'],
     replace: ['#BANCO', '#CEDULA', '#TLF', '#BOLIVARES'],
     html: `<div align="left"> <strong>Banco:</strong> #BANCO <br> <strong>Cedula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLF <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
-  }]
+  },
+  {
+    id: 6,
+    tipo: "debito100porciento",
+    campos: ['this.pref?.value+this.dni?.value','this.CountNumber?.value','this.Amount?.value'],
+    replace: ['#CEDULA', '#TLFoNroC', '#BOLIVARES'],
+    html: `<div align="left"> <strong>Cedula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLFoNroC <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
+  }
+
+]

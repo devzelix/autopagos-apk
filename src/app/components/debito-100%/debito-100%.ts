@@ -5,6 +5,8 @@ import { ApiBNCService } from 'src/app/services/ApiBNC';
 import Swal from 'sweetalert2';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { SeguridadDatos } from 'src/app/services/bscript.service';
+import { PlantillaConfirmPago } from '../form/camposSubscription/camposSuscription';
+
 
 @Component({
   selector: 'app-debito-100x100',
@@ -20,8 +22,13 @@ export class Debit100x100 implements OnInit {
 
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
   public regexCCV: RegExp = /^\d*$/;
+  public PinError: number = 0;
+  public PlantillaTempPago: any = JSON.parse(JSON.stringify(PlantillaConfirmPago));
 
   Debito100x100: FormGroup
+  cantidadDC: any;
+  invalidAmount: any;
+  saldoBs: any;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -36,6 +43,7 @@ export class Debit100x100 implements OnInit {
       CI: ['', [Validators.required, Validators.minLength(6)]],
       CountNumber: ['', [Validators.required, Validators.minLength(10)]],
       Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      Auth: [''],
       identifierTransaction: ['']
     })
 
@@ -44,6 +52,47 @@ export class Debit100x100 implements OnInit {
     this.Debito100x100.get('Amount')?.setValue(this.SaldoBS)
     //this.Debito100x100.get('CardType')?.setValue(this.TypePay)
 
+  }
+
+  get pref() { return this.Debito100x100.get('pref_ci'); }
+  get dni() { return this.Debito100x100.get('CI'); }
+  get Amount() { return this.Debito100x100.get('Amount'); }
+  get CountNumber() { return this.Debito100x100.get('CountNumber'); }
+
+  ButtonGetAuthC2P(title:string,text:string,bank:string) {
+
+    Swal.fire({
+      title: "Clave de autorización",
+      text: "Por favor coloque su clave especial",
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      showLoaderOnConfirm: true,
+      preConfirm: (authClave) => {
+        if (authClave && authClave.length === 8) {
+          this.Debito100x100.controls['Auth'].setValue(authClave);
+          return authClave
+        } else {
+          ++this.PinError
+          if (this.PinError === 3) {
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000);
+          }
+          return Swal.showValidationMessage(
+            `Longitud de pin es incorrecto deben ser 8 carácteres máximo`
+          )
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.PagoDebito100x100();
+      }
+    })
   }
 
   PagoDebito100x100() {
@@ -67,6 +116,61 @@ export class Debit100x100 implements OnInit {
           this.invalidForm("Error",`${resp.error}`)
         }
   }).catch((error: any) => console.error(error))
+  }
+
+  warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
+    console.log('warnignFormGeneral')
+    console.log("metodo", NameMetodo)
+    Swal.fire({
+      title: text,
+      html: html,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#00184E',
+      cancelButtonColor: '#f44336',
+      cancelButtonText: ButtonCancel,
+      confirmButtonText: ButtonConfirm
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //Metodo que voy a llamar
+            eval(NameMetodo);
+      }
+    })
+      .catch((error: any) => {
+        console.error(error);
+      })
+    this.PlantillaTempPago = JSON.parse(JSON.stringify(PlantillaConfirmPago));
+  }
+
+  AmountIncorrectConfirm(value: string, Metodo: string, type?: string) {
+    console.log(this.Amount?.value);
+    if (Number(value) === 0) {
+      this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0");
+      this.cantidadDC?.reset();
+      return
+    } else if (!this.invalidAmount) {
+      let saldobs = Number(this.saldoBs) - Number(value);
+      if (saldobs < 0) saldobs = saldobs * (-1);
+
+      if (type != undefined && type != null && type != "") {
+
+
+        let PlantillaPago: any = this.PlantillaTempPago.filter((plantilla: any) => plantilla.tipo == type);
+        PlantillaPago[0].replace.forEach((replaceRem: any, index: number) => {
+          PlantillaPago[0].html = PlantillaPago[0].html.replace(replaceRem, String(eval(PlantillaPago[0].campos[index])))
+
+          if (index == PlantillaPago[0].replace.length - 1) {
+
+            this.warnignFormGeneral(`Tus datos de pagos son los siguientes:`,
+              PlantillaPago[0].html, "Editar Datos", "Procesar Pago", Metodo);
+          }
+        })
+
+      } else {
+        this.warnignFormGeneral(`¿Reportar pago?`,
+          `Monto en Bolívares: ${value} BOLIVARES`, "Cancelar", "Continuar", Metodo)
+      }
+    }
   }
 
   alertFind(title: string, message: string) {

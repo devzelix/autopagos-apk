@@ -27,7 +27,7 @@ import axios, { Axios } from "axios";
     this.title = '';
    }
 
-   C2PCompra(Datos: any) {
+  C2PCompra(Datos: any) {
     return new Promise((resolve, reject) => {
       try {
         let DatosC2P = {
@@ -64,6 +64,34 @@ import axios, { Axios } from "axios";
       }
     });
   }
+
+  ListBank() {
+    return new Promise((resolve, reject) => {
+      try {
+            const url = 'http://localhost:9003/';
+            const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
+            'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
+            'accion':this._EncrypD.EncryptData100x100('ListBank'),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+            });
+
+            this.http.get<any>(url,{headers:headers}).subscribe({
+              next: data => {
+                  resolve(data);
+              },
+              error: error => {
+                  console.error('There was an error!', error);
+                  reject(error);
+              }
+          })
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
     ngOnInit(): void {
         throw new Error("Method not implemented.");
     }
@@ -83,7 +111,7 @@ import axios, { Axios } from "axios";
             "nAmount":Datos.Amount,
           }
 
-          const url = 'https://apitest3.thomas-talk.me/';
+          const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
           const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
               'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
               'accion':this._EncrypD.EncryptData100x100('DebitPayment'),

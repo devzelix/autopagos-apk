@@ -680,28 +680,6 @@
         <app-list-bank *ngIf="!ReciboPay && !BankSelectPagoMovil" [Tipo]="'PagoMovil'"
           (BankSelect)="TipoBankSelect($event)"></app-list-bank>
 
-        <!-- <div class="cardflexPagoMovil" *ngIf="!ReciboPay && !BankSelectPagoMovil">
-          <div *ngFor="let option of MetodosPagoMovil" class="unicard width_full">
-            <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp"
-              (click)="option.opcion === 'otros' ? ShowalertBankNationals = true : SelectedPagoC2P({'_value':option.opcion}); BankSelectPagoMovil = true">
-              <h5 class=" TitlePerson">{{option.tittle}}</h5>
-              <img style="width: 100%;" src="{{option.image}}">
-            </button>
-          </div>
-        </div> -->
-        <!-- /Botones lista de bancos pago Movil -->
-        <!-- <p>ConsultarPagoMovilboolean {{ConsultarPagoMovilboolean}} <br>
-          RegistrarPagoMovilboolean {{RegistrarPagoMovilboolean}} <br>
-          ReciboPay {{ReciboPay}} <br>
-          BankSelectPagoMovil {{BankSelectPagoMovil}}</p> -->
-        <!-- <mat-form-field *ngIf="!ReciboPay" appearance="outline">
-          <mat-label>Banco</mat-label>
-          <mat-select [value]=SelectPagoc2p #valor>
-            <mat-option (click)="SelectedPagoC2P(valor)" value="mercantil">Mercantil</mat-option>
-            <mat-option (click)="SelectedPagoC2P(valor)" value="otros">Nacional</mat-option>
-          </mat-select>
-        </mat-form-field> -->
-
         <!-- BNC -->
         <div *ngIf="ShowOptionBNCPagoMovil">
           <!-- <app-payment-mobile-bnc [saldoBs]="saldoBs" [dni]="dni?.value" [PinEnviado]="PinEnviado" [Minutes]="Minutes" [ConcatenaTimer]="ConcatenaTimer" [Second]="Second" (BackEvents)="GetEventsBNCPagoMovil($event)"></app-payment-mobile-bnc> -->
@@ -902,6 +880,18 @@
           <div class="form-login__item">
             <ng-template matStepLabel>Pago Móvil</ng-template>
 
+            <mat-form-field *ngIf="ShowBankList" appearance="outline">
+              <mat-label>Banco emisor</mat-label>
+              <mat-select formControlName="BankList" placeholder="Banco emisor">
+                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code">
+                  {{ bank.Name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="PgMovilRegForm.get('BankList')?.errors">
+                <p *ngIf="PgMovilRegForm.get('BankList')?.hasError('required')">El Banco emisor es requerido</p>
+              </mat-error>
+            </mat-form-field>
+            
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="tlfdestin"
@@ -913,6 +903,8 @@
                 </p>
               </mat-error>
             </mat-form-field>
+            
+            
 
             <mat-form-field appearance="outline">
               <mat-label>Cantidad a pagar
@@ -984,7 +976,7 @@
           <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70"
             *ngIf="bancoSeleccionado==='100x100 Banco'" type="button"
             (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
-            Pagar con 100% banco {{Minutes}}{{ConcatenaTimer}}{{Second}}
+            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
           </button>
           <button class="customized_btn_next btn-width-30"
             (click)="ResetFormCD(); ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowalertBankNationals = false; RegistrarPagoMovilboolean = false">

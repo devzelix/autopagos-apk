@@ -6,6 +6,12 @@ export interface BankList {
     referencia_cuenta: string;
 }
 
+export interface BankListC2P {
+    Name: string;
+    Code: string;
+    Services: string;
+}
+
 
 
 type BankEmisor =[{

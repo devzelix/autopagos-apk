@@ -153,7 +153,7 @@ export class ApiBNCService {
             try {
                 this.GlobalHeader.accion = this.EncryptDatos('Bank_List')
                 this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
-
+                console.log("voy")
                 this.MasterGet(this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
 
             } catch (error) {
