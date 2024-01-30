@@ -1159,7 +1159,7 @@
         </div>
         <!-- *ngIf="ReciboPay" -->
         <div *ngIf="ReciboPay">
-          <app-table-receipt [cantidad]="cantidadDC"></app-table-receipt>
+          <app-table-receipt [cantidad]="montoDebitoBNC"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
@@ -1167,7 +1167,7 @@
           <button class="button-material-back btn-width-30"
             (click)="ResetFormCD(); lastDni='';searchServicesv2(dni,false,false)" mat-raised-button type="button"
             matStepperPrevious>
-            Regresarrr
+            Regresar
           </button>
         </div>
 

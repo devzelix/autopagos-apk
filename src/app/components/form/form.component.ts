@@ -89,6 +89,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public PgMovilForm: FormGroup;
   public PgMovilRegForm: FormGroup;
   public PgMovilBNCForm: FormGroup;
+  public montoDebitoBNC: string;
   public DebitoCredito: FormGroup;
   public TypeForm: FormGroup;
   public CriptomonedaForm: FormGroup;
@@ -1032,6 +1033,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.ScrollUp()
         break;
       case "Pago Realizado":
+        this.montoDebitoBNC = Event.monto
         this.ShowFormDebitoCreditoBNC = false
         this.ReciboPay = true
         break;

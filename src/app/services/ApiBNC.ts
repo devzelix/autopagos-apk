@@ -103,12 +103,12 @@ export class ApiBNCService {
                     case 'Principal':
                         accountTypeCode = 0o0;
                         break;
-                    case 'Corriente':
-                        accountTypeCode = 0o1;
+                    case 'Ahorro':
+                        accountTypeCode = 10;
                         break;
-                        case 'Ahorro':
-                            accountTypeCode = 0o2;
-                            break;
+                    case 'Corriente':
+                        accountTypeCode = 20;
+                        break;
                     default:
                         accountTypeCode = 0o0;
                 }
@@ -131,9 +131,8 @@ export class ApiBNCService {
                     "IdContrato": DatosPay.Contrato,
                     "Amount": DatosPay.Amount,
                     "Name": DatosPay.CardName,
-                    "ChildClientID": DatosPay.pref_ci + DatosPay.CI,
                     "AccountType": accountTypeCode,
-                    "CardHolderID": DatosPay.CardHolderId ?? '',
+                    "CardHolderID": DatosPay.CI,
                     "CardNumber": DatosPay.CardNumber,
                     "CardPIN": DatosPay.CardPIN,
                     "CVV": DatosPay.CVV,
