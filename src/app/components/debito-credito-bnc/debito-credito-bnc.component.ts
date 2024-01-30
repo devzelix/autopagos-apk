@@ -84,7 +84,8 @@ export class DebitoCreditoBNCComponent implements OnInit {
         }).then((ResPay: any) => {
           if (ResPay && ResPay.status === true) {
             this.OutputResponse.emit({
-              Tipo: "Pago Realizado"
+              Tipo: "Pago Realizado",
+              monto : DatosJson.Amount
             })
           } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
         }).catch(err => console.error(err))

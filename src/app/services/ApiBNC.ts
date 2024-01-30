@@ -14,7 +14,7 @@ export class ApiBNCService {
         wt: '',
     }
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     EncryptDatos(Data: any) {
         return CryptoJS.AES.encrypt(Data, environment.securityEncrt, {
@@ -97,32 +97,58 @@ export class ApiBNCService {
     Pay_POs_Virtual(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
             try {
-                this.GlobalHeader.accion = this.EncryptDatos('VirtualPos')
-                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC)
+                let accountTypeCode: number;
+
+                switch (DatosPay.AccountType) {
+                    case 'Principal':
+                        accountTypeCode = 0o0;
+                        break;
+                    case 'Ahorro':
+                        accountTypeCode = 10;
+                        break;
+                    case 'Corriente':
+                        accountTypeCode = 20;
+                        break;
+                    default:
+                        accountTypeCode = 0o0;
+                }
+
+                switch (DatosPay.TipoPago) {
+                    case 'Débito Maestro':
+                        DatosPay.TipoPago = 30;
+                        break;
+                    // Agrega más casos según sea necesario
+
+                    default:
+                        DatosPay.TipoPago = 'Código no válido para el tipo de tarjeta';
+                }
+
+                this.GlobalHeader.accion = this.EncryptDatos('VirtualPos');
+                this.GlobalHeader.wt = this.EncryptDatos(environment.TokenBNC);
 
                 const Data: any = {
                     "Abonado": DatosPay.Abonado,
                     "IdContrato": DatosPay.Contrato,
                     "Amount": DatosPay.Amount,
                     "Name": DatosPay.CardName,
-                    "ChildClientID": DatosPay.pref_ci + DatosPay.CI,
-                    "AccountType": DatosPay.AccountType,
-                    "CardHolderID": DatosPay.CardHolderId,
+                    "AccountType": accountTypeCode,
+                    "CardHolderID": DatosPay.CI,
                     "CardNumber": DatosPay.CardNumber,
                     "CardPIN": DatosPay.CardPIN,
                     "CVV": DatosPay.CVV,
                     "dtExpiration": DatosPay.fvncmtoMes + DatosPay.fvncmtoAno,
                     "idCardType": DatosPay.TipoPago,
                     "TransactionIdentifier": "Prueba",
-                }
+                };
 
-                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) })
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) });
 
             } catch (error) {
-                console.error(error)
+                console.error(error);
             }
-        })
+        });
     }
+
 
     Pay_Credit(DatosPay: any) {
         return new Promise(async (resolve: any, reject: any) => {
