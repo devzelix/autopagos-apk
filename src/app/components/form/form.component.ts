@@ -2607,7 +2607,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE')) {
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE') || this.bank?.value.includes('BOFA')) {
       this.secondFormFibex.get('BancoEmisor')?.setValidators([]);
       this.secondFormFibex.get('BancoEmisor')?.updateValueAndValidity();
       if (this.bank?.value.includes('EUR')) return 'EUR'
@@ -2620,16 +2620,16 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   bankSelected(bank: any) {
-    console.log(bank)
+    //console.log(bank)
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
     if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !=='EUR') {
-      console.log("por aqui")
+      //console.log("por aqui")
       if (!Number.isNaN(Math.round(parseFloat(this.lastAmount)))) {
         this.validateIfAmountIsNegativer(this.lastAmount, true);
       }
     } else {
-      console.log(bank)
+      //console.log(bank)
       this.validateIfAmountIsNegativer(this.lastAmount);
       this.BancoEmisor(bank)
     }

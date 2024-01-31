@@ -93,7 +93,7 @@ export class DataBankService {
           return "USD BANCO NACIONAL CREDITO"
           break;
         case "00000000101":
-          return "ZELLE WELL FARGO pagos.zelle2@fibextelecom.net"
+          //return "ZELLE WELL FARGO pagos.zelle2@fibextelecom.net"
           break;
         case "01050652295652011351":
           return "USD BANCO MERCANTIL "
