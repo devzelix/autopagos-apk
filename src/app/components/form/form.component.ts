@@ -697,7 +697,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Zelle
     if (x == 6) {
-      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
+ 
+      let BankZelle: BankList[] = [];
+      if(this.listContratos[0].franquicia=="FIBEX ARAGUA"){
+        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBABECEA53909F26448')
+      }else{
+        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
+      }
+      
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
 
       this.bankSelected(BankZelle[0]);
