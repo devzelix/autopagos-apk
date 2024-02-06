@@ -702,7 +702,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       if(this.listContratos[0].franquicia=="FIBEX ARAGUA"){
         BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBABECEA53909F26448')
       }else{
-        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
+        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBAA15630269FB90658')
       }
       
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
