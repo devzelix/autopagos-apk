@@ -114,7 +114,7 @@
                 <mat-label>Clave</mat-label>
                 <input type="password" matInput formControlName="CardPIN" NumbersOnly="true" #inputDni>
                 <mat-error *ngIf="POS_VirtualForm.get('CardPIN')?.hasError('required')">
-                    El número de tarjeta es requerido
+                    La clave pin es requerida.
                 </mat-error>
             </mat-form-field>
         </div>

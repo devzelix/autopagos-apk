@@ -40,7 +40,7 @@ export class DebitoCreditoBNCComponent implements OnInit {
       CardName: ['', [Validators.required, Validators.minLength(6)]],
       CardNumber: ['', [Validators.required, Validators.minLength(10)]],
       CardHolderId: [''],
-      CardPIN: [''],
+      CardPIN: ['', [Validators.required, Validators.minLength(4)]],
       CVV: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
       fvncmtoMes: ['', [Validators.required]],
       fvncmtoAno: ['', [Validators.required]],
@@ -70,11 +70,31 @@ export class DebitoCreditoBNCComponent implements OnInit {
 
   }
 
+  loading(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      //timer: 5000,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+  }
+
+  successAlert(text: string, optionalText: string = '') {
+    Swal.fire(
+      text,
+      optionalText,
+      'success'
+    )
+  }
+
   ProcesarPago() {
     console.log("Datos POS Virtual")
     let DatosJson: any
     switch (this.TypePay) {
       case "Débito Maestro":
+        this.loading('Comprobando pago', 'Por favor espere...'); 
         DatosJson = this.POS_VirtualForm.value
         this.apiBNC.Pay_POs_Virtual({
           ...DatosJson,
@@ -83,6 +103,7 @@ export class DebitoCreditoBNCComponent implements OnInit {
           Contrato: this.Contrato
         }).then((ResPay: any) => {
           if (ResPay && ResPay.status === true) {
+            this.successAlert("Pago Móvil procesado exitosamente.");
             this.OutputResponse.emit({
               Tipo: "Pago Realizado",
               monto : DatosJson.Amount
@@ -91,6 +112,7 @@ export class DebitoCreditoBNCComponent implements OnInit {
         }).catch(err => console.error(err))
         break;
       case "Credito":
+        this.loading('Comprobando pago', 'Por favor espere...');
         DatosJson = this.CreditoForm.value
         this.apiBNC.Pay_Credit({
           ...DatosJson,
@@ -99,6 +121,7 @@ export class DebitoCreditoBNCComponent implements OnInit {
           Contrato: this.Contrato
         }).then((ResPay: any) => {
           if (ResPay && ResPay.status === true) {
+            this.successAlert("Pago Móvil procesado exitosamente.");
             this.OutputResponse.emit({
               Tipo: "Pago Realizado"
             })
@@ -106,8 +129,6 @@ export class DebitoCreditoBNCComponent implements OnInit {
         }).catch(err => console.error(err))
         break
     }
-    console.log(this.TypePay)
-    console.log(DatosJson)
   }
 
   ResetForm() {

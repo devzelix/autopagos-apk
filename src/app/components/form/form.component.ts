@@ -350,7 +350,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       c_i: ['', [Validators.required, Validators.minLength(6)]],
       phone: ['', [Validators.required, Validators.minLength(11)]],
       codeBank: ['', [Validators.required, Validators.minLength(4)]],
-      Desciption: ['', [Validators.required, Validators.minLength(4)]],
       amountPm: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       validator: Validators.compose(
         [
@@ -638,7 +637,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   get pref_ci_bnc() { return this.PgMovilBNCForm.get('pref_ci') }
   get c_i_bnc() { return this.PgMovilBNCForm.get('c_i') }
   get phoneBeneficiary() { return this.PgMovilBNCForm.get('phone') }
-  get Desciption_bnc() { return this.PgMovilBNCForm.get('Desciption') }
   get amountPm_bnc() { return this.PgMovilBNCForm.get('amountPm') }
   get codeBank() { return this.PgMovilBNCForm.get('codeBank'); }
   //Debito o Credito
@@ -1188,31 +1186,16 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         "CodeBank": this.codeBank?.value,
         "ChildClientID": this.pref_ci_bnc?.value == 'J' ? this.pref_ci_bnc?.value + this.c_i_bnc?.value : null,
         "Amount": this.amountPm_bnc?.value,
-        "Description": this.Desciption_bnc?.value,
         "tokenC2P": token,
         "BeneficiaryID": this.pref_ci_bnc?.value + this.c_i_bnc?.value
       }
-
-      console.log(this.amountPm_bnc?.value);
-
-
-      /* BeneficiaryBankCode: this.global_ser.ValidateCodeBank(DatosBody.CodeBank, 'Mobile_Payment'),
-      BeneficiaryCellPhone: DatosBody.PhoneBeneficiary,
-      BeneficiaryEmail: DatosBody.EmailBeneficiary || null,
-      BeneficiaryID: this.global_ser.ValidateDNI(DatosBody.IdBeneficiary),
-      BeneficiaryName: DatosBody.Name,
-      ChildClientID: DatosBody.ChildClientID ? this.global_ser.ValidateDNI(DatosBody.ChildClientID) : "",
-      Description: DatosBody.Description,
-      tokenC2P: DatosBody.tokenC2P */
-
-      console.log(Datospago);
 
       this._ApiBNC.PayC2P(Datospago).then((ResPay: any) => {
         if (ResPay && ResPay.status === true) {
           this.ShowOptionBNCPagoMovil = false
           this.ReciboPayBNC = true
           this.alertexit("Pago Móvil procesado exitosamente.");
-        } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+        } else { this.invalidForm(ResPay.MsgError || ResPay.message, '') }
       }).catch(err => console.error(err))
     }
   }

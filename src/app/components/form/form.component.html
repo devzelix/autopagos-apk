@@ -727,14 +727,6 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Descripción</mat-label>
-                <input matInput formControlName="Desciption" placeholder="Ejemplo: pago servicio">
-                <mat-error *ngIf="PgMovilBNCForm.get('Desciption')?.errors">
-                  <p *ngIf="PgMovilBNCForm.get('Desciption')?.hasError('required')">La descripción es requerida</p>
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>
                 </mat-label>
