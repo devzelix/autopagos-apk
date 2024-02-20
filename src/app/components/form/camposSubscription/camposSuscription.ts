@@ -148,8 +148,8 @@ export let MetodoDePago2 = [
     alt: 'Otros'
   }
 ]
-export let MetodoDePago3 = [
 
+export let MetodoDePago3 = [
   {
     idpago: 5,
     tipopago: "Criptomoneda",
@@ -183,6 +183,13 @@ export let MetodoDePago3 = [
     omitir: false,
   },
   {
+    idpago: 31,
+    tipopago: "Débito Inmediato",
+    image: 'assets/images/BOTON-2_1-PNG.png',
+    alt: 'Débito Inmediato',
+    omitir: false,
+  },
+  {
     idpago: 1,
     tipopago: "T.C. Nacional",
     image: 'assets/images/Tarjeta de Credito Nacional.jpg',
@@ -195,8 +202,7 @@ export let MetodoDePago3 = [
     image: 'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
     omitir: false,
     alt: 'Pago Móvil'
-  },
-
+  }
 ]
 
 export let FormasDePago = [
@@ -235,7 +241,17 @@ export const ListBankPago = [
   },
   {
     tittle: "100% Banco",
-    image: 'assets/images/Logo100x100Banco.jpg',
+    image: 'assets/images/BOTON-2-PNG.png',
+    omitir: false,
+    opcion:'100% Banco'
+  }
+
+]
+
+export const DebitoInmediato = [
+  {
+    tittle: "100% Banco",
+    image: 'assets/images/BOTON-2-PNG.png',
     omitir: false,
     opcion:'100% Banco'
   }

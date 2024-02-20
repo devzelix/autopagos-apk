@@ -24,7 +24,20 @@
         <!-- Form Para Debito o Credito Creditoboolean=true (Es para credito) -->
         <div class="form-login__item">
             <mat-form-field appearance="outline">
-                <mat-label>Nro. de cuenta</mat-label>
+                <mat-label>Banco emisor</mat-label>
+                <mat-select formControlName="Bank" placeholder="Banco emisor">
+                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code">
+                    {{ bank.Name }}
+                </mat-option>
+                </mat-select>
+                <mat-error *ngIf="Debito100x100.get('Bank')?.hasError('required')">
+                   El banco es requerido
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="form-login__item">
+            <mat-form-field appearance="outline">
+                <mat-label>Nro. de cuenta o Telf.</mat-label>
                 <input matInput required formControlName="CountNumber" NumbersOnly="true">
                 <mat-error *ngIf="Debito100x100.get('CuntNumber')?.hasError('required')">
                     El número de cuenta es requerido
@@ -53,7 +66,7 @@
         <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button [disabled]="!Debito100x100.valid " class="customized_btn_next btn-width-70" id="PagoDC"
                 type="button" (click)="AmountIncorrectConfirm(Amount?.value,'this.ButtonGetAuthC2P()','debito100porciento');">
-                Pagar
+                Solicitar pin de autorización
             </button>
             <button class="customized_btn_next btn-width-30" (click)="ResetForm()" type="button" matStepperPrevious>
                 Regresar

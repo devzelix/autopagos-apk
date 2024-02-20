@@ -29,6 +29,7 @@ export class Debit100x100 implements OnInit {
   cantidadDC: any;
   invalidAmount: any;
   saldoBs: any;
+  ListBank: any;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -41,11 +42,16 @@ export class Debit100x100 implements OnInit {
     this.Debito100x100 = this.fb.group({
       pref_ci: ['', [Validators.required]],
       CI: ['', [Validators.required, Validators.minLength(6)]],
-      CountNumber: ['', [Validators.required, Validators.minLength(10)]],
+      Bank: ['', [Validators.required]],
+      CountNumber: ['', [Validators.required, Validators.minLength(11)]],
       Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
       Auth: [''],
       identifierTransaction: ['']
     })
+    this._Api100x100.ListBank()
+    .then((resp: any) => {
+      this.ListBank = resp
+    }).catch((error: any) => console.error(error))
 
     this.Debito100x100.get('pref_ci')?.setValue('V')
     this.Debito100x100.get('CI')?.setValue(this.DNI)
@@ -97,12 +103,13 @@ export class Debit100x100 implements OnInit {
 
   PagoDebito100x100() {
     this.alertFind("Procesando su pago", "Por favor espere") 
-    let datosPago :any
-    
-    datosPago = this.Debito100x100.value
+    //Desencripto el localstorage para obtenerel nombre del usuario
     let name_user = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!): "";
+    //Esta lógica identifica si es número de telfono o nro de cuenta ya que en backend se lleva por este numero para identifcar el tipo
+    let ValueIdentifier = this.CountNumber?.value.length == 11 || this.CountNumber?.value.length == 12 ? "202" : "222"
+    this.Debito100x100.controls['identifierTransaction'].setValue(ValueIdentifier);
 
-    this._Api100x100.CompraDebito({...datosPago,Abonado: this.Abonado,Contrato: this.Contrato,name_user: name_user})
+    this._Api100x100.CompraDebito({...this.Debito100x100.value,Abonado: this.Abonado,Contrato: this.Contrato,name_user: name_user})
     .then((resp: any) => {
         if (resp.hasOwnProperty('status')){
           if (resp.status == true) {
@@ -119,8 +126,6 @@ export class Debit100x100 implements OnInit {
   }
 
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
-    console.log('warnignFormGeneral')
-    console.log("metodo", NameMetodo)
     Swal.fire({
       title: text,
       html: html,

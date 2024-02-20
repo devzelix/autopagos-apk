@@ -16,11 +16,9 @@ export class ListBankComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log("entre en el ngOninit de list bank " + this.Tipo)
-    console.log(ListBankPago)
     //Se separo en debito y credito ya que ha bancos que no tienen servicio de credito
     if (this.Tipo === 'Debito') {
-      this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros')
+      this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros' && FL.opcion !='100% Banco')
     } else  if (this.Tipo === 'Credito') {
       this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros' && FL.opcion != '100% Banco')
     } else {

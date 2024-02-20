@@ -37,10 +37,11 @@ import axios, { Axios } from "axios";
           "Amount": Datos.cantidad,
           "Abonado": Datos.Abonado,
           "IdContrato": Datos.idContrato,
-          "name_user": Datos.name_user
+          "name_user": Datos.name_user,
+          "sAuthKey":Datos.AuthKey
         };
   
-            const url = 'https://apitest3.thomas-talk.me/';
+            const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
             const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
             'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
             'accion':this._EncrypD.EncryptData100x100('MobilePayment'),
@@ -68,7 +69,7 @@ import axios, { Axios } from "axios";
   ListBank() {
     return new Promise((resolve, reject) => {
       try {
-            const url = 'http://localhost:9003/';
+            const url ='https://apitest3.thomas-talk.me/';
             const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
             'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
             'accion':this._EncrypD.EncryptData100x100('ListBank'),
@@ -105,10 +106,12 @@ import axios, { Axios } from "axios";
             "name_user": Datos.name_user,
             "Abonado": Datos.Abonado,
             "IdContrato": Datos.Contrato,
-            "sBankId": "0108", //Nose si mercantil o 100x100 banco
+            "sBankId": Datos.Bank, //Nose si mercantil o 100x100 banco
             "sDocumentId": Datos.pref_ci+Datos.CI,
             "sPhoneNumber": Datos.CountNumber,//numero de cuenta
             "nAmount":Datos.Amount,
+            "sTrxType":Datos.identifierTransaction,
+            "sAuthKey":Datos.Auth
           }
 
           const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
@@ -123,8 +126,6 @@ import axios, { Axios } from "axios";
 
           this.http.post<any>(url, Datos,{headers:headers}).subscribe({
               next: data => {
-                console.log("Respondio");
-                console.log(data);
                   resolve(data);
               },
               error: error => {

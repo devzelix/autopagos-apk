@@ -18,7 +18,7 @@ import { nanoid } from 'nanoid'
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
 import { Contratos } from '../../interfaces/contratos';
-import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPago } from './camposSubscription/camposSuscription';
+import { DataSlide, TypeAccount, Month, Ano, MetodoDePago2, MetodoDePago3, PlantillaConfirmPago, DatosPagoMovil, FormasDePago, ListBankPago, DebitoInmediato } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
@@ -91,6 +91,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public PgMovilBNCForm: FormGroup;
   public montoDebitoBNC: string;
   public DebitoCredito: FormGroup;
+  public DebitoInmediato: FormGroup;
   public TypeForm: FormGroup;
   public CriptomonedaForm: FormGroup;
   public FirtZelleForm: FormGroup;
@@ -258,12 +259,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.banksFiltered = this.deleteDuplicated(this.banksFiltered, 'id_cuba');
     });
 
-    console.log("aca")
     this._ApiBNC.listBanks().then((res: any) => {
-      console.log(res);
-      console.log({ res: res });
+
       if (res.status == true) {
-        console.log(res);
+
         this.banksListBNC = res.Bancos;
       }
     }).catch((err) => {
@@ -360,6 +359,23 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
 
     this.DebitoCredito = this.fb.group({
+      BancoSeleccionado: [''],
+      ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
+      pref_ci: ['', [Validators.required]],
+      c_i: ['', [Validators.required, Validators.minLength(6)]],
+      typeCuenta: ['', [Validators.required]],
+      Ncard: ['', [Validators.required, Validators.maxLength(18)]],
+      Clavetlfonica: [''],
+      fvncmtoMes: ['', [Validators.required]],
+      fvncmtoAno: ['', [Validators.required]],
+      cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
+    });
+
+    this.DebitoInmediato = this.fb.group({
       BancoSeleccionado: [''],
       ccv: ['', [Validators.required, Validators.pattern(this.regexCCV), Validators.maxLength(3)]],
       pref_ci: ['', [Validators.required]],
@@ -663,12 +679,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
-    this.ShowOptionPagoMovil = false
-    //Modal para pagar Zelle
-    if (x == 10) {
-      this.openDialogZelle();
-      return;
-    }
+    console.log("TipoPago");
+    console.log(x);
+    this.ShowOptionPagoMovil = false;
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
     this.RegistrarPagoMovilboolean = false;
@@ -678,6 +691,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.Criptomoneda = false;
     this.Otros = false;
     this.PrimeraVez = false;
+    this.ShowFormDebito100x100 = false;
+    //Modal para pagar Zelle
+    if (x == 10) {
+      this.openDialogZelle();
+      return;
+    }
+
 
     //Débito
     if (x == 0) {
@@ -780,6 +800,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     if (x == 30) {
       this.PagoMetodosHTML2 = MetodoDePago3;
       this.Otros = true;
+    }
+
+    if (x == 31) {
+      //this.PagoMetodosHTML2 = DebitoInmediato;
+      this.ShowFormDebito100x100 = true;
+      this.Otros = true;
+      setTimeout(() => {
+        this.NextMatStepper()
+      }, 300);
     }
   }
 
@@ -943,9 +972,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       Abonado: this.nroContrato?.value,
       idContrato: this.idContrato,
       name_user: this.nameClient,
-      BankEmisor: this.PgMovilRegForm.get('BankList')?.value
+      BankEmisor: this.PgMovilRegForm.get('BankList')?.value,
+      AuthKey:  this.PgMovilRegForm.get('auth')?.value
     }
-    console.log(datosPago);
+
     this._Api100x100.C2PCompra(datosPago).then((resp: any) => {
       if (resp.hasOwnProperty('error')) {
         // this.alertFindDni(`${resp.error_list[0].description}`,'');
@@ -1010,9 +1040,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       case "Debito":
         if (Evento.Opcion === "BNC") {
           this.ShowFormDebitoCreditoBNC = true
-        } else if (Evento.Opcion === "100% Banco") {
-          this.ShowFormDebito100x100 = true
-        } else {
+         
+        }else{
           this.ShowFormDebitoCredito = true
         }
         break

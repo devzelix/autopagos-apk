@@ -93,6 +93,7 @@
 
       <!--/ Fin de Menú ppal -->
 
+
       <!-- Menú de métodos de pago -->
       <mat-step *ngIf="AppFibex" class="CardPpal">
 
@@ -174,8 +175,7 @@
       <!-- / Fin de métodos de pago -->
 
       <!-- Transferencias -->
-      <div
-        *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda && !Otros && !PrimeraVez">
+      <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda && !Otros && !PrimeraVez">
         <mat-step [stepControl]="firstFormFibex">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
             class="desc-user">
@@ -633,7 +633,6 @@
       <!-- / Fin de Transferencias -->
 
       <!-- Pago Móvil -->
-      <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">  Version original-->
       <mat-step *ngIf="ShowOptionPagoMovil" [stepControl]="TypeForm">
         <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
@@ -1050,12 +1049,6 @@
               [Contrato]="idContrato" (OutputResponse)="OutputCreditoDebitoBNC($event)"></app-debito-credito-bnc>
           </div>
 
-          <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
-          <div *ngIf="ShowFormDebito100x100 ">
-            <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
-              [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
-          </div>
-
 
           <form *ngIf="ShowFormDebitoCredito" [formGroup]="DebitoCredito">
             <div>
@@ -1202,6 +1195,54 @@
 
       </mat-step>
       <!-- / Fin de Crédito o Débito -->
+
+      <mat-step *ngIf="ShowFormDebito100x100">
+        <div *ngIf="!ReciboPay">
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
+            class="desc-user">
+            <div>
+              <h4 class="name-client">
+                {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                Servicio: {{ paquete }}
+              </h4>
+              <h4 class="name-client">
+                Subscripción: {{subscription}} USD
+              </h4>
+            </div>
+          </div>
+          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
+            class="desc-user">
+            <div>
+              <h4 class="name-client">
+                CI/RIF: {{nameClient}}
+              </h4>
+              <h4 class="name-client">
+                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+              </h4>
+            </div>
+            <div>
+              <h4 class="name-client">
+                <!-- Servicio: {{ paquete }} -->
+              </h4>
+              <h4 class="name-client">
+                <!-- Subscripción: {{subscription}} USD -->
+              </h4>
+            </div>
+          </div>
+        </div>
+        <ng-template matStepLabel>Débito inmediato</ng-template>
+          <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
+          <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
+            [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
+      </mat-step>
+    
     </mat-stepper>
 
   </div>
