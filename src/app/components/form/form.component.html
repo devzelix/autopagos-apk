@@ -153,12 +153,13 @@
 
               </span>
 
-              <span *ngSwitchDefault class="flex_center">
-
-                <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp" (click)="TipoPago(option.idpago)">
+              <span *ngSwitchDefault class="flex_center cardflex2">
+                <!--  -->
+                <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp " (click)="TipoPago(option.idpago)">
                   <h5 class=" TitlePerson">{{option.tipopago}}</h5>
                   <img style="width: 100%;" src="{{option.image}}" alt="{{option.alt}}">
                 </button>
+
               </span>
 
             </span>
@@ -167,7 +168,7 @@
         <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
           <app-detalle-pay [DataPagoPendiente]="DataPagoPendiente"></app-detalle-pay>
         </div>
-        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full"
+        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full BackButton"
           (click)="FormaPago(31)">
           REGRESAR
         </button>
