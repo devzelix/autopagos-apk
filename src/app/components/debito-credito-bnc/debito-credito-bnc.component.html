@@ -111,7 +111,7 @@
 
             <!-- <mat-form-field *ngIf="!Creditoboolaean" appearance="outline"> -->
             <mat-form-field appearance="outline">
-                <mat-label>Clave</mat-label>
+                <mat-label>Clave Cajero</mat-label>
                 <input type="password" matInput formControlName="CardPIN" NumbersOnly="true" #inputDni>
                 <mat-error *ngIf="POS_VirtualForm.get('CardPIN')?.hasError('required')">
                     La clave pin es requerida.
@@ -171,17 +171,45 @@
                     El número de tarjeta es requerido
                 </mat-error>
             </mat-form-field>
+
+
+            <mat-form-field appearance="outline">
+                <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
+                <input type="password" matInput required formControlName="CVV" placeholder="Ejemplo: 123">
+                <mat-error *ngIf="POS_VirtualForm.get('CVV')?.hasError('required')">
+                    El número cvv es requerido
+                </mat-error>
+                <mat-error *ngIf="POS_VirtualForm.get('CVV')?.hasError('pattern')">
+                    Escriba el CVV con solo números ejemplo: 123
+                </mat-error>
+            </mat-form-field>
+
+            <div>
+                <mat-label>Fecha de Vencimiento</mat-label><br>
+                <mat-form-field appearance="outline" class="Prefc_i">
+                    <mat-select formControlName="fvncmtoMes">
+                        <mat-option *ngFor="let option of Months" [value]="option.month">
+                            {{option.month}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+    
+                <mat-form-field appearance="outline" class="Prefc_i2">
+                    <mat-select formControlName="fvncmtoAno">
+                        <mat-option *ngFor="let option of Anos" [value]="option.ano">
+                            {{option.ano}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
             <!-- </div>
+
+                
 
         <div class="form-login__item"> -->
 
-            <mat-form-field appearance="outline">
-                <mat-label>Descripción</mat-label>
-                <input matInput required formControlName="Description">
-                <mat-error *ngIf="CreditoForm.get('Description')?.hasError('required')">
-                    La Descripción es requerida
-                </mat-error>
-            </mat-form-field>
+ 
 
             <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar

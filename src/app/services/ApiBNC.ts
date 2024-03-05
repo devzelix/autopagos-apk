@@ -37,12 +37,12 @@ export class ApiBNCService {
                         console.log("Tengo la respuesta true de BNC")
                         resolve(Res)
                     } else if (Res && Res.Error) {
-                        console.log("entre en el else de error")
+                        console.log("entre en el else de error", Res)
                         const TipoError: any = Res.Error
                         if (typeof TipoError === 'object') {
                             for (var key in TipoError) { MsgError = TipoError[key][0] }
                         } else { console.log(TipoError) }
-                        resolve({ status: false, MsgError, message: Res.message })
+                        resolve({ status: false, message: Res.Error.Message == null ? Res.message : 'Error Desconocido' })
                     }
                 }, (err: any) => {
                     console.error("err BNC")
@@ -99,6 +99,16 @@ export class ApiBNCService {
             try {
                 let accountTypeCode: number;
 
+                // Expresiones regulares para validar el formato de las tarjetas Visa y Mastercard
+                var visaRegex = /^4[0-9]{12}(?:[0-9]{3})?$/;
+                var mastercardRegex = /^5[1-5][0-9]{14}$/;
+
+                if (visaRegex.test(DatosPay.CardNumber)) {
+                    DatosPay.TipoPago = "Visa";
+                } else if (mastercardRegex.test(DatosPay.CardNumber)) {
+                    DatosPay.TipoPago = "Mastercard";
+                }
+
                 switch (DatosPay.AccountType) {
                     case 'Principal':
                         accountTypeCode = 0o0;
@@ -114,13 +124,17 @@ export class ApiBNCService {
                 }
 
                 switch (DatosPay.TipoPago) {
-                    case 'Débito Maestro':
-                        DatosPay.TipoPago = 30;
+                    case 'Visa':
+                        DatosPay.TipoPago = 1
                         break;
-                    // Agrega más casos según sea necesario
-
+                    case 'Mastercard':
+                        DatosPay.TipoPago = 2
+                        break;
+                    case 'Débito Maestro':
+                        DatosPay.TipoPago = 3;
+                        break;
                     default:
-                        DatosPay.TipoPago = 'Código no válido para el tipo de tarjeta';
+                        DatosPay.TipoPago = 3;
                 }
 
                 this.GlobalHeader.accion = this.EncryptDatos('VirtualPos');
@@ -134,14 +148,18 @@ export class ApiBNCService {
                     "AccountType": accountTypeCode,
                     "CardHolderID": DatosPay.CI,
                     "CardNumber": DatosPay.CardNumber,
-                    "CardPIN": DatosPay.CardPIN,
+                    "CardPIN": DatosPay.CardPIN || null,
                     "CVV": DatosPay.CVV,
                     "dtExpiration": DatosPay.fvncmtoMes + DatosPay.fvncmtoAno,
                     "idCardType": DatosPay.TipoPago,
-                    "TransactionIdentifier": "Prueba",
+                    "TransactionIdentifier": "",
+                    "TipoPago": DatosPay.Pay_Method,
+                    "PayTrans": 'Virtual_POS'
                 };
 
-                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { resolve(Res) }).catch((err: any) => { reject(err) });
+                //console.log(Data)
+
+                this.MasterPost(Data, this.GlobalHeader).then((Res: any) => { console.log(Res), resolve(Res) }).catch((err: any) => { reject(err) });
 
             } catch (error) {
                 console.error(error);

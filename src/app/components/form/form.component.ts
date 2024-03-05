@@ -1152,11 +1152,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   async PagoC2PBNC() {
     const { value: token } = await Swal.fire({
-      title: "Ingresa el token de autorización",
+      title: "Ingresa la clave C2P generada en tu entidad Bancaria.",
       input: "number",
-      inputLabel: "token de autorización",
-      inputPlaceholder: "token de autorización",
-      validationMessage: "Debes ingresar un token valido.",
+      inputLabel: "",
+      inputPlaceholder: "Clave C2P de autorización",
+      validationMessage: "Debes ingresar una clave C2P valida.",
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Pagar",
@@ -1170,7 +1170,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           if (value.length == 8) {
             resolve(null);
           } else {
-            resolve("Tu token no es valido");
+            resolve("Tu clave C2P no es valida.");
           }
         })
       },
@@ -1187,8 +1187,11 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         "ChildClientID": this.pref_ci_bnc?.value == 'J' ? this.pref_ci_bnc?.value + this.c_i_bnc?.value : null,
         "Amount": this.amountPm_bnc?.value,
         "tokenC2P": token,
-        "BeneficiaryID": this.pref_ci_bnc?.value + this.c_i_bnc?.value
+        "BeneficiaryID": this.pref_ci_bnc?.value + this.c_i_bnc?.value,
+        "Payment_Method": "Mobile_Payment"
       }
+
+      console.log(Datospago)
 
       this._ApiBNC.PayC2P(Datospago).then((ResPay: any) => {
         if (ResPay && ResPay.status === true) {
