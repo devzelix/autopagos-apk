@@ -1234,7 +1234,13 @@
           <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
           <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
             [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
+
+            <div *ngIf="ReciboPay">
+              <app-table-receipt [cantidad]="montoDebitoBNC"></app-table-receipt>
+            </div>
       </mat-step>
+
+      
     
     </mat-stepper>
 

@@ -40,7 +40,7 @@
                 <mat-label>Nro. de cuenta o Telf.</mat-label>
                 <input matInput required formControlName="CountNumber" NumbersOnly="true">
                 <mat-error *ngIf="Debito100x100.get('CuntNumber')?.hasError('required')">
-                    El número de cuenta es requerido
+                    El número de cuenta o telf. es requerido
                 </mat-error>
             </mat-form-field>
         </div>

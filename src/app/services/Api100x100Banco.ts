@@ -41,7 +41,7 @@ import axios, { Axios } from "axios";
           "sAuthKey":Datos.AuthKey
         };
   
-            const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
+            const url ='https://apitest3.thomas-talk.me/';//'https://apitest3.thomas-talk.me/'
             const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
             'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
             'accion':this._EncrypD.EncryptData100x100('MobilePayment'),
@@ -114,7 +114,7 @@ import axios, { Axios } from "axios";
             "sAuthKey":Datos.Auth
           }
 
-          const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
+          const url = 'https://apitest3.thomas-talk.me/';//'https://apitest3.thomas-talk.me/'
           const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
               'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
               'accion':this._EncrypD.EncryptData100x100('DebitPayment'),
