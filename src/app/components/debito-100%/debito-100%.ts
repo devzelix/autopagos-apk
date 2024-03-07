@@ -114,7 +114,8 @@ export class Debit100x100 implements OnInit {
         if (resp.hasOwnProperty('status')){
           if (resp.status == true) {
             this.OutputResponse.emit({
-              Tipo: "Pago Realizado"
+              Tipo: "Pago Realizado",
+              Monto: this.Debito100x100.get('Amount')?.value
             })     
           }else {
             this.invalidForm(`Hubo un problema`,`${resp.description}`);

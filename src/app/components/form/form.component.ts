@@ -223,6 +223,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   public stateTableData: { fecha_reg: Date, numero_ref: number, status_pd: string }[];
   banksListBNC: any[] = [];
   ReciboPayBNC: boolean = false;
+  montoDebito100: any;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -1075,7 +1076,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.ScrollUp()
         break;
       case "Pago Realizado":
-        this.ShowFormDebito100x100 = false
+        //
+        this.montoDebito100= Event.Monto
         this.alertexit("Pago aprobado");
         this.ReciboPay = true
         break;
@@ -1844,6 +1846,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.ShowFormDebito100x100 = false
     this.ReciboPay = false;
     this.ShowBankList = false;
+    this.ShowFormDebito100x100 = false
   }
 
   Contador() {

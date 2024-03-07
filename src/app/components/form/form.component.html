@@ -1190,6 +1190,7 @@
       <!-- / Fin de Crédito o Débito -->
 
       <mat-step *ngIf="ShowFormDebito100x100">
+        <ng-template matStepLabel>Débito inmediato</ng-template>
         <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
             class="desc-user">
@@ -1229,14 +1230,24 @@
               </h4>
             </div>
           </div>
-        </div>
-        <ng-template matStepLabel>Débito inmediato</ng-template>
+
+          
           <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
           <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
             [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
-
+        
+        
+        </div>
             <div *ngIf="ReciboPay">
-              <app-table-receipt [cantidad]="montoDebitoBNC"></app-table-receipt>
+              <app-table-receipt [cantidad]="montoDebito100"></app-table-receipt>
+            </div>
+
+            <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+              <button class="button-material-back btn-width-30"
+                (click)="ResetFormCD(); lastDni='';searchServicesv2(dni,false,false)" mat-raised-button type="button"
+                matStepperPrevious>
+                Regresar
+              </button>
             </div>
       </mat-step>
 
