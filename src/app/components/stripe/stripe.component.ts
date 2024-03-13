@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { StripeService, StripeCardNumberComponent, StripeCardComponent} from 'ngx-stripe';
+import { StripeService, StripeCardNumberComponent, StripeCardComponent } from 'ngx-stripe';
 import { Router } from '@angular/router';
 import {
   StripeCardElementOptions,
@@ -26,9 +26,9 @@ export class StripeComponent implements OnInit {
   paymentForm: FormGroup;
   stripeCardValid: boolean = false;
   @ViewChild(StripeCardComponent) card: StripeCardComponent;
-  
+
   public pinSend: boolean = false;
-  public nameClient:any;
+  public nameClient: any;
   public saldoUSD: any = '';
   public saldoBs: string = '';
   public saldoText: string = '';
@@ -50,10 +50,10 @@ export class StripeComponent implements OnInit {
   public Second: string;
   public errorPin: boolean = false;
   public MountNegative: boolean = false; //Esto debe ir true por defecto ojo acomodar horita es temporal
-  public ValidoPagoStripe: boolean= false;
-  public MontoCancelar: string ="";
-  private StripeTasa:number = 4;
-  private ComissionF:number = 0.3;
+  public ValidoPagoStripe: boolean = false;
+  public MontoCancelar: string = "";
+  private StripeTasa: number = 4;
+  private ComissionF: number = 0.3;
 
   cardOptions: StripeCardElementOptions = {
     iconStyle: 'solid',
@@ -81,8 +81,8 @@ export class StripeComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private stripeService: StripeService, 
-    public registerPayService:RegisterPayService, 
+    private stripeService: StripeService,
+    public registerPayService: RegisterPayService,
     private _helper: HelperService,
     private _seguridadDatos: SeguridadDatos,
     private router: Router,
@@ -103,7 +103,7 @@ export class StripeComponent implements OnInit {
 
     let minutes = parseInt(sessionStorage.getItem('minutes')!);
     let seconds = parseInt(sessionStorage.getItem('seconds')!);
-    if(minutes && seconds) {
+    if (minutes && seconds) {
       this.Countdown(minutes, minutes)
       this.pinSend = true
     }
@@ -119,13 +119,13 @@ export class StripeComponent implements OnInit {
       cantidad: ['', [Validators.required]]
     });
 
-    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!)  : "";
-    if(Number(this.saldoUSD<=1)){
-      this.saldoUSD ="1";
+    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
+    if (Number(this.saldoUSD <= 1)) {
+      this.saldoUSD = "1";
       this.cantidadStripe?.setValue('1');
       this.PagoACobrar();
-    }else{
-      this.MountNegative=true;
+    } else {
+      this.MountNegative = true;
     }
 
     //this.PagoACobrar();//Temporalll
@@ -133,9 +133,9 @@ export class StripeComponent implements OnInit {
 
   get cantidadStripe() { return this.paymentForm.get('cantidad'); }
 
-  onChange( ev:any ) {
-    let type=ev.type;
-    let event=ev.event;
+  onChange(ev: any) {
+    let type = ev.type;
+    let event = ev.event;
     if (type === 'change') {
       this.stripeCardValid = event.complete;
     }
@@ -150,9 +150,9 @@ export class StripeComponent implements OnInit {
     sessionStorage.setItem('seconds', this.Second);
   }
 
-  PagoACobrar(){
+  PagoACobrar() {
     this.cantidadStripe?.valueChanges.subscribe({
-     
+
       next: (value) => {
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
@@ -160,17 +160,17 @@ export class StripeComponent implements OnInit {
             this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
             this.cantidadStripe?.setValue('');
             return;
-          }else{
+          } else {
             this.ValidoPagoStripe = false;
           }
-          this.saldoUSD=value;
+          this.saldoUSD = value;
           this.GetMontoNetoRecibir();
         }
       }
     })
   }
 
-  GetMontoNetoRecibir(){
+  GetMontoNetoRecibir() {
     return (eval(`parseFloat((100*(this.ComissionF + Number(this.saldoUSD))) / (0 - this.StripeTasa + 100)).toFixed(2)`));
   }
 
@@ -183,51 +183,54 @@ export class StripeComponent implements OnInit {
     })
   }
 
-  public clientSecret:any;
+  public clientSecret: any;
 
   buy() {
     this.paymentProcessing('Registrando pago', 'Por favor espere...')
-    let resultTok:any;
+    let resultTok: any;
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
         // this.newAmount = {cantidad: result.amount}
         console.log(result);
-        resultTok=result.token
-            let data={
-              token:result?.token?.id,
-              amount:this.GetMontoNetoRecibir()*100,
-              paquete: this.paquete
-            }
-            //Aqui
-            this.registerPayService.getStripePayment(data)
-            .then((res:any)=>{
-                if(res.pago){
-                    // console.log("Stripe registerPayService");
-                    let client_secret=res.pago.client_secret
-                    // console.log(4000000000009995)
-                    this.stripeService.confirmCardPayment(client_secret, 
-                      {
-                        payment_method: { card: this.card.getCard() },
-                      }).subscribe((result:any) =>{
-                      if(result.error){
-                        this.paymentReject('Ocurrió un error con tu pago',result.error.message);
-                      }
-                      else{
-                        this.paymentAproved('Exitoso','Pago exitoso')
-                        this.showReceipt = true;
-                        result.paymentIntent.neto=this.saldoUSD
-                        this.PostData(result.paymentIntent);
-                      }
-                        
-                    })
-              }else{
-                this.paymentReject('Ocurrió un error con tu pago','Intenta de nuevo en otro momento');
-              }
-            })
-            .catch((error:any)=>{
-              console.log(error);
-            })
+        resultTok = result.token
+        let data = {
+          abonado: this.nroContrato,
+          token: result.token?.id,
+          amount: this.GetMontoNetoRecibir() * 100,
+          paquete: this.paquete
+        }
+
+        console.log(result.token?.id)
+        console.log(data);
+        //Aqui
+        this.registerPayService.getStripePayment(data).then((res: any) => {
+          console.log(res);
+          if (res.pago) {
+            // console.log("Stripe registerPayService");
+            let client_secret = res.pago.client_secret
+            // console.log(4000000000009995)
+            this.stripeService.confirmCardPayment(client_secret,
+              {
+                payment_method: { card: this.card.getCard() },
+              }).subscribe((result: any) => {
+                if (result.error) {
+                  this.paymentReject('Ocurrió un error con tu pago', result.error.message);
+                }
+                else {
+                  this.paymentAproved('Exitoso', 'Pago exitoso')
+                  this.showReceipt = true;
+                  result.paymentIntent.neto = this.saldoUSD
+                  this.PostData(result.paymentIntent);
+                }
+
+              })
+          } else {
+            this.paymentReject('Ocurrió un error con tu pago', 'Intenta de nuevo en otro momento');
+          }
+        }).catch((error: any) => {
+            console.log(error);
+          })
       });
   }
 
@@ -235,6 +238,8 @@ export class StripeComponent implements OnInit {
     Swal.fire({
       title,
       html: message,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading()
       }
@@ -259,43 +264,44 @@ export class StripeComponent implements OnInit {
 
   ClaveAuthStripe() {
     this._Consultas.GeneratePin(String(this.c_i), "PinPagos")
-    .then((res: any) => {
-      if(res.status) {
-        this.pinSend = true;
-        this.Countdown(1, 59);
+      .then((res: any) => {
+        if (res.status) {
+          this.pinSend = true;
+          this.Countdown(1, 59);
 
-        Swal.fire({
-          title: 'Ingrese el PIN recibido.',
-          input: 'text',
-          inputAttributes: {
-            autocapitalize: 'off'
-          },
-          showCancelButton: true,
-          confirmButtonText: 'Enviar',
-          cancelButtonText: 'Cancelar',
-          showLoaderOnConfirm: true,
-          preConfirm: (pin) => {
-            this._Consultas.VerificarPin(this.c_i, pin).then( async (response: any) => {
-              if(response.status) {
-                if(sessionStorage.getItem('minutes') && sessionStorage.getItem('seconds')) {
-                  sessionStorage.removeItem('minutes');
-                  sessionStorage.removeItem('seconds');
+          Swal.fire({
+            title: 'Ingrese el PIN recibido.',
+            input: 'text',
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            confirmButtonText: 'Enviar',
+            cancelButtonText: 'Cancelar',
+            showLoaderOnConfirm: true,
+            preConfirm: (pin) => {
+              this._Consultas.VerificarPin(this.c_i, pin).then(async (response: any) => {
+                if (response.status) {
+                  if (sessionStorage.getItem('minutes') && sessionStorage.getItem('seconds')) {
+                    sessionStorage.removeItem('minutes');
+                    sessionStorage.removeItem('seconds');
+                  }
+                  await this.buy();
+                } else {
+                  this.errorPin = true;
                 }
-                await this.buy();
-              }else{
-                this.errorPin = true;
-              } 
-            })
-          },
-          allowOutsideClick: () => !Swal.isLoading()
-        })
-      }
-    })
-    .catch(err => console.error(err))
+              })
+            }
+          })
+        }
+      })
+      .catch(err => console.error(err))
   }
 
-  PostData(DataStripe:any){
-    let DatosUserAgent= {
+  PostData(DataStripe: any) {
+    let DatosUserAgent = {
       c_iDC: this.c_i,
       Abonado: this.nroContrato,
       Name: this.name,
@@ -318,7 +324,7 @@ export class StripeComponent implements OnInit {
       this.Minutes = padLeft(date.getMinutes() + "");
       this.Second = padLeft(date.getSeconds() + "");
       date = new Date(date.getTime() - 1000);
-      
+
       this.newTime = `${this.Minutes}:${this.Second}`
       if (this.Minutes == '00' && this.Second == '00') {
         this.Minutes = "";

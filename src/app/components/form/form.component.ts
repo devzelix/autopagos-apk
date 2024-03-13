@@ -1154,7 +1154,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   async PagoC2PBNC() {
     const { value: token } = await Swal.fire({
-      title: "Ingresa la clave C2P generada en tu entidad Bancaria.",
+      title: "Por favor, introduce la clave C2P generada por tu entidad bancaria.",
       input: "number",
       inputLabel: "",
       inputPlaceholder: "Clave C2P de autorización",
@@ -1162,6 +1162,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Pagar",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       inputAttributes: {
         maxlength: "6",
         autocapitalize: "off",

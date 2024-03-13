@@ -41,7 +41,7 @@ import axios, { Axios } from "axios";
           "sAuthKey":Datos.AuthKey
         };
   
-            const url ='https://apitest3.thomas-talk.me/';//'https://apitest3.thomas-talk.me/'
+            //const url = 'http://localhost:9003/';//'https://apitest3.thomas-talk.me/'
             const headers = new HttpHeaders({'source':this._EncrypD.EncryptData100x100(origin),
             'wt':this._EncrypD.EncryptData100x100(environment.TokenApi100x100Banco),
             'accion':this._EncrypD.EncryptData100x100('MobilePayment'),
@@ -50,7 +50,7 @@ import axios, { Axios } from "axios";
             'Accept': 'application/json'
             });
 
-            this.http.post<any>(url,DatosC2P,{headers:headers}).subscribe({
+            this.http.post<any>(environment.api100x100,DatosC2P,{headers:headers}).subscribe({
               next: data => {
                   resolve(data);
               },
@@ -93,9 +93,9 @@ import axios, { Axios } from "axios";
       }
     });
   }
-    ngOnInit(): void {
-        throw new Error("Method not implemented.");
-    }
+  ngOnInit(): void {
+    throw new Error("Method not implemented.");
+  }
 
 
 
@@ -124,7 +124,7 @@ import axios, { Axios } from "axios";
 
           });
 
-          this.http.post<any>(url, Datos,{headers:headers}).subscribe({
+          this.http.post<any>(environment.api100x100, Datos,{headers:headers}).subscribe({
               next: data => {
                   resolve(data);
               },
