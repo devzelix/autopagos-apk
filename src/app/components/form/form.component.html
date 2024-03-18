@@ -18,8 +18,7 @@
     <button *ngIf="AppFibex" class="btn-flotante left" mat-mini-fab matTooltip="Últimos pagos" (click)="openInfoPay()">
       <mat-icon><span class="material-symbols-outlined">list</span></mat-icon>
     </button>
-    <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago"
-      (click)="openDialogPM()">
+    <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
       <mat-icon><span class="material-icons-outlined">help_outline</span></mat-icon>
     </button>
 
@@ -73,7 +72,7 @@
           <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
             <mat-spinner></mat-spinner>
           </div>
-          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards animated fadeInUp">
+          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards cards-abonados  animated fadeInUp">
             <button *ngFor="let contrato of listContratos" class="grid-cards-item"
               (click)="contractSelected(contrato,true)">
               <h3>
@@ -112,7 +111,7 @@
               Servicio: {{ paquete }}
             </h4>
             <h4 class="name-client">
-              Subscripción: {{subscription}} USD
+              Suscripción: {{subscription}} USD
             </h4>
           </div>
         </div>
@@ -141,7 +140,7 @@
         <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
-            <span [ngSwitch]="option.tipopago">
+            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size" (click)="showConsole(option)">
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
@@ -168,8 +167,7 @@
         <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
           <app-detalle-pay [DataPagoPendiente]="DataPagoPendiente"></app-detalle-pay>
         </div>
-        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full BackButton"
-          (click)="FormaPago(31)">
+        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full" (click)="FormaPago(31)">
           REGRESAR
         </button>
       </mat-step>
@@ -193,7 +191,7 @@
                 Servicio: {{ paquete }}
               </h4>
               <h4 class="name-client">
-                Subscripción: {{subscription}} USD
+                Suscripción: {{subscription}} USD
               </h4>
             </div>
           </div>
@@ -212,7 +210,7 @@
                 <!-- Servicio: {{ paquete }} -->
               </h4>
               <h4 class="name-client">
-                <!-- Subscripción: {{subscription}} USD -->
+                <!-- Suscripción: {{subscription}} USD -->
               </h4>
             </div>
           </div>
@@ -345,15 +343,15 @@
               </mat-form-field>
 
               <!-- <span *ngIf="BancoNacional(banco)"> -->
-              <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
-              <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' ">
-                <mat-label>Banco emisor</mat-label>
-                <mat-select formControlName="bank">
-                  <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
-                    {{banka.Banco}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+                <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
+                <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' " >
+                  <mat-label>Banco emisor</mat-label>
+                  <mat-select formControlName="BancoEmisor">
+                    <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
+                      {{banka.Banco}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
               <!-- </span> -->
 
 
@@ -369,11 +367,9 @@
                 </mat-error>
                 <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('minlength')">El minimo de número es 4
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe
-                  tener letras o carácteres especiales
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe tener letras o carácteres especiales
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no
-                  válido
+                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no válido
                 </mat-error>
               </mat-form-field>
 
@@ -584,7 +580,7 @@
                       <tr>
                         <td>
                           Servicio: {{ paquete }}<br />
-                          Subscripción: {{subscription}} USD <br />
+                          Suscripción: {{subscription}} USD <br />
                           Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
                           <strong>Banco receptor: {{bank?.value}}</strong>
                         </td>
@@ -624,7 +620,7 @@
             </div>
           </div>
           <div class="btn-flex-center">
-            <button class="button-material-next btn-width-70" mat-raised-button (click)="savePayment()"
+            <button class="button-material-next btn-width-70" mat-raised-button (click)="savePaymentV2()"
               [disabled]="DisableReg || showMessageErrorUpload">Reportar pago</button>
             <button class="button-material-back btn-width-30" mat-raised-button (click)="resetStepper()">Editar
               datos</button>
@@ -634,7 +630,9 @@
       <!-- / Fin de Transferencias -->
 
       <!-- Pago Móvil -->
+      <!-- <mat-step *ngIf="ConsultarPagoMovilboolean || RegistrarPagoMovilboolean" [stepControl]="TypeForm">  Version original-->
       <mat-step *ngIf="ShowOptionPagoMovil" [stepControl]="TypeForm">
+        <ng-template matStepLabel>Pago Móvil</ng-template>
         <div *ngIf="!ReciboPay">
           <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
             class="desc-user">
@@ -651,7 +649,7 @@
                 Servicio: {{ paquete }}
               </h4>
               <h4 class="name-client">
-                Subscripción: {{subscription}} USD
+                Suscripción: {{subscription}} USD
               </h4>
             </div>
           </div>
@@ -670,7 +668,7 @@
                 <!-- Servicio: {{ paquete }} -->
               </h4>
               <h4 class="name-client">
-                <!-- Subscripción: {{subscription}} USD -->
+                <!-- Suscripción: {{subscription}} USD -->
               </h4>
             </div>
           </div>
@@ -996,7 +994,7 @@
                 Servicio: {{ paquete }}
               </h4>
               <h4 class="name-client">
-                Subscripción: {{subscription}} USD
+                Suscripción: {{subscription}} USD
               </h4>
             </div>
           </div>
@@ -1015,7 +1013,7 @@
                 <!-- Servicio: {{ paquete }} -->
               </h4>
               <h4 class="name-client">
-                <!-- Subscripción: {{subscription}} USD -->
+                <!-- Suscripción: {{subscription}} USD -->
               </h4>
             </div>
           </div>
@@ -1163,7 +1161,7 @@
           <button *ngIf="!Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
             class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            <span *ngIf="!Creditoboolaean">Solicitar pin de autorización2 {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+            <span *ngIf="!Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
           <!-- / Fin Debito -->
 
@@ -1259,52 +1257,4 @@
 
 </form>
 
-<section *ngIf="showStateTable"
-  class="info-pay-container form-login__group fancy_shadow form-login__group2 animated fadeIn">
-  <span class="header-info-pay">
-    <mat-icon class="btn-close" (click)="showStateTable=false">arrow_back</mat-icon>
-    <h1 class="title-info-pay">Información de sus últimos pagos</h1>
-  </span>
-  <span *ngIf="stateTableData && stateTableData.length>0">
-    <table class="info-pay-table">
-      <tbody>
-        <tr class="table-header">
-          <th>Fecha</th>
-          <th>Comprobante</th>
-          <th>Estado</th>
-        </tr>
-        <tr *ngFor="let item of stateTableData; let i = index" [ngClass]="{'bg-dark':i%2===0}">
-          <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-          <td> {{item.numero_ref}} </td>
-          <td>
-            <div *ngIf="item.status_pd === 'PROCESADO'" class="pay-icon-checked">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                <path
-                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-              </svg>
-            </div>
-            <div *ngIf="item.status_pd === 'RECHAZADO'" class="pay-icon-rejected">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                <path
-                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-              </svg>
-            </div>
-            <div *ngIf="item.status_pd === 'REGISTRADO'" class="pay-icon-registered">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                class="bi bi-clock-fill" viewBox="0 0 16 16">
-                <path
-                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
-              </svg>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </span>
-  <span *ngIf="stateTableData.length == 0">
-    <h3 style="text-align: center;">No tienes pagos para mostrar</h3>
-  </span>
-
-</section>
+<app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable" (closeEvent)="showStateTable=false"></app-info-pay>

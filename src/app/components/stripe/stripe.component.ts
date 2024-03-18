@@ -157,7 +157,7 @@ export class StripeComponent implements OnInit {
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
             this.ValidoPagoStripe = true;
-            this.invalidForm(`Usted no puede reportar con más de 3 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 3 meses de su suscripción`, ``);
             this.cantidadStripe?.setValue('');
             return;
           } else {
@@ -191,46 +191,39 @@ export class StripeComponent implements OnInit {
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
-        // this.newAmount = {cantidad: result.amount}
-        console.log(result);
-        resultTok = result.token
-        let data = {
-          abonado: this.nroContrato,
-          token: result.token?.id,
-          amount: this.GetMontoNetoRecibir() * 100,
-          paquete: this.paquete
-        }
-
-        console.log(result.token?.id)
-        console.log(data);
-        //Aqui
-        this.registerPayService.getStripePayment(data).then((res: any) => {
-          console.log(res);
-          if (res.pago) {
-            // console.log("Stripe registerPayService");
-            let client_secret = res.pago.client_secret
-            // console.log(4000000000009995)
-            this.stripeService.confirmCardPayment(client_secret,
-              {
-                payment_method: { card: this.card.getCard() },
-              }).subscribe((result: any) => {
-                if (result.error) {
-                  this.paymentReject('Ocurrió un error con tu pago', result.error.message);
-                }
-                else {
-                  this.paymentAproved('Exitoso', 'Pago exitoso')
-                  this.showReceipt = true;
-                  result.paymentIntent.neto = this.saldoUSD
-                  this.PostData(result.paymentIntent);
-                }
-
-              })
-          } else {
-            this.paymentReject('Ocurrió un error con tu pago', 'Intenta de nuevo en otro momento');
-          }
-        }).catch((error: any) => {
-            console.log(error);
-          })
+        resultTok=result.token
+            let data={
+              token:result?.token?.id,
+              amount:this.GetMontoNetoRecibir()*100,
+              paquete: this.paquete
+            }
+            //Aqui
+            this._ApiMercantil.getStripePayment(data)
+            .then((res:any)=>{
+                if(res.pago){
+                    let client_secret=res.pago.client_secret
+                    this.stripeService.confirmCardPayment(client_secret, 
+                      {
+                        payment_method: { card: this.card.getCard() },
+                      }).subscribe((result:any) =>{
+                      if(result.error){
+                        this.paymentReject('Ocurrió un error con tu pago',result.error.message);
+                      }
+                      else{
+                        this.paymentAproved('Exitoso','Pago exitoso')
+                        this.showReceipt = true;
+                        result.paymentIntent.neto=this.saldoUSD
+                        this.PostData(result.paymentIntent);
+                      }
+                        
+                    })
+              }else{
+                this.paymentReject('Ocurrió un error con tu pago','Intenta de nuevo en otro momento');
+              }
+            })
+            .catch((error:any)=>{
+              console.log(error);
+            })
       });
   }
 
@@ -311,7 +304,7 @@ export class StripeComponent implements OnInit {
       ...DataStripe
     }
 
-    this.registerPayService.stripePost(DatosUserAgent)
+    this._ApiMercantil.stripePost(DatosUserAgent)
   }
 
   Countdown(Minute: number, Seconds: number) {

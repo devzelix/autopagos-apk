@@ -28,7 +28,7 @@
           Servicio: {{ paquete }}
         </h4>
         <h4 class="name-client">
-          Subscripción: {{subscription}} USD
+          Suscripción: {{subscription}} USD
         </h4>
       </div>
     </div>
@@ -61,12 +61,10 @@
           <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ saldoUSD | currency}}</b></small>
       </div>
       <br>
-      <div>
-        <div>
-          <mat-card>
+          <div>
             <mat-card-content>
               <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-                <div class="card">
+                <div class="mtb-5">
                   <ngx-stripe-card containerClass="example" [options]="cardOptions" (on)="onChange($event)"
                     [elementsOptions]="elementsOptions">
                   </ngx-stripe-card>
@@ -82,13 +80,11 @@
                 Solicitar pin de autorización {{newTime}}
               </button>
             </mat-card-footer>
-          </mat-card>
+          </div>
 
           <button class="customized_btn_next btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()">
             Regresar
           </button>
-        </div>
-      </div>
     </div>
   </div>
 

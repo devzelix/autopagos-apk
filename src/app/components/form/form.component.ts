@@ -516,24 +516,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
 
-  BancoEmisor(Bank: any) {
+  BancoEmisor(Bank:any){
     switch (Bank.Banco) {
       case 'USD BANCO MERCANTIL':
       case 'EUR BANCO MERCANTIL':
-        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(10), Validators.required, Validators.minLength(4), this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(10),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
 
       case 'ZELLE WELL FARGO pagos.zelle@fibextelecom.net':
       case 'USD BANK OF AMERICA TRANSFERENCIA':
-        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14), Validators.required, Validators.minLength(4), this.CharacterSpecial()]);
+        this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14),Validators.required,Validators.minLength(4),this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
 
       default:
-        if (Bank.hasOwnProperty('Max')) {
+        if(Bank.hasOwnProperty('Max')){
           this.secondFormFibex.get('BancoEmisor')?.setValue(Bank.Banco)
-          this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(Bank.Max), Validators.required, Validators.minLength(4), this.NumericReference()]);
+          this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(Bank.Max),Validators.required,Validators.minLength(4),this.NumericReference()]);
           this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         }
         break;
@@ -614,6 +614,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   get nameTitular() { return this.secondFormFibex.get('nameTitular'); }
   get dniTitular() { return this.secondFormFibex.get('dniTitular'); }
   get emailTitular() { return this.secondFormFibex.get('emailTitular'); }
+  get BankUser() { return this.secondFormFibex.get('BancoEmisor'); }
 
   get note() { return this.thirdFormFibex.get('note'); }
   get img() { return this.thirdFormFibex.get('img'); }
@@ -684,19 +685,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
     this.RegistrarPagoMovilboolean = false;
+    this.ShowOptionPagoMovil = false;
     this.DebitoCreditoboolean = false;
     this.Debitoboolean = false;
     this.Creditoboolaean = false;
     this.Criptomoneda = false;
     this.Otros = false;
     this.PrimeraVez = false;
-    this.ShowFormDebito100x100 = false;
+    this.ShowFormDebito100x100 = false; 
+    this.ShowalertBankNationals = false;
+    this.BankSelectPagoMovil = false;
+    this.ShowOptionPagoMovil = false
     //Modal para pagar Zelle
     if (x == 10) {
       this.openDialogZelle();
       return;
     }
 
+   
 
     //Débito
     if (x == 0) {
@@ -766,7 +772,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Zelle
     if (x == 6) {
-      let BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBA2A448529C1B50236')
+ 
+      let BankZelle: BankList[] = [];
+      if(this.listContratos[0].franquicia=="FIBEX ARAGUA"){
+        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBABECEA53909F26448')
+      }else{
+        BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBAA15630269FB90658')
+      }
+      
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
 
       this.bankSelected(BankZelle[0]);
@@ -1530,20 +1543,27 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
           //NEW SERVICE TO CONVERT IMG//PDF FILES
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud)
-              .then((url) => {
-                imageBase64 = '';
-                this.uploadingImg = false;
-                this.imageUrl = url;
-                // this.imageUrl = res.url;
-                this.SendOption(2, 0, url);
-                this.imageUploaded = true;
-              })
-              .catch((err) => {
-                console.error(err);
-                this.countErrorUploadImage(imageBase64, NameCloud)
-                this.uploadingImg = false;
-              })
+            setTimeout(() => {
+              this.CloudNameComprobante = NameCloud;
+              this.uploadingImg = false;
+              this.imageUrl = imageBase64;
+              this.imageUploaded = true;
+            }, 300);
+
+            // this._Cloudinary.upload_images(imageBase64, NameCloud)
+            //   .then((url) => {
+            //     imageBase64 = '';
+            //     this.uploadingImg = false;
+            //     this.imageUrl = url;
+            //     // this.imageUrl = res.url;
+            //     this.SendOption(2, 0, url);
+            //     this.imageUploaded = true;
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     this.countErrorUploadImage(imageBase64, NameCloud)
+            //     this.uploadingImg = false;
+            //   })
 
           } catch (error) {
             console.error(error);
@@ -1560,32 +1580,39 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   VerifyRefencia(NroRef?: any) {
     try {
       this.LoadingCheckReferencia = true
-      this.registerPayService.ReferenciaMes(NroRef)
-        .then((response: any) => {
-          this.LoadingCheckReferencia = false
-          if (response && response.codigo === 1000) {
-            this.secondFormFibex = this.fb.group({
-              voucher: ['', [Validators.required]],
-            });
-
-            this.ExitRef = false
-
-            this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
-          } else {
-            this.voucher?.setValue(NroRef);
-            this.NextMatStepper()
-          }
-        })
-        .catch((error: any) => {
-          this.LoadingCheckReferencia = false
+      let Data ={
+        Referencia: NroRef,
+        Fecha: this.date?.value,
+        Monto: this.amount?.value,
+        BancoEmisor: this.BankUser?.value,
+        BancoReceptor: this.BancoSelect
+      }
+      this.registerPayService.ReferenciaMes(Data)
+      .then((response:any)=>{
+        this.LoadingCheckReferencia = false
+        if(response && response.codigo === 1000){
           this.secondFormFibex = this.fb.group({
             voucher: ['', [Validators.required]],
           });
 
           this.ExitRef = false
 
-          this.invalidForm('Error al intentar validar su referencia, por favor intente más tarde.');
+          this.invalidForm('Ya existe un pago registrado con la misma referencia y cuenta bancaria.');
+        }else{
+          this.voucher?.setValue(NroRef);
+          this.NextMatStepper()
+        }
+      })
+      .catch((error:any)=>{
+        this.LoadingCheckReferencia = false
+        this.secondFormFibex = this.fb.group({
+          voucher: ['', [Validators.required]],
         });
+
+        this.ExitRef = false
+
+        this.invalidForm('Error al intentar validar su referencia, por favor intente más tarde.');
+      });
       /*if (NroRef || this.voucher?.value) {
         // console.log("Pase1")
         this.registerPayService.ConsultarEstadoDeposito(this.nroContrato?.value, NroRef || this.voucher?.value).then((ResDeposito: any) => {
@@ -1620,6 +1647,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   NextMatStepper() {
     this.stepper.next();
   }
+
+  private CloudNameComprobante: string = "";
+  private CloudNameRetencion: string = "";
 
   uploadRetentionImagePayment2($event: any) {
     this.uploadingRetentionImg = true;
@@ -1673,18 +1703,24 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           //NEW SERVICE TO CONVERT IMG//PDF FILES
 
           try {
-            this._Cloudinary.upload_images(imageBase64, NameCloud)
-              .then((url) => {
-                imageBase64 = '';
-                this.uploadingRetentionImg = false;
-                this.retentionImageUrl = url;
-                this.SendOption(2, 0, url);
-                this.retentionimageUploaded = true;
-              })
-              .catch((err) => {
-                console.error(err);
-                this.countErrorUploadImage(imageBase64, NameCloud);
-              })
+            setTimeout(() => {
+              this.CloudNameRetencion = NameCloud;
+              this.uploadingRetentionImg = false;
+              this.retentionImageUrl = imageBase64;
+              this.retentionimageUploaded = true;
+            }, 300);
+            // this._Cloudinary.upload_images(imageBase64, NameCloud)
+            //   .then((url) => {
+            //     imageBase64 = '';
+            //     this.uploadingRetentionImg = false;
+            //     this.retentionImageUrl = url;
+            //     this.SendOption(2, 0, url);
+            //     this.retentionimageUploaded = true;
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     this.countErrorUploadImage(imageBase64, NameCloud);
+            //   })
 
           } catch (error) {
             console.error(error);
@@ -1697,6 +1733,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       }
     }
   }
+
+  private imageComprobanteURL: string | undefined;
+  private imageRetencionURL: string | undefined;
 
   savePayment() {
     this.DisableReg = true
@@ -1766,19 +1805,19 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.sendingPay = false;
             if (res && res.length > 0) {
               try {
-                // res.data.forEach((Data: any) => {
-                if (res[0].to == "DUPLICADO") {
-                  this.playDuplicated = true;
-                  this.payReported = false;
-                } else if (res[0].to.includes('Error')) {
-                  this.ErrorRegistrando = true;
-                  this.MessageErrorRegistrado = res[0].to;
-                } else {
-                  this.SendOption(3, 0, true);
-                  this.payReported = true;
-                  this.playDuplicated = false;
-                }
-                // });
+               // res.data.forEach((Data: any) => {
+                  if (res[0].to == "DUPLICADO") {
+                    this.playDuplicated = true;
+                    this.payReported = false;
+                  } else if (res[0].to.includes('Error')) {
+                    this.ErrorRegistrando = true;
+                    this.MessageErrorRegistrado = res[0].to;
+                  } else {
+                    this.SendOption(3, 0, true);
+                    this.payReported = true;
+                    this.playDuplicated = false;
+                  }
+               // });
 
               } catch (error) {
                 this.payReported = true;
@@ -1803,6 +1842,191 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.Contador()
     }
 
+  }
+
+  savePaymentV2() {
+    // console.log("this.firstFormFibex.invalid", this.firstFormFibex.invalid, this.firstFormFibex.value);
+    // console.log("this.secondFormFibex.invalid", this.secondFormFibex.invalid, this.secondFormFibex.value);
+    // console.log("this.thirdFormFibex.invalid", this.thirdFormFibex.invalid, this.thirdFormFibex.value);
+    // console.log("this.fourthFormFibex.invalid", this.fourthFormFibex.invalid, this.fourthFormFibex.value);
+
+    const promiseList: Promise<void>[] = [];
+
+    /******************************************
+     * Subir imagen
+     ******************************************/
+    if(!this.imageComprobanteURL && this.imageUrl) {
+      /**
+       * Subir imagen de pago
+       */
+      Swal.fire({
+        title: "Subiendo comprobante",
+        text: "Espere unos momentos, estamos subiendo su comprobante de pago",
+        footer: "Este proceso puede tardar unos momentos",
+        showConfirmButton: false,
+        allowEnterKey: false,
+        allowEscapeKey: false
+      });
+      Swal.showLoading();
+
+      const promise = this._Cloudinary.upload_images(this.imageUrl, this.CloudNameComprobante)
+        .then((url) => {
+          this.imageComprobanteURL = url;
+          Swal.close();
+        })
+        .catch((err) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Lo sentimos, pero no pudimos subir su comprobante de pago.",
+            footer: "Verifique su conexión a internet e intentelo nuevamente"
+          });
+        });
+
+      promiseList.push(promise);
+    }
+
+    if(!this.imageRetencionURL && this.retentionImageUrl) {
+      /**
+       * Subir imagen de retención
+       */
+      Swal.fire({
+        title: "Subiendo retención",
+        text: "Espere unos momentos, estamos subiendo su retención",
+        footer: "Este proceso puede tardar unos momentos",
+        showConfirmButton: false,
+        allowEnterKey: false,
+        allowEscapeKey: false
+      });
+      Swal.showLoading();
+
+      const promise = this._Cloudinary.upload_images(this.retentionImageUrl, this.CloudNameRetencion)
+      .then((url) => {
+        this.imageRetencionURL = url;
+        Swal.close();
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Lo sentimos, pero no pudimos subir su retención.",
+          footer: "Verifique su conexión a internet e intentelo nuevamente"
+        });
+      });
+
+      promiseList.push(promise);
+    }
+
+    Promise.all(promiseList)
+      .then(this.saveRegisterPayment.bind(this))
+      .catch((err) => console.log(err));
+  }
+
+  saveRegisterPayment() {
+    this.DisableReg = true
+      if (this.firstFormFibex.invalid || this.secondFormFibex.invalid || this.thirdFormFibex.invalid || (this.fourthFormFibex.invalid && (this.possibleWithholdingAgent && this.selectedRetentionOption == 2))) {
+        if (!this.regexUrl.test(this.imageUrl)) {
+          this.invalidForm('La imagen de pago es requerida');
+          this.closeAlert();
+          this.DisableReg = false
+          return;
+        }
+        if (!this.regexUrl.test(this.retentionImageUrl) && this.possibleWithholdingAgent && this.selectedRetentionOption == 2) {
+          this.invalidForm('La imagen de pago del comprobante por ser agente de retención es requerida');
+          this.closeAlert();
+          this.DisableReg = false
+          return;
+        }
+        this.invalidForm('Existen campos requeridos que no fueron llenados correctamente');
+        this.closeAlert();
+        this.DisableReg = false
+        return;
+      }
+      let contractInfo = this.listContratos.find((info) => {
+        if (this.nroContrato) {
+          return this.nroContrato.value === info.contrato;
+        }
+        return {};
+      })
+      var saldo = "0";
+
+      if (this.BancoNacional(this.banco) && contractInfo?.saldo != undefined) {
+        saldo = (parseFloat(contractInfo.saldo) * this.cambio_act).toFixed(2)
+      } else {
+        if (contractInfo?.saldo != undefined) {
+          saldo = parseFloat(contractInfo?.saldo).toFixed(2)
+        }
+      }
+
+      var dt = new Date(this.date?.value);
+      let year = dt.getFullYear();
+      let month = (dt.getMonth() + 1).toString().padStart(2, "0");
+      let day = dt.getDate().toString().padStart(2, "0");
+      let date = year + "/" + month + "/" + day;
+
+      this.sendingPay = true;
+      const DataForRegister = {
+        ...this.firstFormFibex.value,
+        ...this.secondFormFibex.value,
+        ...this.thirdFormFibex.value,
+        img: this.selectedRetentionOption == 2 ? this.imageComprobanteURL + ' -Retención:' + this.imageRetencionURL + ' -Monto:' + this.retentionAmount?.value : this.imageComprobanteURL,
+        name: contractInfo?.cliente,
+        amount: this.totalAmount > 0 ? String(this.totalAmount) : this.amount?.value,
+        date,
+        id_Cuba: this.BancoSelect.id_cuba,
+        Browser: this.TypeNavegador,
+        AddresIp: this.IpAddress.ip,
+      }
+
+      const ContratoActual: any = this.listContratos.find((CA: any) => CA.contrato === DataForRegister.nroContrato)
+
+      if (ContratoActual && ContratoActual.status_contrato != "ANULADO" || ContratoActual.status_contrato != "RETIRADO" && DataForRegister.amount > 0) {
+        DataForRegister.IdContrato = ContratoActual.id_contrato;
+
+        this.registerPayService.registerPayClientv2(DataForRegister)
+          .then((res: any) => {
+            this.DisableReg = false
+            if (res) {
+
+              this.sendingPay = false;
+              if (res && res.length > 0) {
+                try {
+                 // res.data.forEach((Data: any) => {
+                    if (res[0].to == "DUPLICADO") {
+                      this.playDuplicated = true;
+                      this.payReported = false;
+                    } else if (res[0].to.includes('Error')) {
+                      this.ErrorRegistrando = true;
+                      this.MessageErrorRegistrado = res[0].to;
+                    } else {
+                      this.SendOption(3, 0, true);
+                      this.payReported = true;
+                      this.playDuplicated = false;
+                    }
+                 // });
+
+                } catch (error) {
+                  this.payReported = true;
+                }
+
+                this.ScrollUp()
+                this.Contar = 10;
+                this.Contador();
+
+              }
+            }
+          })
+          .catch((error: any) => {
+            console.error(error);
+          })
+
+      } else {
+        this.CuentaAnulada = true;
+        this.playDuplicated = false;
+        this.ScrollUp()
+        this.Contar = 10;
+        this.Contador()
+      }
   }
 
   ScrollUp(Eventd?: any) {
@@ -2212,8 +2436,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
         this.lastDni = dni_;
         this.closeAlert();
-        console.log("saldo");
-        console.log(res);
 
         try {
           if (res.length > 0 || this.registerPayService.linkedToContractProcess === 'approved') {
@@ -2224,7 +2446,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
             if (this.registerPayService.linkedToContractProcess != 'approved') {
               //Valido los estatus de los contratos
-              res.forEach((dataContrato: any) => {
+              res.forEach((dataContrato: any,index:number) => {
                 var ValidOno = this.ValidStatusContrato(dataContrato.status_contrato);
                 if (ValidOno) {
                   this.listContratos.push({
@@ -2239,6 +2461,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   });
                   this.cambio_act = dataContrato.cambio_act;
                 }
+                 if(dataContrato.franquicia.includes('FIBEX ARAGUA')) {this.paymentMethod = 'aragua'}
+                 if(index == res.length-1 && this.paymentMethod != 'aragua') {
+                   this.AppFibex = true;
+                 }
               });
 
               if (this.listContratos.length == 0) {
@@ -2259,7 +2485,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                   setTimeout(() => {
                     this.NextMatStepper();
                   }, 300);
-                } else {
+                }else{
                   this.SearchSectorAbonado();
                 }
               }
@@ -2300,7 +2526,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Busco su numeros de comprobantes
               this.registerPayService.getComprobantClient2(dni_)
                 .then((comprobante: any) => {
-                  console.log(comprobante);
                   if (comprobante.length > 0) {
 
                     //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
@@ -2463,37 +2688,37 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.AppFibex = !this.AppFibex
   }
 
-  SearchSectorAbonado() {
+  SearchSectorAbonado(){
 
-    this.LoadingLengthAbonado = true;
-    let Value: any = "";
-    this.listContratos.forEach((element: any, index: number) => {
-      Object.entries(element).forEach(([key, value]) => {
-        if (key == "contrato" && index < this.listContratos.length - 1) {
-          Value += `'${value}',`;
-        } else if (key == "contrato") {
-          Value += `'${value}'`
-        }
-      })
+    this.LoadingLengthAbonado= true;
+    let Value:any= "";
+    this.listContratos.forEach((element:any,index:number) => {
+        Object.entries(element).forEach(([key,value])=>{
+            if(key =="contrato" && index < this.listContratos.length-1){
+                Value +=`'${value}',`;
+            }else if(key =="contrato"){
+                Value+=`'${value}'`
+            }
+        })
     })
 
     this.registerPayService.AbonadoSearchSector(Value)
-      .then((resp: any) => {
-        this.LoadingLengthAbonado = false;
-        if (resp && resp.codigo == 1010) {
-          let SectorAbonado: any[] = JSON.parse(resp.data);
-          SectorAbonado.forEach((element: any) => {
-            let index = this.listContratos.findIndex((data: any) => data.contrato == element.nro_contrato)
-            if (index != -1) {
-              this.listContratos[index].sector = element.sector;
-            }
-          });
-        }
-      })
-      .catch((error: any) => {
-        this.LoadingLengthAbonado = false;
-        console.error(error);
-      })
+    .then((resp:any)=>{
+      this.LoadingLengthAbonado= false;
+      if(resp && resp.codigo == 1010){
+        let SectorAbonado: any[] = JSON.parse(resp.data);
+        SectorAbonado.forEach((element:any) => {
+          let index =this.listContratos.findIndex((data:any)=>data.contrato==element.nro_contrato)
+          if(index != -1){
+            this.listContratos[index].sector = element.sector;
+          }
+        });
+      }
+    })
+    .catch((error:any)=>{
+      this.LoadingLengthAbonado= false;
+      console.error(error);
+    })
   }
 
   ValidStatusContrato(Status: string) {
@@ -2505,7 +2730,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Elimino todos los ceros a la izquierda
     NroRef = NroRef.replace(/^(0+)/g, '');
     //Busco en mi memoria de comprobante luego llamo al de API por si acaso
-    const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
+    const INDEX =this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
     // ValidateLastReferencia(NroRef: any) {
     //   //Busco en mi memoria de comprobante luego llamo al de API por si acaso
     //   const INDEX = this.AllComprobantesPago.findIndex((value: any) => value.Referencia == NroRef)
@@ -2672,7 +2897,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   BancoNacional(StrBanco: string) {
-    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE')) {
+    if (this.bank?.value.includes('USD') || this.bank?.value.includes('ZELLE') || this.bank?.value.includes('EUR') || this.bank?.value.includes('PAYPAL') || this.bank?.value.includes('STRIPE') || this.bank?.value.includes('BOFA')) {
       this.secondFormFibex.get('BancoEmisor')?.setValidators([]);
       this.secondFormFibex.get('BancoEmisor')?.updateValueAndValidity();
       if (this.bank?.value.includes('EUR')) return 'EUR'
@@ -2685,20 +2910,22 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   bankSelected(bank: any) {
-    console.log(bank)
+    //console.log(bank)
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
-    if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !== 'EUR') {
-      console.log("por aqui")
+    if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !=='EUR') {
+      //console.log("por aqui")
       if (!Number.isNaN(Math.round(parseFloat(this.lastAmount)))) {
         this.validateIfAmountIsNegativer(this.lastAmount, true);
       }
     } else {
-      console.log(bank)
+      //console.log(bank)
       this.validateIfAmountIsNegativer(this.lastAmount);
       this.BancoEmisor(bank)
     }
   }
+
+
 
   alertFindDni(title: string, message: string) {
     Swal.fire({
@@ -3032,6 +3259,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.img?.setValue('');
     this.imageUrl = '';
     this.imageUploaded = false;
+    this.imageComprobanteURL = '';
     this.SendOption(2, 0, "deleteimage");
   }
 
@@ -3039,6 +3267,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.retentionImg?.setValue('');
     this.retentionImageUrl = '';
     this.retentionimageUploaded = false;
+    this.imageRetencionURL = '';
   }
 
   validateIfAmountIsNegativer(amount: string, national?: boolean) {
@@ -3218,12 +3447,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.openSnackBar('Error al subir la imagen, intente nuevamente');
           this.counterErrors++;
           this.img?.setValue('');
+          return
         });
     } else {
       this.img?.setValue('');
       this.openSnackBar('Error al subir la imagen, intente nuevamente');
       this.counterErrors++;
       this.uploadingImg = false;
+      return
     }
 
   }
@@ -3407,9 +3638,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         if (value) {
           let date = new Date(value).getTime()
           const { days } = this.miceService.timeDifference(new Date().getTime(), date);
-          if (days > 182) {
+          if (days > 250) {
 
-            this.invalidForm('No puede reportar un pago con más de 6 meses', 'Por favor diríjase a una oficina comercial');
+            this.invalidForm('No puede reportar un pago con más de 8 meses', 'Por favor diríjase a una oficina comercial');
             this.firstFormFibex.get('date')?.setValue('');
             this.dateInvalid = true;
             this.errorDate = !this.errorDate;
@@ -3432,17 +3663,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.amount?.valueChanges.subscribe({
       next: (value) => {
         if (this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+          if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
         }
         if (!this.BancoNacional('')) {
-          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 6) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 8) {
             this.invalidAmount = true;
-            this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.amount?.setValue('');
             return;
           }
@@ -3455,9 +3686,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   amountInvalidCreditoDebitoPagoMovil() {
     this.cantidadDC?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
           this.invalidAmount = true;
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.cantidadDC?.setValue('');
           return;
         }
@@ -3467,8 +3698,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     this.cantidad?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.cantidad?.setValue('');
           this.invalidAmount = true;
           return;
@@ -3479,8 +3710,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
     this.amountPm?.valueChanges.subscribe({
       next: (value) => {
-        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 6) {
-          this.invalidForm(`Usted no puede reportar con más de 6 meses de su subscripción`, ``);
+        if (Number(value) > Number(this.saldoBs) && (Number(value) / Number(this.tasaCambio)) > Number(this.subscription) * 8) {
+          this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
           this.amountPm?.setValue('');
           this.invalidAmount = true;
           return;
@@ -3533,18 +3764,18 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
   }
 
-  openInfoPayDialog() {
+  /* openInfoPayDialog() {
     console.log(this.nroContrato?.value);
     this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
-      .then((response: any) => {
-        const dialog = this.dialogTemplate.open(InfoPayComponent, {
-          panelClass: ['custom-size-lg', 'animated', 'fadeInUp'],
-          data: response.data.length > 0 ? JSON.parse(response.data) : []
-        })
-        dialog.afterClosed().subscribe(result => {
-        });
-      }).catch((err: any) => console.error(err));
-  }
+    .then((response:any)=>{
+      const dialog = this.dialogTemplate.open(InfoPayComponent, {
+        panelClass: ['custom-size-lg', 'animated', 'fadeInUp'],
+        data: response.data.length>0 ? JSON.parse(response.data):[]
+      })
+      dialog.afterClosed().subscribe(result => {
+      });
+    }).catch((err:any)=>console.error(err));
+  } */
 
   logMensaje(mensaje: string) {
     console.log("mensaje", mensaje);
@@ -3552,71 +3783,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
 
   public openInfoPay(): void {
     try {
-      console.log('openInfoPay')
+      console.log('in openInfoPay')
       this.registerPayService.StatusPayAbonadoTeen(this.nroContrato?.value)
-        .then((response: any) => {
-          console.log('response', response)
-          this.showStateTable = true;
-          this.stateTableData = response.data.length > 0 ? JSON.parse(response.data) : []
-          // this.stateTableData = [
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'REGISTRADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'RECHAZADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'RECHAZADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          //   {
-          //     fecha_reg: new Date(),
-          //     numero_ref: 565415656,
-          //     status_pd: 'PROCESADO'
-          //   },
-          // ]
-          console.log('this.stateTableData', this.stateTableData)
-        })
+      .then((response:any) => {
+        this.showStateTable = true;
+        this.stateTableData = response.data.length ? JSON.parse(response.data):[]
+      })
     } catch (error) {
       console.error(error)
     }
@@ -3630,6 +3802,14 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     })
     dialog.afterClosed().subscribe(result => {
     });
+  }
+
+  public showConsole = (log:unknown) => {
+    try {
+      console.log('log', log)
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 

@@ -7,8 +7,9 @@ import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
 import { SeguridadDatos } from './bscript.service';
 import { ResponseMethod } from '../interfaces/response';
-import { StripeData } from '../interfaces/stripeData';
+import { SearchReference } from '../interfaces/searchreference';
 import { info } from 'console';
+import { EncryptService } from './encrypt.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +23,7 @@ export class RegisterPayService {
   private URLGRAPHCONTRACT: string = env.urlGraphqlContract;
   // private URLAPITHOMAS: string = env.urlThomasApi;
   private URLDBFULL: string = env.urlDBFULL;
-  private URLAPISSLTHOMAS: string = env.urlApisslThomas;
-  private URLAPISSLTHOMASSEND: string = env.urlApisslThomasSend;
-  private urlConsultassslThomas: string = env.urlConsultassslThomas;
+  private ApiTLS: string = env.urlApiTLS;
   private TOKEN: string = env.securityEncrt;
   private ApiKeyApissl: string = env.ApiKeyApissl;
   private tokendbfulll: string = env.tokendbFull;
@@ -36,6 +35,7 @@ export class RegisterPayService {
   constructor(
     private http: HttpClient,
     private security: SeguridadDatos,
+    private enc: EncryptService
   ) {
   }
 
@@ -166,9 +166,15 @@ export class RegisterPayService {
   registerPayClientv2(infoClient: any) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
-        infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
-        infoClient.name=infoClient.name.replace(/["]+/g, '');
-        console.log(infoClient);
+
+        if(infoClient.bank == "ZELLE WELL FARGO pagos.zelle@fibextelecom.net"){
+          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img + ' nameTitular: '+ infoClient.nameTitular + ' emailTitular: '+ infoClient.emailTitular
+          infoClient.name=infoClient.name.replace(/["]+/g, '');
+        }else{
+          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
+          infoClient.name=infoClient.name.replace(/["]+/g, '');
+        }
+
         const DataQuery = {
             Nombre:infoClient.name,
             Cedula:infoClient.dni,
@@ -190,8 +196,7 @@ export class RegisterPayService {
             ipaddress:infoClient.AddresIp,
             browser_agent:infoClient.Browser
         }
-
-        this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
+       this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
           console.log("Respuesta del SAE");
           console.log(Response);
           resolve(Response)
@@ -206,14 +211,12 @@ export class RegisterPayService {
     })
   }
 
-  ReferenciaMes(Referencia:any){
+  ReferenciaMes(DataReference:SearchReference){
     return new Promise(async (resolve: any, reject: any) => {
-      let DataQuery= {
-        "Referencia":Referencia
-      }
-      this.http.post(this.URLTRASNF+"SeaRefMs", DataQuery).subscribe((Response: any) => {
-        console.log("Repondio");
-        console.log(Response);
+      //console.log(DataReference);
+      this.http.post(this.URLTRASNF+"SeaRefMs", DataReference).subscribe((Response: any) => {
+        // console.log("Repondio");
+        // console.log(Response);
         resolve(Response)
       }, (error) => {
         reject(error)
@@ -226,9 +229,13 @@ export class RegisterPayService {
       let DataQuery= {
         "abonado":abonado
       }
-      this.http.post(this.URLTRASNF+"SearchSector", DataQuery).subscribe((Response: any) => {
-        console.log("Repondio");
-        console.log(Response);
+
+      const headersData: any = {
+        "TokenAuth": env.TokenCheckDigital,
+        'Authorization': env.authdbCheckDigital
+      }
+
+      this.http.post(this.URLTRASNF+"SearchSector", DataQuery,{headers:headersData}).subscribe((Response: any) => {
         resolve(Response)
       }, (error) => {
         reject(error)
@@ -367,10 +374,12 @@ export class RegisterPayService {
   }
 
   MasterGETDBFULL(headersData: any, url: string) {
+    console.log('in MasterGETDBFULL')
     return new Promise(async (resolve: any, reject: any) => {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
         headers.TokenAuthPlataform = this.tokendbfulll
         headers.Authorization = this.authDBFULL
+        console.log('headers:', headers, 'url:', url )
         this.http.get(url, { headers }).subscribe((res: any) => {
           let jsonres;
           resolve(res);
@@ -490,14 +499,16 @@ export class RegisterPayService {
   GetListService(id_contrato: any) {
 
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "SAE",
         method: `ServiciosIdCo`,
         token: this.ApiKeyApissl,
         id: id_contrato,
         lic: env.lic,
         platform: "PagosMercantil",
-      };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+      });
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=3").then((data: any) => {
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
@@ -513,23 +524,6 @@ export class RegisterPayService {
         }
       }
     );
-  }
-
-  getStripePayment(data: any){
-    return new Promise((resolve,reject)=>{
-      console.log(data);
-      const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-      this.http.post(`${env.ApiMercantil}RegStr`, data,{headers:headers}).subscribe({
-        next: data => {
-          console.log(data);
-          resolve(data)
-        },
-        error: error => {
-          console.log(error);
-            reject(error);
-        }
-    });
-    });
   }
 
   confirmPaymen(data: any){
@@ -567,24 +561,30 @@ export class RegisterPayService {
     console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
     const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
-    this.http.post(`${env.ApiMercantil}SavStr`, DataUSer,{headers:headers}).subscribe({
-      error: error => {
-        console.log(error);
-      }
+    this.security.EncrypDataHash(DataUSer)
+    .then((resp:any)=>{
+      console.log(resp);
+       this.http.post(`${env.ApiMercantil}SavStr`, resp,{headers:headers}).subscribe({
+         error: error => {
+           console.log(error);
+         }
+       })
     })
-
+    .catch((error:any)=>console.error(error));
   }
-
+  
   getNewBankList() {
-    
+
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "SAE",
         method: `CtasBancarias`,
         token: this.ApiKeyApissl,
         platform: "PagosMercantil",
         lic: env.lic
-      };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+      });
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=4").then((data: any) => {
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
@@ -597,7 +597,29 @@ export class RegisterPayService {
   }
 
   MasterGETPOST(headersData: any, url: string, post?: boolean, body?: any) {
-    return new Promise(async (resolve: any, reject: any) => {
+    return new Promise(async (_resolve: any, _reject: any) => {
+
+      const resolve = (d: any) => {
+        /**
+         * Validación extraña pero funciona para API TLS (NOTA: En apiSSL no era necesario este enfoque pero bueno, la verdad es que ni idea :D)
+         */
+        if(d instanceof Object && typeof d.message === "string") {
+          try {
+            d = JSON.parse(this.enc.Descrypt(d.message));
+
+            if(d instanceof Array) {
+              d = JSON.parse(d[0]);
+            }
+          }
+          catch(err) { }
+        }
+        _resolve(d);
+      }
+      const reject = (e: any) => {
+        console.log(url, "RESPONSE ERROR:", e);
+        _reject(e);
+      }
+
       if (post) {
         console.log(headersData);
         console.log(body);
@@ -630,6 +652,7 @@ export class RegisterPayService {
               } else {
                 jsonres = res
               }
+
               resolve(jsonres);
             } catch (error) {
               console.log(error)
@@ -645,15 +668,18 @@ export class RegisterPayService {
 
   ConsultarEstadoDeposito(nroContrato: any, Referencia: any) {
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "SAE",
         method: `ConciliacionPago`,
         token: this.ApiKeyApissl,
         NroReferencia: Referencia,
         NroContrato: nroContrato,
         platform: "PagosMercantil",
         lic: env.lic
-      };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data) => {
+      });
+
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=5").then((data: any) => {
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data);
       }).catch((error: any) => {
         reject(error)
@@ -703,15 +729,25 @@ export class RegisterPayService {
 
   getSaldoByDni(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "SAE",
         method: `SaldoCe`,
         token: this.ApiKeyApissl,
         platform: "PagosMercantil",
         id: dni,
         lic: env.lic
-      };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
-        console.log()
+      });
+      console.log({
+        directory: "SAE",
+        method: `SaldoCe`,
+        token: this.ApiKeyApissl,
+        platform: "PagosMercantil",
+        id: dni,
+        lic: env.lic
+      }, headersData)
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=6").then((data: any) => {
+        // console.log();
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
@@ -722,13 +758,15 @@ export class RegisterPayService {
 
   getTypeClient(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "Consultas",
         method: `GetTypeClient`,
         token: this.ApiKeyApissl,
         cedula: dni,
         platform: 'PagosMercantil'
-      };
-      this.MasterGETPOST(headersData, this.urlConsultassslThomas).then((data: any) => {
+      });
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=7").then((data: any) => {
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data[0]);
       }).catch((error: any) => {
         reject(error)
@@ -738,15 +776,17 @@ export class RegisterPayService {
 
   infoEquiposClientes(dni: string) {
     return new Promise(async (resolve: any, reject: any) => {
-      const headersData = {
+      const headersData = ({
+        directory: "SAE",
         'method': 'InfoEquipos',
         'token': this.ApiKeyApissl,
         'id': dni,
         'lic': env.lic,
         'platform': 'PagosMercantil',
         'Content-Type': 'application/json'
-      };
-      this.MasterGETPOST(headersData, this.URLAPISSLTHOMAS).then((data: any) => {
+      });
+      this.MasterGETPOST(headersData, this.ApiTLS + "?data=8").then((data: any) => {
+        // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
         resolve(data.data.info);
       }).catch((error: any) => {
         reject(error)
@@ -790,12 +830,14 @@ export class RegisterPayService {
               }
             ]
           }
-          const headersData = {
+          const headersData = ({
+            directory: "Envio",
             method: `SendWhats`,
             token: this.ApiKeyApissl,
             platform: "PagosMercantil",
-          };
-          this.MasterGETPOST(headersData, this.URLAPISSLTHOMASSEND, true, DataWa).then((data: any) => {
+          });
+          this.MasterGETPOST(headersData, this.ApiTLS + "?data=9", true, DataWa).then((data: any) => {
+            // data = JSON.parse(JSON.parse(this.enc.Descrypt(data.message))[0]);
             resolve(data);
           }).catch((error: any) => {
             reject(error)
