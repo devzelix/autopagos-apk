@@ -3,6 +3,7 @@ import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscription';
 import { ApiBNCService } from 'src/app/services/ApiBNC';
 import Swal from 'sweetalert2';
+import { isNegativeNumber } from '../../validators/customValidatorAmount';
 
 @Component({
   selector: 'app-debito-credito-bnc',
@@ -47,7 +48,11 @@ export class DebitoCreditoBNCComponent implements OnInit {
       AccountType: ['', [Validators.required]],
       CardType: [''],
       Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-      identifierTransaction: ['']
+      identifierTransaction: [''],
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
     })
 
     this.CreditoForm = this.fb.group({
@@ -60,6 +65,10 @@ export class DebitoCreditoBNCComponent implements OnInit {
       CardNumber: ['', [Validators.required, Validators.minLength(10)]],
       Description: ['', [Validators.minLength(6)]],
       Amount: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
+      validator: Validators.compose(
+        [
+          isNegativeNumber
+        ])
     })
 
     this.POS_VirtualForm.get('pref_ci')?.setValue('V')
@@ -93,49 +102,52 @@ export class DebitoCreditoBNCComponent implements OnInit {
   }
 
   ProcesarPago() {
-    console.log("Datos POS Virtual")
-    let DatosJson: any
-    switch (this.TypePay) {
-      case "Débito Maestro":
-        this.loading('Comprobando pago', 'Por favor espere...'); 
-        DatosJson = this.POS_VirtualForm.value
-        console.log(DatosJson);
-        this.apiBNC.Pay_POs_Virtual({
-          ...DatosJson,
-          TipoPago: this.TypePay,
-          Abonado: this.Abonado,
-          Contrato: this.Contrato,
-          Pay_Method: this.TypePay
-        }).then((ResPay: any) => {
-          if (ResPay && ResPay.status === true) {
-            this.successAlert("Pago procesado exitosamente.");
-            this.OutputResponse.emit({
-              Tipo: "Pago Realizado",
-              monto : DatosJson.Amount
-            })
-          } else { this.invalidForm(ResPay.message, ''), console.log(ResPay) }
-        }).catch(err => console.error(err))
-        break;
-      case "Credito":
-        this.loading('Comprobando pago', 'Por favor espere...');
-        DatosJson = this.CreditoForm.value
-        console.log(DatosJson, this.TypePay);
-        this.apiBNC.Pay_POs_Virtual({
-          ...DatosJson,
-          TipoPago: this.TypePay,
-          Abonado: this.Abonado,
-          Contrato: this.Contrato,
-          Pay_Method: this.TypePay
-        }).then((ResPay: any) => {
-          if (ResPay && ResPay.status === true) {
-            this.successAlert("Pago procesado exitosamente.");
-            this.OutputResponse.emit({
-              Tipo: "Pago Realizado",
-              monto : DatosJson.Amount
-            })
-          } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
-        }).catch(err => console.error(err))
-        break
+    if (Number(this.POS_VirtualForm.get('Amount')?.value) === 0) {
+      this.POS_VirtualForm.get('Amount')?.reset()
+      this.invalidForm("Monto incorrecto", "Por favor ingrese un monto mayor a 0")
+      return
+    } else {
+      let DatosJson: any
+      switch (this.TypePay) {
+        case "Débito Maestro":
+          this.loading('Comprobando pago', 'Por favor espere...');
+          DatosJson = this.POS_VirtualForm.value
+          this.apiBNC.Pay_POs_Virtual({
+            ...DatosJson,
+            TipoPago: this.TypePay,
+            Abonado: this.Abonado,
+            Contrato: this.Contrato,
+            Pay_Method: this.TypePay
+          }).then((ResPay: any) => {
+            if (ResPay && ResPay.status === true) {
+              this.successAlert("Pago procesado exitosamente.");
+              this.OutputResponse.emit({
+                Tipo: "Pago Realizado",
+                monto: DatosJson.Amount
+              })
+            } else { this.invalidForm(ResPay.message, ''), console.log(ResPay) }
+          }).catch(err => console.error(err))
+          break;
+        case "Credito":
+          this.loading('Comprobando pago', 'Por favor espere...');
+          DatosJson = this.CreditoForm.value
+          this.apiBNC.Pay_POs_Virtual({
+            ...DatosJson,
+            TipoPago: this.TypePay,
+            Abonado: this.Abonado,
+            Contrato: this.Contrato,
+            Pay_Method: this.TypePay
+          }).then((ResPay: any) => {
+            if (ResPay && ResPay.status === true) {
+              this.successAlert("Pago procesado exitosamente.");
+              this.OutputResponse.emit({
+                Tipo: "Pago Realizado",
+                monto: DatosJson.Amount
+              })
+            } else { this.invalidForm(ResPay.MsgError || ResPay.message, ''); }
+          }).catch(err => console.error(err))
+          break
+      }
     }
   }
 

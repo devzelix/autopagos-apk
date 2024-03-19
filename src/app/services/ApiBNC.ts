@@ -38,11 +38,12 @@ export class ApiBNCService {
                         resolve(Res)
                     } else if (Res && Res.Error) {
                         console.log("entre en el else de error", Res)
-                        const TipoError: any = Res.Error
+                        /* const TipoError: any = Res.Error
                         if (typeof TipoError === 'object') {
                             for (var key in TipoError) { MsgError = TipoError[key][0] }
-                        } else { console.log(TipoError) }
-                        resolve({ status: false, message: Res.Error.Message == null ? Res.message : 'Error Desconocido' })
+                        } else { console.log(TipoError) } */
+                        console.log(Res.Error)
+                        resolve({ status: false, message: Res.Error.Message || 'Error Desconocido' })
                     }
                 }, (err: any) => {
                     console.error("err BNC")

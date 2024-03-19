@@ -5,11 +5,16 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 if (environment.production) {
-/*   enableProdMode();
+  enableProdMode();
   console.log = function() {}
   console.error =  function() {}
-  console.warn = function() {}  */
+  console.warn = function() {} 
 }
+
+// CANCELA TODOS LOS MENSAJES DE LA CONSOLA
+/* console.log = () => { }
+console.error = () => { }
+console.warn = () => { } */
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch((err:any) => console.error(err));

@@ -80,7 +80,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     MaterialModule,
     CaptchaThomasModule,
-    NgxStripeModule.forRoot(environment.TokenStripe),
+    NgxStripeModule.forRoot(environment.TokenStripeDesarrollo),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
     QRCodeModule,

@@ -193,6 +193,7 @@ export class StripeComponent implements OnInit {
       .subscribe(result => {
         resultTok=result.token
             let data={
+              abonado: this.nroContrato,
               token:result?.token?.id,
               amount:this.GetMontoNetoRecibir()*100,
               paquete: this.paquete
