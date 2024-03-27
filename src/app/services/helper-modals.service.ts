@@ -62,7 +62,7 @@ export class HelperModalsService {
       'success'
     )
   }
-  alertImageModal(text: string, image: string, width= 400, height = 400){
+  alertImageModal(text: string, image: string, width= 400){
   /* return Swal.fire({
       imageUrl: image,
       imageWidth: width,
@@ -82,7 +82,7 @@ export class HelperModalsService {
           Swal.hideLoading()
           Swal.update({
             title: "",
-            html: '<img src="' + img.src + '" width="400">',
+            html: '<img src="' + img.src + `" width="${width}">`,
             showConfirmButton: true
           })
         }

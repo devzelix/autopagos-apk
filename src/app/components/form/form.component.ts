@@ -3857,7 +3857,12 @@ this.getImageByCodeBank(value);
     ];
     let image = images.find(image=>this.findBank(code,image));
     if(image){
-      this._helperModal.alertImageModal("Imagen del banco",image);
+      if(window.innerWidth<=500){
+        this._helperModal.alertImageModal("Imagen del banco",image,300);
+      }else{
+        this._helperModal.alertImageModal("Imagen del banco",image);
+      }
+     
      
     }
     console.log(image);
