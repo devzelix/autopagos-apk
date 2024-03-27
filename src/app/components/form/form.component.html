@@ -715,7 +715,7 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>Banco emisor</mat-label>
-                <mat-select formControlName="codeBank" placeholder="Banco emisor">
+                <mat-select formControlName="codeBank" placeholder="Banco emisor" (selectionChange)="showModalByBank($event.value)" >
                   <mat-option *ngFor="let bank of banksListBNC" [value]="bank.Code">
                     {{ bank.Name }}
                   </mat-option>

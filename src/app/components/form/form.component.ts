@@ -51,6 +51,7 @@ import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog
 import { ResponseMethod } from 'src/app/interfaces/response';
 import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
+import { HelperModalsService } from 'src/app/services/helper-modals.service';
 
 
 
@@ -234,6 +235,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     private tasaService: TasaService,
     private dataBankService: DataBankService,
     private _snackBar: MatSnackBar,
+    private _helperModal: HelperModalsService,
     private _Consultas: ConsultasService,
     private miceService: MiscelaneosService,
     private _Cloudinary: CloudynariService,
@@ -265,6 +267,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       if (res.status == true) {
 
         this.banksListBNC = res.Bancos;
+        console.log(this.banksListBNC);
       }
     }).catch((err) => {
       console.log(err);
@@ -3820,7 +3823,52 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       console.error(error)
     }
   }
+  public showModalByBank(value: any){
+    console.log(value);
+const bankSelected: any =   this.banksListBNC.find(bank=>bank.Code===value);
+console.log(bankSelected);
+this.getImageByCodeBank(value);
+  }
+  public getImageByCodeBank(code: string){
+    const images: string[] = [
+      "https://cms.fibextelecom.info/uploads/C2_P_0171_4f2c382e1b.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0174_c15ff9bcf0.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0177_f953f90d18.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0157_86a022c82c.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0172_c2ec2fe2d4.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0191_4e79b293c7.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0169_6b25015952.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0175_512e6f0ec7.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0102_3e69809b51.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0163_ea09273717.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0168_7eac34ed6e.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0151_e21af380bb.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0138_bb021312ec.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0115_786c2b96b8.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0137_98304ef205.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0134_88d2293973.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0128_9d6b89f706.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0128_9d6b89f706.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0114_4dd4487bc7.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0108_81573474dc.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0105_811cc611a2.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0104_99bb481681.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0156_3084b465db.png",
+    ];
+    let image = images.find(image=>this.findBank(code,image));
+    if(image){
+      this._helperModal.alertImageModal("Imagen del banco",image);
+     
+    }
+    console.log(image);
+  }
+  public findBank(code: string,image: string): boolean{
+    let currentImage: any[] = image.split("_")
+    let valueCodeBank = currentImage[currentImage.length-2];
+    if(valueCodeBank === code) return true;
+    return false;
+  }
 }
-
+ 
 
 

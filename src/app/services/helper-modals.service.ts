@@ -62,7 +62,33 @@ export class HelperModalsService {
       'success'
     )
   }
-
+  alertImageModal(text: string, image: string, width= 400, height = 400){
+  /* return Swal.fire({
+      imageUrl: image,
+      imageWidth: width,
+      imageHeight: height,
+      imageAlt: "Imagen modal banco",
+    });
+    */
+   return Swal.fire({
+      title: 'Por favor espera',
+      html: '<div class="loader"></div>', // Aquí puedes poner el código HTML de tu loader
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+        const img = new Image()
+        img.src = image // Reemplaza esto con la ruta a tu imagen
+        img.onload = () => {
+          Swal.hideLoading()
+          Swal.update({
+            title: "",
+            html: '<img src="' + img.src + '" width="400">',
+            showConfirmButton: true
+          })
+        }
+      }
+    })
+  }
   closeAlert() {
     setTimeout(() => {
       Swal.close();
