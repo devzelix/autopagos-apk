@@ -73,6 +73,8 @@ export class HelperModalsService {
    return Swal.fire({
       title: 'Por favor espera',
       html: '<div class="loader"></div>', // Aquí puedes poner el código HTML de tu loader
+      showClass: {backdrop: 'img-swal'},
+      customClass: {container: 'img-container-swal'},
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading()

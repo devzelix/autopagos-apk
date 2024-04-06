@@ -44,3 +44,20 @@
 
   // PAGES
   @import './pages/login';
+  .img-swal {
+    z-index: 9999999999999999999 !important;
+    padding: 0 .3rem !important;
+    .swal2-modal {
+      position: relative !important;
+      z-index: 9999999999 !important;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+      border-radius: 18px !important;
+      overflow: hidden;
+    }
+    .swal2-html-container {
+      margin: 0 !important;
+      img {
+        width: 100% !important;
+      }
+    }
+  }

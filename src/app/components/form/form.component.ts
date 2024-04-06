@@ -3833,7 +3833,7 @@ this.getImageByCodeBank(value);
     const images: string[] = [
       "https://cms.fibextelecom.info/uploads/C2_P_0171_4f2c382e1b.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0174_c15ff9bcf0.png",
-      "https://cms.fibextelecom.info/uploads/C2_P_0177_f953f90d18.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0177_27441a27a7.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0157_86a022c82c.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0172_c2ec2fe2d4.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0191_4e79b293c7.png",

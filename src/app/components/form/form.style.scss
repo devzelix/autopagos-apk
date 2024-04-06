@@ -355,3 +355,19 @@ $app-light-blue2: rgb(74 159 255);
 .pay-icon-rejected {
   color: #e76e6e;
 }
+swal2-container.swal2-center.img-swal {
+  z-index: 9999999999999999999 !important;
+  .swal-title {
+    position: relative !important;
+    z-index: 9999999999 !important;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+  }
+  .swal2-html-container {
+    margin: 0 !important;
+    img {
+      width: 100% !important;
+    }
+  }
+}
