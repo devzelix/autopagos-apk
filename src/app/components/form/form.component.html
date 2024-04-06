@@ -1169,7 +1169,7 @@
           <button *ngIf="Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
             class="customized_btn_next btn-width-70" id="PagoDC" type="button"
             (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            <span *ngIf="Creditoboolaean">Solicitar pin de autorización3 {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+            <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
           </button>
           <!-- / Fin Credito -->
 

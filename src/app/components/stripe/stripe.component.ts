@@ -265,6 +265,7 @@ export class StripeComponent implements OnInit {
 
           Swal.fire({
             title: 'Ingrese el PIN recibido.',
+            text: "Enviado vía Correo y SMS",
             input: 'text',
             inputAttributes: {
               autocapitalize: 'off'

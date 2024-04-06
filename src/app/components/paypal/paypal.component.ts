@@ -55,6 +55,7 @@ export class PaypalComponent implements OnInit {
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
     },{ validator: isNegativeNumber })
     this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
+    this.MontoCancelar = 1;
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
     if(Number(this.MontoCancelar<=1)){

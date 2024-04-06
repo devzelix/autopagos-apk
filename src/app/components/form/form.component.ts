@@ -263,11 +263,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     });
 
     this._ApiBNC.listBanks().then((res: any) => {
-
       if (res.status == true) {
-
         this.banksListBNC = res.Bancos;
-        console.log(this.banksListBNC);
       }
     }).catch((err) => {
       console.log(err);
@@ -1230,7 +1227,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   PagoDebito() {
-    console.log("Pase")
     let DatosUserAgent = {
       Browser: this.TypeNavegador,
       AddresIp: this.IpAddress.ip,
@@ -1417,7 +1413,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       Swal.fire({
         title: 'Clave de autorización',
-        text: "Enviado vía WhatsApp y SMS",
+        text: "Enviado vía Correo y SMS",
         input: 'text',
         inputAttributes: {
           autocapitalize: 'off',
@@ -3824,7 +3820,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
   }
   public showModalByBank(value: any){
-    console.log(value);
+console.log(value);
 const bankSelected: any =   this.banksListBNC.find(bank=>bank.Code===value);
 console.log(bankSelected);
 this.getImageByCodeBank(value);
