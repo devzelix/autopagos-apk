@@ -122,8 +122,8 @@
         <!-- Botones -->
         <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button [disabled]="!POS_VirtualForm.valid " class="customized_btn_next btn-width-70" id="PagoDC"
-                type="button" (click)="ProcesarPago()">
-                Reportar Pago
+                type="button" (click)="confirmPay()">
+                Pagar
             </button>
             <button class="customized_btn_next btn-width-30" (click)="ResetForm()" type="button" matStepperPrevious>
                 Regresar
@@ -193,7 +193,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-    
+
                 <mat-form-field appearance="outline" class="Prefc_i2">
                     <mat-select formControlName="fvncmtoAno">
                         <mat-option *ngFor="let option of Anos" [value]="option.ano">
@@ -209,7 +209,7 @@
 
         <div class="form-login__item"> -->
 
- 
+
 
             <mat-form-field appearance="outline">
                 <mat-label>Cantidad a pagar
@@ -230,8 +230,8 @@
         <!-- Botones -->
         <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button [disabled]="!CreditoForm.valid " class="customized_btn_next btn-width-70" id="PagoDC" type="button"
-                (click)="ProcesarPago()">
-                Reportar Pago
+                (click)="confirmPay()">
+                Pagar
             </button>
             <button class="customized_btn_next btn-width-30" (click)="ResetForm()" type="button" matStepperPrevious>
                 Regresar
@@ -240,5 +240,4 @@
         <!-- /Botones -->
     </form>
     <!--/ Credito -->
-
 </div>

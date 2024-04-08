@@ -225,6 +225,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   banksListBNC: any[] = [];
   ReciboPayBNC: boolean = false;
   montoDebito100: any;
+  ReciboPayDebitoCreditoBNC: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -2081,6 +2082,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.ReciboPay = false;
     this.ShowBankList = false;
     this.ShowFormDebito100x100 = false
+    this.ReciboPayBNC = false
   }
 
   Contador() {
@@ -3819,17 +3821,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       console.error(error)
     }
   }
-  public showModalByBank(value: any){
-console.log(value);
-const bankSelected: any =   this.banksListBNC.find(bank=>bank.Code===value);
-console.log(bankSelected);
-this.getImageByCodeBank(value);
+  public showModalByBank(value: any) {
+    console.log(value);
+    const bankSelected: any = this.banksListBNC.find(bank => bank.Code === value);
+    console.log(bankSelected);
+    this.getImageByCodeBank(value);
   }
-  public getImageByCodeBank(code: string){
+  public getImageByCodeBank(code: string) {
     const images: string[] = [
       "https://cms.fibextelecom.info/uploads/C2_P_0171_4f2c382e1b.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0174_c15ff9bcf0.png",
-      "https://cms.fibextelecom.info/uploads/C2_P_0177_27441a27a7.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0177_599faf22d2.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0157_86a022c82c.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0172_c2ec2fe2d4.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0191_4e79b293c7.png",
@@ -3851,25 +3853,25 @@ this.getImageByCodeBank(value);
       "https://cms.fibextelecom.info/uploads/C2_P_0104_99bb481681.png",
       "https://cms.fibextelecom.info/uploads/C2_P_0156_3084b465db.png",
     ];
-    let image = images.find(image=>this.findBank(code,image));
-    if(image){
-      if(window.innerWidth<=500){
-        this._helperModal.alertImageModal("Imagen del banco",image,300);
-      }else{
-        this._helperModal.alertImageModal("Imagen del banco",image);
+    let image = images.find(image => this.findBank(code, image));
+    if (image) {
+      if (window.innerWidth <= 500) {
+        this._helperModal.alertImageModal("Imagen del banco", image, 300);
+      } else {
+        this._helperModal.alertImageModal("Imagen del banco", image);
       }
-     
-     
+
+
     }
     console.log(image);
   }
-  public findBank(code: string,image: string): boolean{
+  public findBank(code: string, image: string): boolean {
     let currentImage: any[] = image.split("_")
-    let valueCodeBank = currentImage[currentImage.length-2];
-    if(valueCodeBank === code) return true;
+    let valueCodeBank = currentImage[currentImage.length - 2];
+    if (valueCodeBank === code) return true;
     return false;
   }
 }
- 
+
 
 

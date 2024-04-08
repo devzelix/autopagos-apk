@@ -755,6 +755,15 @@
         <div *ngIf="ReciboPayBNC">
           <app-table-receipt [amountPm]="amountPm_bnc"></app-table-receipt>
         </div>
+
+        <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
+        <div *ngIf="ReciboPayBNC" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+          <button class="button-material-back btn-width-30"
+            (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
+            matStepperPrevious>
+            Regresar
+          </button>
+        </div>
         <!-- /BNC -->
 
         <!-- informacion antes de motrar el formulario -->
@@ -1040,7 +1049,6 @@
               [Contrato]="idContrato" (OutputResponse)="OutputCreditoDebitoBNC($event)"></app-debito-credito-bnc>
           </div>
 
-
           <form *ngIf="ShowFormDebitoCredito" [formGroup]="DebitoCredito">
             <div>
               <mat-label>Cédula de identidad</mat-label><br>
@@ -1143,7 +1151,7 @@
         </div>
         <!-- *ngIf="ReciboPay" -->
         <div *ngIf="ReciboPay">
-          <app-table-receipt [cantidad]="cantidadDC"></app-table-receipt>
+          <app-table-receipt [amountPm]="montoDebitoBNC"></app-table-receipt>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->

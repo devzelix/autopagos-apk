@@ -86,7 +86,6 @@ export class DebitoCreditoBNCComponent implements OnInit {
     Swal.fire({
       title,
       html: message,
-      //timer: 5000,
       didOpen: () => {
         Swal.showLoading()
       }
@@ -165,6 +164,22 @@ export class DebitoCreditoBNCComponent implements OnInit {
       html: optionalText,
       icon: 'error'
     })
+  }
+
+  confirmPay() {
+    Swal.fire({
+      title: "¿Está seguro de continuar?",
+      showCancelButton: true,
+      confirmButtonText: "Reportar pago",
+      cancelButtonText: "Verificar datos",
+      allowEscapeKey: false,
+      text: 'Por favor verifique sus datos antes de proceder con su pago.'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.ProcesarPago();
+      }
+    });
   }
 
 }
