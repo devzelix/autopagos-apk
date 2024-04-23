@@ -114,7 +114,7 @@ export class PaypalComponent implements OnInit {
   private initConfig(): void {
     this.payPalConfig = {
       currency: "USD",
-      clientId: environment.clientId,
+      clientId: environment.clientIdP,
       createOrderOnClient: (data: any) => <ICreateOrderRequest>{
         intent: "CAPTURE",
         purchase_units: [
