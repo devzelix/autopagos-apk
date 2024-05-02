@@ -863,7 +863,7 @@
             <mat-select formControlName="pref_ci">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
-              <mat-option value="J">J</mat-option>
+              <mat-option *ngIf="bancoSeleccionado !='100x100 Banco'" value="J">J</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
