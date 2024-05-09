@@ -26,7 +26,7 @@
             <mat-form-field appearance="outline">
                 <mat-label>Banco emisor</mat-label>
                 <mat-select formControlName="Bank" placeholder="Banco emisor">
-                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code">
+                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code" (click)="NameBank = bank.Name">
                     {{ bank.Name }}
                 </mat-option>
                 </mat-select>

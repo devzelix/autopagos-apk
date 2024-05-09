@@ -226,6 +226,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   ReciboPayBNC: boolean = false;
   montoDebito100: any;
   ReciboPayDebitoCreditoBNC: boolean = false;
+  NameBank: string = '';
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -3209,7 +3210,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
             this.PagoDebito();
             break;
           case 'this.PagoC2P100x100()':
-            this.ButtonGetAuthC2P('Clave de autorización', 'Por favor obtenga la clave especial', '100porciento');
+            this.ButtonGetAuthC2P('Pin de autorización', 'Por favor coloque su pin de autorización', '100porciento');
             break;
           default:
             eval(NameMetodo);
@@ -3829,28 +3830,28 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
   public getImageByCodeBank(code: string) {
     const images: string[] = [
-      "https://cms.fibextelecom.info/uploads/C2_P_0171_6529ea3ecd.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0174_ff2a29b8f8.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0177_ab692bf14f.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0157_5ff13e9b1d.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0172_e2a54d5679.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0191_66eeef16f0.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0169_9ed93f0b9b.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0175_b0da606832.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0102_bb1fd310ac.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0163_29448399bd.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0168_d5f21a468c.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0151_b7b20d6d61.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0138_df04212d33.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0115_bd76b5d64a.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0137_98304ef205.png",  
-      "https://cms.fibextelecom.info/uploads/C2_P_0134_88d2293973.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0128_9d6b89f706.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0114_4dd4487bc7.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0108_81573474dc.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0105_811cc611a2.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0104_99bb481681.png", 
-      "https://cms.fibextelecom.info/uploads/C2_P_0156_3084b465db.png", 
+      "https://cms.fibextelecom.info/uploads/C2_P_0171_6529ea3ecd.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0174_ff2a29b8f8.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0177_ab692bf14f.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0157_5ff13e9b1d.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0172_e2a54d5679.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0191_66eeef16f0.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0169_9ed93f0b9b.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0175_b0da606832.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0102_bb1fd310ac.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0163_29448399bd.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0168_d5f21a468c.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0151_b7b20d6d61.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0138_df04212d33.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0115_bd76b5d64a.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0137_98304ef205.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0134_88d2293973.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0128_9d6b89f706.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0114_4dd4487bc7.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0108_81573474dc.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0105_811cc611a2.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0104_99bb481681.png",
+      "https://cms.fibextelecom.info/uploads/C2_P_0156_3084b465db.png",
     ];
     let image = images.find(image => this.findBank(code, image));
     if (image) {

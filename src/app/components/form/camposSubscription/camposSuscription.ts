@@ -234,17 +234,17 @@ export const ListBankPago = [
     opcion: 'BNC'
   },
   {
-    tittle: "Nacional",
-    image: 'assets/images/Logo_OtrosBancos.png',
-    omitir: false,
-    opcion:'otros'
-  },
-  {
     tittle: "100% Banco",
     image: 'assets/images/BOTON-2_1-PNG.png',
     omitir: false,
     opcion:'100% Banco'
-  } 
+  },
+  {
+    tittle: "Otros bancos",
+    image: 'assets/images/Logo_OtrosBancos.png',
+    omitir: false,
+    opcion:'otros'
+  }
 
 ]
 
@@ -295,16 +295,16 @@ export const PlantillaConfirmPago = [
   {
     id: 5,
     tipo: "c2p100x100Banco",
-    campos: ['this.bancooo', 'this.pref_ci?.value+this.c_iRegPgoMvil?.value', 'this.tlfdestin?.value', 'this.amountPm?.value'],
+    campos: ['this.NameBank', 'this.pref_ci?.value+this.c_iRegPgoMvil?.value', 'this.tlfdestin?.value', 'this.amountPm?.value'],
     replace: ['#BANCO', '#CEDULA', '#TLF', '#BOLIVARES'],
-    html: `<div align="left"> <strong>Banco:</strong> #BANCO <br> <strong>Cedula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLF <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
+    html: `<div align="left"> <strong>Banco:</strong> #BANCO <br> <strong>Cédula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLF <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
   },
   {
     id: 6,
     tipo: "debito100porciento",
-    campos: ['this.pref?.value+this.dni?.value','this.CountNumber?.value','this.Amount?.value'],
-    replace: ['#CEDULA', '#TLFoNroC', '#BOLIVARES'],
-    html: `<div align="left"> <strong>Cedula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLFoNroC <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
+    campos: ['this.NameBank','this.pref?.value+this.dni?.value','this.CountNumber?.value','this.Amount?.value'],
+    replace: ['#BANCO','#CEDULA', '#TLFoNroC', '#BOLIVARES'],
+    html: `<div align="left"> <strong>Banco:</strong> #BANCO <br> <strong>Cédula:</strong> #CEDULA <br>  <strong>Teléfono:</strong> #TLFoNroC <br> <strong>Cantidad a pagar en Bolivares:</strong> #BOLIVARES<br></div>`
   }
 
 ]

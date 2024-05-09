@@ -882,7 +882,7 @@
             <mat-form-field *ngIf="ShowBankList" appearance="outline">
               <mat-label>Banco emisor</mat-label>
               <mat-select formControlName="BankList" placeholder="Banco emisor">
-                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code">
+                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code" (click)="NameBank = bank.Name; showModalByBank(bank.Code)" >
                   {{ bank.Name }}
                 </mat-option>
               </mat-select>
@@ -890,7 +890,7 @@
                 <p *ngIf="PgMovilRegForm.get('BankList')?.hasError('required')">El Banco emisor es requerido</p>
               </mat-error>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Teléfono</mat-label>
               <input matInput formControlName="tlfdestin"
@@ -902,8 +902,8 @@
                 </p>
               </mat-error>
             </mat-form-field>
-            
-            
+
+
 
             <mat-form-field appearance="outline">
               <mat-label>Cantidad a pagar
@@ -1237,12 +1237,12 @@
             </div>
           </div>
 
-          
+
           <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
           <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
             [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
-        
-        
+
+
         </div>
             <div *ngIf="ReciboPay">
               <app-table-receipt [cantidad]="montoDebito100"></app-table-receipt>
@@ -1257,8 +1257,8 @@
             </div>
       </mat-step>
 
-      
-    
+
+
     </mat-stepper>
 
   </div>

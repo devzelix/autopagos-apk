@@ -25,11 +25,13 @@ export class Debit100x100 implements OnInit {
   public PinError: number = 0;
   public PlantillaTempPago: any = JSON.parse(JSON.stringify(PlantillaConfirmPago));
 
+
   Debito100x100: FormGroup
   cantidadDC: any;
   invalidAmount: any;
   saldoBs: any;
   ListBank: any;
+  NameBank:string = ''
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -68,8 +70,8 @@ export class Debit100x100 implements OnInit {
   ButtonGetAuthC2P(title:string,text:string,bank:string) {
 
     Swal.fire({
-      title: "Clave de autorización",
-      text: "Por favor coloque su clave especial",
+      title: "Pin de autorización",
+      text: "Por favor coloque su pin de autorización",
       input: 'text',
       inputAttributes: {
         autocapitalize: 'off'
@@ -102,7 +104,7 @@ export class Debit100x100 implements OnInit {
   }
 
   PagoDebito100x100() {
-    this.alertFind("Procesando su pago", "Por favor espere") 
+    this.alertFind("Procesando su pago", "Por favor espere")
     //Desencripto el localstorage para obtenerel nombre del usuario
     let name_user = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!): "";
     //Esta lógica identifica si es número de telfono o nro de cuenta ya que en backend se lleva por este numero para identifcar el tipo
@@ -116,7 +118,7 @@ export class Debit100x100 implements OnInit {
             this.OutputResponse.emit({
               Tipo: "Pago Realizado",
               Monto: this.Debito100x100.get('Amount')?.value
-            })     
+            })
           }else {
             this.invalidForm(`Hubo un problema`,`${resp.description}`);
           }
