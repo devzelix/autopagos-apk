@@ -144,7 +144,7 @@
 
               <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
 
-                <button class="grid-cards-item forma-pago" (click)="FormaPago(option.idpago)">
+                <button *ngIf="!option.omitir" class="grid-cards-item forma-pago" (click)="FormaPago(option.idpago)">
                   <h3>
                     {{option.tittle}}
                   </h3>

@@ -476,6 +476,16 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
           this.PagoMetodosHTML2 = FormasDePago;
         }
       }
+
+      if (res['formapago']) {
+          if(res['formapago'] === 'Reportar'){
+            this.PagoMetodosHTML2[1].omitir = true;
+            this.FormaPago( this.PagoMetodosHTML2[0].idpago)
+          }else if(res['formapago'] === 'Pagar'){
+            this.PagoMetodosHTML2[0].omitir = true;
+            this.FormaPago( this.PagoMetodosHTML2[1].idpago)
+          }
+      }
     });
     this.dateOfPay();
     this.amountInvalid();
