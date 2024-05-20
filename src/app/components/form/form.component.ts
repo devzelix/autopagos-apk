@@ -691,8 +691,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
-    console.log("TipoPago");
-    console.log(x);
     this.ShowOptionPagoMovil = false;
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
@@ -714,8 +712,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       return;
     }
 
-
-
     //Débito
     if (x == 0) {
       this.DebitoCreditoboolean = !this.DebitoCreditoboolean;
@@ -736,6 +732,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     }
     //Crédito
     if (x == 1) {
+      this.ShowFormDebitoCredito = true
       this.DebitoCreditoboolean = !this.DebitoCreditoboolean;
       this.PaymenMethod = "tdc";
       this.DebitoCredito.get('cantidad')?.setValue(this.saldoBs);
@@ -1071,7 +1068,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         break
       case "Credito":
         if (Evento.Opcion === "BNC") {
-          this.ShowFormDebitoCreditoBNC = true
+          this.ShowFormDebitoCreditoBNC = false
         } else {
           this.ShowFormDebitoCredito = true
         }

@@ -182,13 +182,13 @@ export let MetodoDePago3 = [
     alt: 'Débito Mercantil',
     omitir: false,
   },
-  {
-    idpago: 31,
-    tipopago: "Débito Inmediato",
-    image: 'assets/images/BOTON-2_1-PNG.png',
-    alt: 'Débito Inmediato',
-    omitir: false,
-  },
+  // {
+  //   idpago: 31,
+  //   tipopago: "Débito Inmediato",
+  //   image: 'assets/images/BOTON-2_1-PNG.png',
+  //   alt: 'Débito Inmediato',
+  //   omitir: true,
+  // },
   {
     idpago: 1,
     tipopago: "T.C. Nacional",
@@ -233,12 +233,12 @@ export const ListBankPago = [
     omitir: false,
     opcion: 'BNC'
   },
-  {
-    tittle: "100% Banco",
-    image: 'assets/images/BOTON-2_1-PNG.png',
-    omitir: false,
-    opcion:'100% Banco'
-  },
+  // {
+  //   tittle: "100% Banco",
+  //   image: 'assets/images/BOTON-2_1-PNG.png',
+  //   omitir: true,
+  //   opcion:'100% Banco'
+  // },
   {
     tittle: "Otros bancos",
     image: 'assets/images/Logo_OtrosBancos.png',
@@ -252,7 +252,7 @@ export const DebitoInmediato = [
   {
     tittle: "100% Banco",
     image: 'assets/images/BOTON-2_1-PNG.png',
-    omitir: false,
+    omitir: true,
     opcion:'100% Banco'
   }
 ]
