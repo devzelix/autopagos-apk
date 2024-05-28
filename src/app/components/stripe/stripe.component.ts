@@ -44,6 +44,7 @@ export class StripeComponent implements OnInit {
   private name: any;
   private idContrato: any;
 
+  public AmountMinin: boolean = true;
   public SetInterval: any;
   public newTime: string;
   public Minutes: string;
@@ -70,7 +71,7 @@ export class StripeComponent implements OnInit {
       }
     }
   };
-
+  
   get validForm() {
     return this.stripeCardValid;
   }
@@ -121,12 +122,15 @@ export class StripeComponent implements OnInit {
 
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
     if (Number(this.saldoUSD <= 1)) {
-      this.saldoUSD = "1";
-      this.cantidadStripe?.setValue('1');
-      this.PagoACobrar();
+      // this.saldoUSD = "1";
+      // this.cantidadStripe?.setValue('1');
+      this.ValidoPagoStripe = true;
+      
     } else {
       this.MountNegative = true;
+      this.cantidadStripe?.setValue(this.MontoCancelar);
     }
+    this.PagoACobrar();
 
     //this.PagoACobrar();//Temporalll
   }
@@ -154,6 +158,12 @@ export class StripeComponent implements OnInit {
     this.cantidadStripe?.valueChanges.subscribe({
 
       next: (value) => {
+
+        if(value <= 0){
+          this.AmountMinin = false;
+          return;
+        }
+        
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
             this.ValidoPagoStripe = true;
@@ -161,6 +171,7 @@ export class StripeComponent implements OnInit {
             this.cantidadStripe?.setValue('');
             return;
           } else {
+            this.AmountMinin = true;
             this.ValidoPagoStripe = false;
           }
           this.saldoUSD = value;

@@ -48,12 +48,16 @@
                 *ngIf="MountPaypal.hasError('isNegative') && MountPaypal.get('cantidad')?.hasError('required')">El monto
                 no puede ser negativo</mat-error>
             </mat-form-field>
+            
           </form>
         </div>
+        <p *ngIf="!AmountMinin" style='color: #f44336; font-size: 15px; text-align: center;'>El monto mínimo es de 1 USD</p>
       </div>
+      <br>
+      
 
 
-      <div *ngIf="!ValidoPagoPaypal">
+      <div *ngIf="!ValidoPagoPaypal && AmountMinin">
         <div class="monto-comision">
           <span><b>NOTA:</b></span>
           <small>Al realizar un pago por Paypal la <strong style="color: red;">tasa</strong> y <strong
@@ -61,8 +65,8 @@
             <b>{{GetMontoNetoRecibir() | currency}}</b> el neto a recibir será de: <b>{{ MontoCancelar |
               currency}}</b></small>
         </div>
-        <div class="ContenedorPadre">
-          <ngx-paypal class="paypal-container" [config]="payPalConfig">
+        <div >
+          <ngx-paypal  [config]="payPalConfig">
           </ngx-paypal>
         </div>
       </div>

@@ -2494,18 +2494,28 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
               if (NextContrato) {
                 if (this.listContratos.length == 1) {
+                 // console.log('Ingrese')
+                  if(Number(this.listContratos[0].subscription) > 0){
+                 //   console.log('acaaa')
+                      //! to validate franchise
+                      this.abonado = this.listContratos[0].contrato
+                      if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
+                      //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
+                      this.AppFibex = true;
+                      setTimeout(() => {
+                        this.NextMatStepper();
+                      }, 300);
+                    } else {
+                    //  console.log('Estoy aca');
+                      this.invalidForm('Esta cuenta es exonerada');
+                      this.lastDni = "";
+                      this.AppFibex = false;
+                      return;
+                    }
 
-                  //! to validate franchise
-                  this.abonado = this.listContratos[0].contrato
-                  if (this.listContratos[0].franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua'
-                  //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
-                  this.AppFibex = true;
-                  setTimeout(() => {
-                    this.NextMatStepper();
-                  }, 300);
-                } else {
-                  this.SearchSectorAbonado();
-                }
+                  }else{
+                    this.SearchSectorAbonado();
+                  }
               }
             } else {
               this.dni?.setValue(dni_);
@@ -2903,14 +2913,17 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.abonado = this.nroContrato?.value;
     this.validateIfAmountIsNegativer(contrato.saldo, true);
     this.checkLocalStorageData()
-    if (ppal) {
+    //console.log(this.subscription)
+    if (ppal && Number(this.subscription) > 0) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
       setTimeout(() => {
         this.NextMatStepper();
       }, 300);
-    } else {
-      this.bankSelected(this.BancoSelect);
+    }else{
+      this.invalidForm('Esta cuenta es exonerada');
+      this.lastDni = '';
+      this.AppFibex = false;
     }
   }
 

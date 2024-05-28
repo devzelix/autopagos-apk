@@ -52,8 +52,11 @@
           </mat-form-field>
         </form>
       </div>
+      <p *ngIf="!AmountMinin" style='color: #f44336; font-size: 15px; text-align: center;'>El monto mínimo es de 1 USD</p>
     </div>
-    <div *ngIf="!ValidoPagoStripe">
+    <br>
+
+    <div *ngIf="!ValidoPagoStripe && AmountMinin">
       <div>
         <span><b>NOTA:</b></span>
         <small>Al realizar un pago por Stripe la <strong style="color: red;">tasa</strong> y <strong
@@ -82,10 +85,11 @@
             </mat-card-footer>
           </div>
 
-          <button class="customized_btn_next btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()">
-            Regresar
-          </button>
+          
     </div>
+    <button class="customized_btn_next btn-width-100" routerLink="/" style="margin-top: 10px;" (click)="Clear()">
+      Regresar
+    </button>
   </div>
 
   <div class="form-login__group" *ngIf="showReceipt">

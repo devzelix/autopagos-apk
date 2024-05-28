@@ -34,6 +34,7 @@ export class PaypalComponent implements OnInit {
   public ValidoPagoPaypal: boolean= false;
   public ReciberPay: boolean = false;
   public MountNegative: boolean = false;
+  public AmountMinin: boolean = true;
   
   public MountPaypal: FormGroup;
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
@@ -57,14 +58,12 @@ export class PaypalComponent implements OnInit {
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
     if(Number(this.MontoCancelar<=1)){
-      this.MontoCancelar ="1";
-      this.cantidadPaypal?.setValue('1');
-      this.PagoACobrar();
-    }else{
-      this.MountNegative=true;
+      this.ValidoPagoPaypal = true;
     }
-    
-    
+    else{
+      this.cantidadPaypal?.setValue(this.MontoCancelar);
+    }
+    this.PagoACobrar();
   }
 
   get cantidadPaypal() { return this.MountPaypal.get('cantidad'); }
@@ -73,13 +72,18 @@ export class PaypalComponent implements OnInit {
     this.cantidadPaypal?.valueChanges.subscribe({
       
       next: (value) => {
+        if(value <= 0){
+          this.AmountMinin = false;
+          return;
+        }
         if (value) {
-          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
+          if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 8) {
             this.ValidoPagoPaypal = true;
-            this.invalidForm(`Usted no puede reportar con más de 3 meses de su suscripción`, ``);
+            this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.cantidadPaypal?.setValue('');
             return;
           }else{
+            this.AmountMinin = true;
             this.ValidoPagoPaypal = false;
           }
           this.MontoCancelar=value;
