@@ -127,7 +127,7 @@ export class StripeComponent implements OnInit {
       this.ValidoPagoStripe = true;
       
     } else {
-      this.MountNegative = true;
+      //this.MountNegative = true;
       this.cantidadStripe?.setValue(this.MontoCancelar);
     }
     this.PagoACobrar();
