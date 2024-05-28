@@ -47,7 +47,6 @@ export class PaypalComponent implements OnInit {
     this.saldoText = this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Saldo")!) : "";
     this.subscription = this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Subscription")!) : "";
     this.TasaCambio = this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) ? this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) : "";
-    this.TasaCambio = this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) ? this._seguridadDatos.decrypt(localStorage.getItem("TasaCambio")!) : "";
   }
 
   ngOnInit() {
@@ -55,7 +54,6 @@ export class PaypalComponent implements OnInit {
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
     },{ validator: isNegativeNumber })
     this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
-    this.MontoCancelar = 1;
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
     if(Number(this.MontoCancelar<=1)){
