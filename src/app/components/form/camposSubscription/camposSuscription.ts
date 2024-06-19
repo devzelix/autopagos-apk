@@ -239,7 +239,7 @@ export const ListBankPago = [
     opcion: 'BNC'
   },
   {
-    tittle: "100% Banco",
+    tittle: "Banca Nacional",
     image: 'assets/images/BOTON-2_1-PNG.png',
     omitir: false,
     opcion:'100% Banco'
