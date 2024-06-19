@@ -2506,7 +2506,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                         this.NextMatStepper();
                       }, 300);
                     } else {
-                    //  console.log('Estoy aca');
+                      //console.log('Estoy aca');
                       this.invalidForm('Esta cuenta es exonerada');
                       this.lastDni = "";
                       this.AppFibex = false;
@@ -2914,6 +2914,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.validateIfAmountIsNegativer(contrato.saldo, true);
     this.checkLocalStorageData()
     //console.log(this.subscription)
+    console.log(ppal);
+    console.log(Number(this.subscription));
     if (ppal && Number(this.subscription) > 0) {
       this.AppFibex = true;
       //Para lograr un efecto de transición
@@ -2921,9 +2923,10 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.NextMatStepper();
       }, 300);
     }else{
+      console.log("Pase por aqui2");
       this.invalidForm('Esta cuenta es exonerada');
       this.lastDni = '';
-      this.AppFibex = false;
+      //this.AppFibex = false;
     }
   }
 

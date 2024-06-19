@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ListBankPago } from '../form/camposSubscription/camposSuscription';
+import { ListBankPago, Debito } from '../form/camposSubscription/camposSuscription';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class ListBankComponent implements OnInit {
   ngOnInit(): void {
     //Se separo en debito y credito ya que ha bancos que no tienen servicio de credito
     if (this.Tipo === 'Debito') {
-      this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros' && FL.opcion !='100% Banco')
+      this.MetodosPago = Debito.filter((FL: any) => FL.opcion != 'otros' && FL.opcion !='100% Banco')
     } else  if (this.Tipo === 'Credito') {
       this.MetodosPago = ListBankPago.filter((FL: any) => FL.opcion != 'otros' && FL.opcion != '100% Banco')
     } else {

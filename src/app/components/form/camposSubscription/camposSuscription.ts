@@ -220,13 +220,18 @@ export let FormasDePago = [
   }
 ]
 
-export const ListBankPago = [
+/*
   {
     tittle: "Mercantil",
     image: 'assets/images/Logo_Mercantil.png',
-    omitir: false,
+    omitir: true,
     opcion: 'mercantil'
   },
+
+*/
+
+export const ListBankPago = [
+
   {
     tittle: "BNC",
     image: 'assets/images/Logo_BNC.png',
@@ -241,9 +246,25 @@ export const ListBankPago = [
   },
   {
     tittle: "Otros bancos",
-    image: 'assets/images/Logo_OtrosBancos.png',
+    image: 'assets/images/Logo_Mercantil.png',
     omitir: false,
     opcion:'otros'
+  }
+
+]
+
+export const Debito = [
+  {
+    tittle: "Mercantil",
+    image: 'assets/images/Logo_Mercantil.png',
+    omitir: false,
+    opcion: 'mercantil'
+  },
+  {
+    tittle: "BNC",
+    image: 'assets/images/Logo_BNC.png',
+    omitir: false,
+    opcion: 'BNC'
   }
 
 ]
