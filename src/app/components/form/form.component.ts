@@ -1329,6 +1329,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
                         } else if (resp.hasOwnProperty('transaction_response')) {
                           if (resp.transaction_response.trx_status == "approved") {
                             this.alertexit("Pago realizado exitosamente");
+                            this.montoDebitoBNC = DatosUserAgent.cantidadDC;
                             this.ReciboPay = true;
                             this.PinEnviado = false;
                             this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
@@ -1371,6 +1372,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         } else if (resp.hasOwnProperty('transaction_response')) {
           if (resp.transaction_response.trx_status == "approved") {
             this.alertexit("Pago realizado exitosamente");
+            this.montoDebitoBNC = DatosUserAgent.cantidadDC;
             this.ReciboPay = true;
             this.registerPayService.linkedToContractProcess === "approved" ? this.registerPayService.paySubs(resp, this.registerPayService.dniCustomerContract) : ''
           } else {
