@@ -231,7 +231,12 @@ export let FormasDePago = [
 */
 
 export const ListBankPago = [
-
+  {
+    tittle: "Mercantil",
+    image: 'assets/images/Logo_Mercantil.png',
+    omitir: false,
+    opcion: 'mercantil'
+  },
   {
     tittle: "BNC",
     image: 'assets/images/Logo_BNC.png',
@@ -246,7 +251,7 @@ export const ListBankPago = [
   },
   {
     tittle: "Otros bancos",
-    image: 'assets/images/Logo_Mercantil.png',
+    image: 'assets/images/Logo_OtrosBancos.png',
     omitir: false,
     opcion:'otros'
   }
