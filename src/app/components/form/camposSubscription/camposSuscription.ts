@@ -183,13 +183,6 @@ export let MetodoDePago3 = [
     omitir: false,
   },
   {
-    idpago: 31,
-    tipopago: "Débito Inmediato",
-    image: 'assets/images/BOTON-2_1-PNG.png',
-    alt: 'Débito Inmediato',
-    omitir: false,
-  },
-  {
     idpago: 1,
     tipopago: "T.C. Nacional",
     image: 'assets/images/Tarjeta de Credito Nacional.jpg',
@@ -222,10 +215,11 @@ export let FormasDePago = [
 
 /*
   {
-    tittle: "Mercantil",
-    image: 'assets/images/Logo_Mercantil.png',
-    omitir: true,
-    opcion: 'mercantil'
+    idpago: 31,
+    tipopago: "Débito Inmediato",
+    image: 'assets/images/BOTON-2_1-PNG.png',
+    alt: 'Débito Inmediato',
+    omitir: false,
   },
 
 */
