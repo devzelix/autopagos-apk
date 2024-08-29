@@ -5,7 +5,6 @@ import { SeguridadDatos } from 'src/app/services/bscript.service';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { environment } from 'src/environments/environment';
-import { RegisterPayService } from '../../services/register-pay.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
 import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -35,7 +34,7 @@ export class PaypalComponent implements OnInit {
   public ReciberPay: boolean = false;
   public MountNegative: boolean = false;
   public AmountMinin: boolean = true;
-  
+
   public MountPaypal: FormGroup;
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
   public TasaCambio: string ="";
@@ -70,7 +69,7 @@ export class PaypalComponent implements OnInit {
 
   PagoACobrar(){
     this.cantidadPaypal?.valueChanges.subscribe({
-      
+
       next: (value) => {
         if(value <= 0){
           this.AmountMinin = false;
@@ -101,7 +100,7 @@ export class PaypalComponent implements OnInit {
     })
   }
 
-  
+
 
   Clear() {
     this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;

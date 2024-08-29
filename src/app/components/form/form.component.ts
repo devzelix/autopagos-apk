@@ -536,7 +536,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
         break;
 
-      case 'ZELLE WELL FARGO pagos.zelle@fibextelecom.net':
+      case 'ZELLE WELL FARGO zellepagos@fibextelecom.net':
       case 'USD BANK OF AMERICA TRANSFERENCIA':
         this.secondFormFibex.get('voucher')?.setValidators([Validators.maxLength(14), Validators.required, Validators.minLength(4), this.CharacterSpecial()]);
         this.secondFormFibex.get('voucher')?.updateValueAndValidity();
@@ -691,6 +691,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   TipoPago(x: number) {
+    console.log(x);
     this.ShowOptionPagoMovil = false;
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
@@ -708,6 +709,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.ShowOptionPagoMovil = false
     //Modal para pagar Zelle
     if (x == 10) {
+      //this.alertInfo("Estamos haciendo ajustes en el correo","No realize pagos a este Zelle hasta nuevo aviso");
       this.openDialogZelle();
       return;
     }
@@ -782,6 +784,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Zelle
     if (x == 6) {
 
+      //this.alertInfo("Estamos haciendo ajustes en el correo","No realize pagos a este Zelle hasta nuevo aviso");
       let BankZelle: BankList[] = [];
       if (this.listContratos[0].franquicia == "FIBEX ARAGUA") {
         BankZelle = this.banksFiltered.filter((bank: any) => bank.id_cuba == 'CUBABECEA53909F26448')
@@ -837,9 +840,6 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     this.BackFormaPago = !this.BackFormaPago;
     //Reportar
     if (x == 29) {
-
-      console.log("SaldoUSD")
-      console.log(this.saldoUSD);
 
       if (Number(this.saldoUSD) < 0) {
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
@@ -2946,7 +2946,8 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
   }
 
   bankSelected(bank: any) {
-    //console.log(bank)
+    console.log(bank);
+
     this.BancoSelect = bank
     this.banco = bank.Banco + bank.referencia_cuenta;
     if (this.BancoNacional(this.banco) && this.BancoNacional(this.banco) !== 'EUR') {
@@ -2982,6 +2983,13 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
       didOpen: () => {
         Swal.showLoading()
       }
+    })
+  }
+  alertInfo(title: string, message: string) {
+    Swal.fire({
+      title,
+      icon: "info",
+      html: message,
     })
   }
 

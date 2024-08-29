@@ -167,7 +167,7 @@ export class RegisterPayService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
 
-        if(infoClient.bank == "ZELLE WELL FARGO pagos.zelle@fibextelecom.net"){
+        if(infoClient.bank == "ZELLE WELL FARGO zellepagos@fibextelecom.net"){
           infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img + ' nameTitular: '+ infoClient.nameTitular + ' emailTitular: '+ infoClient.emailTitular
           infoClient.name=infoClient.name.replace(/["]+/g, '');
         }else{
@@ -572,7 +572,7 @@ export class RegisterPayService {
     })
     .catch((error:any)=>console.error(error));
   }
-  
+
   getNewBankList() {
 
     return new Promise(async (resolve: any, reject: any) => {
