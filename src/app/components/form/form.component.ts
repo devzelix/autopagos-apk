@@ -477,15 +477,15 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
         }
       }
 
-      if (res['formapago']) {
-          if(res['formapago'] === 'Reportar'){
-            this.PagoMetodosHTML2[1].omitir = true;
-            this.FormaPago( this.PagoMetodosHTML2[0].idpago)
-          }else if(res['formapago'] === 'Pagar'){
-            this.PagoMetodosHTML2[0].omitir = true;
-            this.FormaPago( this.PagoMetodosHTML2[1].idpago)
-          }
-      }
+      // if (res['formapago']) {
+      //     if(res['formapago'] === 'Reportar'){
+      //       this.PagoMetodosHTML2[1].omitir = true;
+      //       this.FormaPago( this.PagoMetodosHTML2[0].idpago)
+      //     }else if(res['formapago'] === 'Pagar'){
+      //       this.PagoMetodosHTML2[0].omitir = true;
+      //       this.FormaPago( this.PagoMetodosHTML2[1].idpago)
+      //     }
+      // }
     });
     this.dateOfPay();
     this.amountInvalid();
@@ -841,10 +841,12 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     //Reportar
     if (x == 29) {
 
-      if (Number(this.saldoUSD) < 0) {
+      //if (Number(this.saldoUSD) < 0) {
         this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
         this.registerPayService.StatusPayAbonado(this.nroContrato?.value)
           .then((response: any) => {
+            console.log("StatusPayAbonado");
+            console.log(response);
             this.LoadingPagoPendiente = !this.LoadingPagoPendiente;
             let Response: ResponseMethod = response;
             console.log(response);
@@ -857,9 +859,9 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
               this.PagoMetodosHTML2 = MetodoDePago2;
             }
           }).catch((err: any) => { console.log(err); this.PagoMetodosHTML2 = MetodoDePago2; this.LoadingPagoPendiente = !this.LoadingPagoPendiente; })
-      } else {
-        this.PagoMetodosHTML2 = MetodoDePago2;
-      }
+      // } else {
+      //   this.PagoMetodosHTML2 = MetodoDePago2;
+      // }
 
 
     }
@@ -1600,6 +1602,7 @@ export class FormComponent implements AfterViewInit, OnInit, OnChanges {
     try {
       this.LoadingCheckReferencia = true
       let Data = {
+        Abonado: this.nroContrato?.value,
         Referencia: NroRef,
         Fecha: this.date?.value,
         Monto: this.amount?.value,

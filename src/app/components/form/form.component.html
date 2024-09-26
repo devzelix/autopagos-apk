@@ -25,7 +25,7 @@
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
-        su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
+        su pago, el mismo se encuentra en proceso de conciliación ({{ Contar }})</h3>
       <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">No es
         posible registrar su pago porque se cuenta está ANULADA o RETIRADA ({{ Contar }})</h3>
       <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No

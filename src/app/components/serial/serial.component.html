@@ -1,41 +1,41 @@
 <form class="form-login" id="form-offer">
-    
+
     <div class="form-login__offer">
-     
+
       <p>
 
-      </p>        
+      </p>
         <span *ngIf="!nameClient" class="button-link__bold button-link button__secondary btn-width-70">
           <p>
             Registre su pago
-          </p> 
+          </p>
           <!--
             <p>
               Servicio de Internet
             </p>
           -->
-        </span>           
-        <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient}}</span>           
+        </span>
+        <span *ngIf="nameClient" class="button-link__bold button-link button__secondary btn-width-70">{{nameClient}}</span>
     </div>
-  
+
   <div class="form-login__group" >
     <div>
-      <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por su pago, el mismo se encuetra en proceso de conciliación ({{ Contar }})</h3>
+      <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por su pago, el mismo se encuentra en proceso de conciliación ({{ Contar }})</h3>
       <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
     </div>
-    
+
     <mat-stepper [linear]="true" #stepper [ngStyle]="{'visibility':!payReported && !playDuplicated ? 'visible' : 'hidden'}">
       <mat-step [stepControl]="firstFormFibex">
         <div *ngIf="nameClient" class="desc-user">
           <div>
             <h4 class="name-client">
-              {{nameClient}}            
-            </h4> 
-            
+              {{nameClient}}
+            </h4>
+
               <h4 class="name-client">
                 {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
-              </h4> 
-          
+              </h4>
+
           </div>
           <div>
             <h4 class="name-client">
@@ -44,38 +44,38 @@
              <h4 class="name-client">
               Suscripción: {{subscription}} USD
               </h4>
-            
+
           </div>
             <!--
             <p class="name-client" *ngIf="monto_pend_conciliar > 0">
               Monto por Conciliar:{{monto_pend_conciliar | currency:'USD':true:'1.2-2'}}
             </p>-->
-            
+
         </div>
         <form [formGroup]="firstFormFibex">
           <ng-template matStepLabel>Datos de pago</ng-template>
           <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-           
+
             <mat-form-field appearance="outline">
               <mat-label>Cédula/RIF del Cliente</mat-label>
               <input matInput required formControlName="dni" NumbersOnly="true" #inputDni (blur)="searchServices(inputDni)">
               <mat-icon matSuffix (click)="searchServices(inputDni, false)" style="cursor: pointer">search</mat-icon>
-              <mat-error 
+              <mat-error
                   *ngIf="firstFormFibex.get('dni')?.hasError('minlength')">
                 La cédula debe contener al menos 6 carácteres
               </mat-error>
-              <mat-error 
+              <mat-error
                   *ngIf="firstFormFibex.get('dni')?.hasError('required')">
                  La cédula requerida
               </mat-error>
               <!--
-                <mat-error 
+                <mat-error
                   *ngIf="formFibex.get('dni')?.hasError('maxlength')">
                     La cédula debe contener máximo 15 carácteres
                 </mat-error>
 
               -->
-            
+
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Nombre y Apellido</mat-label>
@@ -138,7 +138,7 @@
               <mat-error *ngIf="dniConsulted && listContratos.length === 0">No exite abonado, verifique el documento de identidad</mat-error>
             </mat-form-field>
             <div class="form-login__item">
-              <button class="btn-uplaod-image button-material-upload" 
+              <button class="btn-uplaod-image button-material-upload"
                       mat-raised-button
                       *ngIf="imageUploaded"
                       (click)="deleteImagePay()">
@@ -147,25 +147,25 @@
               <div *ngIf="imageUrl != ''" class="image-pay">
                 <img [src]="imageUrl" width="200px">
               </div>
-              <button class="btn-uplaod-image button-material-upload" mat-raised-button  
+              <button class="btn-uplaod-image button-material-upload" mat-raised-button
                       (click)="uploadFile.click()"
                       *ngIf="!imageUploaded">
                 Subir imagen del equipo
               </button>
-              <input hidden #uploadFile type="file" 
+              <input hidden #uploadFile type="file"
                   formControlName="img"
                      (change)="uploadImagePayment($event)"
                 accept="image/*">
                 <mat-error *ngIf="firstFormFibex.get('img')?.hasError('required')">La imagen es requerida</mat-error>
             </div>
-            
+
               <mat-form-field appearance="outline">
                 <mat-label>Monto Pagado</mat-label>
                 <input matInput formControlName="amount" required>
                 <mat-error>Monto Invalido</mat-error>
               </mat-form-field>
-            
-            
+
+
               <mat-form-field appearance="outline">
                 <mat-label>Fecha</mat-label>
                 <input matInput [matDatepicker]="picker"  formControlName="date">
@@ -173,8 +173,8 @@
                 <mat-datepicker #picker></mat-datepicker>
                 <mat-error *ngIf="firstFormFibex.get('date')?.hasError('required')">La fecha es requerida</mat-error>
               </mat-form-field>
-            
-            
+
+
           </div>
           <div fxLayout="row" fxLayoutAlign="center center" class="btn-width-100">
               <button class="button-material-next btn-width-100" mat-raised-button type="button"  (click)="savePayment()" [disabled]="DisableReg">
@@ -197,7 +197,7 @@
               <input matInput  formControlName="voucher" required>
               <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es requerido</mat-error>
             </mat-form-field>
-            
+
           </div>
           <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
             <button class="button-material-next btn-width-70" (click)="ScrollUp($event)" mat-raised-button matStepperNext type="button">
@@ -215,7 +215,7 @@
         <form [formGroup]="thirdFormFibex">
           <ng-template matStepLabel>Comprobante</ng-template>
           <div class="form-login__item">
-            <button class="btn-uplaod-image button-material-upload" 
+            <button class="btn-uplaod-image button-material-upload"
                     mat-raised-button
                     *ngIf="imageUploaded"
                     (click)="deleteImagePay()">
@@ -224,12 +224,12 @@
             <div *ngIf="imageUrl != ''" class="image-pay">
               <img [src]="imageUrl" width="200px">
             </div>
-            <button class="btn-uplaod-image button-material-upload" mat-raised-button  
+            <button class="btn-uplaod-image button-material-upload" mat-raised-button
                     (click)="uploadFile.click()"
                     *ngIf="!imageUploaded">
               Subir imagen del pago
             </button>
-            <input hidden #uploadFile type="file" 
+            <input hidden #uploadFile type="file"
                 formControlName="img"
                    (change)="uploadImagePayment($event)"
               accept="image/*">
@@ -241,7 +241,7 @@
             <div class="btn-flex-center">
               <button class="button-material-next btn-width-70 " mat-raised-button (click)="savePayment()" [disabled]="DisableReg">Reportar</button>
               <button class="button-material-back btn-width-30 " mat-raised-button  matStepperPrevious>Regresar</button>
-              
+
             </div>
           </div>
         </form>
@@ -249,9 +249,9 @@
     -->
     </mat-stepper>
 
-    
-  </div>
-  
 
-        
+  </div>
+
+
+
 </form>
