@@ -1,42 +1,81 @@
 <form class="form-login" id="form-offer" *ngIf="!showStateTable">
-
   <div *ngIf="!nameClient" class="form-login__offer">
-    <span class="button-link__bold button-link button__secondary btn-width-70 fancy_shadow">
-      <p>
-        Registre su pago
-      </p>
-      <p>
-        Servicio de Internet
-      </p>
+    <span
+      class="button-link__bold button-link button__secondary btn-width-70 fancy_shadow"
+    >
+      <p>Registre su pago</p>
+      <p>Servicio de Internet</p>
     </span>
   </div>
 
   <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
-  <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
-
+  <div
+    class="form-login__group fancy_shadow"
+    [ngClass]="nameClient ? 'form-login__group2' : ''"
+  >
     <!-- FORMAS DE PAGO -->
-    <button *ngIf="AppFibex" class="btn-flotante left" mat-mini-fab matTooltip="Últimos pagos" (click)="openInfoPay()">
+    <button
+      *ngIf="AppFibex"
+      class="btn-flotante left"
+      mat-mini-fab
+      matTooltip="Últimos pagos"
+      (click)="openInfoPay()"
+    >
       <mat-icon><span class="material-symbols-outlined">list</span></mat-icon>
     </button>
-    <button *ngIf="AppFibex" class="btn-flotante right" mat-mini-fab matTooltip="Formas de Pago" (click)="openDialogPM()">
-      <mat-icon><span class="material-icons-outlined">help_outline</span></mat-icon>
+    <button
+      *ngIf="AppFibex"
+      class="btn-flotante right"
+      mat-mini-fab
+      matTooltip="Formas de Pago"
+      (click)="openDialogPM()"
+    >
+      <mat-icon
+        ><span class="material-icons-outlined">help_outline</span></mat-icon
+      >
     </button>
 
     <!-- Mensajes de alerta -->
     <div>
-      <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">Gracias por
-        su pago, el mismo se encuentra en proceso de conciliación ({{ Contar }})</h3>
-      <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">No es
-        posible registrar su pago porque se cuenta está ANULADA o RETIRADA ({{ Contar }})</h3>
-      <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">No
-        es posible registrar el mismo pago dos veces ({{ Contar }})</h3>
-      <h3 class="message-warning" *ngIf="ErrorRegistrando">{{MessageErrorRegistrado}} ({{ Contar }})</h3>
+      <h3
+        class="message-succes"
+        *ngIf="payReported && !playDuplicated"
+        (click)="payReported = !payReported"
+      >
+        Gracias por su pago, el mismo se encuentra en proceso de conciliación el
+        cual dura entre 24 a 48 horas ({{ Contar }})
+      </h3>
+      <h3
+        class="message-succes"
+        *ngIf="CuentaAnulada && !playDuplicated"
+        (click)="CuentaAnulada = !CuentaAnulada"
+      >
+        No es posible registrar su pago porque se cuenta está ANULADA o RETIRADA
+        ({{ Contar }})
+      </h3>
+      <h3
+        class="message-warning"
+        *ngIf="playDuplicated && !payReported"
+        (click)="playDuplicated = !playDuplicated"
+      >
+        No es posible registrar el mismo pago dos veces ({{ Contar }})
+      </h3>
+      <h3 class="message-warning" *ngIf="ErrorRegistrando">
+        {{ MessageErrorRegistrado }} ({{ Contar }})
+      </h3>
     </div>
     <!-- / Mensajes de alerta -->
 
-    <mat-stepper [linear]="true" #stepper
-      *ngIf="!payReported || (CuentaAnulada&&!playDuplicated) || ErrorRegistrando || (playDuplicated&&!payReported)">
-
+    <mat-stepper
+      [linear]="true"
+      #stepper
+      *ngIf="
+        !payReported ||
+        (CuentaAnulada && !playDuplicated) ||
+        ErrorRegistrando ||
+        (playDuplicated && !payReported)
+      "
+    >
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <mat-step>
         <ng-template matStepLabel>Cliente</ng-template>
@@ -44,45 +83,76 @@
         <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
           <mat-form-field appearance="outline" [formGroup]="firstFormFibex">
             <mat-label>Cédula/RIF del cliente</mat-label>
-            <input formControlName="dni" type="number" matInput required NumbersOnly="true" #inputDni
-              [readonly]="readonlyDNI">
-            <mat-icon matSuffix style="cursor: pointer"
-              (click)="dni?.valid && captchaService.validControl ? searchServicesv2(inputDni,false,true) : ''">search</mat-icon>
+            <input
+              formControlName="dni"
+              type="number"
+              matInput
+              required
+              NumbersOnly="true"
+              #inputDni
+              [readonly]="readonlyDNI"
+            />
+            <mat-icon
+              matSuffix
+              style="cursor: pointer"
+              (click)="
+                dni?.valid && captchaService.validControl
+                  ? searchServicesv2(inputDni, false, true)
+                  : ''
+              "
+              >search</mat-icon
+            >
             <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
               La cédula es requerida
             </mat-error>
           </mat-form-field>
           <!-- Si no tiene contratos activos -->
-          <ng-container *ngIf="listContratos.length==0">
-            <captcha-thomas [hidden]="verifyDNI && captchaService.validControl" class="captcha-box"></captcha-thomas>
+          <ng-container *ngIf="listContratos.length == 0">
+            <captcha-thomas
+              [hidden]="verifyDNI && captchaService.validControl"
+              class="captcha-box"
+            ></captcha-thomas>
           </ng-container>
           <!-- / Si no tiene contratos activos -->
 
           <!-- Muestra de boton consultar -->
           <!-- class="button-material-next btn-width-100" -->
-          <button *ngIf="listContratos.length==0 || listContratos.length==1" class="customized_btn_next" type="button"
-            role="button" (click)="searchServicesv2(inputDni,false,true)"
-            [disabled]="dni?.invalid || !captchaService.validControl">
+          <button
+            *ngIf="listContratos.length == 0 || listContratos.length == 1"
+            class="customized_btn_next"
+            type="button"
+            role="button"
+            (click)="searchServicesv2(inputDni, false, true)"
+            [disabled]="dni?.invalid || !captchaService.validControl"
+          >
             Consultar
           </button>
           <!-- /Muestra de boton consultar -->
 
           <!-- En caso de tener dos o más abonados -->
-          <h3 class="message-succes" *ngIf="listContratos.length>1">Por favor seleccione su Nro. de Abonado</h3>
+          <h3 class="message-succes" *ngIf="listContratos.length > 1">
+            Por favor seleccione su Nro. de Abonado
+          </h3>
           <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
             <mat-spinner></mat-spinner>
           </div>
-          <div *ngIf="listContratos.length>1 && !LoadingLengthAbonado" class="grid-cards cards-abonados  animated fadeInUp">
-            <button *ngFor="let contrato of listContratos" class="grid-cards-item"
-              (click)="contractSelected(contrato,true)">
+          <div
+            *ngIf="listContratos.length > 1 && !LoadingLengthAbonado"
+            class="grid-cards cards-abonados animated fadeInUp"
+          >
+            <button
+              *ngFor="let contrato of listContratos"
+              class="grid-cards-item"
+              (click)="contractSelected(contrato, true)"
+            >
               <h3>
-                {{contrato.contrato}}
+                {{ contrato.contrato }}
               </h3>
               <p *ngIf="contrato.sector">
-                {{contrato.sector}}
+                {{ contrato.sector }}
               </p>
               <p>
-                {{contrato.status_contrato}}
+                {{ contrato.status_contrato }}
               </p>
             </button>
           </div>
@@ -92,37 +162,45 @@
 
       <!--/ Fin de Menú ppal -->
 
-
       <!-- Menú de métodos de pago -->
       <mat-step *ngIf="AppFibex" class="CardPpal">
-
-        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
-          class="desc-user">
+        <div
+          *ngIf="
+            nameClient &&
+            saldoBs &&
+            saldoUSD &&
+            registerPayService.linkedToContractProcess != 'approved'
+          "
+          class="desc-user"
+        >
           <div>
             <h4 class="name-client">
-              {{nameClient}}
+              {{ nameClient }}
             </h4>
             <h4 class="name-client">
-              {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+              {{ saldoUSD | negativeAmount }} USD |
+              {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
             </h4>
           </div>
           <div>
-            <h4 class="name-client">
-              Servicio: {{ paquete }}
-            </h4>
-            <h4 class="name-client">
-              Suscripción: {{subscription}} USD
-            </h4>
+            <h4 class="name-client">Servicio: {{ paquete }}</h4>
+            <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
           </div>
         </div>
-        <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
-          class="desc-user">
+        <div
+          *ngIf="
+            nameClient &&
+            saldoBs &&
+            saldoUSD &&
+            registerPayService.linkedToContractProcess == 'approved'
+          "
+          class="desc-user"
+        >
           <div>
+            <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
             <h4 class="name-client">
-              CI/RIF: {{nameClient}}
-            </h4>
-            <h4 class="name-client">
-              Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+              Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
+              {{ saldoBs | negativeAmount }} Bs
             </h4>
           </div>
           <!-- <div>
@@ -138,71 +216,114 @@
           <mat-spinner *ngIf="LoadingPagoPendiente"></mat-spinner>
         </div>
         <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
-          <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
-            [ngClass]="{'hide': option.tipopago === 'Criptomoneda'}">
-            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size" (click)="showConsole(option)">
-
-              <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
-
-                <button *ngIf="!option.omitir" class="grid-cards-item forma-pago" (click)="FormaPago(option.idpago)">
+          <div
+            *ngFor="let option of PagoMetodosHTML2"
+            class="unicard width_full"
+            [ngClass]="{ hide: option.tipopago === 'Criptomoneda' }"
+          >
+            <span
+              [ngSwitch]="option.tipopago"
+              class="opt-cards-container-size"
+              (click)="showConsole(option)"
+            >
+              <span
+                *ngSwitchCase="'FormasDePago'"
+                class="grid-cards animated fadeInUp"
+              >
+                <button
+                  *ngIf="!option.omitir"
+                  class="grid-cards-item forma-pago"
+                  (click)="FormaPago(option.idpago)"
+                >
                   <h3>
-                    {{option.tittle}}
+                    {{ option.tittle }}
                   </h3>
                 </button>
-
               </span>
 
               <span *ngSwitchDefault class="flex_center cardflex2">
                 <!--  -->
-                <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp " (click)="TipoPago(option.idpago)">
-                  <h5 class=" TitlePerson">{{option.tipopago}}</h5>
-                  <img style="width: 100%;" src="{{option.image}}" alt="{{option.alt}}">
+                <button
+                  *ngIf="!option.omitir"
+                  class="fancy_card animated fadeInUp"
+                  (click)="TipoPago(option.idpago)"
+                >
+                  <h5 class="TitlePerson">{{ option.tipopago }}</h5>
+                  <img
+                    style="width: 100%"
+                    src="{{ option.image }}"
+                    alt="{{ option.alt }}"
+                  />
                 </button>
-
               </span>
-
             </span>
           </div>
         </div>
         <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
-          <app-detalle-pay [DataPagoPendiente]="DataPagoPendiente"></app-detalle-pay>
+          <app-detalle-pay
+            [DataPagoPendiente]="DataPagoPendiente"
+          ></app-detalle-pay>
         </div>
-        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full" (click)="FormaPago(31)">
+        <button
+          *ngIf="BackFormaPago && !LoadingPagoPendiente"
+          class="customized_btn_next width_full"
+          (click)="FormaPago(31)"
+        >
           REGRESAR
         </button>
       </mat-step>
       <!-- / Fin de métodos de pago -->
 
       <!-- Transferencias -->
-      <div *ngIf="!ConsultarPagoMovilboolean && !DebitoCreditoboolean && !RegistrarPagoMovilboolean && AppFibex && !Criptomoneda && !Otros && !PrimeraVez">
+      <div
+        *ngIf="
+          !ConsultarPagoMovilboolean &&
+          !DebitoCreditoboolean &&
+          !RegistrarPagoMovilboolean &&
+          AppFibex &&
+          !Criptomoneda &&
+          !Otros &&
+          !PrimeraVez
+        "
+      >
         <mat-step [stepControl]="firstFormFibex">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess != 'approved'
+            "
+            class="desc-user"
+          >
             <div>
               <h4 class="name-client">
-                {{nameClient}}
+                {{ nameClient }}
               </h4>
               <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+                {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
               </h4>
             </div>
             <div>
-              <h4 class="name-client">
-                Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Suscripción: {{subscription}} USD
-              </h4>
+              <h4 class="name-client">Servicio: {{ paquete }}</h4>
+              <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess == 'approved'
+            "
+            class="desc-user"
+          >
             <div>
+              <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
               <h4 class="name-client">
-                CI/RIF: {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+                Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs
               </h4>
             </div>
             <div>
@@ -217,24 +338,42 @@
           <form [formGroup]="firstFormFibex">
             <ng-template matStepLabel>Datos de pago</ng-template>
             <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-
               <mat-form-field appearance="outline">
-                <mat-label>Cédula/RIF del cliente</mat-label>
-                <input type="number" matInput required formControlName="dni" NumbersOnly="true" #inputDni
-                  (blur)="searchServicesv2(inputDni)">
-                <mat-icon matSuffix (click)="searchServicesv2(inputDni, false)"
-                  style="cursor: pointer">search</mat-icon>
-                <mat-error *ngIf="firstFormFibex.get('dni')?.hasError('required')">
-                  La cédula requerida
+                <mat-label>Cédula/RIF cliente</mat-label>
+                <input
+                  type="number"
+                  matInput
+                  required
+                  formControlName="dni"
+                  NumbersOnly="true"
+                  #inputDni
+                  (blur)="searchServicesv2(inputDni)"
+                />
+                <mat-icon
+                  matSuffix
+                  (click)="searchServicesv2(inputDni, false)"
+                  style="cursor: pointer"
+                  >search</mat-icon
+                >
+                <mat-error
+                  *ngIf="firstFormFibex.get('dni')?.hasError('required')"
+                >
+                  La cédula o rif es requerido
                 </mat-error>
               </mat-form-field>
-              <p style="text-align:center;">Seleccione banco receptor (Fibex)</p>
+              <p style="text-align: center">
+                Seleccione el banco al cual realizó el pago
+              </p>
               <mat-form-field appearance="outline">
-                <mat-label>Banco receptor (Fibex)</mat-label>
+                <mat-label>Banco receptor</mat-label>
                 <mat-select formControlName="bank">
-                  <mat-option *ngFor="let bank of banksFiltered" [value]="bank.Banco" (click)="bankSelected(bank)"
-                    (blur)="SendOption(0,1,bank.Banco)">
-                    {{bank.Banco}} ** {{bank.referencia_cuenta }}
+                  <mat-option
+                    *ngFor="let bank of banksFiltered"
+                    [value]="bank.Banco"
+                    (click)="bankSelected(bank)"
+                    (blur)="SendOption(0, 1, bank.Banco)"
+                  >
+                    {{ bank.Banco }} ** {{ bank.referencia_cuenta }}
                   </mat-option>
                 </mat-select>
                 <mat-error>El banco es obligatorio</mat-error>
@@ -242,31 +381,57 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>E-mail</mat-label>
-                <input id="InputEmail" matInput required formControlName="email" #inputEmail
-                  (blur)="SendOption(0,2,inputEmail.value); VerifyEmail()" (keyup)="validateEmail($event)">
-                <mat-error *ngIf="firstFormFibex.get('email')?.hasError('required')">El e-mail es requerido</mat-error>
-                <mat-error *ngIf="firstFormFibex.get('email')?.hasError('pattern')">E-mail no es válido</mat-error>
+                <input
+                  id="InputEmail"
+                  matInput
+                  required
+                  formControlName="email"
+                  #inputEmail
+                  (blur)="SendOption(0, 2, inputEmail.value); VerifyEmail()"
+                  (keyup)="validateEmail($event)"
+                />
+                <mat-error
+                  *ngIf="firstFormFibex.get('email')?.hasError('required')"
+                  >El e-mail es requerido</mat-error
+                >
+                <mat-error
+                  *ngIf="firstFormFibex.get('email')?.hasError('pattern')"
+                  >E-mail no es válido</mat-error
+                >
               </mat-form-field>
-
+              <!-- <button mat-icon-button color="primary" aria-label="Example icon button with a home icon"><mat-icon>home</mat-icon></button> -->
               <mat-form-field appearance="outline">
                 <mat-label>Abonado</mat-label>
                 <mat-select formControlName="nroContrato">
-                  <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
-                    (click)="contractSelected(contrato,true)" (blur)="SendOption(0,3,contrato.contrato)" required>
-                    {{contrato.contrato}}
+                  <mat-option
+                    *ngFor="let contrato of listContratos"
+                    [value]="contrato.contrato"
+                    (click)="contractSelected(contrato, true)"
+                    (blur)="SendOption(0, 3, contrato.contrato)"
+                    required
+                  >
+                    {{ contrato.contrato }}
                   </mat-option>
                 </mat-select>
-                <mat-error *ngIf="firstFormFibex.get('nroContrato')?.hasError('required')">El número de abonado es
-                  requerido</mat-error>
-                <mat-error *ngIf="dniConsulted && listContratos.length === 0">No exite abonado, verifique el documento
-                  de
-                  identidad</mat-error>
+                <mat-error
+                  *ngIf="
+                    firstFormFibex.get('nroContrato')?.hasError('required')
+                  "
+                  >El número de abonado es requerido</mat-error
+                >
+                <mat-error *ngIf="dniConsulted && listContratos.length === 0"
+                  >No exite abonado, verifique el documento de
+                  identidad</mat-error
+                >
               </mat-form-field>
 
               <ng-container *ngIf="possibleWithholdingAgent && !Kiosco">
                 <mat-form-field appearance="outline">
                   <mat-label>Es usted agente de retención?</mat-label>
-                  <mat-select [(value)]="selectedRetentionOption" (selectionChange)="resetParams()">
+                  <mat-select
+                    [(value)]="selectedRetentionOption"
+                    (selectionChange)="resetParams()"
+                  >
                     <mat-option value="2">Si</mat-option>
                     <mat-option value="1">No</mat-option>
                   </mat-select>
@@ -275,53 +440,112 @@
               </ng-container>
 
               <mat-form-field appearance="outline">
-                <mat-label>Monto acreditado
-                  <strong><span *ngIf="BancoNacional('') && BancoNacional('') !='EUR'">en Bolívares</span></strong>
-                  <strong><span *ngIf="!BancoNacional('')">en Dólares</span></strong>
-                  <strong><span *ngIf="BancoNacional('') =='EUR'">en Euros</span></strong>
+                <mat-label
+                  >Monto acreditado
+                  <strong
+                    ><span
+                      *ngIf="BancoNacional('') && BancoNacional('') != 'EUR'"
+                      >en Bolívares</span
+                    ></strong
+                  >
+                  <strong
+                    ><span *ngIf="!BancoNacional('')">en Dólares</span></strong
+                  >
+                  <strong
+                    ><span *ngIf="BancoNacional('') == 'EUR'"
+                      >en Euros</span
+                    ></strong
+                  >
                 </mat-label>
-                <input matInput formControlName="amount" required #inputAmount
-                  (blur)="incorrectBankAndAmount(inputAmount.value)">
-                <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="firstFormFibex.get('amount')?.hasError('pattern')">Escriba el monto seguido dos
-                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                <input
+                  matInput
+                  formControlName="amount"
+                  required
+                  #inputAmount
+                  (blur)="incorrectBankAndAmount(inputAmount.value)"
+                />
                 <mat-error
-                  *ngIf="firstFormFibex.hasError('isNegative') && firstFormFibex.get('amount')?.hasError('required')">El
-                  monto no puede ser negativo</mat-error>
+                  *ngIf="firstFormFibex.get('amount')?.hasError('required')"
+                  >Monto requerido</mat-error
+                >
+                <mat-error
+                  *ngIf="firstFormFibex.get('amount')?.hasError('pattern')"
+                  >Escriba el monto seguido dos decimales separado por punto,
+                  ejemplo: 125.00</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    firstFormFibex.hasError('isNegative') &&
+                    firstFormFibex.get('amount')?.hasError('required')
+                  "
+                  >El monto no puede ser negativo</mat-error
+                >
               </mat-form-field>
 
               <mat-form-field appearance="outline" *ngIf="!errorDate">
                 <mat-label>Fecha del pago</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="date" [max]="dateToDay" #inputDate
-                  (ngModelChange)="SendOption(0,5,$event)">
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="date"
+                  [max]="dateToDay"
+                  #inputDate
+                  (ngModelChange)="SendOption(0, 5, $event)"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="firstFormFibex.get('date')?.hasError('required')">La fecha del pago es requerida
+                <mat-error
+                  *ngIf="firstFormFibex.get('date')?.hasError('required')"
+                  >La fecha del pago es requerida
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline" *ngIf="errorDate">
                 <mat-label>Fecha del pago</mat-label>
-                <input matInput [matDatepicker]="picker2" formControlName="date" [max]="dateToDay" #inputDate
-                  (ngModelChange)="SendOption(0,5,$event)">
-                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <input
+                  matInput
+                  [matDatepicker]="picker2"
+                  formControlName="date"
+                  [max]="dateToDay"
+                  #inputDate
+                  (ngModelChange)="SendOption(0, 5, $event)"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker2"
+                ></mat-datepicker-toggle>
                 <mat-datepicker #picker2></mat-datepicker>
-                <mat-error *ngIf="firstFormFibex.get('date')?.hasError('required')">La fecha del pago es requerida
+                <mat-error
+                  *ngIf="firstFormFibex.get('date')?.hasError('required')"
+                  >La fecha del pago es requerida
                 </mat-error>
               </mat-form-field>
-
-
             </div>
-            <div fxLayout="row" fxLayoutAlign="center center" class="btn-width-100">
-              <button class="button-material-next btn-width-100" mat-raised-button (click)="nextStep(true)"
-                type="button" [disabled]="disbaleButtonIfAmountIsInvalid ||
-                                      disbaleButtonIfAmountIs0 ||
-                                      firstFormFibex.invalid ||
-                                      disbaleButtonIfDateIsInvalid ||
-                                      disableBtnAmountInvalid ||
-                                      disableLengthContrato ||
-                                      (possibleWithholdingAgent && selectedRetentionOption == null) ||
-                                      enableBtn">
+            <div
+              fxLayout="row"
+              fxLayoutAlign="center center"
+              class="btn-width-100"
+            >
+              <button
+                class="button-material-next btn-width-100"
+                mat-raised-button
+                (click)="nextStep(true)"
+                type="button"
+                [disabled]="
+                  disbaleButtonIfAmountIsInvalid ||
+                  disbaleButtonIfAmountIs0 ||
+                  firstFormFibex.invalid ||
+                  disbaleButtonIfDateIsInvalid ||
+                  disableBtnAmountInvalid ||
+                  disableLengthContrato ||
+                  (possibleWithholdingAgent &&
+                    selectedRetentionOption == null) ||
+                  enableBtn
+                "
+              >
                 Siguiente
               </button>
             </div>
@@ -330,102 +554,152 @@
 
         <mat-step [stepControl]="secondFormFibex">
           <form [formGroup]="secondFormFibex">
-            <ng-template matStepLabel>Referencia</ng-template>
+            <ng-template matStepLabel>Nro. de Referencia</ng-template>
             <div class="form-login__item">
-
-              <mat-form-field appearance="outline" *ngIf="!BancoNacional(banco)">
-                <mat-label>Nombre titular cuenta </mat-label>
-                <input matInput formControlName="nameTitular" #inputNameT (blur)="SendOption(1,0,inputNameT.value)">
+              <mat-form-field
+                appearance="outline"
+                *ngIf="!BancoNacional(banco)"
+              >
+                <mat-label>Nombre del titular de la cuenta </mat-label>
+                <input
+                  matInput
+                  formControlName="nameTitular"
+                  #inputNameT
+                  (blur)="SendOption(1, 0, inputNameT.value)"
+                />
               </mat-form-field>
-              <mat-form-field appearance="outline" *ngIf="!BancoNacional(banco)">
-                <mat-label>Email titular cuenta</mat-label>
-                <input matInput formControlName="emailTitular" #inputEmailT (blur)="SendOption(1,1,inputEmailT.value)">
+              <mat-form-field
+                appearance="outline"
+                *ngIf="!BancoNacional(banco)"
+              >
+                <mat-label>Email del titular de la cuenta</mat-label>
+                <input
+                  matInput
+                  formControlName="emailTitular"
+                  #inputEmailT
+                  (blur)="SendOption(1, 1, inputEmailT.value)"
+                />
               </mat-form-field>
 
               <!-- <span *ngIf="BancoNacional(banco)"> -->
-                <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">Banco de donde realizó el pago</p>
-                <mat-form-field appearance="outline" *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR' " >
-                  <mat-label>Banco emisor</mat-label>
-                  <mat-select formControlName="BancoEmisor">
-                    <mat-option *ngFor="let banka of BankEmisor" [value]="banka.Banco" (click)="BancoEmisor(banka)">
-                      {{banka.Banco}}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
+              <p *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'">
+                Banco desde donde realizaste el pago
+              </p>
+              <mat-form-field
+                appearance="outline"
+                *ngIf="BancoNacional(banco) && BancoNacional(banco) != 'EUR'"
+              >
+                <mat-label>Banco emisor</mat-label>
+                <mat-select formControlName="BancoEmisor">
+                  <mat-option
+                    *ngFor="let banka of BankEmisor"
+                    [value]="banka.Banco"
+                    (click)="BancoEmisor(banka)"
+                  >
+                    {{ banka.Banco }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
               <!-- </span> -->
 
-
-              <p>Es el número de referencia del BANCO</p>
+              <p>Número de referencia dado por el BANCO</p>
               <mat-form-field appearance="outline">
                 <mat-label>Número de comprobante</mat-label>
-                <input matInput formControlName="voucher" required #inputVouche
-                  (blur)="SendOption(1,2,inputVouche.value);">
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('required')">Número de comprobante es
-                  requerido
+                <input
+                  matInput
+                  formControlName="voucher"
+                  required
+                  #inputVouche
+                  (blur)="SendOption(1, 2, inputVouche.value)"
+                />
+                <mat-error
+                  *ngIf="secondFormFibex.get('voucher')?.hasError('required')"
+                  >Nro. de comprobante es requerido
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('maxlength')">Supero el máximo de números
+                <mat-error
+                  *ngIf="secondFormFibex.get('voucher')?.hasError('maxlength')"
+                  >Supero el número máximo para esta referencia
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('minlength')">El minimo de número es 4
+                <mat-error
+                  *ngIf="secondFormFibex.get('voucher')?.hasError('minlength')"
+                  >El mínimo de número es 4
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('NumericRefence')">La referencia no debe tener letras o carácteres especiales
+                <mat-error
+                  *ngIf="
+                    secondFormFibex.get('voucher')?.hasError('NumericRefence')
+                  "
+                  >La referencia no debe tener letras o carácteres especiales
                 </mat-error>
-                <mat-error *ngIf="secondFormFibex.get('voucher')?.hasError('CaracterInvalid')">Carácter especial no válido
+                <mat-error
+                  *ngIf="
+                    secondFormFibex.get('voucher')?.hasError('CaracterInvalid')
+                  "
+                  >Carácter especial no válido
                 </mat-error>
               </mat-form-field>
 
-              <h3 *ngIf="ComprobantesPago.length>0" style="text-align: center;">Últimos pagos:</h3><br>
-              <table *ngIf="ComprobantesPago.length>0" mat-table [dataSource]="ComprobantesPago"
-                class="mat-elevation-z8">
-
+              <h3
+                *ngIf="ComprobantesPago.length > 0"
+                style="text-align: center"
+              >
+                Últimos pagos:
+              </h3>
+              <br />
+              <table
+                *ngIf="ComprobantesPago.length > 0"
+                mat-table
+                [dataSource]="ComprobantesPago"
+                class="mat-elevation-z8"
+              >
                 <!-- <ng-container matColumnDef="Comprobante">
                   <th mat-header-cell *matHeaderCellDef> Comprobante </th>
                   <td mat-cell *matCellDef="let element"> {{element.Referencia}} </td>
                 </ng-container> -->
                 <ng-container matColumnDef="Fecha">
-                  <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                  <td mat-cell *matCellDef="let element"> {{element.Fecha | date: 'dd/MM/yyyy'}} </td>
+                  <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.Fecha | date : "dd/MM/yyyy" }}
+                  </td>
                 </ng-container>
 
                 <ng-container matColumnDef="Status">
-                  <th mat-header-cell *matHeaderCellDef> Estado Comprobante </th>
-                  <td mat-cell *matCellDef="let element"> {{element.Status}} </td>
+                  <th mat-header-cell *matHeaderCellDef>Estado Comprobante</th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.Status }}
+                  </td>
                 </ng-container>
 
-                <!-- <ng-container matColumnDef="buttons">
-                  <mat-header-cell *matHeaderCellDef></mat-header-cell> -->
-                <!-- <mat-cell *matCellDef="let element"> -->
-                <!-- <div fxFlex="row" fxLayoutAlign="end center">
-                      <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
-                        (click)="$event.stopPropagation();">
-                        <mat-icon class="secondary-text">more_vert</mat-icon>
-                      </button>
-                      <mat-menu #moreMenu="matMenu">
-                        <button (click)="openDialogCmprobante(element)" mat-menu-item>
-                          <mat-icon>chrome_reader_mode</mat-icon>
-                          <span>Ver detalle</span>
-                        </button>
-                      </mat-menu>
-                    </div> -->
-
-                <!-- </mat-cell> -->
-                <!-- </ng-container> -->
-
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns"
+                ></tr>
               </table>
-
             </div>
-            <div *ngIf="!LoadingCheckReferencia" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-              <button class="button-material-next btn-width-70" (click)="ValidateLastReferencia(inputVouche.value)"
-                mat-raised-button type="button" [disabled]="this.secondFormFibex.invalid">
+            <div
+              *ngIf="!LoadingCheckReferencia"
+              fxLayout="row"
+              fxLayoutAlign="center center"
+              class="btn-flex-center"
+            >
+              <button
+                class="button-material-next btn-width-70"
+                (click)="ValidateLastReferencia(inputVouche.value)"
+                mat-raised-button
+                type="button"
+                [disabled]="this.secondFormFibex.invalid"
+              >
                 Siguiente
               </button>
 
-              <button class="button-material-back btn-width-30" (click)="ScrollUp($event)" mat-raised-button
-                matStepperPrevious>
+              <button
+                class="button-material-back btn-width-30"
+                (click)="ScrollUp($event)"
+                mat-raised-button
+                matStepperPrevious
+              >
                 Regresar
               </button>
-
             </div>
             <div *ngIf="LoadingCheckReferencia" class="spinner-pay">
               <mat-spinner></mat-spinner>
@@ -439,108 +713,223 @@
             <div class="form-login__item">
               <p *ngIf="showMessageErrorUpload" class="message-error-upload">
                 <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
-                Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
+                Por favor intente más tarde, puede enviar su comprobante como
+                altenativa a pagoshogar@fibextelecom.com
               </p>
-              <p *ngIf="!ValidExtension" class=" message-error-upload textinvalido">
+              <p
+                *ngIf="!ValidExtension"
+                class="message-error-upload textinvalido"
+              >
                 <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                 Formato inválido solo se acepta: jpg, png, jpeg y pdf.
               </p>
-              <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button
-                *ngIf="imageUploaded" (click)="deleteImagePay()">
+              <button
+                class="btn-uplaod-image button-material-upload"
+                color="warn"
+                mat-raised-button
+                *ngIf="imageUploaded"
+                (click)="deleteImagePay()"
+              >
                 Eliminar comprobante
               </button>
               <div *ngIf="imageUrl != ''" class="image-pay">
-                <img *ngIf="extn!='pdf'" [src]="imageUrl" width="200px">
-                <img *ngIf="extn=='pdf'" src="assets/images/PDF_file.png" width="100px">
+                <img *ngIf="extn != 'pdf'" [src]="imageUrl" width="200px" />
+                <img
+                  *ngIf="extn == 'pdf'"
+                  src="assets/images/PDF_file.png"
+                  width="100px"
+                />
               </div>
-              <button class="btn-uplaod-image button-material-upload" mat-raised-button (click)="uploadFile.click()"
-                *ngIf="!imageUploaded && !showMessageErrorUpload">
+              <button
+                class="btn-uplaod-image button-material-upload"
+                mat-raised-button
+                (click)="uploadFile.click()"
+                *ngIf="!imageUploaded && !showMessageErrorUpload"
+              >
                 Click aquí para subir imagen
               </button>
-              <br>
-              <div *ngIf="imageUrl == '' && !uploadingImg" class="image-pay" (click)="uploadFile.click()">
-                <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
+              <br />
+              <div
+                *ngIf="imageUrl == '' && !uploadingImg"
+                class="image-pay"
+                (click)="uploadFile.click()"
+              >
+                <span style="cursor: pointer"
+                  ><img src="assets/images/Camara_Icono.png" width="200px"
+                /></span>
               </div>
               <div class="spinner-pay" *ngIf="uploadingImg">
                 <mat-spinner></mat-spinner>
               </div>
-              <input hidden #uploadFile type="file" formControlName="img" (change)="uploadImagePayment2($event)"
-                accept="image/*" #inputIMG (blur)="SendOption(2,0,inputIMG.value)">
+              <input
+                hidden
+                #uploadFile
+                type="file"
+                formControlName="img"
+                (change)="uploadImagePayment2($event)"
+                accept="image/*"
+                #inputIMG
+                (blur)="SendOption(2, 0, inputIMG.value)"
+              />
               <!-- <mat-error *ngIf="thirdFormFibex.get('img')?.hasError('required')">La imagen es requerida</mat-error> -->
               <mat-form-field appearance="outline">
                 <mat-label>Notas</mat-label>
-                <input matInput formControlName="note" #inputNote (blur)="SendOption(2,1,inputNote.value)">
+                <input
+                  matInput
+                  formControlName="note"
+                  #inputNote
+                  (blur)="SendOption(2, 1, inputNote.value)"
+                />
               </mat-form-field>
               <div class="btn-flex-center">
-                <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button
-                  matStepperNext [disabled]="uploadingImg || showMessageErrorUpload || this.thirdFormFibex.invalid"
-                  type="button">
+                <button
+                  class="button-material-next btn-width-70"
+                  (click)="imageNotUploaded()"
+                  mat-raised-button
+                  matStepperNext
+                  [disabled]="
+                    uploadingImg ||
+                    showMessageErrorUpload ||
+                    this.thirdFormFibex.invalid
+                  "
+                  type="button"
+                >
                   Siguiente
                 </button>
-                <button class="button-material-back btn-width-30 " mat-raised-button matStepperPrevious
-                  [disabled]="uploadingImg">Regresar</button>
-
+                <button
+                  class="button-material-back btn-width-30"
+                  mat-raised-button
+                  matStepperPrevious
+                  [disabled]="uploadingImg"
+                >
+                  Regresar
+                </button>
               </div>
             </div>
           </form>
         </mat-step>
 
-        <ng-container *ngIf="possibleWithholdingAgent && selectedRetentionOption == 2 && !Kiosco">
+        <ng-container
+          *ngIf="
+            possibleWithholdingAgent && selectedRetentionOption == 2 && !Kiosco
+          "
+        >
           <mat-step [stepControl]="fourthFormFibex">
             <form [formGroup]="fourthFormFibex">
               <ng-template matStepLabel>Retención</ng-template>
               <div class="form-login__item">
                 <p *ngIf="showMessageErrorUpload" class="message-error-upload">
                   <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
-                  Por favor intente más tarde, puede enviar su comprobante como altenativa a pagoshogar@fibextelecom.com
+                  Por favor intente más tarde, puede enviar su comprobante como
+                  altenativa a pagoshogar@fibextelecom.com
                 </p>
-                <p *ngIf="!ValidRetentionImgExtension" class=" message-error-upload textinvalido">
+                <p
+                  *ngIf="!ValidRetentionImgExtension"
+                  class="message-error-upload textinvalido"
+                >
                   <!-- Por favor, avanze con el registro y envie su comprobante de pago a pagoshogar@fibextelecom.com -->
                   Formato inválido solo se acepta: jpg, png, jpeg y pdf.
                 </p>
-                <button class="btn-uplaod-image button-material-upload" color="warn" mat-raised-button
-                  *ngIf="retentionimageUploaded" (click)="deleteRetentionImagePay()">
+                <button
+                  class="btn-uplaod-image button-material-upload"
+                  color="warn"
+                  mat-raised-button
+                  *ngIf="retentionimageUploaded"
+                  (click)="deleteRetentionImagePay()"
+                >
                   Eliminar imagen del comprobante de retención de impuestos.
                 </button>
                 <div *ngIf="retentionImageUrl != ''" class="image-pay">
-                  <img *ngIf="extn!='pdf'" [src]="retentionImageUrl" width="200px">
-                  <img *ngIf="extn=='pdf'" src="assets/images/PDF_file.png" width="100px">
+                  <img
+                    *ngIf="extn != 'pdf'"
+                    [src]="retentionImageUrl"
+                    width="200px"
+                  />
+                  <img
+                    *ngIf="extn == 'pdf'"
+                    src="assets/images/PDF_file.png"
+                    width="100px"
+                  />
                 </div>
-                <button class="btn-uplaod-image button-material-upload" mat-raised-button (click)="uploadFile.click()"
-                  *ngIf="!retentionimageUploaded && !showMessageErrorUpload">
-                  Subir imagen de la galería del comprobante de retención de impuestos.
+                <button
+                  class="btn-uplaod-image button-material-upload"
+                  mat-raised-button
+                  (click)="uploadFile.click()"
+                  *ngIf="!retentionimageUploaded && !showMessageErrorUpload"
+                >
+                  Subir imagen de la galería del comprobante de retención de
+                  impuestos.
                 </button>
-                <br>
-                <div *ngIf="retentionImageUrl == '' && !uploadingRetentionImg" class="image-pay"
-                  (click)="uploadFile.click()">
-                  <span style="cursor: pointer"><img src="assets/images/Camara_Icono.png" width="200px"></span>
+                <br />
+                <div
+                  *ngIf="retentionImageUrl == '' && !uploadingRetentionImg"
+                  class="image-pay"
+                  (click)="uploadFile.click()"
+                >
+                  <span style="cursor: pointer"
+                    ><img src="assets/images/Camara_Icono.png" width="200px"
+                  /></span>
                 </div>
                 <div class="spinner-pay" *ngIf="uploadingRetentionImg">
                   <mat-spinner></mat-spinner>
                 </div>
-                <input hidden #uploadFile type="file" formControlName="retentionImg"
-                  (change)="uploadRetentionImagePayment2($event)" accept="image/*" #inputIMG
-                  (blur)="SendOption(2,0,inputIMG.value)">
+                <input
+                  hidden
+                  #uploadFile
+                  type="file"
+                  formControlName="retentionImg"
+                  (change)="uploadRetentionImagePayment2($event)"
+                  accept="image/*"
+                  #inputIMG
+                  (blur)="SendOption(2, 0, inputIMG.value)"
+                />
                 <!-- <mat-error *ngIf="fourthFormFibex.get('retentionImg')?.hasError('required')">La imagen es requerida</mat-error> -->
                 <mat-form-field appearance="outline">
                   <mat-label>Monto de retención</mat-label>
-                  <input matInput formControlName="retentionAmount" #inputNote (blur)="considerWithholdingAmount()">
-                  <mat-error *ngIf="retentionAmount?.hasError('required')">Monto requerido</mat-error>
-                  <mat-error *ngIf="retentionAmount?.hasError('pattern')">Escriba el monto seguido dos
-                    decimales separado por punto, ejemplo: 125.00</mat-error>
-                  <mat-error *ngIf="firstFormFibex.hasError('isNegative') && retentionAmount?.hasError('required')">El
-                    monto no puede ser negativo</mat-error>
+                  <input
+                    matInput
+                    formControlName="retentionAmount"
+                    #inputNote
+                    (blur)="considerWithholdingAmount()"
+                  />
+                  <mat-error *ngIf="retentionAmount?.hasError('required')"
+                    >Monto requerido</mat-error
+                  >
+                  <mat-error *ngIf="retentionAmount?.hasError('pattern')"
+                    >Escriba el monto seguido de dos decimales separado por
+                    punto, ejemplo: 125.00</mat-error
+                  >
+                  <mat-error
+                    *ngIf="
+                      firstFormFibex.hasError('isNegative') &&
+                      retentionAmount?.hasError('required')
+                    "
+                    >El monto no puede ser negativo</mat-error
+                  >
                 </mat-form-field>
                 <div class="btn-flex-center">
-                  <button class="button-material-next btn-width-70" (click)="imageNotUploaded()" mat-raised-button
+                  <button
+                    class="button-material-next btn-width-70"
+                    (click)="imageNotUploaded()"
+                    mat-raised-button
                     (click)="nextStepWithRetention(true)"
-                    [disabled]="uploadingRetentionImg || showMessageErrorUpload || this.fourthFormFibex.invalid"
-                    type="button">
+                    [disabled]="
+                      uploadingRetentionImg ||
+                      showMessageErrorUpload ||
+                      this.fourthFormFibex.invalid
+                    "
+                    type="button"
+                  >
                     Siguiente
                   </button>
-                  <button class="button-material-back btn-width-30 " mat-raised-button matStepperPrevious
-                    [disabled]="uploadingRetentionImg">Regresar</button>
-
+                  <button
+                    class="button-material-back btn-width-30"
+                    mat-raised-button
+                    matStepperPrevious
+                    [disabled]="uploadingRetentionImg"
+                  >
+                    Regresar
+                  </button>
                 </div>
               </div>
             </form>
@@ -553,7 +942,9 @@
             <mat-spinner></mat-spinner>
           </div>
 
-          <h2 class="message-warning" *ngIf="!sendingPay">Por favor verifique sus datos y confirme la operación.</h2>
+          <h2 class="message-warning" *ngIf="!sendingPay">
+            Por favor verifique sus datos y confirme la operación.
+          </h2>
           <div class="card-pay">
             <div class="invoice-box">
               <table cellpadding="0" cellspacing="0">
@@ -562,12 +953,14 @@
                     <table>
                       <tr>
                         <td class="title">
-                          <img src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
-                            style="width: 60%; max-width: 300px" />
+                          <img
+                            src="https://crm.thomas-talk.me/uploads/company/9a837ebc624921b826b5e1687f9001c6.png"
+                            style="width: 60%; max-width: 300px"
+                          />
                         </td>
 
                         <td>
-                          Creada en: {{ dateToDay | date: 'dd/MM/yyyy' }}<br />
+                          Creada en: {{ dateToDay | date : "dd/MM/yyyy" }}<br />
                         </td>
                       </tr>
                     </table>
@@ -580,15 +973,16 @@
                       <tr>
                         <td>
                           Servicio: {{ paquete }}<br />
-                          Suscripción: {{subscription}} USD <br />
-                          Monto pendiente: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs<br />
-                          <strong>Banco receptor: {{bank?.value}}</strong>
+                          Suscripción: {{ subscription }} USD <br />
+                          Monto pendiente: {{ saldoUSD | negativeAmount }} USD |
+                          {{ saldoBs | negativeAmount }} Bs<br />
+                          <strong>Banco receptor: {{ bank?.value }}</strong>
                         </td>
 
                         <td>
-                          {{nameClient}}<br />
-                          DNI/RIF {{dni?.value}}<br />
-                          {{email?.value}}
+                          {{ nameClient }}<br />
+                          DNI/RIF {{ dni?.value }}<br />
+                          {{ email?.value }}
                         </td>
                       </tr>
                     </table>
@@ -602,28 +996,47 @@
                 </tr>
 
                 <tr class="details">
-                  <td>{{paquete}}</td>
+                  <td>{{ paquete }}</td>
 
-                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">{{totalAmount}} {{BancoNacional(bank?.value) ? 'Bs.' :
-                    'USD' }}</td>
-                  <td *ngIf="BancoNacional(bank?.value)=='EUR'">{{totalAmount}} EUR</td>
+                  <td *ngIf="BancoNacional(bank?.value) != 'EUR'">
+                    {{ totalAmount }}
+                    {{ BancoNacional(bank?.value) ? "Bs." : "USD" }}
+                  </td>
+                  <td *ngIf="BancoNacional(bank?.value) == 'EUR'">
+                    {{ totalAmount }} EUR
+                  </td>
                 </tr>
 
                 <tr class="total">
                   <td></td>
 
-                  <td *ngIf="BancoNacional(bank?.value)!='EUR'">Total: {{totalAmount}} {{BancoNacional(bank?.value) ?
-                    'Bs.' : 'USD' }}</td>
-                  <td *ngIf="BancoNacional(bank?.value)=='EUR'">Total: {{totalAmount}} EUR</td>
+                  <td *ngIf="BancoNacional(bank?.value) != 'EUR'">
+                    Total: {{ totalAmount }}
+                    {{ BancoNacional(bank?.value) ? "Bs." : "USD" }}
+                  </td>
+                  <td *ngIf="BancoNacional(bank?.value) == 'EUR'">
+                    Total: {{ totalAmount }} EUR
+                  </td>
                 </tr>
               </table>
             </div>
           </div>
           <div class="btn-flex-center">
-            <button class="button-material-next btn-width-70" mat-raised-button (click)="savePaymentV2()"
-              [disabled]="DisableReg || showMessageErrorUpload">Reportar pago</button>
-            <button class="button-material-back btn-width-30" mat-raised-button (click)="resetStepper()">Editar
-              datos</button>
+            <button
+              class="button-material-next btn-width-70"
+              mat-raised-button
+              (click)="savePaymentV2()"
+              [disabled]="DisableReg || showMessageErrorUpload"
+            >
+              Reportar pago
+            </button>
+            <button
+              class="button-material-back btn-width-30"
+              mat-raised-button
+              (click)="resetStepper()"
+            >
+              Editar datos
+            </button>
           </div>
         </mat-step>
       </div>
@@ -634,33 +1047,43 @@
       <mat-step *ngIf="ShowOptionPagoMovil" [stepControl]="TypeForm">
         <ng-template matStepLabel>Pago Móvil</ng-template>
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess != 'approved'
+            "
+            class="desc-user"
+          >
             <div>
               <h4 class="name-client">
-                {{nameClient}}
+                {{ nameClient }}
               </h4>
               <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+                {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
               </h4>
             </div>
             <div>
-              <h4 class="name-client">
-                Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Suscripción: {{subscription}} USD
-              </h4>
+              <h4 class="name-client">Servicio: {{ paquete }}</h4>
+              <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess == 'approved'
+            "
+            class="desc-user"
+          >
             <div>
+              <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
               <h4 class="name-client">
-                CI/RIF: {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+                Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs
               </h4>
             </div>
             <div>
@@ -675,14 +1098,17 @@
         </div>
 
         <!-- Botones lista de bancos pago Movil -->
-        <app-list-bank *ngIf="!ReciboPay && !BankSelectPagoMovil" [Tipo]="'PagoMovil'"
-          (BankSelect)="TipoBankSelect($event)"></app-list-bank>
+        <app-list-bank
+          *ngIf="!ReciboPay && !BankSelectPagoMovil"
+          [Tipo]="'PagoMovil'"
+          (BankSelect)="TipoBankSelect($event)"
+        ></app-list-bank>
 
         <!-- BNC -->
         <div *ngIf="ShowOptionBNCPagoMovil">
           <!-- <app-payment-mobile-bnc [saldoBs]="saldoBs" [dni]="dni?.value" [PinEnviado]="PinEnviado" [Minutes]="Minutes" [ConcatenaTimer]="ConcatenaTimer" [Second]="Second" (BackEvents)="GetEventsBNCPagoMovil($event)"></app-payment-mobile-bnc> -->
           <form [formGroup]="PgMovilBNCForm">
-            <mat-label>Cédula de identidad</mat-label><br>
+            <mat-label>Cédula de identidad títula de pago móvil</mat-label><br />
             <mat-form-field appearance="outline" class="Prefc_i">
               <mat-select formControlName="pref_ci">
                 <mat-option value="V">V</mat-option>
@@ -691,11 +1117,22 @@
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
-              <mat-error *ngIf="PgMovilBNCForm.get('c_i')?.hasError('minlength')">
+              <input
+                type="number"
+                matInput
+                required
+                formControlName="c_i"
+                NumbersOnly="true"
+                #inputDni
+              />
+              <mat-error
+                *ngIf="PgMovilBNCForm.get('c_i')?.hasError('minlength')"
+              >
                 La cédula debe contener al menos 6 carácteres
               </mat-error>
-              <mat-error *ngIf="PgMovilBNCForm.get('c_i')?.hasError('required')">
+              <mat-error
+                *ngIf="PgMovilBNCForm.get('c_i')?.hasError('required')"
+              >
                 La cédula es requerida
               </mat-error>
             </mat-form-field>
@@ -704,49 +1141,102 @@
               <ng-template matStepLabel>Pago Móvil</ng-template>
 
               <mat-form-field appearance="outline">
-                <mat-label>Teléfono</mat-label>
-                <input matInput (keyup)="keypressControPhones($event, 'phone', PgMovilBNCForm)" formControlName="phone" placeholder="Ejemplo: 584120202020">
+                <mat-label>Teléfono del títular pago móvil</mat-label>
+                <input
+                  matInput
+                  (keyup)="
+                    keypressControPhones($event, 'phone', PgMovilBNCForm)
+                  "
+                  formControlName="phone"
+                  placeholder="Ejemplo: 584120202020"
+                />
                 <mat-error *ngIf="PgMovilBNCForm.get('phone')?.errors">
-                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('required')">El número es requerido</p>
-                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('required')">
+                    El número es requerido
+                  </p>
+                  <p *ngIf="PgMovilBNCForm.get('phone')?.hasError('pattern')">
+                    Número incorrecto ejemplo: 584241234567
                   </p>
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Banco emisor</mat-label>
-                <mat-select formControlName="codeBank" placeholder="Banco emisor" (selectionChange)="showModalByBank($event.value)" >
-                  <mat-option *ngFor="let bank of banksListBNC" [value]="bank.Code">
+                <mat-select
+                  formControlName="codeBank"
+                  placeholder="Banco emisor"
+                  (selectionChange)="showModalByBank($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let bank of banksListBNC"
+                    [value]="bank.Code"
+                  >
                     {{ bank.Name }}
                   </mat-option>
                 </mat-select>
                 <mat-error *ngIf="PgMovilBNCForm.get('codeBank')?.errors">
-                  <p *ngIf="PgMovilBNCForm.get('codeBank')?.hasError('required')">El Banco emisor es requerido</p>
+                  <p
+                    *ngIf="PgMovilBNCForm.get('codeBank')?.hasError('required')"
+                  >
+                    El Banco emisor es requerido
+                  </p>
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Cantidad a pagar
+                <mat-label
+                  >Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>
                 </mat-label>
-                <input matInput formControlName="amountPm" required #inputAmount>
-                <mat-error *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
-                  decimales separado por punto, ejemplo: 125.00</mat-error>
+                <input
+                  matInput
+                  formControlName="amountPm"
+                  required
+                  #inputAmount
+                />
                 <mat-error
-                  *ngIf="PgMovilBNCForm.hasError('isNegative') && PgMovilBNCForm.get('amountPm_bnc')?.hasError('required')">El
-                  monto no puede ser negativo</mat-error>
+                  *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('required')"
+                  >Monto requerido</mat-error
+                >
+                <mat-error
+                  *ngIf="PgMovilBNCForm.get('amountPm')?.hasError('pattern')"
+                  >Escriba el monto seguido dos decimales separado por punto,
+                  ejemplo: 125.00</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    PgMovilBNCForm.hasError('isNegative') &&
+                    PgMovilBNCForm.get('amountPm_bnc')?.hasError('required')
+                  "
+                  >El monto no puede ser negativo</mat-error
+                >
               </mat-form-field>
             </div>
           </form>
 
-          <div fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-            <button [disabled]="!PgMovilBNCForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
-              type="button" (click)="PagoC2PBNC()">
+          <div
+            fxLayout="row"
+            fxLayoutAlign="center center"
+            class="btn-flex-center"
+          >
+            <button
+              [disabled]="!PgMovilBNCForm.valid || PinEnviado"
+              class="customized_btn_next btn-width-70"
+              type="button"
+              (click)="PagoC2PBNC()"
+            >
               Pagar
             </button>
-            <button class="customized_btn_next btn-width-30"
-              (click)="ResetFormCD();ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowOptionBNCPagoMovil = false; ReciboPayBNC = false;">
+            <button
+              class="customized_btn_next btn-width-30"
+              (click)="
+                ResetFormCD();
+                ShowOptionPagoMovil = true;
+                BankSelectPagoMovil = false;
+                ShowOptionBNCPagoMovil = false;
+                ReciboPayBNC = false
+              "
+            >
               Regresar
             </button>
           </div>
@@ -757,10 +1247,21 @@
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
-        <div *ngIf="ReciboPayBNC" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button class="button-material-back btn-width-30"
-            (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
-            matStepperPrevious>
+        <div
+          *ngIf="ReciboPayBNC"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            class="button-material-back btn-width-30"
+            (click)="
+              ResetFormCD(); lastDni = ''; searchServicesv2(dni, false, false)
+            "
+            mat-raised-button
+            type="button"
+            matStepperPrevious
+          >
             Regresar
           </button>
         </div>
@@ -768,31 +1269,42 @@
 
         <!-- informacion antes de motrar el formulario -->
         <div *ngIf="ShowalertBankNationals">
-          <h3 style="text-align: center;">Debes realizar un Pago Móvil con los datos a continuación:</h3>
-          <p style="text-align: center;">
-            <br><strong> Teléfono: </strong> 584129637516 <br /> <strong>Rif: </strong> J-30818251-6 <br />
+          <h3 style="text-align: center">
+            Debes realizar un Pago Móvil a los siguientes datos:
+          </h3>
+          <p style="text-align: center">
+            <br /><strong> Teléfono: </strong> 584129637516 <br />
+            <strong>Rif: </strong> J-30818251-6 <br />
             <strong>Banco:</strong> Mercantil(0105) <br />
-            <strong>Monto:</strong> {{saldoBs | negativeAmount}} Bs
-
-
+            <strong>Monto:</strong> {{ saldoBs | negativeAmount }} Bs
           </p>
-          <div>
-
-          </div>
+          <div></div>
           <div class="spinner-pay">
-            <qrcode [qrdata]="DataPagoMovilPublic" [width]="180" [margin]="1" [errorCorrectionLevel]="'M'"></qrcode>
+            <qrcode
+              [qrdata]="DataPagoMovilPublic"
+              [width]="180"
+              [margin]="1"
+              [errorCorrectionLevel]="'M'"
+            ></qrcode>
           </div>
-          <br><br>
-          <p style="color:red; text-align: center;">
-            <strong>NOTA:</strong> Luego de realizar la operación debes reportar el pago en el formulario presentado.
-            <br><br>
+          <br /><br />
+          <p style="color: red; text-align: center">
+            <strong>NOTA:</strong> Luego de realizar la operación debes reportar
+            el pago en el formulario presentado. <br /><br />
           </p>
         </div>
         <!-- /informacion antes de motrar el formulario -->
-
-        <form *ngIf="ConsultarPagoMovilboolean && BankSelectPagoMovil && !ShowalertBankNationals && !ReciboPay"
-          [formGroup]="PgMovilForm">
-          <mat-label>Cédula de identidad</mat-label><br>
+        <!-- 100% banco -->
+        <form
+          *ngIf="
+            ConsultarPagoMovilboolean &&
+            BankSelectPagoMovil &&
+            !ShowalertBankNationals &&
+            !ReciboPay
+          "
+          [formGroup]="PgMovilForm"
+        >
+          <mat-label>Cédula de identidad títular de pago móvil</mat-label><br />
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="prec_i">
               <mat-option value="V">V</mat-option>
@@ -801,7 +1313,14 @@
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+            <input
+              type="number"
+              matInput
+              required
+              formControlName="c_i"
+              NumbersOnly="true"
+              #inputDni
+            />
             <mat-error *ngIf="PgMovilForm.get('c_i')?.hasError('minlength')">
               La cédula debe contener al menos 6 carácteres
             </mat-error>
@@ -814,60 +1333,122 @@
             <ng-template matStepLabel>Pago Móvil</ng-template>
 
             <mat-form-field appearance="outline">
-              <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlforiginReg"
-                (keyup)="keypressControPhones($event, 'tlforiginReg',PgMovilForm)" required type="text"
-                placeholder="Ejemplo: 584121234567">
+              <mat-label>Teléfono del titular pago móvil</mat-label>
+              <input
+                matInput
+                formControlName="tlforiginReg"
+                (keyup)="
+                  keypressControPhones($event, 'tlforiginReg', PgMovilForm)
+                "
+                required
+                type="text"
+                placeholder="Ejemplo: 584121234567"
+              />
               <mat-error *ngIf="PgMovilForm.get('tlforiginReg')?.errors">
-                <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')">El número es requerido</p>
-                <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                <p
+                  *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('required')"
+                >
+                  El número es requerido
+                </p>
+                <p *ngIf="PgMovilForm.get('tlforiginReg')?.hasError('pattern')">
+                  Número incorrecto ejemplo: 584241234567
                 </p>
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Número de comprobante</mat-label>
-              <input matInput formControlName="referencia" required #inputVouche>
-              <mat-error *ngIf="PgMovilForm.get('referencia')?.hasError('required')">Número de comprobante es requerido
+              <input
+                matInput
+                formControlName="referencia"
+                required
+                #inputVouche
+              />
+              <mat-error
+                *ngIf="PgMovilForm.get('referencia')?.hasError('required')"
+                >Número de comprobante es requerido
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Fecha del pago</mat-label>
-              <input matInput [matDatepicker]="picker" formControlName="datepgmovil" [max]="dateToDay" #inputDate>
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="datepgmovil"
+                [max]="dateToDay"
+                #inputDate
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
-              <mat-error *ngIf="PgMovilForm.get('datepgmovil')?.hasError('required')">La fecha del pago es requerida
+              <mat-error
+                *ngIf="PgMovilForm.get('datepgmovil')?.hasError('required')"
+                >La fecha del pago es requerida
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Monto Pagado
+              <mat-label
+                >Monto Pagado
                 <strong><span>En Bolivares</span></strong>
               </mat-label>
-              <input matInput formControlName="cantidad" required #inputAmount>
-              <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-              <mat-error *ngIf="PgMovilForm.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos decimales
-                separado por punto, ejemplo: 125.00</mat-error>
+              <input
+                matInput
+                formControlName="cantidad"
+                required
+                #inputAmount
+              />
               <mat-error
-                *ngIf="PgMovilForm.hasError('isNegative') && PgMovilForm.get('cantidad')?.hasError('required')">El monto
-                no puede ser negativo</mat-error>
+                *ngIf="PgMovilForm.get('cantidad')?.hasError('required')"
+                >Monto requerido</mat-error
+              >
+              <mat-error
+                *ngIf="PgMovilForm.get('cantidad')?.hasError('pattern')"
+                >Escriba el monto seguido dos decimales separado por punto,
+                ejemplo: 125.00</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  PgMovilForm.hasError('isNegative') &&
+                  PgMovilForm.get('cantidad')?.hasError('required')
+                "
+                >El monto no puede ser negativo</mat-error
+              >
             </mat-form-field>
           </div>
         </form>
-
-        <form *ngIf="RegistrarPagoMovilboolean && BankSelectPagoMovil && !ShowalertBankNationals && !ReciboPay"
-          [formGroup]="PgMovilRegForm">
-          <mat-label>Cédula de identidad</mat-label><br>
+        <!-- Pago MOVIL Mercantil -->
+        <form
+          *ngIf="
+            RegistrarPagoMovilboolean &&
+            BankSelectPagoMovil &&
+            !ShowalertBankNationals &&
+            !ReciboPay
+          "
+          [formGroup]="PgMovilRegForm"
+        >
+          <mat-label>Cédula de identidad títular de pago móvil</mat-label><br />
           <mat-form-field appearance="outline" class="Prefc_i">
             <mat-select formControlName="pref_ci">
               <mat-option value="V">V</mat-option>
               <mat-option value="E">E</mat-option>
-              <mat-option *ngIf="bancoSeleccionado !='100x100 Banco'" value="J">J</mat-option>
+              <mat-option *ngIf="bancoSeleccionado != '100x100 Banco'" value="J"
+                >J</mat-option
+              >
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
+            <input
+              type="number"
+              matInput
+              required
+              formControlName="c_i"
+              NumbersOnly="true"
+              #inputDni
+            />
             <mat-error *ngIf="PgMovilRegForm.get('c_i')?.hasError('minlength')">
               La cédula debe contener al menos 6 carácteres
             </mat-error>
@@ -882,103 +1463,221 @@
             <mat-form-field *ngIf="ShowBankList" appearance="outline">
               <mat-label>Banco emisor</mat-label>
               <mat-select formControlName="BankList" placeholder="Banco emisor">
-                <mat-option *ngFor="let bank of ListBank" [value]="bank.Code" (click)="NameBank = bank.Name; showModalByBank(bank.Code)" >
+                <mat-option
+                  *ngFor="let bank of ListBank"
+                  [value]="bank.Code"
+                  (click)="NameBank = bank.Name; showModalByBank(bank.Code)"
+                >
                   {{ bank.Name }}
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="PgMovilRegForm.get('BankList')?.errors">
-                <p *ngIf="PgMovilRegForm.get('BankList')?.hasError('required')">El Banco emisor es requerido</p>
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Teléfono</mat-label>
-              <input matInput formControlName="tlfdestin"
-                (keyup)="keypressControPhones($event, 'tlfdestin',PgMovilRegForm)" required type="text"
-                placeholder="Ejemplo: 584121234567">
-              <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
-                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')">El número es requerido</p>
-                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">Número incorrecto ejemplo: 584241234567
+                <p *ngIf="PgMovilRegForm.get('BankList')?.hasError('required')">
+                  El Banco emisor es requerido
                 </p>
               </mat-error>
             </mat-form-field>
 
-
+            <mat-form-field appearance="outline">
+              <mat-label>Teléfono del titular pago móvil</mat-label>
+              <input
+                matInput
+                formControlName="tlfdestin"
+                (keyup)="
+                  keypressControPhones($event, 'tlfdestin', PgMovilRegForm)
+                "
+                required
+                type="text"
+                placeholder="Ejemplo: 584121234567"
+              />
+              <mat-error *ngIf="PgMovilRegForm.get('tlfdestin')?.errors">
+                <p
+                  *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('required')"
+                >
+                  El número es requerido
+                </p>
+                <p *ngIf="PgMovilRegForm.get('tlfdestin')?.hasError('pattern')">
+                  Número incorrecto ejemplo: 584241234567
+                </p>
+              </mat-error>
+            </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Cantidad a pagar
+              <mat-label
+                >Cantidad a pagar
                 <strong><span>En Bolivares</span></strong>
               </mat-label>
-              <input matInput formControlName="amountPm" required #inputAmount>
-              <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')">Monto requerido</mat-error>
-              <mat-error *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')">Escriba el monto seguido dos
-                decimales separado por punto, ejemplo: 125.00</mat-error>
+              <input
+                matInput
+                formControlName="amountPm"
+                required
+                #inputAmount
+              />
               <mat-error
-                *ngIf="PgMovilRegForm.hasError('isNegative') && PgMovilRegForm.get('amountPm')?.hasError('required')">El
-                monto no puede ser negativo</mat-error>
+                *ngIf="PgMovilRegForm.get('amountPm')?.hasError('required')"
+                >Monto requerido</mat-error
+              >
+              <mat-error
+                *ngIf="PgMovilRegForm.get('amountPm')?.hasError('pattern')"
+                >Escriba el monto seguido dos decimales separado por punto,
+                ejemplo: 125.00</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  PgMovilRegForm.hasError('isNegative') &&
+                  PgMovilRegForm.get('amountPm')?.hasError('required')
+                "
+                >El monto no puede ser negativo</mat-error
+              >
             </mat-form-field>
           </div>
         </form>
 
         <div *ngIf="ReciboPay">
-          <app-table-receipt [amountPm]="amountPm" [cantidad]="cantidad"></app-table-receipt>
+          <app-table-receipt
+            [amountPm]="amountPm"
+            [cantidad]="cantidad"
+          ></app-table-receipt>
         </div>
 
-
         <!-- regreso al stepper anteriror de pago movil-->
-        <button *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil" class="customized_btn_next width_full"
-          (click)=" ShowOptionPagoMovil = false; BankSelectPagoMovil = false; ShowalertBankNationals = false"
-          matStepperPrevious>
+        <button
+          *ngIf="ShowOptionPagoMovil && !BankSelectPagoMovil"
+          class="customized_btn_next width_full"
+          (click)="
+            ShowOptionPagoMovil = false;
+            BankSelectPagoMovil = false;
+            ShowalertBankNationals = false
+          "
+          matStepperPrevious
+        >
           REGRESAR
         </button>
         <!-- /regreso al stepper anteriror de pago movil -->
 
-        <div *ngIf="BankSelectPagoMovil && ShowalertBankNationals && !ReciboPay" fxLayout="row"
-          fxLayoutAlign="center center" class="btn-flex-center">
-          <button class="customized_btn_next btn-width-70" (click)="SelectedPagoC2P({'_value': 'otros'})">
+        <div
+          *ngIf="BankSelectPagoMovil && ShowalertBankNationals && !ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            class="customized_btn_next btn-width-70"
+            (click)="SelectedPagoC2P({ _value: 'otros' })"
+          >
             REPORTAR PAGO
           </button>
-          <button class="customized_btn_next btn-width-30"
-            (click)="BankSelectPagoMovil = false; ShowalertBankNationals = false">
+          <button
+            class="customized_btn_next btn-width-30"
+            (click)="
+              BankSelectPagoMovil = false; ShowalertBankNationals = false
+            "
+          >
             Regresar
           </button>
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
-        <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button class="button-material-back btn-width-30"
-            (click)="ResetFormCD(); lastDni=''; searchServicesv2(dni,false,false)" mat-raised-button type="button"
-            matStepperPrevious>
+        <div
+          *ngIf="ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            class="button-material-back btn-width-30"
+            (click)="
+              ResetFormCD(); lastDni = ''; searchServicesv2(dni, false, false)
+            "
+            mat-raised-button
+            type="button"
+            matStepperPrevious
+          >
             Regresar
           </button>
         </div>
 
-        <div *ngIf="ConsultarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
-          class="btn-flex-center">
-          <button [disabled]="!PgMovilForm.valid" class="customized_btn_next btn-width-70"
-            (click)="AmountIncorrectConfirm(cantidad?.value,'this.ComprobarPgoMovil()','c2pnacional')">
+        <div
+          *ngIf="ConsultarPagoMovilboolean && !ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            [disabled]="!PgMovilForm.valid"
+            class="customized_btn_next btn-width-70"
+            (click)="
+              AmountIncorrectConfirm(
+                cantidad?.value,
+                'this.ComprobarPgoMovil()',
+                'c2pnacional'
+              )
+            "
+          >
             Procesar orden
           </button>
-          <button class="customized_btn_next btn-width-30"
-            (click)="BankSelectPagoMovil = true; ShowalertBankNationals = true; ConsultarPagoMovilboolean = false">
+          <button
+            class="customized_btn_next btn-width-30"
+            (click)="
+              BankSelectPagoMovil = true;
+              ShowalertBankNationals = true;
+              ConsultarPagoMovilboolean = false
+            "
+          >
             Regresar
           </button>
         </div>
 
-        <div *ngIf="RegistrarPagoMovilboolean && !ReciboPay" fxLayout="row" fxLayoutAlign="center center"
-          class="btn-flex-center">
-          <button [disabled]="!PgMovilRegForm.valid || PinEnviado" class="customized_btn_next btn-width-70"
-            *ngIf="bancoSeleccionado==='Mercantil'" type="button"
-            (click)="AmountIncorrectConfirm(amountPm?.value,'this.ClaveAuthPgoMovil()','c2pmercantil');logMensaje(bancoSeleccionado)">
-            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
+        <div
+          *ngIf="RegistrarPagoMovilboolean && !ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            [disabled]="!PgMovilRegForm.valid || PinEnviado"
+            class="customized_btn_next btn-width-70"
+            *ngIf="bancoSeleccionado === 'Mercantil'"
+            type="button"
+            (click)="
+              AmountIncorrectConfirm(
+                amountPm?.value,
+                'this.ClaveAuthPgoMovil()',
+                'c2pmercantil'
+              );
+              logMensaje(bancoSeleccionado)
+            "
+          >
+            Solicitar pin de autorización {{ Minutes }}{{ ConcatenaTimer
+            }}{{ Second }}
           </button>
-          <button [disabled]="!PgMovilRegForm.valid" class="customized_btn_next btn-width-70"
-            *ngIf="bancoSeleccionado==='100x100 Banco'" type="button"
-            (click)="AmountIncorrectConfirm(amountPm?.value,'this.PagoC2P100x100()','c2p100x100Banco');logMensaje(bancoSeleccionado)">
-            Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}
+          <button
+            [disabled]="!PgMovilRegForm.valid"
+            class="customized_btn_next btn-width-70"
+            *ngIf="bancoSeleccionado === '100x100 Banco'"
+            type="button"
+            (click)="
+              AmountIncorrectConfirm(
+                amountPm?.value,
+                'this.PagoC2P100x100()',
+                'c2p100x100Banco'
+              );
+              logMensaje(bancoSeleccionado)
+            "
+          >
+            Solicitar pin de autorización {{ Minutes }}{{ ConcatenaTimer
+            }}{{ Second }}
           </button>
-          <button class="customized_btn_next btn-width-30"
-            (click)="ResetFormCD(); ShowOptionPagoMovil = true; BankSelectPagoMovil = false; ShowalertBankNationals = false; RegistrarPagoMovilboolean = false">
+          <button
+            class="customized_btn_next btn-width-30"
+            (click)="
+              ResetFormCD();
+              ShowOptionPagoMovil = true;
+              BankSelectPagoMovil = false;
+              ShowalertBankNationals = false;
+              RegistrarPagoMovilboolean = false
+            "
+          >
             Regresar
           </button>
         </div>
@@ -988,33 +1687,43 @@
       <!-- Crédito o Débito -->
       <mat-step *ngIf="DebitoCreditoboolean" [stepControl]="DebitoCredito">
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess != 'approved'
+            "
+            class="desc-user"
+          >
             <div>
               <h4 class="name-client">
-                {{nameClient}}
+                {{ nameClient }}
               </h4>
               <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+                {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
               </h4>
             </div>
             <div>
-              <h4 class="name-client">
-                Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Suscripción: {{subscription}} USD
-              </h4>
+              <h4 class="name-client">Servicio: {{ paquete }}</h4>
+              <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess == 'approved'
+            "
+            class="desc-user"
+          >
             <div>
+              <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
               <h4 class="name-client">
-                CI/RIF: {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+                Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs
               </h4>
             </div>
             <div>
@@ -1028,8 +1737,15 @@
           </div>
 
           <app-list-bank
-            *ngIf="!ShowFormDebitoCredito && !ShowFormDebitoCreditoBNC && !ShowFormDebito100x100 && !Creditoboolaean"
-            [Tipo]="'Debito'" (BankSelect)="TipoBankSelect($event)">
+            *ngIf="
+              !ShowFormDebitoCredito &&
+              !ShowFormDebitoCreditoBNC &&
+              !ShowFormDebito100x100 &&
+              !Creditoboolaean
+            "
+            [Tipo]="'Debito'"
+            (BankSelect)="TipoBankSelect($event)"
+          >
           </app-list-bank>
 
           <!-- <app-list-bank
@@ -1044,14 +1760,19 @@
               [TypePay]="'Débito Maestro'" [Abonado]="nroContrato?.value"
               [Contrato]="idContrato"></app-debito-credito-bnc> -->
 
-            <app-debito-credito-bnc [DNI]="this.dni?.value" [SaldoBS]="saldoBs"
-              [TypePay]="Creditoboolaean ? 'Credito':'Débito Maestro'" [Abonado]="nroContrato?.value"
-              [Contrato]="idContrato" (OutputResponse)="OutputCreditoDebitoBNC($event)"></app-debito-credito-bnc>
+            <app-debito-credito-bnc
+              [DNI]="this.dni?.value"
+              [SaldoBS]="saldoBs"
+              [TypePay]="Creditoboolaean ? 'Credito' : 'Débito Maestro'"
+              [Abonado]="nroContrato?.value"
+              [Contrato]="idContrato"
+              (OutputResponse)="OutputCreditoDebitoBNC($event)"
+            ></app-debito-credito-bnc>
           </div>
 
           <form *ngIf="ShowFormDebitoCredito" [formGroup]="DebitoCredito">
             <div>
-              <mat-label>Cédula de identidad</mat-label><br>
+              <mat-label>Cédula de identidad</mat-label><br />
               <mat-form-field appearance="outline" class="Prefc_i">
                 <mat-select formControlName="pref_ci">
                   <mat-option value="V">V</mat-option>
@@ -1060,11 +1781,22 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <input type="number" matInput required formControlName="c_i" NumbersOnly="true" #inputDni>
-                <mat-error *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')">
+                <input
+                  type="number"
+                  matInput
+                  required
+                  formControlName="c_i"
+                  NumbersOnly="true"
+                  #inputDni
+                />
+                <mat-error
+                  *ngIf="DebitoCredito.get('c_i')?.hasError('minlength')"
+                >
                   La cédula debe contener al menos 6 carácteres
                 </mat-error>
-                <mat-error *ngIf="DebitoCredito.get('c_i')?.hasError('required')">
+                <mat-error
+                  *ngIf="DebitoCredito.get('c_i')?.hasError('required')"
+                >
                   La cédula es requerida
                 </mat-error>
               </mat-form-field>
@@ -1074,42 +1806,69 @@
               <mat-form-field *ngIf="!Creditoboolaean" appearance="outline">
                 <mat-label>Tipo de cuenta</mat-label>
                 <mat-select formControlName="typeCuenta">
-                  <mat-option *ngFor="let Acount of TypeAcountDC" [value]="Acount.type">
-                    {{Acount.cuenta}}
+                  <mat-option
+                    *ngFor="let Acount of TypeAcountDC"
+                    [value]="Acount.type"
+                  >
+                    {{ Acount.cuenta }}
                   </mat-option>
                 </mat-select>
-                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('required')">La cuenta es
-                  obligatoria</mat-error>
-                <mat-error *ngIf="DebitoCredito.get('typeCuenta')?.hasError('maxlength')">La tarjeta no debe ser mayor a
-                  18 dígitos</mat-error>
+                <mat-error
+                  *ngIf="DebitoCredito.get('typeCuenta')?.hasError('required')"
+                  >La cuenta es obligatoria</mat-error
+                >
+                <mat-error
+                  *ngIf="DebitoCredito.get('typeCuenta')?.hasError('maxlength')"
+                  >La tarjeta no debe ser mayor a 18 dígitos</mat-error
+                >
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Nro. de tarjeta</mat-label>
-                <input matInput required formControlName="Ncard" NumbersOnly="true">
-                <mat-error *ngIf="DebitoCredito.get('Ncard')?.hasError('required')">
+                <input
+                  matInput
+                  required
+                  formControlName="Ncard"
+                  NumbersOnly="true"
+                />
+                <mat-error
+                  *ngIf="DebitoCredito.get('Ncard')?.hasError('required')"
+                >
                   El número de tarjeta es requerido
                 </mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Código de seguridad de tarjeta (CVV)</mat-label>
-                <input type="password" matInput required formControlName="ccv" placeholder="Ejemplo: 123">
-                <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('required')">
+                <input
+                  type="password"
+                  matInput
+                  required
+                  formControlName="ccv"
+                  placeholder="Ejemplo: 123"
+                />
+                <mat-error
+                  *ngIf="DebitoCredito.get('ccv')?.hasError('required')"
+                >
                   El número cvv es requerido
                 </mat-error>
-                <mat-error *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')">
+                <mat-error
+                  *ngIf="DebitoCredito.get('ccv')?.hasError('pattern')"
+                >
                   Escriba el CVV con solo números ejemplo: 123
                 </mat-error>
               </mat-form-field>
             </div>
 
             <div>
-              <mat-label>Fecha de Vencimiento</mat-label><br>
+              <mat-label>Fecha de Vencimiento</mat-label><br />
               <mat-form-field appearance="outline" class="Prefc_i">
                 <mat-select formControlName="fvncmtoMes">
-                  <mat-option *ngFor="let option of Months" [value]="option.month">
-                    {{option.month}}
+                  <mat-option
+                    *ngFor="let option of Months"
+                    [value]="option.month"
+                  >
+                    {{ option.month }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -1117,7 +1876,7 @@
               <mat-form-field appearance="outline" class="Prefc_i2">
                 <mat-select formControlName="fvncmtoAno">
                   <mat-option *ngFor="let option of Anos" [value]="option.ano">
-                    {{option.ano}}
+                    {{ option.ano }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -1125,17 +1884,31 @@
 
             <div class="form-login__item">
               <mat-form-field appearance="outline">
-                <mat-label>Cantidad a pagar
+                <mat-label
+                  >Cantidad a pagar
                   <strong><span>En Bolivares</span></strong>
                 </mat-label>
-                <input matInput formControlName="cantidad" required #inputAmount>
-                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('required')">Monto requerido</mat-error>
-                <mat-error *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')">Escriba el monto seguido dos
-                  decimales separado por punto, ejemplo: 125.00
+                <input
+                  matInput
+                  formControlName="cantidad"
+                  required
+                  #inputAmount
+                />
+                <mat-error
+                  *ngIf="DebitoCredito.get('cantidad')?.hasError('required')"
+                  >Monto requerido</mat-error
+                >
+                <mat-error
+                  *ngIf="DebitoCredito.get('cantidad')?.hasError('pattern')"
+                  >Escriba el monto seguido dos decimales separado por punto,
+                  ejemplo: 125.00
                 </mat-error>
                 <mat-error
-                  *ngIf="DebitoCredito.hasError('isNegative') && DebitoCredito.get('cantidad')?.hasError('required')">El
-                  monto no puede ser negativo
+                  *ngIf="
+                    DebitoCredito.hasError('isNegative') &&
+                    DebitoCredito.get('cantidad')?.hasError('required')
+                  "
+                  >El monto no puede ser negativo
                 </mat-error>
               </mat-form-field>
 
@@ -1155,29 +1928,73 @@
         </div>
 
         <!-- Con este regresar vuelve a consultar la cuenta del usuario solo cuando emite un pago -->
-        <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-          <button class="button-material-back btn-width-30"
-            (click)="ResetFormCD(); lastDni='';searchServicesv2(dni,false,false)" mat-raised-button type="button"
-            matStepperPrevious>
+        <div
+          *ngIf="ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            class="button-material-back btn-width-30"
+            (click)="
+              ResetFormCD(); lastDni = ''; searchServicesv2(dni, false, false)
+            "
+            mat-raised-button
+            type="button"
+            matStepperPrevious
+          >
             Regresar
           </button>
         </div>
 
         <!-- /Form Para Debito o Credito  -->
-        <div *ngIf="!ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
+        <div
+          *ngIf="!ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
           <!-- Debito -->
-          <button *ngIf="!Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
-            class="customized_btn_next btn-width-70" id="PagoDC" type="button"
-            (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            <span *ngIf="!Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+          <button
+            *ngIf="!Creditoboolaean && ShowFormDebitoCredito"
+            [disabled]="!DebitoCredito.valid || PinEnviado"
+            class="customized_btn_next btn-width-70"
+            id="PagoDC"
+            type="button"
+            (click)="
+              AmountIncorrectConfirm(
+                cantidadDC?.value,
+                'this.PagoDebito()',
+                PaymenMethod
+              )
+            "
+          >
+            <span *ngIf="!Creditoboolaean"
+              >Solicitar pin de autorización {{ Minutes }}{{ ConcatenaTimer
+              }}{{ Second }}</span
+            >
           </button>
           <!-- / Fin Debito -->
 
           <!-- Credito -->
-          <button *ngIf="Creditoboolaean && ShowFormDebitoCredito" [disabled]="!DebitoCredito.valid || PinEnviado"
-            class="customized_btn_next btn-width-70" id="PagoDC" type="button"
-            (click)="AmountIncorrectConfirm(cantidadDC?.value,'this.PagoDebito()',PaymenMethod)">
-            <span *ngIf="Creditoboolaean">Solicitar pin de autorización {{Minutes}}{{ConcatenaTimer}}{{Second}}</span>
+          <button
+            *ngIf="Creditoboolaean && ShowFormDebitoCredito"
+            [disabled]="!DebitoCredito.valid || PinEnviado"
+            class="customized_btn_next btn-width-70"
+            id="PagoDC"
+            type="button"
+            (click)="
+              AmountIncorrectConfirm(
+                cantidadDC?.value,
+                'this.PagoDebito()',
+                PaymenMethod
+              )
+            "
+          >
+            <span *ngIf="Creditoboolaean"
+              >Solicitar pin de autorización {{ Minutes }}{{ ConcatenaTimer
+              }}{{ Second }}</span
+            >
           </button>
           <!-- / Fin Credito -->
 
@@ -1185,46 +2002,63 @@
             matStepperPrevious>
             Regresar
           </button> -->
-          <button *ngIf="!ShowFormDebitoCreditoBNC  && !ShowFormDebito100x100" class="customized_btn_next"
-            [ngClass]="{'btn-width-30':ShowFormDebitoCredito, 'width_full': !ShowFormDebitoCredito}"
-            (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
+          <button
+            *ngIf="!ShowFormDebitoCreditoBNC && !ShowFormDebito100x100"
+            class="customized_btn_next"
+            [ngClass]="{
+              'btn-width-30': ShowFormDebitoCredito,
+              width_full: !ShowFormDebitoCredito
+            }"
+            (click)="ScrollUp($event); ResetFormCD()"
+            type="button"
+            matStepperPrevious
+          >
             Regresar
           </button>
         </div>
-
       </mat-step>
       <!-- / Fin de Crédito o Débito -->
 
       <mat-step *ngIf="ShowFormDebito100x100">
         <ng-template matStepLabel>Débito inmediato</ng-template>
         <div *ngIf="!ReciboPay">
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess != 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess != 'approved'
+            "
+            class="desc-user"
+          >
             <div>
               <h4 class="name-client">
-                {{nameClient}}
+                {{ nameClient }}
               </h4>
               <h4 class="name-client">
-                {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs {{saldoText}}
+                {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
               </h4>
             </div>
             <div>
-              <h4 class="name-client">
-                Servicio: {{ paquete }}
-              </h4>
-              <h4 class="name-client">
-                Subscripción: {{subscription}} USD
-              </h4>
+              <h4 class="name-client">Servicio: {{ paquete }}</h4>
+              <h4 class="name-client">Subscripción: {{ subscription }} USD</h4>
             </div>
           </div>
-          <div *ngIf="nameClient && saldoBs && saldoUSD && registerPayService.linkedToContractProcess == 'approved'"
-            class="desc-user">
+          <div
+            *ngIf="
+              nameClient &&
+              saldoBs &&
+              saldoUSD &&
+              registerPayService.linkedToContractProcess == 'approved'
+            "
+            class="desc-user"
+          >
             <div>
+              <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
               <h4 class="name-client">
-                CI/RIF: {{nameClient}}
-              </h4>
-              <h4 class="name-client">
-                Monto a Pagar: {{saldoUSD | negativeAmount}} USD | {{saldoBs | negativeAmount}} Bs
+                Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
+                {{ saldoBs | negativeAmount }} Bs
               </h4>
             </div>
             <div>
@@ -1237,32 +2071,45 @@
             </div>
           </div>
 
-
           <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
-          <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
-            [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
-
-
+          <app-debito-100x100
+            [DNI]="this.dni?.value"
+            [SaldoBS]="saldoBs"
+            [Abonado]="nroContrato?.value"
+            [Contrato]="idContrato"
+            (OutputResponse)="OutputDebito100x100($event)"
+          ></app-debito-100x100>
         </div>
-            <div *ngIf="ReciboPay">
-              <app-table-receipt [cantidad]="montoDebito100"></app-table-receipt>
-            </div>
+        <div *ngIf="ReciboPay">
+          <app-table-receipt [cantidad]="montoDebito100"></app-table-receipt>
+        </div>
 
-            <div *ngIf="ReciboPay" fxLayout="row" fxLayoutAlign="center center" class="btn-flex-center">
-              <button class="button-material-back btn-width-30"
-                (click)="ResetFormCD(); lastDni='';searchServicesv2(dni,false,false)" mat-raised-button type="button"
-                matStepperPrevious>
-                Regresar
-              </button>
-            </div>
+        <div
+          *ngIf="ReciboPay"
+          fxLayout="row"
+          fxLayoutAlign="center center"
+          class="btn-flex-center"
+        >
+          <button
+            class="button-material-back btn-width-30"
+            (click)="
+              ResetFormCD(); lastDni = ''; searchServicesv2(dni, false, false)
+            "
+            mat-raised-button
+            type="button"
+            matStepperPrevious
+          >
+            Regresar
+          </button>
+        </div>
       </mat-step>
-
-
-
     </mat-stepper>
-
   </div>
-
 </form>
 
-<app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable" (closeEvent)="showStateTable=false"></app-info-pay>
+<app-info-pay
+  *ngIf="showStateTable"
+  [stateTableData]="stateTableData"
+  [showStateTable]="showStateTable"
+  (closeEvent)="showStateTable = false"
+></app-info-pay>

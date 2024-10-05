@@ -146,6 +146,13 @@ export let MetodoDePago2 = [
     omitir: false,
     image: 'assets/images/Icono_Transferencia-Pagos_Fibex.png',
     alt: 'Otros'
+  },
+  {
+    idpago: 7,
+    tipopago: "Pago Móvil",
+    omitir: false,
+    image: 'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
+    alt: 'Otros'
   }
 ]
 
