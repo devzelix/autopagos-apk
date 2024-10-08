@@ -79,6 +79,7 @@ import { ResponseMethod } from 'src/app/interfaces/response';
 import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
+import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 
 export interface DialogData {
   animal: string;
@@ -285,7 +286,8 @@ export class FormComponent implements AfterViewInit, OnInit {
     private cacheService: ClearCacheService,
     public dialogTemplate: MatDialog,
     public helper: HelperService,
-    public _ApiBNC: ApiBNCService
+    public _ApiBNC: ApiBNCService,
+    private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
   ) //private hcaptchaService: NgHcaptchaService
   {
     this.cacheService.clear();
@@ -4647,4 +4649,34 @@ export class FormComponent implements AfterViewInit, OnInit {
     if (valueCodeBank === code) return true;
     return false;
   }
+
+
+  //###########################################################################################################################################//
+  //Funtions VPOSUniversal PINPAD// -By:MR-
+
+  public _requestCard(){
+    this._ApiVPOS.cardRequest('V1000000', '0,01');
+  }
+
+  //#FIN#//Funtions VPOSUniversal PINPAD//#FIN#//
+  //###########################################################################################################################################//
+
+   //###########################################################################################################################################//
+  //Funtions KeyBoard on screen // -By:MR-
+
+  inputValue: string = '';
+
+  public onTecladoInput(value: string): void {
+    this.inputValue += value; // Agregar el valor recibido al input
+  }
+
+  // Función para eliminar el último carácter
+  deleteLastCharacter(): void {
+    this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
+  }
+
+  //#FIN#//Funtions KeyBoard on screen ///#FIN#//
+  //###########################################################################################################################################//
+
+
 }

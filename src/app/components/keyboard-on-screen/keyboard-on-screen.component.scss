@@ -1,0 +1,28 @@
+.pinpad-container {
+  text-align: center;
+}
+.pinpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 300px;
+  margin: 20px auto;
+}
+.pinpad button {
+  padding: 20px;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1;
+  border-color: gray;
+  touch-action: manipulation;
+  background-color: transparent;
+}
+
+@media (max-width: 600px) {
+  .pinpad button {
+    padding: 20px;
+    font-size: 18px;
+  }
+}

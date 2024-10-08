@@ -35,6 +35,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { ListBankComponent } from './components/list-bank/list-bank.component';
 import { DebitoCreditoBNCComponent } from './components/debito-credito-bnc/debito-credito-bnc.component';
 import { Debit100x100 } from './components/debito-100%/debito-100%';
+import { KeyboardOnScreenComponent } from './components/keyboard-on-screen/keyboard-on-screen.component'; 
 
 
 const routes: Routes = [
@@ -71,6 +72,7 @@ const routes: Routes = [
     ListBankComponent,
     DebitoCreditoBNCComponent,
     Debit100x100,
+    KeyboardOnScreenComponent,
   ],
   imports: [
     BrowserModule,

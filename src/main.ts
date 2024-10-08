@@ -6,15 +6,15 @@ import { environment } from './environments/environment';
 
 if (environment.production) {
   enableProdMode();
-  console.log = function() {}
-  console.error =  function() {}
-  console.warn = function() {}
+  //console.log = function() {}
+  //console.error =  function() {}
+  //console.warn = function() {}
 }
 
 // CANCELA TODOS LOS MENSAJES DE LA CONSOLA
-console.log = () => { }
-console.error = () => { }
-console.warn = () => { }
+//console.log = () => { }
+//console.error = () => { }
+//console.warn = () => { }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch((err:any) => console.error(err));
