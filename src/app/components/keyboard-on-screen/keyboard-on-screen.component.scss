@@ -1,28 +1,71 @@
 .pinpad-container {
   text-align: center;
+  display: flex;
 }
 .pinpad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  max-width: 300px;
-  margin: 20px auto;
+  gap: 0.4rem;
+  // max-width: 250px;
+  // margin: 20px auto;
+  padding-right: 1rem;
+  margin: auto;
+
 }
 .pinpad button {
-  padding: 20px;
-  font-size: 18px;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1;
-  border-color: gray;
-  touch-action: manipulation;
-  background-color: transparent;
+      font-size: 24px;
+      cursor: pointer;
+      box-sizing: border-box;
+      border: 1;
+      border-color: gray;
+      touch-action: manipulation;
+      background-color: transparent;
+      border-radius: 50%;
+      flex-direction: column;
+      place-content: center;
+      align-items: center;
+      display: flex;
+      margin: auto;
+      max-width: 4.2rem;
+      max-height: 4.2rem;
+      width: 4.2rem;
+      height: 4.2rem;
+      padding: 0;
+      border: 0;
+      // border-top: 1px solid black;
+      // border-bottom: 1px solid black;
+      // background-color: #eeeeee63;
+      overflow: hidden;
+
+      background-color: rgb(238 238 238 / 0%);
+      overflow: hidden;
+      color: white;
+      backdrop-filter: blur(17px);
+      transition: all .6s ease-in-out;
+      user-select: none !important;
+
+      &:active, &:hover {
+        // background-color: #ffffff2b;
+        background-color: #ffffff64;
+      }
 }
 
 @media (max-width: 600px) {
   .pinpad button {
-    padding: 20px;
+    // padding: 20px;
     font-size: 18px;
+  }
+}
+
+.pinpad-container.pinpad-big-size {
+  .pinpad {
+    gap: 0.8rem;
+
+    button {
+      max-width: 6rem;
+      max-height: 6rem;
+      width: 6rem;
+      height: 6rem;
+    }
   }
 }

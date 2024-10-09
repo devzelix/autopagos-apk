@@ -1,3 +1,47 @@
+// BREAKPOINTS
+@import './abstracts/breakpoints';
+@import './abstracts/variables';
+
+// BASE
+@import './base/reset';
+@import './base/typography';
+
+//PAGES
+@import './pages/login';
+
+// COMPONENTS
+@import './components/buttons';
+@import './components/icon';
+@import './components/imagePay';
+@import './components/invoice';
+@import './components/spinner';
+
+// LAYOUT
+@import './layout/footer';
+@import './layout/form';
+@import './layout/title';
+@import './layout/nav';
+
+
+* {
+  box-sizing: border-box;
+}
+span, p, h1, h2, h3, h4, h5, h6, div{
+  font-family: "Poppins", sans-serif !important;
+}
+body {
+  font-family: "Poppins", sans-serif !important;
+  background-color: ghostwhite;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+app-form {
+  display: flex;
+  margin: auto;
+}
+
   *::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #F5F5F5;
@@ -19,31 +63,8 @@
         color-stop(0.86, rgb(28, 58, 148)));
   }
 
-  // BREAKPOINTS
-  @import './abstracts/breakpoints';
-  @import './abstracts/variables';
+  
 
-  // BASE
-  @import './base/reset';
-  @import './base/typography';
-
-
-  // COMPONENTS
-  @import './components/buttons';
-  @import './components/icon';
-  @import './components/imagePay';
-  @import './components/invoice';
-  @import './components/spinner';
-
-  // LAYOUT
-  @import './layout/footer';
-  @import './layout/form';
-  @import './layout/title';
-  @import './layout/nav';
-
-
-  // PAGES
-  @import './pages/login';
   .img-swal {
     z-index: 9999999999999999999 !important;
     padding: 0 .3rem !important;

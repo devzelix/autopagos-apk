@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-keyboard-on-screen',
@@ -6,23 +6,26 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
   styleUrls: ['./keyboard-on-screen.component.scss']
 })
 export class KeyboardOnScreenComponent implements OnInit {
+  @Output() valorTeclado = new EventEmitter<string>();
+  @Output() deleteKeyEmitter = new EventEmitter<void>();
+  @Output() enterEmitter = new EventEmitter<void>();
+  @Input() isValidEnterBtn: boolean = false;
+  @Input() classes: string = ''
 
   constructor() { }
+
 
   ngOnInit(): void {
   }
 
-  @Output() valorTeclado = new EventEmitter<string>();
-
   public pressKey(num: string): void {
     this.valorTeclado.emit(num);
   }
+  
+  public deleteLast = (): void => this.deleteKeyEmitter.emit();
 
-  public  clearScreen(): void {
-    this.valorTeclado.emit(''); // Emitir vacío para limpiar
-  }
-
-  public deleteLast(currentValue: string): void {
-    this.valorTeclado.emit(currentValue.slice(0, -1)); // Emitir el valor sin el último carácter
-  }
+  /**
+   * Function executed on enter pressed
+   */
+  public enterEmit = (): void => this.enterEmitter.emit();
 }

@@ -1,5 +1,5 @@
 <div id="content-scrollable" class="container" (scroll)="handleShowScrollArrow($event)">
-  <app-nav *ngIf="!helper.view"></app-nav>
+  <!-- <app-nav *ngIf="!helper.view"></app-nav> -->
   <div class="flex-container-column" ngClass="{{ helper.view ? 'bg-app' : 'default-bg' }}">
     <router-outlet></router-outlet>
   </div>

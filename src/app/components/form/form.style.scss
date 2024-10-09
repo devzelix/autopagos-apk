@@ -49,12 +49,12 @@ $app-light-blue2: rgb(74 159 255);
   // display: flex;
   // align-items: center;
   // justify-content: center;
-  
+
   @media only screen and (max-width: 1342px) {
     display: block;
     width: 100%;
     height: 100%;
-  } 
+  }
 
   width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
@@ -372,3 +372,117 @@ swal2-container.swal2-center.img-swal {
   }
 }
 
+.section-step-container {
+  width: 100%;
+
+  .section-step-item {
+    width: 100%;
+    gap: 2rem !important;
+
+    &.keypad-form-step {
+      display: flex;
+      gap: 1rem;
+
+      .form-dni-section {
+        width: 50%;
+        display: flex;
+        /* min-width: 25rem; */
+        min-width: fit-content;
+      }
+      app-keyboard-on-screen {
+        width: 50%;
+      }
+    }
+  }
+}
+
+.main-title-login-container {
+  background: none;
+  backdrop-filter: initial;
+}
+.main-title-login {
+  color: ghostwhite;
+  font-weight: 400;
+  strong {
+    font-weight: bold;
+  }
+}
+
+.form-control-item-container {
+  width: 100%;
+  min-width: fit-content;
+}
+
+label.form-control-label {
+  color: ghostwhite;
+  font-size: 2rem;
+}
+
+.form-control-input {
+  display: flex;
+  gap: 0.8rem;
+  padding: 1.5rem 0;
+  width: 100%;
+  min-width: fit-content;
+
+  select {
+    background: transparent;
+    border: 0;
+    // color: ghostwhite;
+    color: #212121;
+    outline: none !important;
+    font-weight: 700;
+  }
+
+  h4 {
+    min-width: 19.4rem;
+    padding: 1rem 0.7rem;
+    -webkit-backdrop-filter: blur(26px);
+    backdrop-filter: blur(26px);
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    letter-spacing: 3.2px;
+    font-size: 2.5rem;
+    color: #ffffff;
+    // width: fit-content;
+    min-width: fit-content;
+    width: 100%;
+    letter-spacing: 0.5rem;
+    
+    &.form-input-empty {
+      letter-spacing: 1.5rem;
+      // background: radial-gradient(transparent 48%, #ffffff30 160%);
+
+    }
+  }
+}
+
+.form-control-btn {
+  background: transparent;
+  // border: 2px solid ghostwhite;
+  padding: 1rem 0;
+  color: ghostwhite;
+  border-radius: 3rem;
+  font-size: 1.2rem;
+  position: relative;
+  bottom: -4rem;
+  border: 0;
+  transition: all .4s ease-in-out;
+  
+  &:disabled {
+    background: #f8f8ff63;
+    opacity: 0.5;
+  }
+  &:not(:disabled) {
+    // background: linear-gradient(36deg, rgba(69, 127, 192, 1) 18%, rgba(7, 195, 176, 1) 100%);
+    background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+  }
+}
+.text-sm {
+  font-size: 0.8rem;
+}
+.fibex-main-title-logo {
+  width: 15rem;
+  aspect-ratio: 48 / 19;
+}

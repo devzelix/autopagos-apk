@@ -260,6 +260,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   montoDebito100: any;
   ReciboPayDebitoCreditoBNC: boolean = false;
   NameBank: string = '';
+  public showDniForm: boolean = true;
+  public loginTypeSelectValue: string = 'V';
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -4667,16 +4669,22 @@ export class FormComponent implements AfterViewInit, OnInit {
   inputValue: string = '';
 
   public onTecladoInput(value: string): void {
-    this.inputValue += value; // Agregar el valor recibido al input
+    // this.inputValue += value; // Agregar el valor recibido al input
+    let dniFormValue = this.firstFormFibex.get('dni')?.value
+
+    if (typeof dniFormValue === 'string' && (this.loginTypeSelectValue === 'V' && dniFormValue.length < 8 || this.loginTypeSelectValue === 'J' && dniFormValue.length < 15)) this.firstFormFibex.get('dni')?.setValue(dniFormValue += value);
   }
 
   // Función para eliminar el último carácter
   deleteLastCharacter(): void {
-    this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
+    let dniFormValue = this.firstFormFibex.get('dni')?.value
+    this.firstFormFibex.get('dni')?.setValue(dniFormValue.slice(0, -1));
+    // this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
   }
 
-  //#FIN#//Funtions KeyBoard on screen ///#FIN#//
-  //###########################################################################################################################################//
-
+  public onLoginTypeChange = (value:string): void => {
+    this.loginTypeSelectValue = value
+    this.firstFormFibex.get('dni')?.setValue('')
+  }
 
 }
