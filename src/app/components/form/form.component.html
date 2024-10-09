@@ -11,11 +11,6 @@
     </span>
   </div>
 
-  <div *ngIf="AppFibex && nameClient" class="subtitle-info">
-    <h1 class="name-client">
-      Hola, {{ nameClient }}
-    </h1>
-  </div>
 
   <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
   <div
@@ -24,13 +19,12 @@
   >
 
     <!-- FORMAS DE PAGO --->
-    <button
+   <!--  <button
       *ngIf="AppFibex"
       class="btn-flotante left"
       title="Últimos pagos"
       (click)="openInfoPay()"
     >
-      <!-- <mat-icon><span class="material-symbols-outlined">list</span></mat-icon> -->
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 9V7h14v2zm0 4v-2h14v2zm0 4v-2h14v2zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7t.713.288T5 8t-.288.713T4 9m0 4q-.425 0-.712-.288T3 12t.288-.712T4 11t.713.288T5 12t-.288.713T4 13m0 4q-.425 0-.712-.288T3 16t.288-.712T4 15t.713.288T5 16t-.288.713T4 17"/></svg>
     </button>
     <button
@@ -39,11 +33,8 @@
       title="Formas de Pago"
       (click)="openDialogPM()"
     >
-      <!-- <mat-icon
-        ><span class="material-icons-outlined">help_outline</span></mat-icon
-      > -->
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.195 8.765A4 4 0 1 1 12 14v1m.05 4v.1h-.1V19z"/></svg>
-    </button>
+    </button> -->
 
     <!-- Mensajes de alerta -->
     <div>
@@ -85,6 +76,12 @@
       "
       class="section-step-container"
     >
+    <div *ngIf="AppFibex && userGreeting" class="subtitle-info">
+      <h1 class="name-client">
+        {{ userGreeting }}
+      </h1>
+    </div>
+
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <div *ngIf="showDniForm && !AppFibex" class="section-step-item keypad-form-step">
 
@@ -186,30 +183,58 @@
       <!--/ Fin de Menú ppal -->
 
       <!-- Menú de métodos de pago -->
-      <div *ngIf="AppFibex" class="CardPpal" class="section-step-item">
-        <div
-          *ngIf="
-            nameClient &&
-            saldoBs &&
-            saldoUSD &&
-            registerPayService.linkedToContractProcess != 'approved'
-          "
-          class="desc-user"
-        >
-          <div>
-            <h4 class="name-client">
-              {{ nameClient }}
-            </h4>
-            <h4 class="name-client">
-              {{ saldoUSD | negativeAmount }} USD |
-              {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
-            </h4>
-          </div>
-          <div>
-            <h4 class="name-client">Servicio: {{ paquete }}</h4>
-            <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
-          </div>
+      <div *ngIf="AppFibex" class="CardPpal" class="section-step-item flex-column-stepper">
+        <div class="flex">
+
+            <div
+              *ngIf="
+                nameClient &&
+                saldoBs &&
+                saldoUSD &&
+                registerPayService.linkedToContractProcess != 'approved'
+              "
+              class="desc-user"
+            >
+              <div>
+                <h4 class="name-client">
+                  {{ saldoUSD | negativeAmount }} USD |
+                  {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
+                </h4>
+              </div>
+              <div>
+                <h4 class="name-client">Servicio: {{ paquete }}</h4>
+                <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
+              </div>
+            </div>
+
+            <div *ngIf="AppFibex" class="step-payment-type-btn-container">
+
+              <button
+                class="step-payment-type-btns last-payment-btn"
+                title="Últimos pagos"
+                (click)="openInfoPay()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 9V7h14v2zm0 4v-2h14v2zm0 4v-2h14v2zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7t.713.288T5 8t-.288.713T4 9m0 4q-.425 0-.712-.288T3 12t.288-.712T4 11t.713.288T5 12t-.288.713T4 13m0 4q-.425 0-.712-.288T3 16t.288-.712T4 15t.713.288T5 16t-.288.713T4 17"/></svg>
+                <p>
+                  últimos pagos
+                </p>
+              </button>
+
+              <button
+                class="step-payment-type-btns payment-types-btn"
+                title="Formas de Pago"
+                (click)="openDialogPM()"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.195 8.765A4 4 0 1 1 12 14v1m.05 4v.1h-.1V19z"/></svg>
+                <p>
+                  Formas de Pago
+                </p>
+              </button>
+
+            </div>
+
         </div>
+
         <div
           *ngIf="
             nameClient &&

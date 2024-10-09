@@ -6,6 +6,7 @@ import {
   OnChanges,
   AfterViewInit,
   Input,
+  HostListener,
 } from '@angular/core';
 import {
   UntypedFormGroup,
@@ -92,6 +93,18 @@ export interface DialogData {
   styleUrls: ['./form.style.scss'],
 })
 export class FormComponent implements AfterViewInit, OnInit {
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboard(event: KeyboardEvent) {
+
+    if (this.showDniForm && !this.AppFibex && this.listContratos.length < 1 && !this.LoadingLengthAbonado) {
+
+      if (event.key === 'Backspace') return this.deleteLastCharacter();
+      else if (event.key === 'Enter') this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
+      else if (/^[0-9]+$/.test(event.key)) this.onTecladoInput(event.key)
+
+    }
+
+  }
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
@@ -262,6 +275,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   NameBank: string = '';
   public showDniForm: boolean = true;
   public loginTypeSelectValue: string = 'V';
+  public userGreeting: string = ''
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -564,6 +578,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.dni?.reset();
       this.captchaService.validControl = false;
       this.nameClient = '';
+      this.userGreeting = '';
       this.saldoUSD = '';
       this.saldoBs = '';
       this.dniConsulted = true;
@@ -2493,6 +2508,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   ResetForm() {
     this.nameClient = '';
+    this.userGreeting = '';
     this.imageUrl = '';
     this.imageUploaded = false;
     this.DisableReg = false;
@@ -2974,6 +2990,7 @@ export class FormComponent implements AfterViewInit, OnInit {
             } else {
               this.dni?.setValue(dni_);
               this.nameClient = String(dni_);
+              this.setGreeting(this.nameClient)
               this.name?.setValue(String(dni_));
               this.cambio_act = Number(this.tasaCambio);
             }
@@ -2992,6 +3009,7 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.readonlyDNI = true;
               this.idContrato = this.listContratos[0].id_contrato;
               this.nameClient = this.listContratos[0].cliente;
+              this.setGreeting(this.nameClient)
               this.name?.setValue(res[0].cliente);
               this.nroContrato?.setValue(this.listContratos[0].contrato);
               this.SendOption(0, 3, this.listContratos[0].contrato);
@@ -3135,6 +3153,7 @@ export class FormComponent implements AfterViewInit, OnInit {
           } else {
             //this.hcaptcha.reset()
             this.nameClient = '';
+            this.userGreeting = '';
             this.saldoUSD = '';
             this.saldoBs = '';
             this.lastAmount = '';
@@ -3162,6 +3181,7 @@ export class FormComponent implements AfterViewInit, OnInit {
             this.dni?.setValue(dni_);
             // this.searchInfoEquipos(dni_);
             this.nameClient = String(dni_);
+            this.setGreeting(this.nameClient)
             this.name?.setValue(String(dni_));
             this.cambio_act = parseFloat(this.tasaCambio);
             this.AppFibex = true;
@@ -3215,6 +3235,7 @@ export class FormComponent implements AfterViewInit, OnInit {
             }
           } else {
             this.nameClient = '';
+            this.userGreeting = '';
             this.saldoUSD = '';
             this.saldoBs = '';
             this.dniConsulted = true;
@@ -3231,6 +3252,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       //this.hcaptcha.reset()
       this.dni?.setValue('');
       this.nameClient = '';
+      this.userGreeting = '';
       this.saldoUSD = '';
       this.saldoBs = '';
       this.dniConsulted = true;
@@ -4529,6 +4551,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.saldoUSD = '';
       this.subscription = '';
       this.nameClient = '';
+      this.userGreeting = '';
     }
   }
 
@@ -4686,5 +4709,10 @@ export class FormComponent implements AfterViewInit, OnInit {
     this.loginTypeSelectValue = value
     this.firstFormFibex.get('dni')?.setValue('')
   }
+
+  /**
+   * Function to set the initial client greeting
+   */
+  public setGreeting = (nameClient: string): string => this.userGreeting = 'Hola, ' + nameClient.split(' ').map((char)=> char.charAt(0).toUpperCase() + char.slice(1).toLowerCase()).join(' ')
 
 }

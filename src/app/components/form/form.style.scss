@@ -115,7 +115,8 @@ $app-light-blue2: rgb(74 159 255);
   height: 100px !important;
   border-radius: 13px;
   // background-color: #00184e;
-  background-color: $app-dark-blue;
+  /* background-color: $app-dark-blue; */
+  background-color: rgb(54 119 198 / 68%);
   border: none;
   cursor: pointer;
   // margin: 10px;
@@ -151,6 +152,9 @@ $app-light-blue2: rgb(74 159 255);
   h3 {
     margin: 7px;
     font-size: 18px;
+    &.text-size-lg {
+      font-size: 1.5rem !important;
+    }
   }
 
   p {
@@ -377,10 +381,10 @@ swal2-container.swal2-center.img-swal {
 
   .section-step-item {
     width: 100%;
-    gap: 2rem !important;
-
+    
     &.keypad-form-step {
       display: flex;
+      gap: 2rem !important;
       gap: 1rem;
 
       .form-dni-section {
@@ -392,6 +396,11 @@ swal2-container.swal2-center.img-swal {
       app-keyboard-on-screen {
         width: 50%;
       }
+    }
+
+    &.flex-column-stepper {
+      display: flex;
+      flex-direction: column;
     }
   }
 }
@@ -485,4 +494,29 @@ label.form-control-label {
 .fibex-main-title-logo {
   width: 15rem;
   aspect-ratio: 48 / 19;
+}
+.step-payment-type-btns {
+  transition: all 300ms ease 0ms;
+  border: 0;
+  padding: 0.5rem;
+  border-radius: 99rem;
+  display: flex;
+  width: fit-content;
+  min-width: 10.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  background-color: rgba(54, 119, 198, 0.68);
+
+  svg {
+    font-size: 1.8rem;
+  }
+  p {
+    font-size: 0.9rem;
+  }
+}
+.step-payment-type-btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }

@@ -31,9 +31,12 @@
 }
 
 .name-client {
-    text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 1rem;
     font-weight: 500;
+    text-align: start;
+}
+.name-client-title {
+    font-size: 1rem;
 }
 
 .message-succes {
