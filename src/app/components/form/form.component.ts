@@ -4926,6 +4926,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         } else if (this.listContratos.length > 1) return this.SearchSectorAbonado();//* When is more than 1 account
 
         this.dni?.setValue('');
+        
         /* this.dni?.setValue(dni_); */
       }
 
