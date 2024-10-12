@@ -157,7 +157,7 @@ export let MetodoDePago2 = [
 ]
 
 export let MetodoDePago3 = [
-  {
+  /* {
     idpago: 5,
     tipopago: "Criptomoneda",
     omitir: true,
@@ -175,7 +175,7 @@ export let MetodoDePago3 = [
     tipopago: "Paypal",
     omitir: false,
     image: 'assets/images/Paypal_2014_logo.png'
-  },
+  }, */
   {
     idpago: 28,
     tipopago: "T.C. Internacional",
@@ -196,13 +196,13 @@ export let MetodoDePago3 = [
     alt: 'Crédito',
     omitir: false,
   },
-  {
+  /* {
     idpago: 2,
     tipopago: "Pago Móvil",
     image: 'assets/images/Icono_Pago_Movil-Pagos_Fibex.png',
     omitir: false,
     alt: 'Pago Móvil'
-  }
+  } */
 ]
 
 export let FormasDePago = [

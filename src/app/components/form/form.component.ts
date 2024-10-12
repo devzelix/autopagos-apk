@@ -76,7 +76,7 @@ import { ApiBNCService } from 'src/app/services/ApiBNC';
 //Modal
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
-import { ResponseMethod } from 'src/app/interfaces/response';
+import { IAccount, ResponseMethod } from 'src/app/interfaces/response';
 import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
@@ -85,6 +85,17 @@ import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vpos
 export interface DialogData {
   animal: string;
   name: string;
+}
+
+enum PAGES_NAVIGATION {
+  LOGIN,
+  MAIN_MENU,
+  PAYMENT_CARDS,
+  PAYMENT_FORMS
+}
+
+type IHandlerNav = {
+  [key in PAGES_NAVIGATION]: () => void
 }
 
 @Component({
@@ -115,7 +126,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   name2: string;
   fecha: string = 'sssssssssssssss';
   // displayedColumns: string[] = ['Comprobante', 'Status', 'Fecha'];
-  displayedColumns: string[] = ['Fecha','Status'];
+  displayedColumns: string[] = ['Fecha', 'Status'];
 
   public BankEmisor = BankEmisorS;
   public bancoSeleccionado: string = '';
@@ -273,9 +284,14 @@ export class FormComponent implements AfterViewInit, OnInit {
   montoDebito100: any;
   ReciboPayDebitoCreditoBNC: boolean = false;
   NameBank: string = '';
+  public inputValue: string = '';
   public showDniForm: boolean = true;
   public loginTypeSelectValue: string = 'V';
-  public userGreeting: string = ''
+  public userGreeting: string = '';
+  public userServices: string[] = [];
+  public showMainMenuPage2: boolean = false;
+  public navActive: PAGES_NAVIGATION = PAGES_NAVIGATION.LOGIN;
+  public ENUM_NAV: typeof PAGES_NAVIGATION = PAGES_NAVIGATION;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -929,6 +945,9 @@ export class FormComponent implements AfterViewInit, OnInit {
     this.ShowalertBankNationals = false;
     this.BankSelectPagoMovil = false;
     this.ShowOptionPagoMovil = false;
+    this.showMainMenuPage2 = false;
+    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+
     //Modal para pagar Zelle
     if (x == 10) {
       //this.alertInfo("Estamos haciendo ajustes en el correo","No realize pagos a este Zelle hasta nuevo aviso");
@@ -939,7 +958,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     if (x == 7) {
       //Por default selecciono el Pago Móvil para Mercantil
       this.Otros = true;
-      this.ShowOptionPagoMovil =true;
+      this.ShowOptionPagoMovil = true;
 
       this.SelectedPagoC2P('otros');
       setTimeout(() => {
@@ -963,9 +982,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       ]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Otros = true;
-      setTimeout(() => {
+      /* setTimeout(() => {
         this.NextMatStepper();
-      }, 300);
+      }, 300); */
+      this.navActive = PAGES_NAVIGATION.PAYMENT_FORMS;
     }
     //Crédito
     if (x == 1) {
@@ -981,9 +1001,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Creditoboolaean = !this.Creditoboolaean;
       this.Otros = true;
-      setTimeout(() => {
+      /* setTimeout(() => {
         this.NextMatStepper();
-      }, 300);
+      }, 300); */
+      this.navActive = PAGES_NAVIGATION.PAYMENT_FORMS;
     }
     //Pago Movil
     if (x == 2) {
@@ -1032,11 +1053,11 @@ export class FormComponent implements AfterViewInit, OnInit {
       }
 
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
-
+      console.log('BANK ZELLE >>>>>>>>>>>>>>>>>>', BankZelle)
       this.bankSelected(BankZelle[0]);
-      setTimeout(() => {
+      /* setTimeout(() => {
         this.NextMatStepper();
-      }, 300);
+      }, 300); */
     }
     //Paypal
     if (x == 9) {
@@ -1073,10 +1094,12 @@ export class FormComponent implements AfterViewInit, OnInit {
       //this.PagoMetodosHTML2 = DebitoInmediato;
       this.ShowFormDebito100x100 = true;
       this.Otros = true;
-      setTimeout(() => {
+      /* setTimeout(() => {
         this.NextMatStepper();
-      }, 300);
+      }, 300); */
     }
+
+    console.log('TIPO PAGO', this.PagoMetodosHTML2, x)
   }
 
   FormaPago(x: number) {
@@ -1109,16 +1132,19 @@ export class FormComponent implements AfterViewInit, OnInit {
     //Pagar
     if (x == 30) {
       this.PagoMetodosHTML2 = MetodoDePago3;
-      let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp) => {
-        this.TipoPago(6);
-        SubscriptionZelle.unsubscribe();
-      });
+      /*  let SubscriptionZelle = this._Consultas.PagoZelleOb.subscribe((resp) => {
+         console.log('respuesta subscription', resp)
+         this.TipoPago(6);
+         SubscriptionZelle.unsubscribe();
+       }); */
     }
 
     if (x == 31) {
       this.PagoPendiente = false;
       this.PagoMetodosHTML2 = FormasDePago;
     }
+    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+    console.log('FORMA PAGO', this.PagoMetodosHTML2, x)
   }
 
   checkLocalStorageData() {
@@ -1251,9 +1277,9 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.ReciboPay = true;
               this.registerPayService.linkedToContractProcess === 'approved'
                 ? this.registerPayService.paySubs(
-                    resp,
-                    this.registerPayService.dniCustomerContract
-                  )
+                  resp,
+                  this.registerPayService.dniCustomerContract
+                )
                 : '';
               this.alertexit('Pago aprobado');
             } else {
@@ -1303,9 +1329,9 @@ export class FormComponent implements AfterViewInit, OnInit {
             this.ReciboPay = true;
             this.registerPayService.linkedToContractProcess === 'approved'
               ? this.registerPayService.paySubs(
-                  resp,
-                  this.registerPayService.dniCustomerContract
-                )
+                resp,
+                this.registerPayService.dniCustomerContract
+              )
               : '';
             this.alertexit('Pago aprobado');
           } else {
@@ -1688,11 +1714,11 @@ export class FormComponent implements AfterViewInit, OnInit {
                             this.ReciboPay = true;
                             this.PinEnviado = false;
                             this.registerPayService.linkedToContractProcess ===
-                            'approved'
+                              'approved'
                               ? this.registerPayService.paySubs(
-                                  resp,
-                                  this.registerPayService.dniCustomerContract
-                                )
+                                resp,
+                                this.registerPayService.dniCustomerContract
+                              )
                               : '';
                           } else {
                             this.invalidForm(
@@ -1745,9 +1771,9 @@ export class FormComponent implements AfterViewInit, OnInit {
             this.ReciboPay = true;
             this.registerPayService.linkedToContractProcess === 'approved'
               ? this.registerPayService.paySubs(
-                  resp,
-                  this.registerPayService.dniCustomerContract
-                )
+                resp,
+                this.registerPayService.dniCustomerContract
+              )
               : '';
           } else {
             this.invalidForm(
@@ -2222,10 +2248,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       img:
         this.selectedRetentionOption == 2
           ? this.imageUrl +
-            ' -Retención:' +
-            this.retentionImageUrl +
-            ' -Monto:' +
-            this.retentionAmount?.value
+          ' -Retención:' +
+          this.retentionImageUrl +
+          ' -Monto:' +
+          this.retentionAmount?.value
           : this.imageUrl,
       name: contractInfo?.cliente,
       amount:
@@ -2434,10 +2460,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       img:
         this.selectedRetentionOption == 2
           ? this.imageComprobanteURL +
-            ' -Retención:' +
-            this.imageRetencionURL +
-            ' -Monto:' +
-            this.retentionAmount?.value
+          ' -Retención:' +
+          this.imageRetencionURL +
+          ' -Monto:' +
+          this.retentionAmount?.value
           : this.imageComprobanteURL,
       name: contractInfo?.cliente,
       amount:
@@ -2948,6 +2974,9 @@ export class FormComponent implements AfterViewInit, OnInit {
                 }
                 if (index == res.length - 1 && this.paymentMethod != 'aragua') {
                   this.AppFibex = true;
+                  this.showMainMenuPage2 = true
+                  this.showDniForm = false;
+                  this.navActive = PAGES_NAVIGATION.MAIN_MENU
                 }
               });
 
@@ -2973,6 +3002,10 @@ export class FormComponent implements AfterViewInit, OnInit {
                       this.paymentMethod = 'aragua';
                     //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
                     this.AppFibex = true;
+                    this.showMainMenuPage2 = true;
+                    this.showDniForm = false;
+                    this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+
                     setTimeout(() => {
                       this.NextMatStepper();
                     }, 300);
@@ -2981,6 +3014,8 @@ export class FormComponent implements AfterViewInit, OnInit {
                     this.invalidForm('Esta cuenta es exonerada');
                     this.lastDni = '';
                     this.AppFibex = false;
+                    this.showMainMenuPage2 = false;
+                    this.navActive = PAGES_NAVIGATION.LOGIN;
                     return;
                   }
                 } else {
@@ -3018,7 +3053,7 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.filterBankByFranquicia(this.listContratos[0].franquicia);
               this.dni?.setValue(dni_);
               this.searchInfoEquipos(dni_)
-                .then((result) => {})
+                .then((result) => { })
                 .catch((err) => {
                   console.log('falló el ingreso de datos del usuario');
                 });
@@ -3185,6 +3220,9 @@ export class FormComponent implements AfterViewInit, OnInit {
             this.name?.setValue(String(dni_));
             this.cambio_act = parseFloat(this.tasaCambio);
             this.AppFibex = true;
+            this.showMainMenuPage2 = true;
+            this.showDniForm = false;
+            this.navActive = PAGES_NAVIGATION.MAIN_MENU;
 
             /*Esto se hacer por si el usuario preciomente selecciona un banco */
             if (this.BancoNacional(this.banco)) {
@@ -3229,6 +3267,9 @@ export class FormComponent implements AfterViewInit, OnInit {
             }
             if (NextContrato) {
               this.AppFibex = true;
+              this.showMainMenuPage2 = true
+              this.showDniForm = false;
+              this.navActive = PAGES_NAVIGATION.MAIN_MENU;
               setTimeout(() => {
                 this.NextMatStepper();
               }, 300);
@@ -3428,6 +3469,12 @@ export class FormComponent implements AfterViewInit, OnInit {
                   .replace('_', ' ')
               );
             }
+            this.userServices = [
+              ...this.AllService,
+              ...this.AllService,
+              ...this.AllService
+            ]
+            console.log('this.userServices', this.userServices)
             this.paquete = this.AllService;
             localStorage.setItem(
               'Service',
@@ -3513,6 +3560,10 @@ export class FormComponent implements AfterViewInit, OnInit {
     console.log(Number(this.subscription));
     if (ppal && Number(this.subscription) > 0) {
       this.AppFibex = true;
+      this.showMainMenuPage2 = true;
+      this.showDniForm = false;
+      this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+
       //Para lograr un efecto de transición
       setTimeout(() => {
         this.NextMatStepper();
@@ -3906,10 +3957,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.alertDniAmount(
         'Usted no posee deuda pendiente',
         'Tiene un saldo a favor de: ' +
-          (parseFloat(saldo) * -1).toFixed(2) +
-          ' REGISTRO PAGO ADELANTADO'
+        (parseFloat(saldo) * -1).toFixed(2) +
+        ' REGISTRO PAGO ADELANTADO'
       );
-      setTimeout(() => {}, 1500);
+      setTimeout(() => { }, 1500);
     }
   }
 
@@ -4422,8 +4473,7 @@ export class FormComponent implements AfterViewInit, OnInit {
             let month =
               feriadoDay.mes.charAt(0).toUpperCase() + feriadoDay.mes.slice(1);
             this.warningSimpleForm(
-              `El día ${feriadoDay.diasemana.toLowerCase()} ${
-                feriadoDay.dia
+              `El día ${feriadoDay.diasemana.toLowerCase()} ${feriadoDay.dia
               } de ${month} es feriado nacional`,
               `
             ¿Esta seguro que su pago cae en la fecha que usted indica?
@@ -4442,7 +4492,7 @@ export class FormComponent implements AfterViewInit, OnInit {
           if (
             Number(value) > Number(this.saldoBs) &&
             Number(value) / Number(this.tasaCambio) >
-              Number(this.subscription) * 8
+            Number(this.subscription) * 8
           ) {
             this.invalidAmount = true;
             this.invalidForm(
@@ -4478,7 +4528,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         if (
           Number(value) > Number(this.saldoBs) &&
           Number(value) / Number(this.tasaCambio) >
-            Number(this.subscription) * 8
+          Number(this.subscription) * 8
         ) {
           this.invalidAmount = true;
           this.invalidForm(
@@ -4497,7 +4547,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         if (
           Number(value) > Number(this.saldoBs) &&
           Number(value) / Number(this.tasaCambio) >
-            Number(this.subscription) * 8
+          Number(this.subscription) * 8
         ) {
           this.invalidForm(
             `Usted no puede reportar con más de 8 meses de su suscripción`,
@@ -4516,7 +4566,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         if (
           Number(value) > Number(this.saldoBs) &&
           Number(value) / Number(this.tasaCambio) >
-            Number(this.subscription) * 8
+          Number(this.subscription) * 8
         ) {
           this.invalidForm(
             `Usted no puede reportar con más de 8 meses de su suscripción`,
@@ -4573,7 +4623,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       // disableClose: false,
       panelClass: ['custom-size-standard', 'animated', 'fadeInUp'],
     });
-    dialog.afterClosed().subscribe((result) => {});
+    dialog.afterClosed().subscribe((result) => { });
   }
 
   /* openInfoPayDialog() {
@@ -4615,7 +4665,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       minHeight: '36vh',
       // disableClose: false,
     });
-    dialog.afterClosed().subscribe((result) => {});
+    dialog.afterClosed().subscribe((result) => { });
   }
 
   public showConsole = (log: unknown) => {
@@ -4679,17 +4729,15 @@ export class FormComponent implements AfterViewInit, OnInit {
   //###########################################################################################################################################//
   //Funtions VPOSUniversal PINPAD// -By:MR-
 
-  public _requestCard(){
+  public _requestCard() {
     this._ApiVPOS.cardRequest('V1000000', '0,01');
   }
 
   //#FIN#//Funtions VPOSUniversal PINPAD//#FIN#//
   //###########################################################################################################################################//
 
-   //###########################################################################################################################################//
+  //###########################################################################################################################################//
   //Funtions KeyBoard on screen // -By:MR-
-
-  inputValue: string = '';
 
   public onTecladoInput(value: string): void {
     // this.inputValue += value; // Agregar el valor recibido al input
@@ -4705,14 +4753,189 @@ export class FormComponent implements AfterViewInit, OnInit {
     // this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
   }
 
-  public onLoginTypeChange = (value:string): void => {
+  public onLoginTypeChange = (value: 'V' | 'J'): void => {
     this.loginTypeSelectValue = value
-    this.firstFormFibex.get('dni')?.setValue('')
+    if (value === 'V') {
+      const formValue = this.firstFormFibex.get('dni')?.value;
+      this.firstFormFibex.get('dni')?.setValue(formValue.slice(0, 8))
+    }
   }
 
   /**
    * Function to set the initial client greeting
    */
-  public setGreeting = (nameClient: string): string => this.userGreeting = 'Hola, ' + nameClient.split(' ').map((char)=> char.charAt(0).toUpperCase() + char.slice(1).toLowerCase()).join(' ')
+  public setGreeting = (nameClient: string): string => this.userGreeting = 'Hola, ' + nameClient.split(' ').map((char) => char.charAt(0).toUpperCase() + char.slice(1).toLowerCase()).join(' ')
+
+  /**
+   * (Function test) to set the form dni value and go to the next page automatically
+   */
+  public testNextPage = () => {
+    this.firstFormFibex.get('dni')?.setValue('26728159')
+    // this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
+  }
+
+  /**
+   * Function to go steb back
+   */
+  public goStepBack = () => {
+    /*// * Handler function whose index is the current position of the navigation */
+    const HANDLE_NAV_FN: Partial<IHandlerNav> = {
+
+      [PAGES_NAVIGATION.MAIN_MENU]: () => {
+        console.log('PASO 1', this.navActive)
+        // this.AppFibex = false;
+        this.firstFormFibex.get('dni')?.setValue('');
+        this.ResetForm()
+        this.listContratos = [];
+        this.LoadingLengthAbonado = false;
+        this.showMainMenuPage2 = false;
+        this.showDniForm = true;
+        this.navActive = PAGES_NAVIGATION.LOGIN;
+      },
+
+      [PAGES_NAVIGATION.PAYMENT_CARDS]: () => {
+        console.log('PASO 2', this.navActive)
+        this.FormaPago(31);
+        this.showMainMenuPage2 = true;
+        this.navActive = PAGES_NAVIGATION.MAIN_MENU
+      },
+
+      [PAGES_NAVIGATION.PAYMENT_FORMS]: () => {
+        this.ResetFormCD()
+        this.ScrollUp()
+        this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+      }
+
+    }
+
+    if (HANDLE_NAV_FN[this.navActive] !== undefined) (HANDLE_NAV_FN[this.navActive] as () => void)();
+
+  }
+
+  /**
+   * Function to check for lastest payments
+   */
+  public checkLatestPayments = async () => {
+    try {
+      this.nroContrato?.setValue('')
+      
+      let dni_: string = this.dni?.value;
+
+      if (dni_) dni_ = this.ClearCedula(dni_);
+
+      this.banksFiltered = [...this.bankList];
+
+      if (dni_ === this.lastDni) return;
+
+      this.dniConsulted = false;
+      if (dni_.length <= 6) {
+
+        this.dni?.setValue('');
+        this.nameClient = '';
+        this.userGreeting = '';
+        this.saldoUSD = '';
+        this.saldoBs = '';
+        this.dniConsulted = true;
+        this.lastDni = '';
+        this.name?.setValue('');
+        this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
+        setTimeout(() => this.closeAlert(), 1000);
+        return
+      }
+
+      this.alertFindDniMercantil(
+        'Buscando información del cliente',
+        'Por favor espere...'
+      );
+
+      //Busco por su Cédula
+      const dniUserResult: IAccount[] = await this.registerPayService.getSaldoByDni(dni_) as IAccount[]
+      console.log('dniUserREsult', dniUserResult)
+      this.lastDni = dni_;
+      this.closeAlert();
+
+      if (dniUserResult.length === 0) {
+        this.nameClient = '';
+        this.userGreeting = '';
+        this.saldoUSD = '';
+        this.saldoBs = '';
+        this.lastAmount = '';
+        this.dniConsulted = true;
+        this.patchValueAllForm();
+        this.invalidForm('Debe colocar una cédula válida');
+        this.lastDni = '';
+        setTimeout(() => this.closeAlert(), 1000);
+        this.banksFiltered = [...this.bankList];
+        this.listContratos = [];
+        this.banksFiltered = [...this.bankList];
+        return
+      }
+
+      this.listContratos = [];
+      this.ComprobantesPago = [];
+
+      if (this.registerPayService.linkedToContractProcess != 'approved') {
+        //Valido los estatus de los contratos
+        dniUserResult.forEach((dataContrato: any, index: number) => {
+          var isValid = this.ValidStatusContrato(dataContrato.status_contrato);
+
+          if (isValid) {
+            this.listContratos.push({
+              id_contrato: dataContrato.id_contrato,
+              contrato: dataContrato.nro_contrato,
+              saldo: dataContrato.saldo,
+              cliente: dataContrato.cliente,
+              monto_pend_conciliar: dataContrato.monto_pend_conciliar,
+              subscription: dataContrato.suscripcion,
+              franquicia: dataContrato.franquicia,
+              status_contrato: dataContrato.status_contrato,
+            });
+            this.cambio_act = dataContrato.cambio_act;
+          }
+
+          if (dataContrato.franquicia.includes('FIBEX ARAGUA')) this.paymentMethod = 'aragua';
+
+        });
+
+        /** When the user has all the accounts with invalid status */
+        if (this.listContratos.length == 0) {
+          this.invalidForm('Todos los contratos para esta cuenta están ANULADOS o RETIRADO!');
+          this.lastDni = '';
+          return;
+        }
+
+        if (this.listContratos.length == 1) { //* When is 1 account
+
+          if (Number(this.listContratos[0].subscription) > 0) {//* when the account is valid status
+            this.idContrato = this.listContratos[0].id_contrato;
+            this.nameClient = this.listContratos[0].cliente;
+            this.name?.setValue(dniUserResult[0].cliente);
+            this.nroContrato?.setValue(this.listContratos[0].contrato);
+            this.monto_pend_conciliar = this.listContratos[0].monto_pend_conciliar;
+            /* this.navActive = PAGES_NAVIGATION.MAIN_MENU; */
+
+          } else { //* Cuando la cuenta esta exonerada
+            this.invalidForm('Esta cuenta es exonerada');
+            this.lastDni = '';
+            this.AppFibex = false;
+            this.showMainMenuPage2 = false;
+            this.navActive = PAGES_NAVIGATION.LOGIN;
+            return;
+          }
+
+        } else if (this.listContratos.length > 1) return this.SearchSectorAbonado();//* When is more than 1 account
+
+        this.dni?.setValue('');
+        /* this.dni?.setValue(dni_); */
+      }
+
+      this.closeAlert2();
+
+      if (this.nroContrato?.value.length) this.openInfoPay()
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
 }

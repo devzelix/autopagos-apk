@@ -1,5 +1,6 @@
-<div id="content-scrollable" class="container" (scroll)="handleShowScrollArrow($event)">
-  <!-- <app-nav *ngIf="!helper.view"></app-nav> -->
+<!-- (scroll)="handleShowScrollArrow($event)" -->
+<div id="content-scrollable" class="container">
+  
   <div class="flex-container-column" ngClass="{{ helper.view ? 'bg-app' : 'default-bg' }}">
     <router-outlet></router-outlet>
   </div>
@@ -7,8 +8,8 @@
   <app-footer *ngIf="!helper.view"></app-footer>
 
     <!-- * Arrow button to scroll up -->
-    <button class="arrow_up animated faster" (click)="scrollToTop()" [class.fadeInUp]="showScrollArrow"
+    <!-- <button class="arrow_up animated faster" (click)="scrollToTop()" [class.fadeInUp]="showScrollArrow"
     [class.fadeOutDown]="!showScrollArrow">
     <img src="../assets/images/arrow_up.png" alt="Ir hacia arriba">
-  </button>
+  </button> -->
 </div>

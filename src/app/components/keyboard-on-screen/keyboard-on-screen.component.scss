@@ -38,7 +38,8 @@
       // background-color: #eeeeee63;
       overflow: hidden;
 
-      background-color: rgb(238 238 238 / 0%);
+      // background-color: rgb(238 238 238 / 0%);
+      background-color: rgba(233, 233, 233, 0.203);
       overflow: hidden;
       color: white;
       backdrop-filter: blur(17px);
@@ -46,8 +47,8 @@
       user-select: none !important;
 
       &:active, &:hover {
-        // background-color: #ffffff2b;
-        background-color: #ffffff64;
+        // background-color: #ffffff64;
+        background-color: #ffffff78;
       }
 }
 
