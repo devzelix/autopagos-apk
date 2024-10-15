@@ -1,3 +1,4 @@
+
 .pinpad-container {
   text-align: center;
   display: flex;
@@ -20,7 +21,7 @@
       border: 1;
       border-color: gray;
       touch-action: manipulation;
-      background-color: transparent;
+      // background-color: transparent;
       border-radius: 50%;
       flex-direction: column;
       place-content: center;
@@ -33,13 +34,11 @@
       height: 4.2rem;
       padding: 0;
       border: 0;
-      // border-top: 1px solid black;
-      // border-bottom: 1px solid black;
-      // background-color: #eeeeee63;
       overflow: hidden;
 
-      // background-color: rgb(238 238 238 / 0%);
-      background-color: rgba(233, 233, 233, 0.203);
+      // background-color: rgba(233, 233, 233, 0.203);
+      // background-color: #34bcde;
+      background: #3484ded9;
       overflow: hidden;
       color: white;
       backdrop-filter: blur(17px);
@@ -48,7 +47,9 @@
 
       &:active, &:hover {
         // background-color: #ffffff64;
-        background-color: #ffffff78;
+        // background: #9fdbfaea;
+      background: #86b3e8d9;
+
       }
 }
 

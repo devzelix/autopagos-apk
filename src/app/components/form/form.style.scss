@@ -425,7 +425,8 @@ swal2-container.swal2-center.img-swal {
 }
 
 label.form-control-label {
-  color: ghostwhite;
+  // color: ghostwhite;
+  color: #313131;
   font-size: 2rem;
 }
 
@@ -448,8 +449,8 @@ label.form-control-label {
   h4 {
     min-width: 19.4rem;
     padding: 1rem 0.7rem;
-    -webkit-backdrop-filter: blur(26px);
-    backdrop-filter: blur(26px);
+    // -webkit-backdrop-filter: blur(26px);
+    // backdrop-filter: blur(26px);
     border-radius: 20px;
     overflow: hidden;
     text-align: center;
@@ -461,6 +462,7 @@ label.form-control-label {
     width: 100%;
     letter-spacing: 0.7rem;
     max-width: 420px;
+    background: lightblue;
     
     
     &.form-input-empty {
@@ -490,8 +492,9 @@ label.form-control-label {
   gap: 0.5rem;
   
   &:disabled {
-    background: #f8f8ff63;
-    opacity: 0.5;
+    // background: #f8f8ff63;
+    background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    opacity: 0.6;
   }
   &:not(:disabled) {
     // background: linear-gradient(36deg, rgba(69, 127, 192, 1) 18%, rgba(7, 195, 176, 1) 100%);
@@ -588,7 +591,8 @@ label.form-control-label {
   button {
     padding: 1rem 2rem;
     border-radius: 9rem;
-    background: rgb(223 228 240 / 40%);
+    // background: rgb(223 228 240 / 40%);
+    background: lightblue;
     color: white;
     overflow: hidden;
     font-size: 1.3rem;

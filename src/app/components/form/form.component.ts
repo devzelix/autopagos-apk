@@ -110,7 +110,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     if (this.showDniForm && !this.AppFibex && this.listContratos.length < 1 && !this.LoadingLengthAbonado) {
 
       if (event.key === 'Backspace') return this.deleteLastCharacter();
-      else if (event.key === 'Enter') this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
+      else if (event.key === 'Enter' && this.dni?.value.length > 5) this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
       else if (/^[0-9]+$/.test(event.key)) this.onTecladoInput(event.key)
 
     }
@@ -4937,6 +4937,10 @@ export class FormComponent implements AfterViewInit, OnInit {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  public goToPayment = () => {
+    
   }
 
 }
