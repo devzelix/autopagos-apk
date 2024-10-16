@@ -36,6 +36,7 @@ import { ListBankComponent } from './components/list-bank/list-bank.component';
 import { DebitoCreditoBNCComponent } from './components/debito-credito-bnc/debito-credito-bnc.component';
 import { Debit100x100 } from './components/debito-100%/debito-100%';
 import { KeyboardOnScreenComponent } from './components/keyboard-on-screen/keyboard-on-screen.component'; 
+import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
 
 
 const routes: Routes = [
@@ -73,6 +74,7 @@ const routes: Routes = [
     DebitoCreditoBNCComponent,
     Debit100x100,
     KeyboardOnScreenComponent,
+    ModalPaymentComponent
   ],
   imports: [
     BrowserModule,

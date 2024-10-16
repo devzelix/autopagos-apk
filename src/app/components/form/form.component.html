@@ -73,7 +73,7 @@
       </div>
 
       <div *ngIf="AppFibex && userGreeting" class="subtitle-info">
-        <h1 class="name-client text-2xl">
+        <h1 class="name-client text-2xl txt-dark">
           {{ userGreeting }}
         </h1>
       </div>
@@ -156,7 +156,7 @@
                 <button
                   class="form-control-btn" type="button" role="button"
                   (click)="goToPayment()" [disabled]="dni?.invalid">
-                  Siguiente
+                  Pagar
                   <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 4h10v14a2 2 0 0 1-2 2H9m3-5l3-3m0 0l-3-3m3 3H5"/></svg>
                 </button>
                 <button
@@ -215,7 +215,7 @@
 
       <!-- Menú de métodos de pago -->
       <!-- AppFibex && !showDniForm &&  -->
-      <div *ngIf="navActive === ENUM_NAV.MAIN_MENU " class="CardPpal" class="section-step-item flex-column-stepper">
+      <!-- <div *ngIf="navActive === ENUM_NAV.MAIN_MENU " class="CardPpal" class="section-step-item flex-column-stepper">
 
         <div *ngIf="
                 nameClient &&
@@ -322,35 +322,23 @@
               {{ saldoBs | negativeAmount }} Bs
             </h4>
           </div>
-          <!-- <div>
-            <h4 class="name-client">
-            </h4>
-            <h4 class="name-client">
-            </h4>
-          </div> -->
         </div>
 
-        <!-- 
-        <div *ngIf="PagoPendiente && !LoadingPagoPendiente">
-          <app-detalle-pay
-            [DataPagoPendiente]="DataPagoPendiente"
-          ></app-detalle-pay>
-        </div> -->
         <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full"
           (click)="FormaPago(31)">
           REGRESAR
         </button>
-      </div>
+      </div> -->
       <!-- / Fin de métodos de pago -->
 
 
       <!-- PAYMENT CARDS STEP -->
       <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
-
-        <ng-template matStepLabel>Tipo de pago</ng-template>
-        <div class="spinner-pay">
+        <h6 class="txt-dark text-2xl font-bold text-center"> Seleccione su tipo de pago </h6>
+        
+        <!-- <div class="spinner-pay">
           <mat-spinner *ngIf="LoadingPagoPendiente"></mat-spinner>
-        </div>
+        </div> -->
         <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{ hide: option.tipopago === 'Criptomoneda' }">
@@ -359,7 +347,7 @@
               <span *ngSwitchDefault class="flex_center cardflex2">
                 <!--  -->
                 <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp" (click)="TipoPago(option.idpago)">
-                  <h5 class="TitlePerson text-gray-800">{{ option.tipopago }}</h5>
+                  <h5 class="TitlePerson text-gray-800 payment-type-title text_ellipsis">{{ option.tipopago }}</h5>
                   <img style="width: 100%" src="{{ option.image }}" alt="{{ option.alt }}" />
                 </button>
               </span>
@@ -372,7 +360,7 @@
       <!-- END PAYMENT CARDS STEP -->
 
       <!-- PAYMENT CREDITO / DEBITO FORM -->
-      <div *ngIf="navActive === ENUM_NAV.PAYMENT_FORMS && DebitoCreditoboolean" class="section-step-item">
+      <div *ngIf="navActive === ENUM_NAV.PAYMENT_FORMS && DebitoCreditoboolean" class="section-step-item txt-dark">
 
         <div *ngIf="!ReciboPay" class="animated fadeInUp">
           <div *ngIf="
@@ -383,7 +371,7 @@
             " class="desc-user">
             <div>
               <h4 class="name-client">
-                {{ nameClient }}
+                <!-- {{ nameClient }} -->
               </h4>
               <h4 class="name-client">
                 {{ saldoUSD | negativeAmount }} USD |
@@ -412,15 +400,14 @@
           </div>
 
           <br>
-          <button type="button" class="grid-cards-item forma-pago ng-star-inserted" (click)="_requestCard()">
+          <button type="button" class="grid-cards-item forma-pago ng-star-inserted  btn-card-customized-1" (click)="_requestCard()">
+            Pagar
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
               class="bi bi-credit-card-fill" viewBox="0 0 16 16">
               <path
                 d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1" />
             </svg>
-            Pagar
           </button>
-          <br><br>
 
           <!-- <button *ngIf="!ShowFormDebitoCreditoBNC && !ShowFormDebito100x100" class="customized_btn_next" [ngClass]="{
               'btn-width-30': ShowFormDebitoCredito,
@@ -666,3 +653,8 @@
 
 <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
   (closeEvent)="showStateTable = false"></app-info-pay>
+
+
+<!-- MODAL DE TRANSACCION DEL PAGO -->
+<app-modal-payment *ngIf="showTransactionModal">
+</app-modal-payment>

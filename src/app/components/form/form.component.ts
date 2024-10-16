@@ -292,6 +292,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   public showMainMenuPage2: boolean = false;
   public navActive: PAGES_NAVIGATION = PAGES_NAVIGATION.LOGIN;
   public ENUM_NAV: typeof PAGES_NAVIGATION = PAGES_NAVIGATION;
+  public showTransactionModal: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -946,7 +947,8 @@ export class FormComponent implements AfterViewInit, OnInit {
     this.BankSelectPagoMovil = false;
     this.ShowOptionPagoMovil = false;
     this.showMainMenuPage2 = false;
-    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+    /* this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS; */
+    this.showTransactionModal = true
 
     //Modal para pagar Zelle
     if (x == 10) {
@@ -2897,345 +2899,374 @@ export class FormComponent implements AfterViewInit, OnInit {
   }*/
 
   searchServicesv2(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
-    //agreago por juan
-    this.BankSelectPagoMovil = false;
-    this.ShowalertBankNationals = false;
-    this.ShowOptionPagoMovil = false;
-    //
+    return new Promise<void>((resolve, reject) => {
 
-    this.possibleWithholdingAgent = false;
-    this.selectedRetentionOption = null;
-    let dni_: string = '';
+      //agreago por juan
+      this.BankSelectPagoMovil = false;
+      this.ShowalertBankNationals = false;
+      this.ShowOptionPagoMovil = false;
+      //
 
-    if (!fromParmas) {
-      dni_ = dni.value;
-    } else if (fromParmas) {
-      dni_ = dni;
-    }
+      this.possibleWithholdingAgent = false;
+      this.selectedRetentionOption = null;
+      let dni_: string = '';
 
-    if (dni_) {
-      dni_ = this.ClearCedula(dni_);
-    }
+      if (!fromParmas) {
+        dni_ = dni.value;
+      } else if (fromParmas) {
+        dni_ = dni;
+      }
 
-    this.banksFiltered = [...this.bankList];
-    if (dni_ === this.lastDni) {
-      return;
-    }
+      if (dni_) {
+        dni_ = this.ClearCedula(dni_);
+      }
 
-    this.dniConsulted = false;
-    if (dni_.length >= 6) {
-      this.alertFindDniMercantil(
-        'Buscando información del cliente',
-        'Por favor espere...'
-      );
-      //Busco el tipo de cliente
-      this.registerPayService.getTypeClient(dni_).then((result: any) => {
-        if (result.length > 0 && result[0].TipoCliente != 'NATURAL') {
-          this.possibleWithholdingAgent = true;
-        }
-      });
+      this.banksFiltered = [...this.bankList];
+      if (dni_ === this.lastDni) {
+        return;
+      }
 
-      //Busco por su Cédula
-      //this.SearchDataClient(dni_)
-      this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
-        this.lastDni = dni_;
-        this.closeAlert();
+      this.dniConsulted = false;
+      if (dni_.length >= 6) {
+        this.alertFindDniMercantil(
+          'Buscando información del cliente',
+          'Por favor espere...'
+        );
+        //Busco el tipo de cliente
+        this.registerPayService.getTypeClient(dni_).then((result: any) => {
+          if (result.length > 0 && result[0].TipoCliente != 'NATURAL') {
+            this.possibleWithholdingAgent = true;
+          }
+        });
 
-        try {
-          if (
-            res.length > 0 ||
-            this.registerPayService.linkedToContractProcess === 'approved'
-          ) {
-            this.listContratos = [];
-            this.ComprobantesPago = [];
-            this.SendOption(0, 0, dni_);
+        //Busco por su Cédula
+        //this.SearchDataClient(dni_)
+        this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
+          this.lastDni = dni_;
+          this.closeAlert();
 
-            if (this.registerPayService.linkedToContractProcess != 'approved') {
-              //Valido los estatus de los contratos
-              res.forEach((dataContrato: any, index: number) => {
-                var ValidOno = this.ValidStatusContrato(
-                  dataContrato.status_contrato
-                );
-                if (ValidOno) {
-                  this.listContratos.push({
-                    id_contrato: dataContrato.id_contrato,
-                    contrato: dataContrato.nro_contrato,
-                    saldo: dataContrato.saldo,
-                    cliente: dataContrato.cliente,
-                    monto_pend_conciliar: dataContrato.monto_pend_conciliar,
-                    subscription: dataContrato.suscripcion,
-                    franquicia: dataContrato.franquicia,
-                    status_contrato: dataContrato.status_contrato,
-                  });
-                  this.cambio_act = dataContrato.cambio_act;
+          try {
+            if (
+              res.length > 0 ||
+              this.registerPayService.linkedToContractProcess === 'approved'
+            ) {
+              this.listContratos = [];
+              this.ComprobantesPago = [];
+              this.SendOption(0, 0, dni_);
+
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                //Valido los estatus de los contratos
+                res.forEach((dataContrato: any, index: number) => {
+                  var ValidOno = this.ValidStatusContrato(
+                    dataContrato.status_contrato
+                  );
+                  if (ValidOno) {
+                    this.listContratos.push({
+                      id_contrato: dataContrato.id_contrato,
+                      contrato: dataContrato.nro_contrato,
+                      saldo: dataContrato.saldo,
+                      cliente: dataContrato.cliente,
+                      monto_pend_conciliar: dataContrato.monto_pend_conciliar,
+                      subscription: dataContrato.suscripcion,
+                      franquicia: dataContrato.franquicia,
+                      status_contrato: dataContrato.status_contrato,
+                    });
+                    this.cambio_act = dataContrato.cambio_act;
+                  }
+                  if (dataContrato.franquicia.includes('FIBEX ARAGUA')) {
+                    this.paymentMethod = 'aragua';
+                  }
+                  if (index == res.length - 1 && this.paymentMethod != 'aragua') {
+                    this.AppFibex = true;
+                    this.showMainMenuPage2 = true
+                    this.showDniForm = false;
+                    // this.navActive = PAGES_NAVIGATION.MAIN_MENU
+                    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+                    resolve()
+                  }
+                });
+
+                if (this.listContratos.length == 0) {
+                  this.invalidForm(
+                    'Todos los contratos para esta cuenta están ANULADOS o RETIRADO!'
+                  );
+                  this.lastDni = '';
+                  return;
                 }
-                if (dataContrato.franquicia.includes('FIBEX ARAGUA')) {
-                  this.paymentMethod = 'aragua';
-                }
-                if (index == res.length - 1 && this.paymentMethod != 'aragua') {
-                  this.AppFibex = true;
-                  this.showMainMenuPage2 = true
-                  this.showDniForm = false;
-                  this.navActive = PAGES_NAVIGATION.MAIN_MENU
-                }
-              });
 
-              if (this.listContratos.length == 0) {
-                this.invalidForm(
-                  'Todos los contratos para esta cuenta están ANULADOS o RETIRADO!'
-                );
-                this.lastDni = '';
-                return;
+                //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
+                if (NextContrato) {
+                  if (this.listContratos.length == 1) {
+                    // console.log('Ingrese')
+                    if (Number(this.listContratos[0].subscription) > 0) {
+                      //   console.log('acaaa')
+                      //! to validate franchise
+                      this.abonado = this.listContratos[0].contrato;
+                      if (
+                        this.listContratos[0].franquicia.includes('FIBEX ARAGUA')
+                      )
+                        this.paymentMethod = 'aragua';
+                      //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
+                      this.AppFibex = true;
+                      this.showMainMenuPage2 = true;
+                      this.showDniForm = false;
+                      // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+                      this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+                      resolve()
+
+                     /*  setTimeout(() => {
+                        this.NextMatStepper();
+                      }, 300); */
+                    } else {
+                      //console.log('Estoy aca');
+                      this.invalidForm('Esta cuenta es exonerada');
+                      this.lastDni = '';
+                      this.AppFibex = false;
+                      this.showMainMenuPage2 = false;
+                      this.navActive = PAGES_NAVIGATION.LOGIN;
+                      reject();
+                      return;
+                    }
+                  } else {
+                    this.SearchSectorAbonado();
+                  }
+                }
+              } else {
+                this.dni?.setValue(dni_);
+                this.nameClient = String(dni_);
+                this.setGreeting(this.nameClient)
+                this.name?.setValue(String(dni_));
+                this.cambio_act = Number(this.tasaCambio);
               }
 
-              //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
-              if (NextContrato) {
-                if (this.listContratos.length == 1) {
-                  // console.log('Ingrese')
-                  if (Number(this.listContratos[0].subscription) > 0) {
-                    //   console.log('acaaa')
-                    //! to validate franchise
-                    this.abonado = this.listContratos[0].contrato;
-                    if (
-                      this.listContratos[0].franquicia.includes('FIBEX ARAGUA')
-                    )
-                      this.paymentMethod = 'aragua';
-                    //this.DataPagoMovilPublic.push(parseFloat(this.registerPayService.amountCustomerContract).toFixed(2))
-                    this.AppFibex = true;
-                    this.showMainMenuPage2 = true;
-                    this.showDniForm = false;
-                    this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+              /* EMITIR TASA DEL DÍA */
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                this.tasaService.tasa.next(this.cambio_act.toString());
+                this.tasaCambio = this.cambio_act.toString();
 
-                    setTimeout(() => {
-                      this.NextMatStepper();
-                    }, 300);
+                if (this.listContratos.length === 0) {
+                  this.dni?.setValue('');
+                  reject()
+                  return;
+                }
+
+                this.closeAlert2();
+                this.readonlyDNI = true;
+                this.idContrato = this.listContratos[0].id_contrato;
+                this.nameClient = this.listContratos[0].cliente;
+                this.setGreeting(this.nameClient)
+                this.name?.setValue(res[0].cliente);
+                this.nroContrato?.setValue(this.listContratos[0].contrato);
+                this.SendOption(0, 3, this.listContratos[0].contrato);
+                this.monto_pend_conciliar =
+                  this.listContratos[0].monto_pend_conciliar;
+                this.filterBankByFranquicia(this.listContratos[0].franquicia);
+                this.dni?.setValue(dni_);
+                this.searchInfoEquipos(dni_)
+                  .then((result) => { })
+                  .catch((err) => {
+                    console.log('falló el ingreso de datos del usuario');
+                    reject()
+                  });
+              }
+
+              if (this.registerPayService.linkedToContractProcess != 'approved') {
+                //Busco su numeros de comprobantes
+                this.registerPayService
+                  .getComprobantClient2(dni_)
+                  .then((comprobante: any) => {
+                    if (comprobante.length > 0) {
+                      //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                      this.AllComprobantesPago = comprobante;
+
+                      let temp = comprobante
+                        .slice()
+                        .sort(
+                          (a: any, b: any) =>
+                            b.Fecha.getTime() - a.Fecha.getTime()
+                        );
+                      temp = temp.slice(0, 5);
+                      this.ValidateReferenciaLast(temp);
+                    }
+                  })
+                  .catch((error: any) => console.error(error));
+              }
+
+              /*Esto se hacer por si el usuario preciomente selecciona un banco */
+              if (this.BancoNacional(this.banco)) {
+                if (
+                  !Number.isNaN(parseFloat(this.listContratos[0].saldo)) ||
+                  !Number.isNaN(
+                    parseFloat(this.registerPayService.amountCustomerContract)
+                  )
+                ) {
+                  if (
+                    this.registerPayService.linkedToContractProcess != 'approved'
+                  ) {
+                    this.validateIfAmountIsNegativer(
+                      this.listContratos[0].saldo,
+                      true
+                    );
+
+                    this.lastAmount = parseFloat(
+                      this.listContratos[0].saldo
+                    ).toFixed(2);
+
+                    this.saldoUSD = parseFloat(
+                      this.listContratos[0].saldo
+                    ).toFixed(2);
+                    this.saldoBs = (
+                      parseFloat(this.listContratos[0].saldo) * this.cambio_act
+                    ).toFixed(2);
+                    this.subscription = parseFloat(
+                      this.listContratos[0].subscription
+                    ).toFixed(2);
                   } else {
-                    //console.log('Estoy aca');
-                    this.invalidForm('Esta cuenta es exonerada');
-                    this.lastDni = '';
-                    this.AppFibex = false;
-                    this.showMainMenuPage2 = false;
-                    this.navActive = PAGES_NAVIGATION.LOGIN;
-                    return;
+                    // this.registerPayService.amountCustomerContract
+                    this.validateIfAmountIsNegativer(
+                      this.registerPayService.amountCustomerContract,
+                      true
+                    );
+
+                    this.lastAmount = parseFloat(
+                      this.registerPayService.amountCustomerContract
+                    ).toFixed(2);
+
+                    this.saldoUSD = parseFloat(
+                      this.registerPayService.amountCustomerContract
+                    ).toFixed(2);
+                    this.saldoBs = (
+                      parseFloat(this.registerPayService.amountCustomerContract) *
+                      this.cambio_act
+                    ).toFixed(2);
+                    this.subscription = parseFloat('0').toFixed(2);
                   }
                 } else {
-                  this.SearchSectorAbonado();
+                  this.amount?.setValue(0);
+                  this.lastAmount = '0';
                 }
+              } else {
+                //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
+                this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(
+                  2
+                );
+                this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(
+                  2
+                );
+                this.saldoBs = (
+                  parseFloat(this.listContratos[0].saldo) * this.cambio_act
+                ).toFixed(2);
+                this.subscription = parseFloat(
+                  this.listContratos[0].subscription
+                ).toFixed(2);
+              }
+
+              //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
+              localStorage.setItem(
+                'Name',
+                this._seguridadDatos.encrypt(this.nameClient)
+              );
+              localStorage.setItem(
+                'Monto',
+                this._seguridadDatos.encrypt(this.saldoUSD)
+              );
+              localStorage.setItem(
+                'MontoBs',
+                this._seguridadDatos.encrypt(this.saldoBs)
+              );
+              localStorage.setItem(
+                'Subscription',
+                this._seguridadDatos.encrypt(this.subscription)
+              );
+              localStorage.setItem(
+                'idContrato',
+                this._seguridadDatos.encrypt(this.idContrato)
+              );
+              localStorage.setItem(
+                'dni',
+                this._seguridadDatos.encrypt(this.dni?.value)
+              );
+              localStorage.setItem(
+                'Abonado',
+                this._seguridadDatos.encrypt(this.abonado)
+              );
+
+              if (this.listContratos.length === 1) {
+                this.listContratos.find((cliente) => {
+                  this.verifySaldo(cliente.saldo);
+                });
               }
             } else {
+              //this.hcaptcha.reset()
+              this.nameClient = '';
+              this.userGreeting = '';
+              this.saldoUSD = '';
+              this.saldoBs = '';
+              this.lastAmount = '';
+              this.dniConsulted = true;
+              this.patchValueAllForm();
+              this.invalidForm('Debe colocar una cédula válida');
+              //this.verifyDNI = false;
+              this.lastDni = '';
+              setTimeout(() => this.closeAlert(), 1000);
+              this.banksFiltered = [...this.bankList];
+              this.listContratos = [];
+              this.banksFiltered = [...this.bankList];
+              reject()
+            }
+          } catch (error) {
+            if (this.registerPayService.linkedToContractProcess == 'approved') {
+              this.tasaService.getSaldoBCV().subscribe((res) => {
+                this.tasaCambio = res;
+              });
+              this.closeAlert2();
+              this.listContratos = [];
+              this.ComprobantesPago = [];
+              //this.verifyDNI = true;
+              this.SendOption(0, 0, dni_);
+
               this.dni?.setValue(dni_);
+              // this.searchInfoEquipos(dni_);
               this.nameClient = String(dni_);
               this.setGreeting(this.nameClient)
               this.name?.setValue(String(dni_));
-              this.cambio_act = Number(this.tasaCambio);
-            }
+              this.cambio_act = parseFloat(this.tasaCambio);
+              this.AppFibex = true;
+              this.showMainMenuPage2 = true;
+              this.showDniForm = false;
+              // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+              this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+              resolve()
 
-            /* EMITIR TASA DEL DÍA */
-            if (this.registerPayService.linkedToContractProcess != 'approved') {
-              this.tasaService.tasa.next(this.cambio_act.toString());
-              this.tasaCambio = this.cambio_act.toString();
-
-              if (this.listContratos.length === 0) {
-                this.dni?.setValue('');
-                return;
-              }
-
-              this.closeAlert2();
-              this.readonlyDNI = true;
-              this.idContrato = this.listContratos[0].id_contrato;
-              this.nameClient = this.listContratos[0].cliente;
-              this.setGreeting(this.nameClient)
-              this.name?.setValue(res[0].cliente);
-              this.nroContrato?.setValue(this.listContratos[0].contrato);
-              this.SendOption(0, 3, this.listContratos[0].contrato);
-              this.monto_pend_conciliar =
-                this.listContratos[0].monto_pend_conciliar;
-              this.filterBankByFranquicia(this.listContratos[0].franquicia);
-              this.dni?.setValue(dni_);
-              this.searchInfoEquipos(dni_)
-                .then((result) => { })
-                .catch((err) => {
-                  console.log('falló el ingreso de datos del usuario');
-                });
-            }
-
-            if (this.registerPayService.linkedToContractProcess != 'approved') {
-              //Busco su numeros de comprobantes
-              this.registerPayService
-                .getComprobantClient2(dni_)
-                .then((comprobante: any) => {
-                  if (comprobante.length > 0) {
-                    //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
-                    this.AllComprobantesPago = comprobante;
-
-                    let temp = comprobante
-                      .slice()
-                      .sort(
-                        (a: any, b: any) =>
-                          b.Fecha.getTime() - a.Fecha.getTime()
-                      );
-                    temp = temp.slice(0, 5);
-                    this.ValidateReferenciaLast(temp);
-                  }
-                })
-                .catch((error: any) => console.error(error));
-            }
-
-            /*Esto se hacer por si el usuario preciomente selecciona un banco */
-            if (this.BancoNacional(this.banco)) {
-              if (
-                !Number.isNaN(parseFloat(this.listContratos[0].saldo)) ||
-                !Number.isNaN(
-                  parseFloat(this.registerPayService.amountCustomerContract)
-                )
-              ) {
+              /*Esto se hacer por si el usuario preciomente selecciona un banco */
+              if (this.BancoNacional(this.banco)) {
                 if (
-                  this.registerPayService.linkedToContractProcess != 'approved'
+                  !Number.isNaN(
+                    parseFloat(this.registerPayService.amountCustomerContract)
+                  )
                 ) {
-                  this.validateIfAmountIsNegativer(
-                    this.listContratos[0].saldo,
-                    true
-                  );
-
-                  this.lastAmount = parseFloat(
-                    this.listContratos[0].saldo
-                  ).toFixed(2);
-
-                  this.saldoUSD = parseFloat(
-                    this.listContratos[0].saldo
-                  ).toFixed(2);
-                  this.saldoBs = (
-                    parseFloat(this.listContratos[0].saldo) * this.cambio_act
-                  ).toFixed(2);
-                  this.subscription = parseFloat(
-                    this.listContratos[0].subscription
-                  ).toFixed(2);
-                } else {
                   // this.registerPayService.amountCustomerContract
                   this.validateIfAmountIsNegativer(
                     this.registerPayService.amountCustomerContract,
                     true
                   );
-
                   this.lastAmount = parseFloat(
                     this.registerPayService.amountCustomerContract
                   ).toFixed(2);
-
-                  this.saldoUSD = parseFloat(
-                    this.registerPayService.amountCustomerContract
-                  ).toFixed(2);
-                  this.saldoBs = (
-                    parseFloat(this.registerPayService.amountCustomerContract) *
+                  this.saldoUSD = (
+                    parseFloat(this.registerPayService.amountCustomerContract) /
                     this.cambio_act
                   ).toFixed(2);
-                  this.subscription = parseFloat('0').toFixed(2);
+                  this.saldoBs = parseFloat(
+                    this.registerPayService.amountCustomerContract
+                  ).toFixed(2);
+                  this.subscription = parseFloat('No aplica').toFixed(2);
+                } else {
+                  this.amount?.setValue(0);
+                  this.lastAmount = '0';
                 }
               } else {
-                this.amount?.setValue(0);
-                this.lastAmount = '0';
-              }
-            } else {
-              //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
-              this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(
-                2
-              );
-              this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(
-                2
-              );
-              this.saldoBs = (
-                parseFloat(this.listContratos[0].saldo) * this.cambio_act
-              ).toFixed(2);
-              this.subscription = parseFloat(
-                this.listContratos[0].subscription
-              ).toFixed(2);
-            }
-
-            //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
-            localStorage.setItem(
-              'Name',
-              this._seguridadDatos.encrypt(this.nameClient)
-            );
-            localStorage.setItem(
-              'Monto',
-              this._seguridadDatos.encrypt(this.saldoUSD)
-            );
-            localStorage.setItem(
-              'MontoBs',
-              this._seguridadDatos.encrypt(this.saldoBs)
-            );
-            localStorage.setItem(
-              'Subscription',
-              this._seguridadDatos.encrypt(this.subscription)
-            );
-            localStorage.setItem(
-              'idContrato',
-              this._seguridadDatos.encrypt(this.idContrato)
-            );
-            localStorage.setItem(
-              'dni',
-              this._seguridadDatos.encrypt(this.dni?.value)
-            );
-            localStorage.setItem(
-              'Abonado',
-              this._seguridadDatos.encrypt(this.abonado)
-            );
-
-            if (this.listContratos.length === 1) {
-              this.listContratos.find((cliente) => {
-                this.verifySaldo(cliente.saldo);
-              });
-            }
-          } else {
-            //this.hcaptcha.reset()
-            this.nameClient = '';
-            this.userGreeting = '';
-            this.saldoUSD = '';
-            this.saldoBs = '';
-            this.lastAmount = '';
-            this.dniConsulted = true;
-            this.patchValueAllForm();
-            this.invalidForm('Debe colocar una cédula válida');
-            //this.verifyDNI = false;
-            this.lastDni = '';
-            setTimeout(() => this.closeAlert(), 1000);
-            this.banksFiltered = [...this.bankList];
-            this.listContratos = [];
-            this.banksFiltered = [...this.bankList];
-          }
-        } catch (error) {
-          if (this.registerPayService.linkedToContractProcess == 'approved') {
-            this.tasaService.getSaldoBCV().subscribe((res) => {
-              this.tasaCambio = res;
-            });
-            this.closeAlert2();
-            this.listContratos = [];
-            this.ComprobantesPago = [];
-            //this.verifyDNI = true;
-            this.SendOption(0, 0, dni_);
-
-            this.dni?.setValue(dni_);
-            // this.searchInfoEquipos(dni_);
-            this.nameClient = String(dni_);
-            this.setGreeting(this.nameClient)
-            this.name?.setValue(String(dni_));
-            this.cambio_act = parseFloat(this.tasaCambio);
-            this.AppFibex = true;
-            this.showMainMenuPage2 = true;
-            this.showDniForm = false;
-            this.navActive = PAGES_NAVIGATION.MAIN_MENU;
-
-            /*Esto se hacer por si el usuario preciomente selecciona un banco */
-            if (this.BancoNacional(this.banco)) {
-              if (
-                !Number.isNaN(
-                  parseFloat(this.registerPayService.amountCustomerContract)
-                )
-              ) {
-                // this.registerPayService.amountCustomerContract
-                this.validateIfAmountIsNegativer(
-                  this.registerPayService.amountCustomerContract,
-                  true
-                );
+                //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
                 this.lastAmount = parseFloat(
                   this.registerPayService.amountCustomerContract
                 ).toFixed(2);
@@ -3247,61 +3278,50 @@ export class FormComponent implements AfterViewInit, OnInit {
                   this.registerPayService.amountCustomerContract
                 ).toFixed(2);
                 this.subscription = parseFloat('No aplica').toFixed(2);
-              } else {
-                this.amount?.setValue(0);
-                this.lastAmount = '0';
+              }
+              if (NextContrato) {
+                this.AppFibex = true;
+                this.showMainMenuPage2 = true
+                this.showDniForm = false;
+                // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+                this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+                resolve()
+               /*  setTimeout(() => {
+                  this.NextMatStepper();
+                }, 300); */
               }
             } else {
-              //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
-              this.lastAmount = parseFloat(
-                this.registerPayService.amountCustomerContract
-              ).toFixed(2);
-              this.saldoUSD = (
-                parseFloat(this.registerPayService.amountCustomerContract) /
-                this.cambio_act
-              ).toFixed(2);
-              this.saldoBs = parseFloat(
-                this.registerPayService.amountCustomerContract
-              ).toFixed(2);
-              this.subscription = parseFloat('No aplica').toFixed(2);
+              this.nameClient = '';
+              this.userGreeting = '';
+              this.saldoUSD = '';
+              this.saldoBs = '';
+              this.dniConsulted = true;
+              this.lastDni = '';
+              this.name?.setValue('');
+              this.alertFindDni('Disculpe intente de nuevo', '');
+              setTimeout(() => this.closeAlert(), 1000);
+              reject()
             }
-            if (NextContrato) {
-              this.AppFibex = true;
-              this.showMainMenuPage2 = true
-              this.showDniForm = false;
-              this.navActive = PAGES_NAVIGATION.MAIN_MENU;
-              setTimeout(() => {
-                this.NextMatStepper();
-              }, 300);
-            }
-          } else {
-            this.nameClient = '';
-            this.userGreeting = '';
-            this.saldoUSD = '';
-            this.saldoBs = '';
-            this.dniConsulted = true;
-            this.lastDni = '';
-            this.name?.setValue('');
-            this.alertFindDni('Disculpe intente de nuevo', '');
-            setTimeout(() => this.closeAlert(), 1000);
           }
-        }
-      });
-    } else {
-      // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
-      // Se quedan los valores anteriores de la consulta anterior
-      //this.hcaptcha.reset()
-      this.dni?.setValue('');
-      this.nameClient = '';
-      this.userGreeting = '';
-      this.saldoUSD = '';
-      this.saldoBs = '';
-      this.dniConsulted = true;
-      this.lastDni = '';
-      this.name?.setValue('');
-      this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
-      setTimeout(() => this.closeAlert(), 1000);
-    }
+        });
+      } else {
+        // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
+        // Se quedan los valores anteriores de la consulta anterior
+        //this.hcaptcha.reset()
+        this.dni?.setValue('');
+        this.nameClient = '';
+        this.userGreeting = '';
+        this.saldoUSD = '';
+        this.saldoBs = '';
+        this.dniConsulted = true;
+        this.lastDni = '';
+        this.name?.setValue('');
+        this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
+        setTimeout(() => this.closeAlert(), 1000);
+        reject()
+      }
+    })
+
   }
 
   lengthContrat() {
@@ -3562,12 +3582,13 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.AppFibex = true;
       this.showMainMenuPage2 = true;
       this.showDniForm = false;
-      this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+      // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+      this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
 
       //Para lograr un efecto de transición
-      setTimeout(() => {
+     /*  setTimeout(() => {
         this.NextMatStepper();
-      }, 300);
+      }, 300); */
     } else {
       console.log('Pase por aqui2');
       this.invalidForm('Esta cuenta es exonerada');
@@ -4781,9 +4802,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     /*// * Handler function whose index is the current position of the navigation */
     const HANDLE_NAV_FN: Partial<IHandlerNav> = {
 
-      [PAGES_NAVIGATION.MAIN_MENU]: () => {
-        console.log('PASO 1', this.navActive)
-        // this.AppFibex = false;
+      [PAGES_NAVIGATION.PAYMENT_CARDS]: () => {
         this.firstFormFibex.get('dni')?.setValue('');
         this.ResetForm()
         this.listContratos = [];
@@ -4791,13 +4810,6 @@ export class FormComponent implements AfterViewInit, OnInit {
         this.showMainMenuPage2 = false;
         this.showDniForm = true;
         this.navActive = PAGES_NAVIGATION.LOGIN;
-      },
-
-      [PAGES_NAVIGATION.PAYMENT_CARDS]: () => {
-        console.log('PASO 2', this.navActive)
-        this.FormaPago(31);
-        this.showMainMenuPage2 = true;
-        this.navActive = PAGES_NAVIGATION.MAIN_MENU
       },
 
       [PAGES_NAVIGATION.PAYMENT_FORMS]: () => {
@@ -4939,8 +4951,19 @@ export class FormComponent implements AfterViewInit, OnInit {
     }
   }
 
-  public goToPayment = () => {
-    
+  /**
+   * Function to go to payment cards
+   */
+  public goToPayment = async () => {
+    try {
+      
+      await this.searchServicesv2(this.dni, false, true) //* => to login
+      console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
+      this.FormaPago(30) //* => go To payment cards
+
+    } catch (error) {
+      console.error(error) 
+    }
   }
 
 }
