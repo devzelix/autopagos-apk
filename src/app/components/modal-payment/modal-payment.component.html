@@ -1,37 +1,49 @@
-<section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated fadeInUp">
+<section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated fadeIn">
 
-    <div class="modal-payment">
+    <div class="modal-payment animated fadeInUp">
         <div class="btn-close-section">
-            <button type="button">
+            <button type="button" (click)="onCloseModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m7 7l10 10M7 17L17 7"/></svg>
             </button>
         </div>
-        <h1 class="text-4xl text-center">Transacción de Débito</h1>
+        <h1 class="text-4xl text-center">COMFIRMAR DATOS</h1>
 
-        <h4 class="text-xl text-center mb-4" > Ingrese los datos</h4>
+        <!-- <h4 class="text-xl text-center mb-4" > Ingrese los datos</h4> -->
+        
+        <app-tab-dni
+            (typeDNIEmitter)="onLoginTypeChange($event)"
+        >
+        </app-tab-dni>
 
         <div class="modal-pay-content">
 
             <form [formGroup]="formPayment" (ngSubmit)="onSubmit($event)" class="modal-pay-form-section">
+
+
                 <div>
-                <label for="cedula">Cédula del cliente:</label>
-                <input (focus)="onFocus('dni')" id="cedula" formControlName="dni" type="number" required autofocus/>
-                <div *ngIf="formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched">
-                    <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La cédula es requerida.</small>
-                    <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten números.</small>
-                </div>
+                <label for="dni">Cédula del cliente:</label>
+                <span class="input-dni-container flex items-center">
+                    <span class="icon-type-dni">
+                        {{typeDNI}}
+                    </span>
+                    <input id="dni" formControlName="dni" type="number" required autofocus/>
+                </span>
+                    <div *ngIf="formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched">
+                        <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La cédula es requerida.</small>
+                        <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten números.</small>
+                    </div>
                 </div>
             
                 <div>
                 <label for="mount">Monto Bs:</label>
-                <input (focus)="onFocus('mount')" id="mount" formControlName="mount" type="number" required />
+                <input id="mount" formControlName="mount" type="number" required [disabled]="true"/>
                 <div *ngIf="formPayment.get('mount')?.invalid && formPayment.get('mount')?.touched">
                     <small *ngIf="formPayment.get('mount')?.errors?.['required']">El monto es requerido.</small>
                     <small *ngIf="formPayment.get('mount')?.errors?.['min']">El monto debe ser mayor que 0.</small>
                 </div>
                 </div>
             
-                <div>
+                <!-- <div>
                 <label>Tipo de Cuenta:</label>
                 <div class="not-margin-bottom">
                     <div class="input-radio-custom important-row items-center justify-center">
@@ -46,7 +58,7 @@
                 <div *ngIf="formPayment.get('accountType')?.invalid && formPayment.get('accountType')?.touched">
                     <small>El tipo de cuenta es requerido.</small>
                 </div>
-                </div>
+                </div> -->
             
                 <button type="submit" [disabled]="formPayment.invalid" class="bg-input-primary next-form-pay-btn">Aceptar</button>
             </form>

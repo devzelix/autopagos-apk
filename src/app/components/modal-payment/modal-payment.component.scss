@@ -54,10 +54,11 @@ section.modal-pay-container {
             font-size: 1.3rem;
         }
         input {
-            min-height: 3rem;
+            min-height: 3.9rem;
             border-radius: 11px;
             font-size: 1.9rem;
             padding: 0 2rem;
+            transition: all 0.3s ease-in-out;
         }
     }
 }
@@ -83,4 +84,14 @@ small {
     width: 100%;
     border-radius: 1rem;
     font-size: 1.6rem;
+}
+.activeInputPay {
+    background: lightblue;
+}
+span span.icon-type-dni {
+    width: 2.5rem;
+    font-size: 2rem;
+    margin-right: 1rem;
+    max-width: 2.5rem;
+    min-width: 2.5rem;
 }

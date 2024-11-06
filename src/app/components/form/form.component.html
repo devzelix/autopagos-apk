@@ -334,18 +334,14 @@
 
       <!-- PAYMENT CARDS STEP -->
       <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
-        <h6 class="txt-dark text-2xl font-bold text-center"> Seleccione su tipo de pago </h6>
+        <!-- <h6 class="txt-dark text-2xl font-bold text-center mb-6"> Seleccione su tipo de pago </h6> -->
         
-        <!-- <div class="spinner-pay">
-          <mat-spinner *ngIf="LoadingPagoPendiente"></mat-spinner>
-        </div> -->
-        <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
+        <!-- <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
           <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
             [ngClass]="{ hide: option.tipopago === 'Criptomoneda' }">
-            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size" (click)="showConsole(option)">
+            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size">
 
               <span *ngSwitchDefault class="flex_center cardflex2">
-                <!--  -->
                 <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp" (click)="TipoPago(option.idpago)">
                   <h5 class="TitlePerson text-gray-800 payment-type-title text_ellipsis">{{ option.tipopago }}</h5>
                   <img style="width: 100%" src="{{ option.image }}" alt="{{ option.alt }}" />
@@ -354,7 +350,53 @@
 
             </span>
           </div>
+        </div> -->
+        <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
+          
+          <div class="payment-menu-subscription-section">
+            <h4 class="name-client text-center text-base">
+              {{ saldoUSD | negativeAmount }} USD |
+              {{ saldoBs | negativeAmount }} Bs <strong>{{ saldoText }}</strong>
+            </h4>
+          </div>
+
+          <div class="payment-menu-months">
+            <h4 class="text-4xl font-bold mb-4 text-center">Seleccione los meses a pagar</h4>
+            <div class="payment-menu-months-grid">
+
+                <div *ngFor="let item of [1,2,3,4,5,6];let i = index" (click)="setMonthPayment(item)" class="payment-grid-item bg-primary-gradient" [ngClass]="{'payment-grid-item-active': activePaymentMonth === item}">
+                  {{item}} {{( item > 1 ? 'Meses' : 'Mes' )}}
+                </div>
+
+            </div>
+          </div>
+          
+
+          <div class="payment-menu-item">
+
+
+            <div class="mount-pay-container flex flex-col justify-center items-center">
+              <h4>Monto:</h4>
+              <div class="payment-menu-mount-section">
+                <h1 class="payment-mount-small"> {{mountTotalMonthBs}} &nbsp; <small>Bs</small></h1>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M10.47 2.22a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H5.75a.75.75 0 0 1 0-1.5h5.69l-.97-.97a.75.75 0 0 1 0-1.06m-4.94 6a.75.75 0 0 1 0 1.06l-.97.97h5.69a.75.75 0 0 1 0 1.5H4.56l.97.97a.75.75 0 1 1-1.06 1.06l-2.25-2.25a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0" clip-rule="evenodd"/></svg>
+                <h1> {{mountTotalMonthUSD}} &nbsp; <small>USD</small></h1>
+              </div>
+
+            </div>
+            
+           
+          </div>
+
+
         </div>
+
+        <button
+        class="form-control-btn w-full payment-menu-success-btn" type="button" role="button"
+        (click)="handleShowTransactionModal(true)" [disabled]="monthPayCount<1">
+        Pagar
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" fill-rule="evenodd"><path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"/></g></svg>
+      </button>
 
       </div>
       <!-- END PAYMENT CARDS STEP -->
@@ -400,7 +442,7 @@
           </div>
 
           <br>
-          <button type="button" class="grid-cards-item forma-pago ng-star-inserted  btn-card-customized-1" (click)="_requestCard()">
+          <button type="button" class="grid-cards-item forma-pago ng-star-inserted  btn-card-customized-1">
             Pagar
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
               class="bi bi-credit-card-fill" viewBox="0 0 16 16">
@@ -656,5 +698,10 @@
 
 
 <!-- MODAL DE TRANSACCION DEL PAGO -->
-<app-modal-payment *ngIf="showTransactionModal">
+<app-modal-payment *ngIf="showTransactionModal"
+  [paymentType]="selectedPaymentType"
+  [dniValue]="this.dni?.value"
+  [mountValue]="mountTotalMonthBs"
+  (closeEmmit)="handleShowTransactionModal(false)"
+  (onSubmitPayForm)="resetAllForms()" >
 </app-modal-payment>

@@ -10,11 +10,11 @@ export class VposuniversalRequestService {
   constructor() { }
 
   //#-----------------------------Conect to API and Test-----------------------------------#//
-  closeAPI(){//Close Conecction to API
-    axios.get(environment.API_URL+'/api/donwservice')
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
-  }
+  // closeAPI(){//Close Conecction to API
+  //   axios.get(environment.API_URL+'/api/donwservice')
+  //   .then(res => console.log(res))
+  //   .catch(err => console.log(err));
+  // }
 
   statusOK(_dataApi: any){//Test connection to API
     axios.get(environment.API_URL+'/api/pingpage')
@@ -33,12 +33,12 @@ export class VposuniversalRequestService {
         if(_ci != null && _ci != '' && _amount ) {
           axios({
             method: 'get',
-            url: environment.API_URL+'/api/metodo/request/cardpay/'+_ci+'/'+_amount,
-            /*data: {
-              "accion":"tarjeta",
-              "montoTransaccion": _amount,
-              "cedula": _ci
-            }*/
+            url: environment.API_URL+'/api/metodo/request/cardpay',
+            headers: {
+              'token': environment.TokenAPILaravelVPOS,
+              'monto': _amount,
+              'ci': _ci
+            }
           }).then(res => {
               console.log(res);
               resolve(res)

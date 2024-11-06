@@ -1,0 +1,27 @@
+.tabs-login-type-container h6 {
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    color: #ffffffed;
+  }
+  .tabs-login-type {
+    button {
+      padding: 1rem 2rem;
+      border-radius: 9rem;
+      // background: rgb(223 228 240 / 40%);
+      background: lightblue;
+      color: white;
+      overflow: hidden;
+      font-size: 1.3rem;
+      // transition: all .3s ease-in-out;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+  
+      &.activeTab {
+        background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+      }
+      svg {
+        font-size: 1.9rem;
+      }
+    }
+  }

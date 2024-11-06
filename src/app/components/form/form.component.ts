@@ -81,6 +81,7 @@ import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
+import { IPaymentTypes } from 'src/app/interfaces/payment-opt';
 
 export interface DialogData {
   animal: string;
@@ -293,6 +294,11 @@ export class FormComponent implements AfterViewInit, OnInit {
   public navActive: PAGES_NAVIGATION = PAGES_NAVIGATION.LOGIN;
   public ENUM_NAV: typeof PAGES_NAVIGATION = PAGES_NAVIGATION;
   public showTransactionModal: boolean = false;
+  public selectedPaymentType: IPaymentTypes;
+  public monthPayCount: number = 1;
+  public mountTotalMonthBs: string = '0.00';
+  public mountTotalMonthUSD: string = '0.00'
+  public activePaymentMonth: number = 1;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -320,7 +326,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
+    // private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
   ) //private hcaptchaService: NgHcaptchaService
   {
     this.cacheService.clear();
@@ -929,8 +935,8 @@ export class FormComponent implements AfterViewInit, OnInit {
     }
   }
 
-  TipoPago(x: number) {
-    this.ShowOptionPagoMovil = false;
+  TipoPago(idType: number) {
+    /* this.ShowOptionPagoMovil = false;
     this.ShowOptionBNCPagoMovil = false;
     this.tipo_pago = x;
     this.ConsultarPagoMovilboolean = false;
@@ -943,14 +949,15 @@ export class FormComponent implements AfterViewInit, OnInit {
     this.Otros = false;
     this.PrimeraVez = false;
     this.ShowFormDebito100x100 = false;
-    this.ShowalertBankNationals = false;
+    this.ShowalertBankNationals = false; */
     this.BankSelectPagoMovil = false;
     this.ShowOptionPagoMovil = false;
     this.showMainMenuPage2 = false;
     /* this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS; */
+    this.selectedPaymentType = (idType === 28) ? 'Internacional' : (idType === 1) ? 'Nacional' : 'Débito'
     this.showTransactionModal = true
 
-    //Modal para pagar Zelle
+    /* //Modal para pagar Zelle
     if (x == 10) {
       //this.alertInfo("Estamos haciendo ajustes en el correo","No realize pagos a este Zelle hasta nuevo aviso");
       this.openDialogZelle();
@@ -984,9 +991,6 @@ export class FormComponent implements AfterViewInit, OnInit {
       ]);
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Otros = true;
-      /* setTimeout(() => {
-        this.NextMatStepper();
-      }, 300); */
       this.navActive = PAGES_NAVIGATION.PAYMENT_FORMS;
     }
     //Crédito
@@ -1003,9 +1007,6 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.DebitoCredito.get('typeCuenta')?.updateValueAndValidity();
       this.Creditoboolaean = !this.Creditoboolaean;
       this.Otros = true;
-      /* setTimeout(() => {
-        this.NextMatStepper();
-      }, 300); */
       this.navActive = PAGES_NAVIGATION.PAYMENT_FORMS;
     }
     //Pago Movil
@@ -1019,9 +1020,6 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.PgMovilRegForm.get('pref_ci')?.setValue('V');
       this.PgMovilRegForm.get('c_i')?.setValue(this.dni?.value);
       this.Otros = true;
-      setTimeout(() => {
-        this.NextMatStepper();
-      }, 300);
     }
     //Transferencia
     if (x == 4) {
@@ -1057,9 +1055,6 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.firstFormFibex.get('bank')?.setValue(BankZelle[0].Banco);
       console.log('BANK ZELLE >>>>>>>>>>>>>>>>>>', BankZelle)
       this.bankSelected(BankZelle[0]);
-      /* setTimeout(() => {
-        this.NextMatStepper();
-      }, 300); */
     }
     //Paypal
     if (x == 9) {
@@ -1096,12 +1091,9 @@ export class FormComponent implements AfterViewInit, OnInit {
       //this.PagoMetodosHTML2 = DebitoInmediato;
       this.ShowFormDebito100x100 = true;
       this.Otros = true;
-      /* setTimeout(() => {
-        this.NextMatStepper();
-      }, 300); */
-    }
+    } */
 
-    console.log('TIPO PAGO', this.PagoMetodosHTML2, x)
+    console.log('TIPO PAGO', this.PagoMetodosHTML2, idType)
   }
 
   FormaPago(x: number) {
@@ -1146,6 +1138,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.PagoMetodosHTML2 = FormasDePago;
     }
     this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+    this.loadInitMonthMountValues()
     console.log('FORMA PAGO', this.PagoMetodosHTML2, x)
   }
 
@@ -2575,6 +2568,23 @@ export class FormComponent implements AfterViewInit, OnInit {
     this.ShowBankList = false;
     this.ShowFormDebito100x100 = false;
     this.ReciboPayBNC = false;
+  }
+
+  /**
+   * Function to reset all
+   */
+  public resetAllForms = () => {
+    this.firstFormFibex.reset()
+    this.handleShowTransactionModal(false)
+    this.loginTypeSelectValue = 'V';
+    this.userGreeting  = '';
+    this.userServices  = [];
+    this.showMainMenuPage2 = false;
+    this.showDniForm = true;
+    this.navActive = PAGES_NAVIGATION.LOGIN;
+    this.AppFibex = false;
+
+    this.ScrollUp();
   }
 
   Contador() {
@@ -4750,15 +4760,12 @@ export class FormComponent implements AfterViewInit, OnInit {
   //###########################################################################################################################################//
   //Funtions VPOSUniversal PINPAD// -By:MR-
 
-  public _requestCard() {
-    this._ApiVPOS.cardRequest('V1000000', '0,01');
-  }
+  // public _requestCard() {
+  //   this._ApiVPOS.cardRequest('V1000000', '0,01');
+  // }
 
   //#FIN#//Funtions VPOSUniversal PINPAD//#FIN#//
   //###########################################################################################################################################//
-
-  //###########################################################################################################################################//
-  //Funtions KeyBoard on screen // -By:MR-
 
   public onTecladoInput(value: string): void {
     // this.inputValue += value; // Agregar el valor recibido al input
@@ -4959,11 +4966,54 @@ export class FormComponent implements AfterViewInit, OnInit {
       
       await this.searchServicesv2(this.dni, false, true) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
+      this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
 
     } catch (error) {
       console.error(error) 
     }
+  }
+
+  /**
+   * Function to handle the transaction modal visibility
+   * @param visibility value
+   */
+  public handleShowTransactionModal = (valueShow: boolean) => {
+    this.showTransactionModal = valueShow
+  }
+
+  /**
+   * Function to handle the month count
+   * @param processType type of the process
+   */
+  public handleMonthCount = (processType: 'add' | 'subtract') => {
+    if (processType === 'add') {//* => add month count
+      this.monthPayCount++ 
+    }
+    else if (processType === 'subtract' && this.monthPayCount > 0) {//* => subtract month count
+      this.monthPayCount--; 
+    }
+
+    
+    const mountUSDString = (this.monthPayCount * parseFloat(this.subscription)).toFixed(2)
+    this.mountTotalMonthUSD = parseFloat(mountUSDString).toLocaleString()
+    
+    const mountBsString = String(parseFloat(this.mountTotalMonthUSD) * 38.9)
+    console.log('mount', mountBsString, parseFloat(mountBsString),parseFloat(mountBsString).toLocaleString() )
+    this.mountTotalMonthBs = parseFloat(mountBsString).toLocaleString()
+  }
+
+  public loadInitMonthMountValues = () => {
+    const subscription: number = Number(this.subscription)
+    const saldoUSD: number = Number(this.saldoUSD)
+
+    this.monthPayCount = Math.round(saldoUSD / subscription)
+    this.mountTotalMonthUSD = this.saldoUSD
+    this.mountTotalMonthBs = this.saldoBs
+  }
+
+  public setMonthPayment = (numMonth:number) => {
+    this.activePaymentMonth = numMonth;
   }
 
 }
