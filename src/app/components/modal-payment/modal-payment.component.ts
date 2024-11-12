@@ -55,8 +55,7 @@ export class ModalPaymentComponent implements OnInit {
    * On submit payment form
    * @param event 
    */
-  public onSubmit = (event: Event) => {
-    event.preventDefault();
+  public onSubmit = () => {
     if (this.formPayment.valid) {
       console.log(this.formPayment.value);
 

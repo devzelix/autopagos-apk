@@ -59,6 +59,7 @@ section.modal-pay-container {
             font-size: 1.9rem;
             padding: 0 2rem;
             transition: all 0.3s ease-in-out;
+            width: calc(100% - 2.5rem);
         }
     }
 }

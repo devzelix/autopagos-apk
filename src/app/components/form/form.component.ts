@@ -81,7 +81,7 @@ import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
-import { IPaymentTypes } from 'src/app/interfaces/payment-opt';
+import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
 
 export interface DialogData {
   animal: string;
@@ -299,6 +299,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   public mountTotalMonthBs: string = '0.00';
   public mountTotalMonthUSD: string = '0.00'
   public activePaymentMonth: number = 1;
+  public showFormView: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -4781,8 +4782,12 @@ export class FormComponent implements AfterViewInit, OnInit {
     // this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
   }
 
-  public onLoginTypeChange = (value: 'V' | 'J'): void => {
-    this.loginTypeSelectValue = value
+  /**
+   * Function to change the DNI type in the form
+   * @param value 
+  */
+  public onLoginTypeChange = (value: ITypeDNI): void => {
+    this.loginTypeSelectValue = value;
     if (value === 'V') {
       const formValue = this.firstFormFibex.get('dni')?.value;
       this.firstFormFibex.get('dni')?.setValue(formValue.slice(0, 8))
@@ -5014,6 +5019,15 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   public setMonthPayment = (numMonth:number) => {
     this.activePaymentMonth = numMonth;
+    this.mountTotalMonthBs = numMonth > 1 ? ( Number(this.saldoBs) + (Number(this.subscription) * (numMonth - 1))).toFixed(2) : this.saldoBs ;
+  }
+
+  public handleShowFormView = (showValue: boolean) => {
+    this.showFormView = showValue;
+    if (showValue) {
+      const formComponent = document.getElementsByTagName('app-form')[0]
+      formComponent?.classList.add('m-auto')
+    }
   }
 
 }

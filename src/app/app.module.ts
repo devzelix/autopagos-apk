@@ -38,6 +38,8 @@ import { Debit100x100 } from './components/debito-100%/debito-100%';
 import { KeyboardOnScreenComponent } from './components/keyboard-on-screen/keyboard-on-screen.component'; 
 import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
 import { TabDniComponent } from './components/tabs/tab-dni/tab-dni.component';
+import { WelcomeViewComponent } from './components/welcome-view/welcome-view.component';
+import { BtnTransactionComponent } from './components/buttons/btn-transaction/btn-transaction.component';
 
 
 const routes: Routes = [
@@ -76,7 +78,9 @@ const routes: Routes = [
     Debit100x100,
     KeyboardOnScreenComponent,
     ModalPaymentComponent,
-    TabDniComponent
+    TabDniComponent,
+    WelcomeViewComponent,
+    BtnTransactionComponent
   ],
   imports: [
     BrowserModule,

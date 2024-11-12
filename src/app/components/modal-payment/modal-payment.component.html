@@ -1,4 +1,4 @@
-<section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated fadeIn">
+<section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated faster fadeIn">
 
     <div class="modal-payment animated fadeInUp">
         <div class="btn-close-section">
@@ -17,12 +17,12 @@
 
         <div class="modal-pay-content">
 
-            <form [formGroup]="formPayment" (ngSubmit)="onSubmit($event)" class="modal-pay-form-section">
+            <form [formGroup]="formPayment" class="modal-pay-form-section">
 
 
                 <div>
                 <label for="dni">Cédula del cliente:</label>
-                <span class="input-dni-container flex items-center">
+                <span class="input-dni-container flex items-center w-full">
                     <span class="icon-type-dni">
                         {{typeDNI}}
                     </span>
@@ -60,7 +60,13 @@
                 </div>
                 </div> -->
             
-                <button type="submit" [disabled]="formPayment.invalid" class="bg-input-primary next-form-pay-btn">Aceptar</button>
+                <!-- <button type="submit" [disabled]="formPayment.invalid" class="bg-input-primary next-form-pay-btn">Aceptar</button> -->
+                <app-btn-transaction 
+                [disabled]="formPayment.invalid"
+                [btnType]="'submit'"
+                (onBtnClick)="onSubmit()"
+                >
+                </app-btn-transaction>
             </form>
 
             <app-keyboard-on-screen
