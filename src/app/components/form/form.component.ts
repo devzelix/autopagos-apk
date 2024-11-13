@@ -80,7 +80,6 @@ import { IAccount, ResponseMethod } from 'src/app/interfaces/response';
 import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
-import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
 
 export interface DialogData {
@@ -4784,7 +4783,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   /**
    * Function to change the DNI type in the form
-   * @param value 
+   * @param value
   */
   public onLoginTypeChange = (value: ITypeDNI): void => {
     this.loginTypeSelectValue = value;
@@ -4842,7 +4841,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   public checkLatestPayments = async () => {
     try {
       this.nroContrato?.setValue('')
-      
+
       let dni_: string = this.dni?.value;
 
       if (dni_) dni_ = this.ClearCedula(dni_);
@@ -4950,7 +4949,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         } else if (this.listContratos.length > 1) return this.SearchSectorAbonado();//* When is more than 1 account
 
         this.dni?.setValue('');
-        
+
         /* this.dni?.setValue(dni_); */
       }
 
@@ -4968,14 +4967,14 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public goToPayment = async () => {
     try {
-      
+
       await this.searchServicesv2(this.dni, false, true) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
 
     } catch (error) {
-      console.error(error) 
+      console.error(error)
     }
   }
 
@@ -4993,16 +4992,16 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public handleMonthCount = (processType: 'add' | 'subtract') => {
     if (processType === 'add') {//* => add month count
-      this.monthPayCount++ 
+      this.monthPayCount++
     }
     else if (processType === 'subtract' && this.monthPayCount > 0) {//* => subtract month count
-      this.monthPayCount--; 
+      this.monthPayCount--;
     }
 
-    
+
     const mountUSDString = (this.monthPayCount * parseFloat(this.subscription)).toFixed(2)
     this.mountTotalMonthUSD = parseFloat(mountUSDString).toLocaleString()
-    
+
     const mountBsString = String(parseFloat(this.mountTotalMonthUSD) * 38.9)
     console.log('mount', mountBsString, parseFloat(mountBsString),parseFloat(mountBsString).toLocaleString() )
     this.mountTotalMonthBs = parseFloat(mountBsString).toLocaleString()
@@ -5010,16 +5009,24 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   public loadInitMonthMountValues = () => {
     const subscription: number = Number(this.subscription)
-    const saldoUSD: number = Number(this.saldoUSD)
+    let saldoUSD: number = Number(this.saldoUSD)
 
     this.monthPayCount = Math.round(saldoUSD / subscription)
     this.mountTotalMonthUSD = this.saldoUSD
     this.mountTotalMonthBs = this.saldoBs
   }
 
-  public setMonthPayment = (numMonth:number) => {
-    this.activePaymentMonth = numMonth;
-    this.mountTotalMonthBs = numMonth > 1 ? ( Number(this.saldoBs) + (Number(this.subscription) * (numMonth - 1))).toFixed(2) : this.saldoBs ;
+  // public setMonthPayment (numMonth:number) {
+  //   this.activePaymentMonth = numMonth;
+  //   this.mountTotalMonthBs = numMonth > 1 ? ( Number(this.saldoBs) + (Number(this.subscription) * (numMonth - 1))).toFixed(2) : this.saldoBs ;
+  // }
+
+  public mountsToPaymentBs(moutnBs: string){
+    this.mountTotalMonthBs = moutnBs
+  }
+
+  public mountsToPaymentUSD(mountUSD: string){
+    this.mountTotalMonthUSD = mountUSD
   }
 
   public handleShowFormView = (showValue: boolean) => {

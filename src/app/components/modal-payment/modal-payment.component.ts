@@ -109,10 +109,10 @@ export class ModalPaymentComponent implements OnInit {
   }
 
   /**
-   * Function to change to call api method and reliaze payment
+   * Function to call api method and reliaze payment
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
-  public _requestCard() {
+  public requestCard() {
     this._ApiVPOS.cardRequest(this.dniValue, this.mountValue);
   }
 }

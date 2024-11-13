@@ -9,7 +9,7 @@
         <h1 class="text-4xl text-center">COMFIRMAR DATOS</h1>
 
         <!-- <h4 class="text-xl text-center mb-4" > Ingrese los datos</h4> -->
-        
+
         <app-tab-dni
             (typeDNIEmitter)="onLoginTypeChange($event)"
         >
@@ -33,7 +33,7 @@
                         <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten números.</small>
                     </div>
                 </div>
-            
+
                 <div>
                 <label for="mount">Monto Bs:</label>
                 <input id="mount" formControlName="mount" type="number" required [disabled]="true"/>
@@ -42,12 +42,12 @@
                     <small *ngIf="formPayment.get('mount')?.errors?.['min']">El monto debe ser mayor que 0.</small>
                 </div>
                 </div>
-            
+
                 <!-- <div>
                 <label>Tipo de Cuenta:</label>
                 <div class="not-margin-bottom">
                     <div class="input-radio-custom important-row items-center justify-center">
-                        <input (focus)="onFocus('accountType')" type="radio" id="corriente" formControlName="accountType" value="Corriente" class="w-12 h-12" checked /> 
+                        <input (focus)="onFocus('accountType')" type="radio" id="corriente" formControlName="accountType" value="Corriente" class="w-12 h-12" checked />
                         <label for="corriente">Corriente</label>
                     </div>
                     <div class="input-radio-custom important-row items-center justify-center not-margin-bottom">
@@ -59,9 +59,9 @@
                     <small>El tipo de cuenta es requerido.</small>
                 </div>
                 </div> -->
-            
+
                 <!-- <button type="submit" [disabled]="formPayment.invalid" class="bg-input-primary next-form-pay-btn">Aceptar</button> -->
-                <app-btn-transaction 
+                <app-btn-transaction
                 [disabled]="formPayment.invalid"
                 [btnType]="'submit'"
                 (onBtnClick)="onSubmit()"

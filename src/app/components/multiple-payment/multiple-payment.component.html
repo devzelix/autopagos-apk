@@ -1,0 +1,9 @@
+<div [hidden]="viewMultiple">
+  <div class="payment-menu-months-grid">
+
+      <div *ngFor="let item of [1,2,3,4,5,6];let i = index" (click)="setMonthPayment(item)" class="payment-grid-item bg-primary-gradient" [ngClass]="{'payment-grid-item-active': activePaymentMonth === item}">
+        {{ item }} {{ ( item > 1 ? 'Meses' : 'Mes' ) }}
+      </div>
+
+  </div>
+</div>

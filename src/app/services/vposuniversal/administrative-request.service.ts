@@ -16,7 +16,7 @@ export class AdministrativeRequestService {
       try {
         axios({
           method: 'post',
-          url: environment.API_URL+'/api/adminstrative/print/lastvaouvher',
+          url: environment.API_URL_VPOS+'/api/adminstrative/print/lastvaouvher',
           /*data: {
             "accion":"imprimeUltimoVoucher"
           }*/
@@ -47,7 +47,7 @@ export class AdministrativeRequestService {
       try {
         axios({
           method: 'post',
-          url: environment.API_URL+'/api/adminstrative/print/lastvaouvher/processed',
+          url: environment.API_URL_VPOS+'/api/adminstrative/print/lastvaouvher/processed',
           /*data: {
             "accion":"imprimeUltimoVoucherP"
           }*/
@@ -78,7 +78,7 @@ export class AdministrativeRequestService {
       try {
         axios({
           method: 'post',
-          url: environment.API_URL+'/api/administrative/closingbox/pre-closing',
+          url: environment.API_URL_VPOS+'/api/administrative/closingbox/pre-closing',
           /*data: {
             "accion":"precierre"
           }*/
@@ -109,7 +109,7 @@ export class AdministrativeRequestService {
       try {
         axios({
           method: 'post',
-          url: environment.API_URL+'/api/administrative/closingbox',
+          url: environment.API_URL_VPOS+'/api/administrative/closingbox',
           /*data: {
             "accion":"precierre"
           }*/
@@ -140,7 +140,7 @@ export class AdministrativeRequestService {
       try {
         axios({
           method: 'post',
-          url: environment.API_URL+'/api/administrative/closingbox/re-print/lastvaucherclosing',
+          url: environment.API_URL_VPOS+'/api/administrative/closingbox/re-print/lastvaucherclosing',
           /*data: {
             "accion":"UltimoCierre"
           }*/

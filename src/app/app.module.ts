@@ -35,11 +35,13 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { ListBankComponent } from './components/list-bank/list-bank.component';
 import { DebitoCreditoBNCComponent } from './components/debito-credito-bnc/debito-credito-bnc.component';
 import { Debit100x100 } from './components/debito-100%/debito-100%';
-import { KeyboardOnScreenComponent } from './components/keyboard-on-screen/keyboard-on-screen.component'; 
+import { KeyboardOnScreenComponent } from './components/keyboard-on-screen/keyboard-on-screen.component';
 import { ModalPaymentComponent } from './components/modal-payment/modal-payment.component';
 import { TabDniComponent } from './components/tabs/tab-dni/tab-dni.component';
 import { WelcomeViewComponent } from './components/welcome-view/welcome-view.component';
 import { BtnTransactionComponent } from './components/buttons/btn-transaction/btn-transaction.component';
+import { UniquePaymentComponent } from './components/unique-payment/unique-payment.component';
+import { MultiplePaymentComponent } from './components/multiple-payment/multiple-payment.component';
 
 
 const routes: Routes = [
@@ -80,7 +82,9 @@ const routes: Routes = [
     ModalPaymentComponent,
     TabDniComponent,
     WelcomeViewComponent,
-    BtnTransactionComponent
+    BtnTransactionComponent,
+    UniquePaymentComponent,
+    MultiplePaymentComponent
   ],
   imports: [
     BrowserModule,

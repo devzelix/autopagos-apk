@@ -11,13 +11,13 @@ export class VposuniversalRequestService {
 
   //#-----------------------------Conect to API and Test-----------------------------------#//
   // closeAPI(){//Close Conecction to API
-  //   axios.get(environment.API_URL+'/api/donwservice')
+  //   axios.get(environment.API_URL_VPOS+'/api/donwservice')
   //   .then(res => console.log(res))
   //   .catch(err => console.log(err));
   // }
 
   statusOK(_dataApi: any){//Test connection to API
-    axios.get(environment.API_URL+'/api/pingpage')
+    axios.get(environment.API_URL_VPOS+'/api/pingpage')
     .then(res => _dataApi = res).then(res => console.log(res))
     .catch(err => console.log(err));
     //this.closeAPI();
@@ -32,8 +32,8 @@ export class VposuniversalRequestService {
 
         if(_ci != null && _ci != '' && _amount ) {
           axios({
-            method: 'get',
-            url: environment.API_URL+'/api/metodo/request/cardpay',
+            method: 'post',
+            url: environment.API_URL_VPOS+'/metodo/request/cardpay',
             headers: {
               'token': environment.TokenAPILaravelVPOS,
               'monto': _amount,
@@ -71,7 +71,7 @@ export class VposuniversalRequestService {
         if(_ci != null && _ci != '' && Number.isFinite(_amount) && Number.isInteger(_refZelle)) {
           axios({
             method: 'post',
-            url: environment.API_URL+'/api/metodo/request/zelle/'+_ci+'/'+_amount+'/'+_refZelle,
+            url: environment.API_URL_VPOS+'/api/metodo/request/zelle/'+_ci+'/'+_amount+'/'+_refZelle,
             /*data: {
               "accion":"tarjeta",
               "montoTransaccion": _amount,
@@ -110,7 +110,7 @@ export class VposuniversalRequestService {
         if(_ci != null && _ci != '' && Number.isFinite(_amount) && _typeCoin != '') {
           axios({
             method: 'post',
-            url: environment.API_URL+'/api/metodo/request/paymentchange/'+_ci+'/'+_amount+'/'+_typeCoin,
+            url: environment.API_URL_VPOS+'/api/metodo/request/paymentchange/'+_ci+'/'+_amount+'/'+_typeCoin,
             /*data: {
               "accion": "cambio",
               "montoTransaccion": _amount,
