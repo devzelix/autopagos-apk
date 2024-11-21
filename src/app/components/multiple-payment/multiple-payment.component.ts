@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class MultiplePaymentComponent implements OnInit {
 
   @Input() viewMultiple: boolean = true;
+  @Input() activePaymentMonth: number = 1;
   @Input() tasaCambio: string = '0.00';
   @Input() saldoUSD: string = '0.00';
   @Input() saldoBs: string = '0.00';
@@ -18,8 +19,6 @@ export class MultiplePaymentComponent implements OnInit {
 
   @Output() totalBs = new EventEmitter<string>();
   @Output() totalUSD = new EventEmitter<string>();
-
-  public activePaymentMonth: number = 1;
 
   constructor() {}
 
@@ -32,8 +31,8 @@ export class MultiplePaymentComponent implements OnInit {
     let subscriptionBs = Number(this.subscription) * Number(this.tasaCambio);
     this.activePaymentMonth = numMonth;
 
-    this.mountTotalMonthBs = numMonth > 1 ? ( Number(this.saldoBs) + (subscriptionBs * (numMonth- 1))).toFixed(2) : this.saldoBs;
-    this.mountTotalMonthUSD = numMonth > 1? ( Number(this.saldoUSD) + ((Number(this.subscription) * (numMonth - 1)))).toFixed(2) : this.saldoUSD ;
+    this.mountTotalMonthBs = numMonth >= 1 ? ( Number(this.saldoBs) + (Number(this.saldoBs) + (subscriptionBs * (numMonth- 1)))).toFixed(2) : this.saldoBs;
+    this.mountTotalMonthUSD = numMonth >= 1? ( Number(this.saldoUSD) + (Number(this.saldoUSD) + ((Number(this.subscription) * (numMonth - 1))))).toFixed(2) : this.saldoUSD;
 
     this.totalBs.emit(this.mountTotalMonthBs);
     this.totalUSD.emit(this.mountTotalMonthUSD);

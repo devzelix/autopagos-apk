@@ -11,9 +11,17 @@
 
 <div class="payment-menu-months">
   <h4 class="text-4xl font-bold mb-4 text-center">{{ title }}</h4>
+
+  <!-- <div [hidden]="viewUniquePayments">
+
+    <h1>Plan, etc</h1>
+
+  </div> -->
+
   <div class="payment-menu-months-flex">
     <app-multiple-payment
       [viewMultiple]="viewMultiplePayments"
+      [activePaymentMonth]="activePaymentMonth"
       [tasaCambio]="tasaCambio"
       [saldoBs]="saldoBs"
       [saldoUSD]="saldoUSD"
@@ -27,17 +35,21 @@
     ></app-multiple-payment>
   </div>
 
-  <div class="div-more-payments">
-    <button class="btn-more-payments" (click)="morePayments()">{{ morePayment }}</button>
-  </div>
 
 </div>
 
 <div class="payment-menu-item">
 
+
   <div class="mount-pay-container flex flex-col justify-center items-center">
 
-    <h4>Monto:</h4>
+    <div class="div-more-payments flex flex-row justify-center items-center">
+      <h4 class="h4-amount">Monto:</h4>
+
+      <div class="div-btn-more-payments">
+        <button class="btn-more-payments" (click)="morePayments()">{{ morePayment }}</button>
+      </div>
+    </div>
 
     <div class="payment-menu-mount-section">
 

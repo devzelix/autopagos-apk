@@ -20,8 +20,9 @@ export class UniquePaymentComponent implements OnInit {
 
   public activePaymentMonth: number = 1;
   public viewMultiplePayments: boolean = true;
+  public viewUniquePayments: boolean = false;
   public morePayment: string = 'Adelanta tus pagos!!!';
-  public title: string = 'Paga a tiempo tu mensualidad';
+  public title: string = 'Pago de mensualidad';
 
   constructor() {}
 
@@ -31,17 +32,19 @@ export class UniquePaymentComponent implements OnInit {
 
   public morePayments(){
     if (this.viewMultiplePayments === true){
-      this.viewMultiplePayments = false;
-      this.morePayment = 'Pagar un solo mes';
-      this.title = 'Selecione los meses a pagar';
+      this.viewMultiplePayments = false; // To show multiple payments
+      this.viewUniquePayments = true; // To hidden view unique payments
+      this.morePayment = 'Volver'; // To change text from button click
+      this.title = 'Selecione  cuantos meses desea adelantar'; // To change title on view
     } else if (this.viewMultiplePayments === false) {
-      this.viewMultiplePayments = true;
-      this.mountTotalMonthBs = this.saldoBs
-      this.mountTotalMonthUSD = this.saldoUSD
-      this.morePayment = 'Adelanta tus pagos!!!';
-      this.title = 'Paga a tiempo tu mensualidad';
-      this.totalBs.emit(this.mountTotalMonthBs);
-      this.totalUSD.emit(this.mountTotalMonthUSD);
+      this.viewMultiplePayments = true; // To hiden view multiple payments
+      this.viewUniquePayments = false; // To show view unique payments
+      this.mountTotalMonthBs = this.saldoBs // To show total month in Bs
+      this.mountTotalMonthUSD = this.saldoUSD // To show total month in USD
+      this.morePayment = 'Adelanta tus pagos!!!'; // To change text from button click
+      this.title = 'Paga tu mensualidad'; // To change title on view
+      this.totalBs.emit(this.mountTotalMonthBs); // To emit Total in BS
+      this.totalUSD.emit(this.mountTotalMonthUSD); // To emit Total in USD
     }
   }
 
