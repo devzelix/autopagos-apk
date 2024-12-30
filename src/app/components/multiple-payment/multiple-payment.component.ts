@@ -14,8 +14,8 @@ export class MultiplePaymentComponent implements OnInit {
   @Input() saldoBs: string = '0.00';
   @Input() subscription: string = '0.00';
   @Input() monthPayCount: number = 1;
-  @Input() mountTotalMonthBs: string = '0.00';
-  @Input() mountTotalMonthUSD: string = '0.00';
+  @Input() mountTotalMonthBs: number = 0;
+  @Input() mountTotalMonthUSD: number = 0;
 
   @Output() totalBs = new EventEmitter<string>();
   @Output() totalUSD = new EventEmitter<string>();
@@ -24,18 +24,19 @@ export class MultiplePaymentComponent implements OnInit {
 
   ngOnInit(): void {
     // Aquí puedes inicializar cualquier lógica que necesites al cargar el componente
+    console.log('mountTotalMonthBs >>>>', this.mountTotalMonthBs, 'mountTotalMonthUSD >>>>', this.mountTotalMonthUSD)
   }
 
   public setMonthPayment (numMonth:number) {
-
-    let subscriptionBs = Number(this.subscription) * Number(this.tasaCambio);
+    let subscriptionBs = parseFloat( (parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2) );
+    console.log('setMonthPayment num month:', numMonth,' Saldo Bs:', this.saldoBs,' Saldo USD:', this.saldoUSD, ' Subscription USD:', this.subscription, ' Subscription Bs:', subscriptionBs, ' Tasa cambio:', this.tasaCambio)
     this.activePaymentMonth = numMonth;
 
-    this.mountTotalMonthBs = numMonth >= 1 ? ( Number(this.saldoBs) + (Number(this.saldoBs) + (subscriptionBs * (numMonth- 1)))).toFixed(2) : this.saldoBs;
-    this.mountTotalMonthUSD = numMonth >= 1? ( Number(this.saldoUSD) + (Number(this.saldoUSD) + ((Number(this.subscription) * (numMonth - 1))))).toFixed(2) : this.saldoUSD;
+    this.mountTotalMonthBs =  parseFloat(( ( parseFloat(this.saldoBs) > 0 ? parseFloat(this.saldoBs) : 0) + (subscriptionBs * (numMonth))).toFixed(2));
+    this.mountTotalMonthUSD = parseFloat(( ( parseFloat(this.saldoBs) > 0 ? parseFloat(this.saldoUSD) : 0 ) + ((parseFloat(this.subscription) * (numMonth)))).toFixed(2));
 
-    this.totalBs.emit(this.mountTotalMonthBs);
-    this.totalUSD.emit(this.mountTotalMonthUSD);
+    this.totalBs.emit(String(this.mountTotalMonthBs));
+    this.totalUSD.emit(String(this.mountTotalMonthUSD));
 
   }
 }

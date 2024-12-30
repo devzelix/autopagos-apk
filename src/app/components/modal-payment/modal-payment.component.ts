@@ -14,7 +14,7 @@ export class ModalPaymentComponent implements OnInit {
   @Output() onSubmitPayForm: EventEmitter<void> = new EventEmitter() // => on submit event emitter, resets all
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
-  @Input() mountValue: string = '0,00';
+  @Input() mountValue: number = 0;
   public formPayment: FormGroup;
   public activeInputFocus: 'dni' | 'mount' | 'accountType' = 'dni';
   public typeDNI: ITypeDNI = 'V';
@@ -113,6 +113,8 @@ export class ModalPaymentComponent implements OnInit {
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
   public requestCard() {
-    this._ApiVPOS.cardRequest(this.dniValue, this.mountValue);
+    const mountValue: string = parseFloat(String(this.mountValue)).toFixed(2)
+    console.log('requestCard MOUNT VALUE', this.mountValue, mountValue)
+    this._ApiVPOS.cardRequest(this.dniValue, mountValue);
   }
 }

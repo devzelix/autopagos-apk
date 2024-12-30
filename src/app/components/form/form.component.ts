@@ -295,8 +295,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   public showTransactionModal: boolean = false;
   public selectedPaymentType: IPaymentTypes;
   public monthPayCount: number = 1;
-  public mountTotalMonthBs: string = '0.00';
-  public mountTotalMonthUSD: string = '0.00'
+  public mountTotalMonthBs: number = 0;
+  public mountTotalMonthUSD: number = 0;
   public activePaymentMonth: number = 1;
   public showFormView: boolean = false;
 
@@ -535,6 +535,10 @@ export class FormComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      console.log('RESET ALL FORMS')
+      this.resetAllForms()
+    }, 6000);
     this.MyInit();
     this._ApiMercantil
       .GetAddress()
@@ -2574,17 +2578,24 @@ export class FormComponent implements AfterViewInit, OnInit {
    * Function to reset all
    */
   public resetAllForms = () => {
-    this.firstFormFibex.reset()
-    this.handleShowTransactionModal(false)
-    this.loginTypeSelectValue = 'V';
-    this.userGreeting  = '';
-    this.userServices  = [];
-    this.showMainMenuPage2 = false;
-    this.showDniForm = true;
-    this.navActive = PAGES_NAVIGATION.LOGIN;
-    this.AppFibex = false;
+    try {
+      // this.firstFormFibex.reset()
+      this.firstFormFibex.get('dni')?.setValue('')
+      this.firstFormFibex.setValue
+      this.handleShowTransactionModal(false)
+      this.loginTypeSelectValue = 'V';
+      this.userGreeting  = '';
+      this.userServices  = [];
+      this.showMainMenuPage2 = false;
+      this.showDniForm = true;
+      this.navActive = PAGES_NAVIGATION.LOGIN;
+      this.AppFibex = false;
+      this.lastDni = '';
+      this.ScrollUp();
 
-    this.ScrollUp();
+    } catch (error) {
+      console.error('Error resetting all forms:', error);
+    }
   }
 
   Contador() {
@@ -2910,6 +2921,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   searchServicesv2(dni: any, fromParmas?: boolean, NextContrato?: boolean) {
     return new Promise<void>((resolve, reject) => {
+      console.log('in searchServicesv2 function')
 
       //agreago por juan
       this.BankSelectPagoMovil = false;
@@ -2933,7 +2945,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
       this.banksFiltered = [...this.bankList];
       if (dni_ === this.lastDni) {
-        return;
+        return reject();
       }
 
       this.dniConsulted = false;
@@ -2963,7 +2975,6 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.listContratos = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni_);
-
               if (this.registerPayService.linkedToContractProcess != 'approved') {
                 //Valido los estatus de los contratos
                 res.forEach((dataContrato: any, index: number) => {
@@ -2992,6 +3003,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                     this.showDniForm = false;
                     // this.navActive = PAGES_NAVIGATION.MAIN_MENU
                     this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+                    console.warn('HACE RESOLVEE 1')
                     resolve()
                   }
                 });
@@ -3001,12 +3013,13 @@ export class FormComponent implements AfterViewInit, OnInit {
                     'Todos los contratos para esta cuenta están ANULADOS o RETIRADO!'
                   );
                   this.lastDni = '';
-                  return;
+                  return reject();
                 }
 
                 //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
                 if (NextContrato) {
                   if (this.listContratos.length == 1) {
+                    console.log('this.listContratos.length == 1')
                     // console.log('Ingrese')
                     if (Number(this.listContratos[0].subscription) > 0) {
                       //   console.log('acaaa')
@@ -3022,6 +3035,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                       this.showDniForm = false;
                       // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
                       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+                      console.warn('HACE RESOLVEEE 2')
                       resolve()
 
                      /*  setTimeout(() => {
@@ -3034,14 +3048,15 @@ export class FormComponent implements AfterViewInit, OnInit {
                       this.AppFibex = false;
                       this.showMainMenuPage2 = false;
                       this.navActive = PAGES_NAVIGATION.LOGIN;
-                      reject();
-                      return;
+                      return reject();
                     }
                   } else {
+                    console.log('PAsar por la funcion SearchSectorAbonado')
                     this.SearchSectorAbonado();
                   }
                 }
               } else {
+                console.error('pasa por aquiiiiiii 1 y se tranca')
                 this.dni?.setValue(dni_);
                 this.nameClient = String(dni_);
                 this.setGreeting(this.nameClient)
@@ -3056,8 +3071,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
                 if (this.listContratos.length === 0) {
                   this.dni?.setValue('');
-                  reject()
-                  return;
+                  return reject();
                 }
 
                 this.closeAlert2();
@@ -3246,6 +3260,7 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.showDniForm = false;
               // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
               this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+              console.warn('HACE RESOLVEEE 3')
               resolve()
 
               /*Esto se hacer por si el usuario preciomente selecciona un banco */
@@ -3295,6 +3310,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                 this.showDniForm = false;
                 // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
                 this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
+                console.warn('HACE RESOLVEEE 4')
                 resolve()
                /*  setTimeout(() => {
                   this.NextMatStepper();
@@ -4967,7 +4983,6 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public goToPayment = async () => {
     try {
-
       await this.searchServicesv2(this.dni, false, true) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
@@ -4990,7 +5005,7 @@ export class FormComponent implements AfterViewInit, OnInit {
    * Function to handle the month count
    * @param processType type of the process
    */
-  public handleMonthCount = (processType: 'add' | 'subtract') => {
+  /* public handleMonthCount = (processType: 'add' | 'subtract') => {
     if (processType === 'add') {//* => add month count
       this.monthPayCount++
     }
@@ -5000,20 +5015,21 @@ export class FormComponent implements AfterViewInit, OnInit {
 
 
     const mountUSDString = (this.monthPayCount * parseFloat(this.subscription)).toFixed(2)
-    this.mountTotalMonthUSD = parseFloat(mountUSDString).toLocaleString()
+    this.mountTotalMonthUSD = parseFloat(mountUSDString)
 
-    const mountBsString = String(parseFloat(this.mountTotalMonthUSD) * 38.9)
-    console.log('mount', mountBsString, parseFloat(mountBsString),parseFloat(mountBsString).toLocaleString() )
-    this.mountTotalMonthBs = parseFloat(mountBsString).toLocaleString()
-  }
+    const mountBsString = String(this.mountTotalMonthUSD * this.cambio_act)
+    console.log('mount', mountBsString, parseFloat(mountBsString),parseFloat(mountBsString) )
+    this.mountTotalMonthBs = parseFloat(parseFloat(mountBsString).toFixed(2))
+  } */
 
   public loadInitMonthMountValues = () => {
     const subscription: number = Number(this.subscription)
     let saldoUSD: number = Number(this.saldoUSD)
 
     this.monthPayCount = Math.round(saldoUSD / subscription)
-    this.mountTotalMonthUSD = this.saldoUSD
-    this.mountTotalMonthBs = this.saldoBs
+    console.log('SUBSCRIPTION', this.cambio_act, this.saldoBs, parseFloat(this.saldoBs))
+    this.mountTotalMonthUSD = saldoUSD > 0 ? parseFloat(this.saldoUSD) : parseFloat(subscription.toFixed(2))
+    this.mountTotalMonthBs = saldoUSD > 0 ? parseFloat(this.saldoBs) : parseFloat((this.mountTotalMonthUSD * this.cambio_act).toFixed(2))
   }
 
   // public setMonthPayment (numMonth:number) {
@@ -5022,11 +5038,11 @@ export class FormComponent implements AfterViewInit, OnInit {
   // }
 
   public mountsToPaymentBs(moutnBs: string){
-    this.mountTotalMonthBs = moutnBs
+    this.mountTotalMonthBs = parseFloat(moutnBs)
   }
 
   public mountsToPaymentUSD(mountUSD: string){
-    this.mountTotalMonthUSD = mountUSD
+    this.mountTotalMonthUSD = parseFloat(mountUSD)
   }
 
   public handleShowFormView = (showValue: boolean) => {
