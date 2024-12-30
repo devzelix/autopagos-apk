@@ -25,7 +25,7 @@ export class VposuniversalRequestService {
   //#--------------------------------------------------------------------------------------#//
 
   //#--------------------------------Card pay Simple---------------------------------------#//
-  cardRequest(_ci: string, _amount: string){ //Pay Card Simple
+  cardRequest(_ci: any, _amount: string, _subscriber: string, _register: string){ //Pay Card Simple
 
     return new Promise((resolve, reject)=>{
       try {
@@ -35,18 +35,26 @@ export class VposuniversalRequestService {
             method: 'post',
             url: environment.API_URL_VPOS+'/metodo/request/cardpay',
             headers: {
+              'accept': 'application/json',
               'token': environment.TokenAPILaravelVPOS,
-              'monto': _amount,
-              'ci': _ci
+              'Content-Type': 'application/json',
+              },
+            data : {
+               "monto": _amount,
+                  "ci": _ci,
+                  "subscriber": _subscriber,
+                  "register": _register
             }
           }).then(res => {
               console.log(res);
               resolve(res)
+              return true;
             })
             .catch(err => {
               console.log(err);
               reject(err)
-          });
+              return false;
+            });
         }else{
           reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
         }

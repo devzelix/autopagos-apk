@@ -53,26 +53,42 @@ export class ModalPaymentComponent implements OnInit {
 
   /**
    * On submit payment form
-   * @param event 
+   * @param event
    */
-  public onSubmit = () => {
+  public  onSubmit = ()  => {
     if (this.formPayment.valid) {
       console.log(this.formPayment.value);
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Pago procesado con éxito',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        timer: 4000, // El modal se cerrará después de 5 segundos
-        didClose: () => this.onSubmitPayForm.emit()
-      });
+      try {
+        let requestBack = this.requestCard()
+
+        console.log('RESPUESTGA >>>>>>>>>>>>>>>>>>>>>>>>>>>>',requestBack);
+        Swal.fire({
+          icon: 'success',
+          title: 'Pago procesado con éxito',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 4000, // El modal se cerrará después de 5 segundos
+          didClose: () => this.onSubmitPayForm.emit()
+        });
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Pago no procesado Intente más tarde',
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 4000, // El modal se cerrará después de 5 segundos
+          didClose: () => this.onSubmitPayForm.emit()
+        });
+      }
+
 
     } else  console.log('Formulario no válido');
   }
 
   /**
-   * Function to handle the keyboard pressed events 
+   * Function to handle the keyboard pressed events
    * @param value Value of the keyboard event
    */
   public onTecladoInput = (value: string): void => {
@@ -102,7 +118,7 @@ export class ModalPaymentComponent implements OnInit {
 
   /**
    * Function to change the DNI type in the form
-   * @param value 
+   * @param value
    */
   public onLoginTypeChange = (value: ITypeDNI): void => {
     this.typeDNI = value
@@ -113,8 +129,9 @@ export class ModalPaymentComponent implements OnInit {
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
   public requestCard() {
-    const mountValue: string = parseFloat(String(this.mountValue)).toFixed(2)
-    console.log('requestCard MOUNT VALUE', this.mountValue, mountValue)
-    this._ApiVPOS.cardRequest(this.dniValue, mountValue);
+    const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
+    console.log('requestCard MOUNT VALUE', this.mount, mountValue);
+    console.log('dni: ', this.dni?.value);
+    return this._ApiVPOS.cardRequest(this.dni?.value, this.mount?.value, 'CV52633', 'A7-A5-6F-8E-6B');
   }
 }
