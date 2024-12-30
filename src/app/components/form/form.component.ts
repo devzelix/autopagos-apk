@@ -535,10 +535,6 @@ export class FormComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      console.log('RESET ALL FORMS')
-      this.resetAllForms()
-    }, 6000);
     this.MyInit();
     this._ApiMercantil
       .GetAddress()
