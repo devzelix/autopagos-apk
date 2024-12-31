@@ -97,7 +97,7 @@ const routes: Routes = [
     NgxStripeModule.forRoot(environment.TokenStripe),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
-    QRCodeModule,
+    QRCodeModule
     /* NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language
