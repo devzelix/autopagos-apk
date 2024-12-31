@@ -15,7 +15,7 @@ import { NgxPayPalModule } from 'ngx-paypal';
 
 import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
-import { NgHcaptchaModule } from 'ng-hcaptcha';
+// import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { SeguridadDatos } from './services/bcryptjs';
 import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
@@ -98,10 +98,10 @@ const routes: Routes = [
     NgxPayPalModule,
     RouterModule.forRoot(routes),
     QRCodeModule,
-    NgHcaptchaModule.forRoot({
+    /* NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language
-    }),
+    }) */,
   ],
   providers: [
     NegativeAmountPipe,

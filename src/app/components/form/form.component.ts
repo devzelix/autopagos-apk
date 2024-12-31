@@ -2577,7 +2577,6 @@ export class FormComponent implements AfterViewInit, OnInit {
     try {
       // this.firstFormFibex.reset()
       this.firstFormFibex.get('dni')?.setValue('')
-      this.firstFormFibex.setValue
       this.handleShowTransactionModal(false)
       this.loginTypeSelectValue = 'V';
       this.userGreeting  = '';
@@ -2588,6 +2587,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.AppFibex = false;
       this.lastDni = '';
       this.ScrollUp();
+      this.showFormView = false;
 
     } catch (error) {
       console.error('Error resetting all forms:', error);

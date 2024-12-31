@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-multiple-payment',
   templateUrl: './multiple-payment.component.html',
   styleUrls: ['./multiple-payment.component.scss']
 })
-export class MultiplePaymentComponent implements OnInit {
+export class MultiplePaymentComponent implements AfterViewInit {
 
   @Input() viewMultiple: boolean = true;
   @Input() activePaymentMonth: number = 1;
@@ -22,10 +22,10 @@ export class MultiplePaymentComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-    // Aquí puedes inicializar cualquier lógica que necesites al cargar el componente
-    console.log('mountTotalMonthBs >>>>', this.mountTotalMonthBs, 'mountTotalMonthUSD >>>>', this.mountTotalMonthUSD)
-  }
+  /* ngOnInit(): void {
+  } */
+ ngAfterViewInit(): void {
+ }
 
   public setMonthPayment (numMonth:number) {
     let subscriptionBs = parseFloat( (parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2) );
