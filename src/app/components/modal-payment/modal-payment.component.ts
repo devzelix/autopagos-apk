@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
+import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 import Swal from 'sweetalert2';
 
@@ -22,6 +23,7 @@ export class ModalPaymentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
+    private _printer: PrinterService, // PrinterService instance used to print on Printer -By:MR-
   ) {
     this.formPayment = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
@@ -59,32 +61,79 @@ export class ModalPaymentComponent implements OnInit {
     if (this.formPayment.valid) {
       console.log(this.formPayment.value);
 
-      try {
-        let requestBack = this.requestCard()
+      let requestBack = this.requestCard();
 
-        console.log('RESPUESTGA >>>>>>>>>>>>>>>>>>>>>>>>>>>>',requestBack);
-        Swal.fire({
-          icon: 'success',
-          title: 'Pago procesado con éxito',
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          timer: 4000, // El modal se cerrará después de 5 segundos
-          didClose: () => this.onSubmitPayForm.emit()
-        });
+      console.log('RESPUESTGA >>>>>>>>>>>>>>>>>>>>>>>>>>>>',requestBack);
 
-      } catch (error) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Pago no procesado Intente más tarde',
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          timer: 4000, // El modal se cerrará después de 5 segundos
-          didClose: () => this.onSubmitPayForm.emit()
-        });
-      }
+      // to genarate tiket and printer this
+      // let requestBackClient = [{
+      //   'date': '2024-10-31',
+      //   'hours': '12:00:00 PM',
+      //   'refundNumber': requestBack.data.numeroReferencia,
+      //   'nameClient': 'Miguel',
+      //   'ciClient': this.dni,
+      //   'abonumber': ,
+      //   'describe': 'MENS OCT 2024',
+      //   'amount': this.mount,
+      //   'methodPayment': requestBack.data.tipoProducto,
+      //   'totalAmount': this.mount,
+      //   'saldo': '0,00Bs.',
+      //   'status': requestBack.data.mensajeRespuesta,
+      // }];
 
+      // console.log('My data: '+requestBack.data.nombreVoucher);
+      // console.log('Ref number: '+requestBack.data.numeroReferencia);
+      // console.log('Answer Message: '+requestBack.data.mensajeRespuesta);
+      // console.log('Product type: '+requestBack.data.tipoProducto);
+      // console.log('Number autoritation: '+requestBack.data.numeroAutorizacion);
+      // console.log('Number card: '+requestBack.data.numeroTarjeta);
+      // console.log('Amount: '+requestBack.data.montoTransaccion);
+      // console.log('CI: '+requestBack.data.cedula);
 
-    } else  console.log('Formulario no válido');
+      // // Generar PDF con los datos del comprobante
+      // // this.generarPDF(requestBackClient);
+
+      // if(requestBackClient[0]['status'] === 'SALDO INSUFICIENTE'){
+      //   requestBackClient = [{
+      //     'date': '2024-10-31',
+      //     'hours': '12:00:00 PM',
+      //     'refundNumber': 'Negadada',
+      //     'nameClient': 'Miguel',
+      //     'ciClient': requestBack.data.cedula,
+      //     'abonumber': 'V1242',
+      //     'describe': 'MENS OCT 2024',
+      //     'amount': '00.00',
+      //     'methodPayment': 'Transacción Negada',
+      //     'totalAmount': '00.00Bs.',
+      //     'saldo': '0,00Bs.',
+      //     'status': requestBack.data.mensajeRespuesta,
+      //   }];
+      // }
+
+      // // Validación de campos indefinidos
+      // const hasUndefinedFields = Object.values(requestBackClient[0]).some(value => value === undefined || value === null || value === '');
+
+      // if (!hasUndefinedFields) {
+      //   // Generar PDF con los datos del comprobante
+      //   this.generarPDF(requestBackClient);
+      // } else {
+      //     console.error('Uno o más campos en requestBackClient están indefinidos o vacíos.');
+      // }
+      // to genarate tiket and printer this
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Pago procesado con éxito',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        timer: 4000, // El modal se cerrará después de 5 segundos
+        didClose: () => this.onSubmitPayForm.emit()
+      });
+
+    } else {
+      console.log('Formulario no válido');
+    }
+
   }
 
   /**
@@ -132,6 +181,14 @@ export class ModalPaymentComponent implements OnInit {
     const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
     console.log('requestCard MOUNT VALUE', this.mount, mountValue);
     console.log('dni: ', this.dni?.value);
-    return this._ApiVPOS.cardRequest(this.dni?.value, this.mount?.value, 'CV52633', 'A7-A5-6F-8E-6B');
+    return this._ApiVPOS.cardRequest(this.dni?.value, mountValue, 'CV52633', '3F-8B-6A-4D-R2-6C');
+  }
+
+  /**
+   * Function to generate a PDF with the payment data
+   * @param data data to be included in the PDF
+   */
+  public generarPDF(requestBackClient: any) {
+    this._printer.printTitek(requestBackClient);
   }
 }

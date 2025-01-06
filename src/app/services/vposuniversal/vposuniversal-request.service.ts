@@ -41,9 +41,9 @@ export class VposuniversalRequestService {
               },
             data : {
                "monto": _amount,
-                  "ci": _ci,
-                  "subscriber": _subscriber,
-                  "register": _register
+                "ci": _ci,
+                "subscriber": _subscriber,
+                "register": _register
             }
           }).then(res => {
               console.log(res);
