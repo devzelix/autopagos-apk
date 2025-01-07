@@ -282,3 +282,8 @@
         transform: translateY(0);
     }
 }
+
+.disabled {
+  pointer-events: none; /* Deshabilita los eventos de clic */
+  opacity: 0.5; /* Opcional: Cambia la opacidad para que parezca deshabilitado */
+}

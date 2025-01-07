@@ -62,7 +62,7 @@
 
                 <!-- <button type="submit" [disabled]="formPayment.invalid" class="bg-input-primary next-form-pay-btn">Aceptar</button> -->
                 <app-btn-transaction
-                [disabled]="formPayment.invalid"
+                [disabled]="formPayment.invalid || sendPayment"
                 [btnType]="'submit'"
                 (onBtnClick)="onSubmit()"
                 >

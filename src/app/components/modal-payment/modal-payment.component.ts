@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { log } from 'console';
 import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
@@ -19,6 +20,9 @@ export class ModalPaymentComponent implements OnInit {
   public formPayment: FormGroup;
   public activeInputFocus: 'dni' | 'mount' | 'accountType' = 'dni';
   public typeDNI: ITypeDNI = 'V';
+  public _dataApi: any;
+  public _dataApiClient: any;
+  public sendPayment: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -57,78 +61,56 @@ export class ModalPaymentComponent implements OnInit {
    * On submit payment form
    * @param event
    */
-  public  onSubmit = ()  => {
+  public  onSubmit = async ()  => {
+    this.sendPayment = true; // Indica que se está enviando el pago al API
+
     if (this.formPayment.valid) {
-      console.log(this.formPayment.value);
 
-      let requestBack = this.requestCard();
+      try {
 
-      console.log('RESPUESTGA >>>>>>>>>>>>>>>>>>>>>>>>>>>>',requestBack);
+        this._dataApi = await this.requestCard();
 
-      // to genarate tiket and printer this
-      // let requestBackClient = [{
-      //   'date': '2024-10-31',
-      //   'hours': '12:00:00 PM',
-      //   'refundNumber': requestBack.data.numeroReferencia,
-      //   'nameClient': 'Miguel',
-      //   'ciClient': this.dni,
-      //   'abonumber': ,
-      //   'describe': 'MENS OCT 2024',
-      //   'amount': this.mount,
-      //   'methodPayment': requestBack.data.tipoProducto,
-      //   'totalAmount': this.mount,
-      //   'saldo': '0,00Bs.',
-      //   'status': requestBack.data.mensajeRespuesta,
-      // }];
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', this._dataApi.data.data.mensajeRespuesta);
 
-      // console.log('My data: '+requestBack.data.nombreVoucher);
-      // console.log('Ref number: '+requestBack.data.numeroReferencia);
-      // console.log('Answer Message: '+requestBack.data.mensajeRespuesta);
-      // console.log('Product type: '+requestBack.data.tipoProducto);
-      // console.log('Number autoritation: '+requestBack.data.numeroAutorizacion);
-      // console.log('Number card: '+requestBack.data.numeroTarjeta);
-      // console.log('Amount: '+requestBack.data.montoTransaccion);
-      // console.log('CI: '+requestBack.data.cedula);
+        if(this._dataApi.data.data.mensajeRespuesta === 'Aprobado'){
 
-      // // Generar PDF con los datos del comprobante
-      // // this.generarPDF(requestBackClient);
+          await this.generarPDF();
 
-      // if(requestBackClient[0]['status'] === 'SALDO INSUFICIENTE'){
-      //   requestBackClient = [{
-      //     'date': '2024-10-31',
-      //     'hours': '12:00:00 PM',
-      //     'refundNumber': 'Negadada',
-      //     'nameClient': 'Miguel',
-      //     'ciClient': requestBack.data.cedula,
-      //     'abonumber': 'V1242',
-      //     'describe': 'MENS OCT 2024',
-      //     'amount': '00.00',
-      //     'methodPayment': 'Transacción Negada',
-      //     'totalAmount': '00.00Bs.',
-      //     'saldo': '0,00Bs.',
-      //     'status': requestBack.data.mensajeRespuesta,
-      //   }];
-      // }
+          Swal.fire({
+            icon: 'success',
+            title: 'Pago procesado con éxito \n'+this._dataApi.data.data.mensajeRespuesta,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 4000, // El modal se cerrará después de 5 segundos
+            didClose: () => this.onSubmitPayForm.emit()
+          });
+        } else if (this._dataApi.data.data.mensajeRespuesta === 'SALDO INSUFICIENTE'){
 
-      // // Validación de campos indefinidos
-      // const hasUndefinedFields = Object.values(requestBackClient[0]).some(value => value === undefined || value === null || value === '');
+          await this.generarPDF();
 
-      // if (!hasUndefinedFields) {
-      //   // Generar PDF con los datos del comprobante
-      //   this.generarPDF(requestBackClient);
-      // } else {
-      //     console.error('Uno o más campos en requestBackClient están indefinidos o vacíos.');
-      // }
-      // to genarate tiket and printer this
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al procesar el pago \n'+this._dataApi.data.data.mensajeRespuesta,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 4000, // El modal se cerrará después de 5 segundos
+            didClose: () => this.onCloseModal()
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al procesar el pago \n'+this._dataApi.data.data.mensajeRespuesta,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 4000, // El modal se cerrará después de 5 segundos
+            didClose: () => this.onCloseModal()
+          });
+        }
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Pago procesado con éxito',
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        timer: 4000, // El modal se cerrará después de 5 segundos
-        didClose: () => this.onSubmitPayForm.emit()
-      });
+
+      } catch (error) {
+
+      }
 
     } else {
       console.log('Formulario no válido');
@@ -177,18 +159,106 @@ export class ModalPaymentComponent implements OnInit {
    * Function to call api method and reliaze payment
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
-  public requestCard() {
+  public async requestCard() {
     const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
-    console.log('requestCard MOUNT VALUE', this.mount, mountValue);
-    console.log('dni: ', this.dni?.value);
-    return this._ApiVPOS.cardRequest(this.dni?.value, mountValue, 'CV52633', '3F-8B-6A-4D-R2-6C');
+
+    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, mountValue, 'CV52633', '3F-8B-6A-4D-R2-6C');
+
+    console.log('responseJSON', responseJSON);
+
+    return responseJSON;
   }
 
   /**
    * Function to generate a PDF with the payment data
    * @param data data to be included in the PDF
    */
-  public generarPDF(requestBackClient: any) {
-    this._printer.printTitek(requestBackClient);
+  public async generarPDF() {
+
+    let _dataApiClient = []; // Data to tiket print
+
+    // to genarate tiket and printer this
+    _dataApiClient = [{
+      'date': this.getTime('date'),
+      'hours': this.getTime('time'),
+      'refundNumber': this._dataApi.data.data.numeroReferencia,
+      'nameClient': 'Thomas',
+      'ciClient': this.dni?.value || 'unknown',
+      'abonumber': 'CV52633',
+      'describe': 'Pago',
+      'amount': String(this.mount?.value),
+      'methodPayment': this._dataApi.data.data.tipoProducto,
+      'totalAmount': String(this.mount?.value),
+      'saldo': String(this.mount?.value),
+      'status': this._dataApi.data.data.mensajeRespuesta,
+    }];
+
+    console.log('My data: '+this._dataApi.data.data.nombreVoucher);
+    console.log('Ref number: '+this._dataApi.data.data.numeroReferencia);
+    console.log('Answer Message: '+this._dataApi.data.data.mensajeRespuesta);
+    console.log('Product type: '+this._dataApi.data.data.tipoProducto);
+    console.log('Number autoritation: '+this._dataApi.data.data.numeroAutorizacion);
+    // console.log('Number card: '+this._dataApi.data.data.numeroTarjeta);
+    console.log('Amount: '+this._dataApi.data.data.montoTransaccion);
+    console.log('CI: '+this._dataApi.data.data.cedula);
+
+    console.log(_dataApiClient);
+
+    if(_dataApiClient[0]['status'] === 'SALDO INSUFICIENTE'){
+
+      _dataApiClient = [{
+        'date': '2024-10-31',
+        'hours': '12:00:00 PM',
+        'refundNumber': 'Negadada',
+        'nameClient': 'Miguel',
+        'ciClient': this._dataApi.data.data.cedula,
+        'abonumber': 'V1242',
+        'describe': 'MENS OCT 2024',
+        'amount': '00.00',
+        'methodPayment': 'Transacción Negada',
+        'totalAmount': '00.00Bs.',
+        'saldo': '0,00Bs.',
+        'status': this._dataApi.data.data.mensajeRespuesta,
+      }];
+    }
+
+    // Validación de campos indefinidos
+    const hasUndefinedFields = Object.values(_dataApiClient[0]).some(value => value === undefined || value === null || value === '');
+
+    if (!hasUndefinedFields) {
+      // Generar PDF con los datos del comprobante
+      await this._printer.printTitek(_dataApiClient);
+      console.log('PDF genetrado');
+
+    } else {
+        console.error('Uno o más campos en _dataApiClient están indefinidos o vacíos.');
+    }
+    // to genarate tiket and printer this
   }
+
+  private getTime(type: 'date' | 'time') {
+    const date = new Date();
+    let time: string;
+
+    if (type === 'date') {
+      // Formatear la fecha en formato español
+      time = date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } else {
+      // Formatear la hora en formato 24 horas
+      time = date.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    }
+
+    return time;
+  }
+
+
 }

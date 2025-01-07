@@ -46,14 +46,12 @@ export class VposuniversalRequestService {
                 "register": _register
             }
           }).then(res => {
-              console.log(res);
+              console.log('res from service: ', res);
               resolve(res)
-              return true;
             })
             .catch(err => {
               console.log(err);
               reject(err)
-              return false;
             });
         }else{
           reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
