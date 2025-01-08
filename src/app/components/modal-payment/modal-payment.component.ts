@@ -22,7 +22,7 @@ export class ModalPaymentComponent implements OnInit {
   public typeDNI: ITypeDNI = 'V';
   public _dataApi: any;
   public _dataApiClient: any;
-  public sendPayment: boolean;
+  public sendPayment: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -74,7 +74,9 @@ export class ModalPaymentComponent implements OnInit {
 
         if(this._dataApi.data.data.mensajeRespuesta === 'Aprobado'){
 
-          await this.generarPDF();
+          this.generarPDF().catch((err) => {
+            console.log(err);
+          });
 
           Swal.fire({
             icon: 'success',
@@ -86,7 +88,9 @@ export class ModalPaymentComponent implements OnInit {
           });
         } else if (this._dataApi.data.data.mensajeRespuesta === 'SALDO INSUFICIENTE'){
 
-          await this.generarPDF();
+          this.generarPDF().catch((err) => {
+            console.log(err);
+          });
 
           Swal.fire({
             icon: 'error',
@@ -109,7 +113,17 @@ export class ModalPaymentComponent implements OnInit {
 
 
       } catch (error) {
-
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al procesar el pago \n'+ (error instanceof Error ? error.message : "Error desconocido"),
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 4000, // El modal se cerrará después de 5 segundos
+          didClose: () => this.onCloseModal()
+        });
+      }
+      finally {
+        this.sendPayment = false;
       }
 
     } else {
@@ -160,9 +174,9 @@ export class ModalPaymentComponent implements OnInit {
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
   public async requestCard() {
-    const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
+    // const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
 
-    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, mountValue, 'CV52633', '3F-8B-6A-4D-R2-6C');
+    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, String(this.mount?.value), 'CV52633', '3F-8B-6A-4D-R2-6C');
 
     console.log('responseJSON', responseJSON);
 
@@ -178,34 +192,37 @@ export class ModalPaymentComponent implements OnInit {
     let _dataApiClient = []; // Data to tiket print
 
     // to genarate tiket and printer this
-    _dataApiClient = [{
-      'date': this.getTime('date'),
-      'hours': this.getTime('time'),
-      'refundNumber': this._dataApi.data.data.numeroReferencia,
-      'nameClient': 'Thomas',
-      'ciClient': this.dni?.value || 'unknown',
-      'abonumber': 'CV52633',
-      'describe': 'Pago',
-      'amount': String(this.mount?.value),
-      'methodPayment': this._dataApi.data.data.tipoProducto,
-      'totalAmount': String(this.mount?.value),
-      'saldo': String(this.mount?.value),
-      'status': this._dataApi.data.data.mensajeRespuesta,
-    }];
+    _dataApiClient = [
+      {
+        'date': this.getTime('date'),
+        'hours': this.getTime('time'),
+        'refundNumber': this._dataApi.data.data.numeroReferencia,
+        'nameClient': 'Thomas',
+        'ciClient': this.dniValue || 'unknown',
+        'abonumber': 'CV52633',
+        'describe': 'Pago',
+        'amount': String(this.mount?.value),
+        'methodPayment': this._dataApi.data.data.tipoProducto,
+        'totalAmount': String(this.mount?.value),
+        'saldo': String(this.mount?.value),
+        'status': this._dataApi.data.data.mensajeRespuesta,
+      }
+    ];
 
-    console.log('My data: '+this._dataApi.data.data.nombreVoucher);
-    console.log('Ref number: '+this._dataApi.data.data.numeroReferencia);
-    console.log('Answer Message: '+this._dataApi.data.data.mensajeRespuesta);
-    console.log('Product type: '+this._dataApi.data.data.tipoProducto);
-    console.log('Number autoritation: '+this._dataApi.data.data.numeroAutorizacion);
-    // console.log('Number card: '+this._dataApi.data.data.numeroTarjeta);
-    console.log('Amount: '+this._dataApi.data.data.montoTransaccion);
-    console.log('CI: '+this._dataApi.data.data.cedula);
+    // console.log('My data: '+this._dataApi.data.data.nombreVoucher);
+    // console.log('Ref number: '+this._dataApi.data.data.numeroReferencia);
+    // console.log('Answer Message: '+this._dataApi.data.data.mensajeRespuesta);
+    // console.log('Product type: '+this._dataApi.data.data.tipoProducto);
+    // console.log('Number autoritation: '+this._dataApi.data.data.numeroAutorizacion);
+    // // console.log('Number card: '+this._dataApi.data.data.numeroTarjeta);
+    // console.log('Amount: '+this._dataApi.data.data.montoTransaccion);
+    // console.log('CI: '+this._dataApi.data.data.cedula);
 
-    console.log(_dataApiClient);
+    // console.log(_dataApiClient);
 
-    if(_dataApiClient[0]['status'] === 'SALDO INSUFICIENTE'){
+    if(_dataApiClient[0]['status'] === 'SALDO INSUFICIENTE') {
 
+      // TODO ANALIZAR ESTO QUE ESTA CABLEADO
       _dataApiClient = [{
         'date': '2024-10-31',
         'hours': '12:00:00 PM',

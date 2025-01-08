@@ -33,11 +33,9 @@ export class PrinterService {
               'status': String(_dataTiket[0]['status']),
             }
           }).then(res => {
-              console.log(res);
               resolve(res)
             })
             .catch(err => {
-              console.log(err);
               reject(err)
           });
         }else{
@@ -48,21 +46,21 @@ export class PrinterService {
         reject(error);
       }
 
-      console.log(`
-        \'date\': ${_dataTiket[0]['date']},
-        \'refNumber\': ${_dataTiket[0]['refundNumber']},
-        \'nameClient\': ${_dataTiket[0]['nameClient']},
-        \'ciClient\': ${_dataTiket[0]['ciClient']},
-        \'abononumber\': ${_dataTiket[0]['abonumber']},
-        \'describe\': ${_dataTiket[0]['describe']},
-        \'amount\': ${_dataTiket[0]['amount']},
-        \'methodPayment\': ${_dataTiket[0]['methodPayment']},
-        \'totalAmount\': ${_dataTiket[0]['totalAmount']},
-        \'saldo\': ${_dataTiket[0]['saldo']},
-        \'status\': ${_dataTiket[0]['status']},
-      `);
+      // console.log(`
+      //   \'date\': ${_dataTiket[0]['date']},
+      //   \'refNumber\': ${_dataTiket[0]['refundNumber']},
+      //   \'nameClient\': ${_dataTiket[0]['nameClient']},
+      //   \'ciClient\': ${_dataTiket[0]['ciClient']},
+      //   \'abononumber\': ${_dataTiket[0]['abonumber']},
+      //   \'describe\': ${_dataTiket[0]['describe']},
+      //   \'amount\': ${_dataTiket[0]['amount']},
+      //   \'methodPayment\': ${_dataTiket[0]['methodPayment']},
+      //   \'totalAmount\': ${_dataTiket[0]['totalAmount']},
+      //   \'saldo\': ${_dataTiket[0]['saldo']},
+      //   \'status\': ${_dataTiket[0]['status']},
+      // `);
 
-      console.log(_dataTiket);
+      // console.log(_dataTiket);
 
     });
 

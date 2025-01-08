@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -27,36 +27,28 @@ export class VposuniversalRequestService {
   //#--------------------------------Card pay Simple---------------------------------------#//
   cardRequest(_ci: any, _amount: string, _subscriber: string, _register: string){ //Pay Card Simple
 
-    return new Promise((resolve, reject)=>{
+    return new Promise<AxiosResponse<any>>((resolve, reject)=>{
       try {
-
-        if(_ci != null && _ci != '' && _amount ) {
-          axios({
-            method: 'post',
-            url: environment.API_URL_VPOS+'/metodo/request/cardpay',
-            headers: {
-              'accept': 'application/json',
-              'token': environment.TokenAPILaravelVPOS,
-              'Content-Type': 'application/json',
-              },
-            data : {
-               "monto": _amount,
-                "ci": _ci,
-                "subscriber": _subscriber,
-                "register": _register
-            }
-          }).then(res => {
-              console.log('res from service: ', res);
-              resolve(res)
-            })
-            .catch(err => {
-              console.log(err);
-              reject(err)
-            });
-        }else{
-          reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
-        }
-
+        axios({
+          method: 'post',
+          url: environment.API_URL_VPOS+'/metodo/request/cardpay',
+          headers: {
+            'accept': 'application/json',
+            'token': environment.TokenAPILaravelVPOS,
+            'Content-Type': 'application/json',
+            },
+          data : {
+             "monto": _amount,
+              "ci": _ci,
+              "subscriber": _subscriber,
+              "register": _register
+          }
+        }).then(res => {
+            resolve(res)
+          })
+          .catch(err => {
+            reject(err)
+          });
       } catch (error) {
         reject(error);
       }

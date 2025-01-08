@@ -17,24 +17,6 @@
   <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
   <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
 
-    <!-- FORMAS DE PAGO --->
-    <!--  <button
-      *ngIf="AppFibex"
-      class="btn-flotante left"
-      title="Últimos pagos"
-      (click)="openInfoPay()"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 9V7h14v2zm0 4v-2h14v2zm0 4v-2h14v2zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7t.713.288T5 8t-.288.713T4 9m0 4q-.425 0-.712-.288T3 12t.288-.712T4 11t.713.288T5 12t-.288.713T4 13m0 4q-.425 0-.712-.288T3 16t.288-.712T4 15t.713.288T5 16t-.288.713T4 17"/></svg>
-    </button>
-    <button
-      *ngIf="AppFibex"
-      class="btn-flotante right"
-      title="Formas de Pago"
-      (click)="openDialogPM()"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.195 8.765A4 4 0 1 1 12 14v1m.05 4v.1h-.1V19z"/></svg>
-    </button> -->
-
     <!-- Mensajes de alerta -->
     <div>
       <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">
@@ -96,20 +78,8 @@
 
             <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
 
-              <!-- ngIf="listContratos.length < 1 && !LoadingLengthAbonado" -->
               <div div="form-control-item-container"
                 [formGroup]="firstFormFibex">
-                <!-- <label>Cédula/RIF del cliente</label>
-                <input
-                  formControlName="dni"
-                  type="number"
-                  matInput
-                  required
-                  NumbersOnly="true"
-                  #inputDni
-                  [readonly]="readonlyDNI"
-                  minlength="6"
-                /> -->
 
 
                 <!-- SOLO PARA DESARROLLO Y PRUEBAS >>> (click)="testNextPage()" -->
@@ -118,10 +88,6 @@
                 </label>
 
                 <div class="form-control-input form-dni-input">
-                  <!-- <select #selectType (change)="onLoginTypeChange(selectType.value)">
-                    <option value="V" selected>V</option>
-                    <option value="J">J</option>
-                  </select> -->
                   <h4
                     [ngClass]="{'form-input-empty': (firstFormFibex.get('dni')?.value.length === 0), 'dni-juridico-type':loginTypeSelectValue === 'J' }">
                     {{ firstFormFibex.get('dni')?.value || '_____' }}
@@ -136,7 +102,6 @@
               </div>
 
               <div class="login-form-btns-section relative -mb-8 flex gap-4 w-full flex-col">
-                <!-- listContratos.length < 1 && !LoadingLengthAbonado && (listContratos.length == 0 || listContratos.length == 1) -->
                 <button
                   class="form-control-btn" type="button" role="button"
                   (click)="goToPayment()" [disabled]="dni?.invalid">
@@ -184,7 +149,6 @@
             </div>
           </div>
 
-          <!-- listContratos.length < 1 && !LoadingLengthAbonado -->
           <app-keyboard-on-screen
             [isValidEnterBtn]="!dni?.invalid" classes="pinpad-big-size" (valorTeclado)="onTecladoInput($event)"
             (deleteKeyEmitter)="deleteLastCharacter()"
@@ -195,145 +159,8 @@
 
       </div>
 
-      <!--/ Fin de Menú ppal -->
-
-      <!-- Menú de métodos de pago -->
-      <!-- AppFibex && !showDniForm &&  -->
-      <!-- <div *ngIf="navActive === ENUM_NAV.MAIN_MENU " class="CardPpal" class="section-step-item flex-column-stepper">
-
-        <div *ngIf="
-                nameClient &&
-                saldoBs &&
-                saldoUSD &&
-                registerPayService.linkedToContractProcess != 'approved' &&
-                showMainMenuPage2
-                " class="flex gap-8">
-
-
-          <div class="desc-user w-1/2 flex-col">
-
-            <div *ngIf="userServices" class="slider-services-container">
-              <h3 class="mb-2"> Servicio{{ (userServices.length > 1) ? 's' : ''}} que posee :</h3>
-              <div class="slider-services flex w-full gap-4 overflow-auto pb-4">
-
-                <div *ngFor="let service of userServices" class="slider-service-item">
-                  <h3>{{ service }}</h3>
-                </div>
-
-              </div>
-            </div>
-
-
-
-          </div>
-
-          <div class="step-payment-type-btn-container">
-
-            <h4 class="name-client text-center text-base">
-              {{ saldoUSD | negativeAmount }} USD |
-              {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
-            </h4>
-
-            <button class="step-payment-type-btns last-payment-btn" title="Consultar últimos pagos"
-              (click)="openInfoPay()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                  d="M7 9V7h14v2zm0 4v-2h14v2zm0 4v-2h14v2zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7t.713.288T5 8t-.288.713T4 9m0 4q-.425 0-.712-.288T3 12t.288-.712T4 11t.713.288T5 12t-.288.713T4 13m0 4q-.425 0-.712-.288T3 16t.288-.712T4 15t.713.288T5 16t-.288.713T4 17" />
-              </svg>
-              <p>
-                Consultar últimos pagos
-              </p>
-            </button>
-
-            <button class="step-payment-type-btns payment-types-btn" title="Formas de Pago" (click)="openDialogPM()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8.195 8.765A4 4 0 1 1 12 14v1m.05 4v.1h-.1V19z" />
-              </svg>
-              <p>
-                Formas de Pago
-              </p>
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <ng-template matStepLabel>Tipo de pago</ng-template>
-        <div class="spinner-pay">
-          <mat-spinner *ngIf="LoadingPagoPendiente"></mat-spinner>
-        </div>
-        <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
-          <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
-            [ngClass]="{ hide: option.tipopago === 'Criptomoneda' }">
-            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size" (click)="showConsole(option)">
-              <span *ngSwitchCase="'FormasDePago'" class="grid-cards animated fadeInUp">
-                <button *ngIf="!option.omitir" class="grid-cards-item forma-pago grid-cards-btn-with-icons"
-                  (click)="FormaPago(option.idpago)">
-                  <h3>
-                    {{ option.tittle }}
-                  </h3>
-                  <svg *ngIf="option.tittle === 'Reportar'" class="grid-cards-btn-icon report-pay-icon"
-                    xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-5l-5 3v-3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3zm-6 4v3m0 3v.01" />
-                  </svg>
-                  <svg *ngIf="option.tittle === 'Pagar'" class="grid-cards-btn-icon payment-icon"
-                    xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
-                    <path fill="currentColor"
-                      d="M2 9.5A4.5 4.5 0 0 1 6.5 5h19A4.5 4.5 0 0 1 30 9.5v13a4.5 4.5 0 0 1-4.5 4.5h-19A4.5 4.5 0 0 1 2 22.5zM6.5 7A2.5 2.5 0 0 0 4 9.5V11h24V9.5A2.5 2.5 0 0 0 25.5 7zM4 22.5A2.5 2.5 0 0 0 6.5 25h19a2.5 2.5 0 0 0 2.5-2.5V13H4zM21 19h3a1 1 0 1 1 0 2h-3a1 1 0 1 1 0-2" />
-                  </svg>
-                </button>
-              </span>
-
-            </span>
-          </div>
-        </div>
-
-
-        <div *ngIf="
-            nameClient &&
-            saldoBs &&
-            saldoUSD &&
-            registerPayService.linkedToContractProcess == 'approved'
-          " class="desc-user">
-          <div>
-            <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
-            <h4 class="name-client">
-              Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
-              {{ saldoBs | negativeAmount }} Bs
-            </h4>
-          </div>
-        </div>
-
-        <button *ngIf="BackFormaPago && !LoadingPagoPendiente" class="customized_btn_next width_full"
-          (click)="FormaPago(31)">
-          REGRESAR
-        </button>
-      </div> -->
-      <!-- / Fin de métodos de pago -->
-
       <!-- PAYMENT CARDS STEP -->
       <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
-        <!-- <h6 class="txt-dark text-2xl font-bold text-center mb-6"> Seleccione su tipo de pago </h6> -->
-
-        <!-- <div *ngIf="!PagoPendiente && !LoadingPagoPendiente" class="cardflex">
-          <div *ngFor="let option of PagoMetodosHTML2" class="unicard width_full"
-            [ngClass]="{ hide: option.tipopago === 'Criptomoneda' }">
-            <span [ngSwitch]="option.tipopago" class="opt-cards-container-size">
-
-              <span *ngSwitchDefault class="flex_center cardflex2">
-                <button *ngIf="!option.omitir" class="fancy_card animated fadeInUp" (click)="TipoPago(option.idpago)">
-                  <h5 class="TitlePerson text-gray-800 payment-type-title text_ellipsis">{{ option.tipopago }}</h5>
-                  <img style="width: 100%" src="{{ option.image }}" alt="{{ option.alt }}" />
-                </button>
-              </span>
-
-            </span>
-          </div>
-        </div> -->
         <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
 
           <div class="payment-menu-subscription-section">
@@ -357,36 +184,6 @@
             (totalBs)="mountsToPaymentBs($event)"
             (totalUSD)="mountsToPaymentUSD($event)"
           ></app-unique-payment>
-          <!-- END UNIQUE PAYMENT -->
-
-          <!-- <div class="payment-menu-months">
-            <h4 class="text-4xl font-bold mb-4 text-center">Seleccione los meses a pagar</h4>
-            <div class="payment-menu-months-grid">
-
-                <div *ngFor="let item of [1,2,3,4,5,6];let i = index" (click)="setMonthPayment(item)" class="payment-grid-item bg-primary-gradient" [ngClass]="{'payment-grid-item-active': activePaymentMonth === item}">
-                  {{item}} {{( item > 1 ? 'Meses' : 'Mes' )}}
-                </div>
-
-            </div>
-          </div> -->
-
-
-          <!-- <div class="payment-menu-item">
-
-
-            <div class="mount-pay-container flex flex-col justify-center items-center">
-              <h4>Monto:</h4>
-              <div class="payment-menu-mount-section">
-                <h1 class="payment-mount-small"> {{mountTotalMonthBs}} &nbsp; <small>Bs</small></h1>
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M10.47 2.22a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H5.75a.75.75 0 0 1 0-1.5h5.69l-.97-.97a.75.75 0 0 1 0-1.06m-4.94 6a.75.75 0 0 1 0 1.06l-.97.97h5.69a.75.75 0 0 1 0 1.5H4.56l.97.97a.75.75 0 1 1-1.06 1.06l-2.25-2.25a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0" clip-rule="evenodd"/></svg>
-                <h1> {{mountTotalMonthUSD}} &nbsp; <small>USD</small></h1>
-              </div>
-
-            </div>
-
-
-          </div> -->
-
 
         </div>
 
@@ -401,7 +198,7 @@
       <!-- END PAYMENT CARDS STEP -->
 
       <!-- PAYMENT CREDITO / DEBITO FORM -->
-      <div *ngIf="navActive === ENUM_NAV.PAYMENT_FORMS && DebitoCreditoboolean" class="section-step-item txt-dark">
+      <!-- <div *ngIf="navActive === ENUM_NAV.PAYMENT_FORMS && DebitoCreditoboolean" class="section-step-item txt-dark">
 
         <div *ngIf="!ReciboPay" class="animated fadeInUp">
           <div *ngIf="
@@ -412,7 +209,7 @@
             " class="desc-user">
             <div>
               <h4 class="name-client">
-                <!-- {{ nameClient }} -->
+                <!-- {{ nameClient }} ->
               </h4>
               <h4 class="name-client">
                 {{ saldoUSD | negativeAmount }} USD |
@@ -449,19 +246,12 @@
                 d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1" />
             </svg>
           </button>
-
-          <!-- <button *ngIf="!ShowFormDebitoCreditoBNC && !ShowFormDebito100x100" class="customized_btn_next" [ngClass]="{
-              'btn-width-30': ShowFormDebitoCredito,
-              width_full: !ShowFormDebitoCredito
-            }" (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
-            Regresar
-          </button> -->
         </div>
       </div>
-      <!-- / END PAYMENT CREDITO / DEBITO FORM -->
+      <!-- / END PAYMENT CREDITO / DEBITO FORM ->
 
 
-      <!-- Transferencias -->
+      <!-- Transferencias ->
       <div *ngIf="
           !ConsultarPagoMovilboolean &&
           !DebitoCreditoboolean &&
@@ -571,67 +361,7 @@
           </div>
         </div>
       </div>
-      <!-- / Fin de Transferencias -->
-
-      <!-- Crédito o Débito -->
-      <!-- <div *ngIf="DebitoCreditoboolean" class="section-step-item">
-
-        <div *ngIf="!ReciboPay">
-          <div *ngIf="
-              nameClient &&
-              saldoBs &&
-              saldoUSD &&
-              registerPayService.linkedToContractProcess != 'approved'
-            " class="desc-user">
-            <div>
-              <h4 class="name-client">
-                {{ nameClient }}
-              </h4>
-              <h4 class="name-client">
-                {{ saldoUSD | negativeAmount }} USD |
-                {{ saldoBs | negativeAmount }} Bs {{ saldoText }}
-              </h4>
-            </div>
-            <div>
-              <h4 class="name-client">Servicio: {{ paquete }}</h4>
-              <h4 class="name-client">Suscripción: {{ subscription }} USD</h4>
-            </div>
-          </div>
-          <div *ngIf="
-              nameClient &&
-              saldoBs &&
-              saldoUSD &&
-              registerPayService.linkedToContractProcess == 'approved'
-            " class="desc-user">
-            <div>
-              <h4 class="name-client">CI/RIF: {{ nameClient }}</h4>
-              <h4 class="name-client">
-                Monto a Pagar: {{ saldoUSD | negativeAmount }} USD |
-                {{ saldoBs | negativeAmount }} Bs
-              </h4>
-            </div>
-          </div>
-
-          <br>
-          <button type="button" class="grid-cards-item forma-pago ng-star-inserted" (click)="_requestCard()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-credit-card-fill" viewBox="0 0 16 16">
-              <path
-                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0zm0 3v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zm3 2h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1" />
-            </svg>
-            Pagar
-          </button>
-          <br><br>
-
-          <button *ngIf="!ShowFormDebitoCreditoBNC && !ShowFormDebito100x100" class="customized_btn_next" [ngClass]="{
-              'btn-width-30': ShowFormDebitoCredito,
-              width_full: !ShowFormDebitoCredito
-            }" (click)="ScrollUp($event); ResetFormCD()" type="button" matStepperPrevious>
-            Regresar
-          </button>
-        </div>
-      </div> -->
-      <!-- / Fin de Crédito o Débito -->
+      <!-- / Fin de Transferencias ->
 
       <div *ngIf="ShowFormDebito100x100" class="section-step-item">
         <ng-template matStepLabel>Débito inmediato</ng-template>
@@ -671,7 +401,7 @@
             </div>
           </div>
 
-          <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito-->
+          <!-- !Creditoboolaean en false para solo mostrarlo para pago en debito->
           <app-debito-100x100 [DNI]="this.dni?.value" [SaldoBS]="saldoBs" [Abonado]="nroContrato?.value"
             [Contrato]="idContrato" (OutputResponse)="OutputDebito100x100($event)"></app-debito-100x100>
         </div>
@@ -690,7 +420,7 @@
 
     </div>
   </div>
-</form>
+</form> -->
 
 <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
   (closeEvent)="showStateTable = false"></app-info-pay>

@@ -15,7 +15,6 @@ export class AppComponent {
 
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: MouseEvent) {
-    console.log('onRightClick')
     event.preventDefault();
   }
 
@@ -23,11 +22,12 @@ export class AppComponent {
 
   constructor(public helper: HelperService) { }
 
+  /**
+   * Llevar la vista a la parte superior
+   */
   public handleShowScrollArrow = (event: Event) => {
     this.showScrollArrow = ((event.target as HTMLDivElement).scrollTop > 0)
   }
-
-
 
   public scrollToTop = () => {
     const scrollElement: HTMLElement | null = document.getElementById('content-scrollable')

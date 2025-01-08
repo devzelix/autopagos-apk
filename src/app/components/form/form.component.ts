@@ -1,37 +1,26 @@
 import {
   Component,
   OnInit,
-  ViewChild,
-  OnDestroy,
-  OnChanges,
-  AfterViewInit,
+  ViewChild, AfterViewInit,
   Input,
-  HostListener,
+  HostListener
 } from '@angular/core';
 import {
   UntypedFormGroup,
   UntypedFormBuilder,
-  FormGroup,
-  FormBuilder,
-  Validators,
-  AbstractControl,
-  FormControl,
-  NgControlStatus,
-  ValidatorFn,
-  ValidationErrors,
+  FormGroup, Validators,
+  AbstractControl, ValidatorFn,
+  ValidationErrors
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInput } from '@angular/material/datepicker';
-import { ThisReceiver } from '@angular/compiler';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 import { ImageComponent } from '../image/image.component';
-import { DialogDetailComprobantesComponent } from '../dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 
 import { isNegativeNumber } from '../../validators/customValidatorAmount';
-import { BankListC2P } from 'src/app/interfaces/bankList';
 
 import { nanoid } from 'nanoid';
 import { BankList } from '../../interfaces/bankList';
@@ -47,8 +36,7 @@ import {
   PlantillaConfirmPago,
   DatosPagoMovil,
   FormasDePago,
-  ListBankPago,
-  DebitoInmediato,
+  ListBankPago
 } from './camposSubscription/camposSuscription';
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
@@ -77,7 +65,6 @@ import { ApiBNCService } from 'src/app/services/ApiBNC';
 import { PaymentDialogComponent } from '../payment-dialog/payment-dialog.component';
 import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { IAccount, ResponseMethod } from 'src/app/interfaces/response';
-import { InfoPayComponent } from '../info-pay/info-pay.component';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
@@ -4814,7 +4801,9 @@ export class FormComponent implements AfterViewInit, OnInit {
    * (Function test) to set the form dni value and go to the next page automatically
    */
   public testNextPage = () => {
-    this.firstFormFibex.get('dni')?.setValue('26728159')
+    if(!environment.production) {
+      this.firstFormFibex.get('dni')?.setValue('26728159')
+    }
     // this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
   }
 
