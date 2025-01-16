@@ -72,7 +72,7 @@ export class ModalPaymentComponent implements OnInit {
 
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', this._dataApi.data.data.mensajeRespuesta);
 
-        if(this._dataApi.data.data.mensajeRespuesta === 'Aprobado'){
+        if(this._dataApi.data.data.codRespuesta === '00' && this._dataApi.data.data.mensajeRespuesta === 'APROBADA'){
 
           this.generarPDF().catch((err) => {
             console.log(err);
@@ -86,7 +86,7 @@ export class ModalPaymentComponent implements OnInit {
             timer: 4000, // El modal se cerrará después de 5 segundos
             didClose: () => this.onSubmitPayForm.emit()
           });
-        } else if (this._dataApi.data.data.mensajeRespuesta === 'SALDO INSUFICIENTE'){
+        } else if (this._dataApi.data.data.codRespuesta === '51'){
 
           this.generarPDF().catch((err) => {
             console.log(err);
@@ -94,11 +94,11 @@ export class ModalPaymentComponent implements OnInit {
 
           Swal.fire({
             icon: 'error',
-            title: 'Error al procesar el pago \n'+this._dataApi.data.data.mensajeRespuesta,
+            title: 'Error al procesar el pago \n TRANSACCIÓN NEGADA',
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
-            didClose: () => this.onCloseModal()
+            // didClose: () => this.onCloseModal()
           });
         } else {
           Swal.fire({
@@ -107,7 +107,7 @@ export class ModalPaymentComponent implements OnInit {
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
-            didClose: () => this.onCloseModal()
+            // didClose: () => this.onCloseModal()
           });
         }
 
@@ -119,7 +119,7 @@ export class ModalPaymentComponent implements OnInit {
           showConfirmButton: false,
           allowOutsideClick: false,
           timer: 4000, // El modal se cerrará después de 5 segundos
-          didClose: () => this.onCloseModal()
+          // didClose: () => this.onCloseModal()
         });
       }
       finally {
@@ -174,14 +174,32 @@ export class ModalPaymentComponent implements OnInit {
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
   public async requestCard() {
-    // const mountValue: string = parseFloat(String(this.mount?.value)).toFixed(2)
 
-    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, String(this.mount?.value), 'CV52633', '3F-8B-6A-4D-R2-6C');
+    let macAddress = await this.getMacAddress();
+
+    console.log('macAddress', macAddress);
+    // Monto dincamico #String(this.mount?.value)#
+    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, '1', 'CV52633', macAddress);
 
     console.log('responseJSON', responseJSON);
 
     return responseJSON;
   }
+
+  /**
+   * Function to get the current MAC-ADDRESS
+   * @param type Type of string
+   */
+  public async getMacAddress(){
+
+    const macaddress: any = await this._printer.getMacAddress();
+
+    console.log('macaddress', macaddress.data.mac);
+
+    return macaddress.data.mac;
+
+  }
+
 
   /**
    * Function to generate a PDF with the payment data
@@ -220,19 +238,19 @@ export class ModalPaymentComponent implements OnInit {
 
     // console.log(_dataApiClient);
 
-    if(_dataApiClient[0]['status'] === 'SALDO INSUFICIENTE') {
+    if(_dataApiClient[0]['status'] === 'NEGADA 116          NEGADA') {
 
       // TODO ANALIZAR ESTO QUE ESTA CABLEADO
       _dataApiClient = [{
-        'date': '2024-10-31',
-        'hours': '12:00:00 PM',
-        'refundNumber': 'Negadada',
+        'date': this.getTime('date'),
+        'hours': this.getTime('time'),
+        'refundNumber': this._dataApi.data.data.numeroReferencia,
         'nameClient': 'Miguel',
         'ciClient': this._dataApi.data.data.cedula,
         'abonumber': 'V1242',
         'describe': 'MENS OCT 2024',
         'amount': '00.00',
-        'methodPayment': 'Transacción Negada',
+        'methodPayment': this._dataApi.data.data.tipoProducto,
         'totalAmount': '00.00Bs.',
         'saldo': '0,00Bs.',
         'status': this._dataApi.data.data.mensajeRespuesta,

@@ -17,7 +17,7 @@ export class PrinterService {
         if(_dataTiket) {
           axios({
             method: 'post',
-            url: environment.API_Printer+'/generar-ticket',
+            url: environment.API_Printer+'/tikect/generate-print',
             data: {
               'date': String(_dataTiket[0]['date']),
               'hours': String(_dataTiket[0]['hours']),
@@ -46,21 +46,26 @@ export class PrinterService {
         reject(error);
       }
 
-      // console.log(`
-      //   \'date\': ${_dataTiket[0]['date']},
-      //   \'refNumber\': ${_dataTiket[0]['refundNumber']},
-      //   \'nameClient\': ${_dataTiket[0]['nameClient']},
-      //   \'ciClient\': ${_dataTiket[0]['ciClient']},
-      //   \'abononumber\': ${_dataTiket[0]['abonumber']},
-      //   \'describe\': ${_dataTiket[0]['describe']},
-      //   \'amount\': ${_dataTiket[0]['amount']},
-      //   \'methodPayment\': ${_dataTiket[0]['methodPayment']},
-      //   \'totalAmount\': ${_dataTiket[0]['totalAmount']},
-      //   \'saldo\': ${_dataTiket[0]['saldo']},
-      //   \'status\': ${_dataTiket[0]['status']},
-      // `);
+    });
 
-      // console.log(_dataTiket);
+  }
+
+  getMacAddress(){
+    return new Promise((resolve, reject)=>{
+      try {
+        axios({
+          method: 'get',
+          url: environment.API_Printer+'/get-macaddress',
+          data: {}
+        }).then(res => {
+            resolve(res)
+          })
+          .catch(err => {
+            reject(err)
+        });
+      } catch (error) {
+        reject(error);
+      }
 
     });
 
