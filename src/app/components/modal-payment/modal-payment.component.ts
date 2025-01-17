@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { log } from 'console';
 import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
+import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 import Swal from 'sweetalert2';
 
@@ -27,7 +28,8 @@ export class ModalPaymentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
-    private _printer: PrinterService, // PrinterService instance used to print on Printer -By:MR-
+    private _printer: PrinterService,
+    private _errorsvpos: VposerrorsService // PrinterService instance used to print on Printer -By:MR-
   ) {
     this.formPayment = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
@@ -70,9 +72,14 @@ export class ModalPaymentComponent implements OnInit {
 
         this._dataApi = await this.requestCard();
 
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', this._dataApi.data.data.mensajeRespuesta);
+        console.log(
+          '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
+          this._dataApi.data.data.mensajeRespuesta,
+          this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta),
+          this._dataApi.data.data.codRespuesta
+        );
 
-        if(this._dataApi.data.data.codRespuesta === '00' && this._dataApi.data.data.mensajeRespuesta === 'APROBADA'){
+        if(this._dataApi.data.data.codRespuesta === '00'){
 
           this.generarPDF().catch((err) => {
             console.log(err);
@@ -80,30 +87,23 @@ export class ModalPaymentComponent implements OnInit {
 
           Swal.fire({
             icon: 'success',
-            title: 'Pago procesado con éxito \n'+this._dataApi.data.data.mensajeRespuesta,
+            title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta),
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
             didClose: () => this.onSubmitPayForm.emit()
           });
-        } else if (this._dataApi.data.data.codRespuesta === '51'){
-
-          this.generarPDF().catch((err) => {
-            console.log(err);
-          });
-
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al procesar el pago \n TRANSACCIÓN NEGADA',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            timer: 4000, // El modal se cerrará después de 5 segundos
-            // didClose: () => this.onCloseModal()
-          });
         } else {
+
+          if (this._dataApi.data.data.codRespuesta === '51'){
+            this.generarPDF().catch((err) => {
+              console.log(err);
+            });
+          }
+
           Swal.fire({
             icon: 'error',
-            title: 'Error al procesar el pago \n'+this._dataApi.data.data.mensajeRespuesta,
+            title: this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta), //'Error al procesar el pago \n'+
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
@@ -215,7 +215,7 @@ export class ModalPaymentComponent implements OnInit {
         'date': this.getTime('date'),
         'hours': this.getTime('time'),
         'refundNumber': this._dataApi.data.data.numeroReferencia,
-        'nameClient': 'Thomas',
+        'nameClient': this._dataApi.data.data.numSeq,
         'ciClient': this.dniValue || 'unknown',
         'abonumber': 'CV52633',
         'describe': 'Pago',
