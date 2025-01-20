@@ -112,7 +112,7 @@ export class VposerrorsService {
     ["96", "SISTEMA INACTIVO"],
     ["97", "SIN RESP. DEL HOST"],
     ["98", "RESERVED FOR NATIONAL USE"],
-    ["99", "RESERVED FOR NATIONAL USE"],
+    ["99", "TRANSACCIÓN FALLIDA"],
     ["AV", "TID no disponible"],
     ["AX", "Error en Autorizador"],
     ["AY", "Error de comando"],

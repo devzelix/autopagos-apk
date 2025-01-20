@@ -22,7 +22,7 @@ export class PrinterService {
               'date': String(_dataTiket[0]['date']),
               'hours': String(_dataTiket[0]['hours']),
               'refNumber': String(_dataTiket[0]['refundNumber']),
-              'nameClient': String(_dataTiket[0]['nameClient']),
+              'numSeq': String(_dataTiket[0]['numSeq']),
               'ciClient': String(_dataTiket[0]['ciClient']),
               'abononumber': String(_dataTiket[0]['abonumber']),
               'describe': String(_dataTiket[0]['describe']),
