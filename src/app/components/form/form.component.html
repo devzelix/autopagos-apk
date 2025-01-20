@@ -89,8 +89,12 @@
 
                 <div class="form-control-input form-dni-input">
                   <h4
-                    [ngClass]="{'form-input-empty': (firstFormFibex.get('dni')?.value.length === 0), 'dni-juridico-type':loginTypeSelectValue === 'J' }">
+                    (click)="isActiveLoginInput = true"
+                    [ngClass]="{'form-input-empty': (firstFormFibex.get('dni')?.value.length === 0), 'input-active-color': firstFormFibex.get('dni')?.value.length || isActiveLoginInput, 'input-small-text-size': firstFormFibex.get('dni')?.value.length > 8 }">
+                    
                     {{ firstFormFibex.get('dni')?.value || '_____' }}
+
+                    <span *ngIf="(loginTypeSelectValue === 'V' ? (firstFormFibex.get('dni')?.value.length < 7) : firstFormFibex.get('dni')?.value.length < 16)" class="custom-cursor"></span>
                   </h4>
                 </div>
 
@@ -183,6 +187,7 @@
 
             (totalBs)="mountsToPaymentBs($event)"
             (totalUSD)="mountsToPaymentUSD($event)"
+            (onEditAmountEvent)="onEditAmountClick()"
           ></app-unique-payment>
 
         </div>
@@ -416,21 +421,25 @@
             Regresar
           </button>
         </div>
-      </div>
+      </div>-->
 
     </div>
   </div>
-</form> -->
+</form> 
 
 <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
-  (closeEvent)="showStateTable = false"></app-info-pay>
+  (closeEvent)="showStateTable = false">
+</app-info-pay>
 
 
 <!-- MODAL DE TRANSACCION DEL PAGO -->
 <app-modal-payment *ngIf="showTransactionModal"
   [paymentType]="selectedPaymentType"
   [dniValue]="this.dni?.value"
+  [nroContrato]="this.nroContrato?.value"
   [mountValue]="mountTotalMonthBs"
+  [activeInputFocus]="activeTransactionInputFocus"
+
   (closeEmmit)="handleShowTransactionModal(false)"
-  (onSubmitPayForm)="resetAllForms()" >
+  (onSubmitPayForm)="resetAllForms()">
 </app-modal-payment>

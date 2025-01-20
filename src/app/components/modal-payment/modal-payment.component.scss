@@ -96,3 +96,34 @@ span span.icon-type-dni {
     max-width: 2.5rem;
     min-width: 2.5rem;
 }
+.input-focused-style {
+    background: white !important;
+    outline: 2px solid rgba(52, 132, 222, 0.85) !important;
+}
+.dni-edit-value {
+    color: rgb(30 108 195);
+    font-size: 0.1rem;
+    padding: 0.4rem;
+    height: 4rem;
+    margin-left: 0.5rem;
+    border-radius: 10px;
+    transition: opacity .3s ease-in-out;
+
+    &:active {
+        background-color: #eee;
+    }
+
+    &:not(.show-btn-visible) {
+        opacity: 0;
+        user-select: none;
+    }
+}
+
+form.modal-pay-form-section {
+    input:disabled {
+        background-color: #eee;
+    }
+    input:not(:disabled) {
+        background-color: white;
+    }
+}

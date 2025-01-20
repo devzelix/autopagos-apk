@@ -1,0 +1,21 @@
+export interface ILog {
+    'dateTime': Date,
+    'http_method': 'GET' | 'POST' | 'PUT' | 'DELETE',
+    // 'status': number,
+    'url_api': string,
+    // 'ipAddress': string | number,
+    'ciClient': string | number,
+    // 'subscriberNum': string | number,
+    // 'id_sede': string | number,
+    // 'id_checkout': string | number,
+    'mac_address': string | number,
+    'response_code': unknown,
+    // 'response_message': string,
+    // 'additional_data'?: unknown,
+    'duration_ms'?: number, // Obtener la duración de los atributos del request
+    'is-success'?: boolean
+    'request_body'?: any | undefined,
+}
+
+export type IPromptLog = {response_code: ILog['response_code'], ciClient: ILog['ciClient'], url_api: ILog['url_api'], http_method: ILog['http_method'], 'is-success': ILog['is-success'], /* The `request_body` property in the `ILog` interface is used to store the body of the HTTP request. It can hold any type of data or be undefined if there is no request body associated with the log entry. In the `IPromptLog` type, `request_body` is an optional property that can be included when creating a prompt log object. */
+request_body?: ILog['request_body'],}

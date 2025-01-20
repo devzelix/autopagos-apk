@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { log } from 'console';
-import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
+import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
@@ -12,18 +12,24 @@ import Swal from 'sweetalert2';
   templateUrl: './modal-payment.component.html',
   styleUrls: ['./modal-payment.component.scss']
 })
-export class ModalPaymentComponent implements OnInit {
+export class ModalPaymentComponent implements OnInit, AfterViewInit {
+  @ViewChild('inputDni') inputDni: ElementRef<HTMLInputElement>;
+  @ViewChild('inputMount') inputMount: ElementRef<HTMLInputElement>;
   @Output() closeEmmit: EventEmitter<void> = new EventEmitter() // => close event emmitter
   @Output() onSubmitPayForm: EventEmitter<void> = new EventEmitter() // => on submit event emitter, resets all
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
   @Input() mountValue: number = 0;
+  @Input() nroContrato: string = ''
+  @Input() activeInputFocus: ITransactionInputs = 'dni';
   public formPayment: FormGroup;
-  public activeInputFocus: 'dni' | 'mount' | 'accountType' = 'dni';
   public typeDNI: ITypeDNI = 'V';
   public _dataApi: any;
   public _dataApiClient: any;
   public sendPayment: boolean = false;
+  public isDniDisabled: boolean = true;
+
+  public formErrorMessage?: {inputName: ITransactionInputs, errorMsg: string}
 
   constructor(
     private fb: FormBuilder,
@@ -33,17 +39,35 @@ export class ModalPaymentComponent implements OnInit {
   ) {
     this.formPayment = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
-      mount: [{value:'', disabled: true}, [Validators.required, Validators.min(0)]], // Validación requerida y monto positivo
+      mount: [{value:''}, [Validators.required, Validators.min(0), Validators.pattern(/\./g)]], // Validación requerida y monto positivo
       accountType: ['Corriente', Validators.required] // Valor por defecto y validación requerida
     });
   }
 
   ngOnInit(): void {
-    console.log('dni => value', this.dni?.value)
-    console.log('mount => value', this.mountValue)
     this.dni?.setValue(this.dniValue)
     this.mount?.setValue(this.mountValue)
-    this.mount?.disable()
+    this.setCurrencyMountFormat()
+
+    /* if (this.activeInputFocus === 'dni') {
+      this.mount?.disable();
+    }
+    else if (this.activeInputFocus ==='mount') {
+      this.dni?.disable();
+    } */
+
+/* 
+    if (this.activeInputFocus === 'dni' && this.inputDni && !this.dni?.disable) {
+      console.log('SETEA FOCUS')
+      this.inputDni.nativeElement.focus();
+    }
+    else if (this.inputMount && !this.mount?.disable) {
+      this.inputMount.nativeElement.focus()
+    } */
+  }
+
+  ngAfterViewInit(): void {
+    
   }
 
   /**
@@ -57,6 +81,12 @@ export class ModalPaymentComponent implements OnInit {
   }
   get accountType() {
     return this.formPayment.get('accountType');
+  }
+  get isDniInputDisabled() {
+    return this.dni?.disabled;
+  }
+  get isMountInputDisabled() {
+    return this.mount?.disabled;
   }
 
   /**
@@ -72,8 +102,17 @@ export class ModalPaymentComponent implements OnInit {
 
         this._dataApi = await this.requestCard();
 
+        if (!this._dataApi || !this._dataApi?.data?.data) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Ha ocurrido un error, intente nuevamente más tarde',
+            showConfirmButton: false,
+            allowOutsideClick: true,
+            timer: 4000, 
+          })
+        }
+
         console.log(
-          '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
           this._dataApi.data.data.mensajeRespuesta,
           this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta),
           this._dataApi.data.data.codRespuesta
@@ -137,9 +176,26 @@ export class ModalPaymentComponent implements OnInit {
    * @param value Value of the keyboard event
    */
   public onTecladoInput = (value: string): void => {
-    let inputValue = this.formPayment.get(this.activeInputFocus)?.value
+    try {
 
-    if (typeof inputValue === 'string' && inputValue.length < 8) this.formPayment.get(this.activeInputFocus)?.setValue(inputValue += value);
+      let inputValue = this.formPayment.get(this.activeInputFocus)?.value
+
+      if (this.formPayment.get(this.activeInputFocus)?.disabled) return;
+
+      if (this.activeInputFocus === 'dni' && typeof inputValue === 'string' && inputValue.length < 8) {
+
+        this.formPayment.get(this.activeInputFocus)?.setValue(inputValue += value);
+
+      }
+      else if (this.activeInputFocus === 'mount' && (!String(inputValue ?? '') || String(inputValue)?.replace(/\,/g, '').length < 10) ) {
+
+        this.setCurrencyMountFormat(value)
+      }
+
+      this.validateFormErrors()
+    } catch (error) {
+      console.error('Error onTecladoInput', error)
+    }
   }
 
   /**
@@ -147,7 +203,17 @@ export class ModalPaymentComponent implements OnInit {
    */
   public deleteLastCharacter = (): void => {
     let inputValue = this.formPayment.get(this.activeInputFocus)?.value
+
+    if (this.formPayment.get(this.activeInputFocus)?.disabled) return;
+
     this.formPayment.get(this.activeInputFocus)?.setValue(inputValue.slice(0, -1));
+
+    if (this.activeInputFocus === 'mount') {
+      this.setCurrencyMountFormat();
+    }
+    else this.isDniDisabled = false;
+
+    this.validateFormErrors()
   }
 
   /**
@@ -156,6 +222,9 @@ export class ModalPaymentComponent implements OnInit {
    */
   public onFocus = (focusInputName: 'dni' | 'mount' | 'accountType') => {
     console.log('onfocus', focusInputName)
+
+    if (this.formPayment.get(focusInputName)?.disabled) return;
+
     this.activeInputFocus = focusInputName
   }
 
@@ -173,17 +242,34 @@ export class ModalPaymentComponent implements OnInit {
    * Function to call api method and reliaze payment
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
-  public async requestCard() {
+  public async requestCard(): Promise<any> {
+    try {
 
-    let macAddress = await this.getMacAddress();
+      console.log('in requestCard')
+      let macAddress = '';
 
-    console.log('macAddress', macAddress);
-    // Monto dincamico #String(this.mount?.value)#
-    const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, '1', 'CV52633', macAddress);
+      try {
+        // macAddress  = await this.getMacAddress();
+        macAddress  = '2223:2324:c:PRUEBA'
+      } catch (error) {
+        console.error(error)
+      }
 
-    console.log('responseJSON', responseJSON);
+      console.log('macAddress', macAddress);
+      // Monto dincamico #String(this.mount?.value)#
+      console.log('this.mount?.value', this.mount?.value)
+      const mount: string = String(this.mount?.value).replace(/\,/g, '');
+      console.log('MOUNT', mount)
+      
+      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, '1', this.nroContrato, macAddress);
 
-    return responseJSON;
+      console.log('responseJSON', responseJSON);
+
+      return responseJSON;
+
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   /**
@@ -217,7 +303,7 @@ export class ModalPaymentComponent implements OnInit {
         'refundNumber': this._dataApi.data.data.numeroReferencia,
         'numSeq': this._dataApi.data.data.numSeq,
         'ciClient': this.dniValue || 'unknown',
-        'abonumber': 'false',
+        'abonumber': this.nroContrato,
         'describe': 'Pago',
         'amount': String(this.mount?.value),
         'methodPayment': this._dataApi.data.data.tipoProducto,
@@ -295,5 +381,95 @@ export class ModalPaymentComponent implements OnInit {
     return time;
   }
 
+  private setCurrencyMountFormat = (value?: string) => {
+    const inputValue: number | string = this.mount?.value;
+    console.log('inputValue', inputValue)
+    const currentValue = String(inputValue ?? '').replace(/\./g, '').replace(/\,/g, '')
+
+    const newAmountValue: number = parseInt(value ? (currentValue + value) : currentValue)
+
+    const currency = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(newAmountValue / 100);
+    console.log('currency', currency)
+
+    this.mount?.setValue(currency);
+  }
+
+  public setInputFocus = (input: ITransactionInputs) => {
+
+    if (this.formPayment.get(input)?.disabled) return;
+
+    this.activeInputFocus = input;
+
+    if (input === 'dni' && this.inputDni && !this.dni?.disable) {
+      console.log('SETEA FOCUSSSSS')
+      this.inputDni.nativeElement.focus()
+      this.inputMount.nativeElement.disabled = false;
+    }
+    else if (input ==='mount' && this.inputMount && !this.mount?.disable) {
+      console.log('SETEA FOCUSSS MOUNT')
+      this.inputMount.nativeElement.focus()
+      this.inputMount.nativeElement.disabled = false;
+    }
+  }
+
+  public onInputValueChange = (event:Event, inputName: ITransactionInputs) => {
+    const regex = /^\d+$/;
+    let value = (event.target as HTMLInputElement).value;
+    const isMountActive: boolean = (inputName === 'mount')
+
+    if (isMountActive) value = value.replace(/\,/g, '').replace(/\./g, '')
+
+    if (!regex.test(value)) {
+      this[inputName]?.setValue(this[inputName]?.value.slice(0, -1))
+    }
+
+    if (isMountActive) {
+      this.setCurrencyMountFormat()
+    }
+
+    this.validateFormErrors()
+  }
+
+  public onEditDniValue = () => {
+    if (this.inputDni) {
+      console.log('SETEA FOCUSS')
+      this.inputDni.nativeElement.disabled = false;
+      this.dni?.setValue('')
+      this.inputDni.nativeElement.focus();
+      this.isDniDisabled = false;
+      if (this.dni) this.dni.enable()
+    }
+    this.validateFormErrors()
+  }
+
+  private validateFormErrors = (): void  => {
+    try {
+
+      if (!this.dni?.value || this.dni?.value.length < 7) {
+        this.formErrorMessage = {inputName:'dni', errorMsg: 'Ingrese una cédula válida'}
+        return;
+      }
+
+      this.formErrorMessage = {inputName:'dni', errorMsg: ''}
+
+      if (!this.mount?.value) {
+        this.formErrorMessage = {inputName:'mount', errorMsg: 'Ingrese un monto válido'}
+        return;
+      }
+      const mount = parseInt(this.mount?.value.replace(/\,/g, ''))
+      if (mount <= 0 ) {
+        this.formErrorMessage = {inputName:'mount', errorMsg: 'Ingrese un monto válido'}
+        return;
+      }
+
+      this.formErrorMessage = {inputName:'mount', errorMsg: ''}
+        
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
 }

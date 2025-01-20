@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosResponse } from 'axios';
 import { environment } from 'src/environments/environment';
+import { LogService } from '../log.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VposuniversalRequestService {
 
-  constructor() { }
+  constructor(
+    private _logService: LogService
+  ) {
+  }
 
   //#-----------------------------Conect to API and Test-----------------------------------#//
   // closeAPI(){//Close Conecction to API
@@ -25,9 +29,9 @@ export class VposuniversalRequestService {
   //#--------------------------------------------------------------------------------------#//
 
   //#--------------------------------Card pay Simple---------------------------------------#//
-  cardRequest(_ci: any, _amount: string, _subscriber: string, _register: string){ //Pay Card Simple
-
+  cardRequest(_ci: string, _amount: string, _subscriber: string, _register: string){ //Pay Card Simple
     return new Promise<AxiosResponse<any>>((resolve, reject)=>{
+      console.log('in cardRequest')
       try {
         axios({
           method: 'post',
@@ -43,13 +47,21 @@ export class VposuniversalRequestService {
               "subscriber": _subscriber,
               "register": _register
           }
-        }).then(res => {
+        })
+        .then(res => {
+          console.log('RES', res)
+          this._logService.storagelog({ciClient: _ci, http_method: 'POST', request_body: {"monto": _amount,"ci": _ci,"subscriber": _subscriber,"register": _register}, response_code: res.data?.status ?? res.status, url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': true})
             resolve(res)
           })
           .catch(err => {
+            console.error(err)
+            const response_code = err.response ? err.response.status : undefined;
+            this._logService.storagelog({ciClient: _ci, http_method: 'POST', url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': false, response_code})
             reject(err)
           });
       } catch (error) {
+        const response_code = (error as any).response ? (error as any).response.status : undefined;
+        this._logService.storagelog({ciClient: _ci, http_method: 'POST', url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': false, response_code})
         reject(error);
       }
 

@@ -7,3 +7,5 @@ export type DataOptionsType = {
 export type IPaymentTypes = 'Débito' | 'Internacional' | 'Nacional';
 
 export type ITypeDNI = 'V' | 'J' | 'E';
+
+export type ITransactionInputs = 'dni' | 'mount' | 'accountType';

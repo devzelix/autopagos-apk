@@ -464,6 +464,10 @@ label.form-control-label {
     max-width: 420px;
     background: lightblue;
 
+    &.input-active-color {
+      background: linear-gradient(36deg, rgb(59 143 239 / 75%) 18%, rgb(48 201 228 / 74%) 100%);
+    }
+
 
     &.form-input-empty {
       letter-spacing: 1.5rem;
@@ -700,3 +704,7 @@ label.form-control-label {
 //     }
 //   }
 // }
+.input-small-text-size {
+  font-size: 1.7rem !important;
+  letter-spacing: 3px !important;
+}

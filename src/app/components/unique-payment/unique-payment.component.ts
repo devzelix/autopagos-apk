@@ -19,6 +19,7 @@ export class UniquePaymentComponent implements OnInit {
 
   @Output() totalBs = new EventEmitter<string>();
   @Output() totalUSD = new EventEmitter<string>();
+  @Output() onEditAmountEvent = new EventEmitter<void>()
 
   public activePaymentMonth: number = 1;
   public viewMultiplePayments: boolean = true;
@@ -71,6 +72,10 @@ export class UniquePaymentComponent implements OnInit {
   public mountsToPaymentUSD(mountUSD: string){
     this.mountTotalMonthUSD = parseFloat(mountUSD)
     this.totalUSD.emit(this.mountTotalMonthUSD.toFixed(2));
+  }
+
+  public onEditAmount = () => {
+    this.onEditAmountEvent.emit()
   }
 
 }

@@ -67,7 +67,8 @@ import { PaymenDialogZelleComponent } from '../paymen-dialog-zelle/paymen-dialog
 import { IAccount, ResponseMethod } from 'src/app/interfaces/response';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
-import { IPaymentTypes, ITypeDNI } from 'src/app/interfaces/payment-opt';
+import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
+import { LocalstorageService } from 'src/app/services/localstorage.service';
 
 export interface DialogData {
   animal: string;
@@ -286,6 +287,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   public mountTotalMonthUSD: number = 0;
   public activePaymentMonth: number = 1;
   public showFormView: boolean = false;
+  public activeTransactionInputFocus: ITransactionInputs = 'dni';
+  public isActiveLoginInput: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -313,6 +316,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
+    private _localStorageService: LocalstorageService
     // private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
   ) //private hcaptchaService: NgHcaptchaService
   {
@@ -2537,6 +2541,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       const control = this.firstFormFibex.controls[key];
       control.setErrors(null);
     });
+
   }
 
   ResetFormCD() {
@@ -2575,6 +2580,8 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.lastDni = '';
       this.ScrollUp();
       this.showFormView = false;
+      this.activeTransactionInputFocus = 'dni';
+      this.isActiveLoginInput = false;
 
     } catch (error) {
       console.error('Error resetting all forms:', error);
@@ -2927,9 +2934,9 @@ export class FormComponent implements AfterViewInit, OnInit {
       }
 
       this.banksFiltered = [...this.bankList];
-      if (dni_ === this.lastDni) {
+      /* if (dni_ === this.lastDni) {
         return reject();
-      }
+      } */
 
       this.dniConsulted = false;
       if (dni_.length >= 6) {
@@ -4683,6 +4690,7 @@ export class FormComponent implements AfterViewInit, OnInit {
           this.stateTableData = response.data.length
             ? JSON.parse(response.data)
             : [];
+            console.log('SHOW TABLE VALUE DATA', this.stateTableData, this.showStateTable)
         });
     } catch (error) {
       console.error(error);
@@ -4770,7 +4778,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     // this.inputValue += value; // Agregar el valor recibido al input
     let dniFormValue = this.firstFormFibex.get('dni')?.value
 
-    if (typeof dniFormValue === 'string' && (this.loginTypeSelectValue === 'V' && dniFormValue.length < 8 || this.loginTypeSelectValue === 'J' && dniFormValue.length < 15)) this.firstFormFibex.get('dni')?.setValue(dniFormValue += value);
+    if (typeof dniFormValue === 'string' && (this.loginTypeSelectValue === 'V' && dniFormValue.length < 8 || (['E', 'J',].includes(this.loginTypeSelectValue)) && dniFormValue.length < 15)) this.firstFormFibex.get('dni')?.setValue(dniFormValue += value);
   }
 
   // Función para eliminar el último carácter
@@ -4802,7 +4810,7 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public testNextPage = () => {
     if(!environment.production) {
-      this.firstFormFibex.get('dni')?.setValue('26728159')
+      this.firstFormFibex.get('dni')?.setValue('1000000')
     }
     // this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
   }
@@ -4828,11 +4836,13 @@ export class FormComponent implements AfterViewInit, OnInit {
         this.ResetFormCD()
         this.ScrollUp()
         this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
-      }
-
+      },
+      
     }
 
-    if (HANDLE_NAV_FN[this.navActive] !== undefined) (HANDLE_NAV_FN[this.navActive] as () => void)();
+    const handleStepFn: (() => void) | undefined = HANDLE_NAV_FN[this.navActive]
+
+    if (handleStepFn !== undefined) handleStepFn();
 
   }
 
@@ -4955,8 +4965,9 @@ export class FormComponent implements AfterViewInit, OnInit {
       }
 
       this.closeAlert2();
-
-      if (this.nroContrato?.value.length) this.openInfoPay()
+      if (this.nroContrato?.value.length) {
+        this.openInfoPay()
+      }
 
     } catch (error) {
       console.error(error)
@@ -5036,6 +5047,12 @@ export class FormComponent implements AfterViewInit, OnInit {
       const formComponent = document.getElementsByTagName('app-form')[0]
       formComponent?.classList.add('m-auto')
     }
+  }
+
+  public onEditAmountClick = () => {
+    console.log('SELECTED PAYMENT TYPE', this.selectedPaymentType)
+    this.activeTransactionInputFocus = 'mount';
+    this.handleShowTransactionModal(true)
   }
 
 }
