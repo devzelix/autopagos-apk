@@ -91,7 +91,7 @@
                   <h4
                     (click)="isActiveLoginInput = true"
                     [ngClass]="{'form-input-empty': (firstFormFibex.get('dni')?.value.length === 0), 'input-active-color': firstFormFibex.get('dni')?.value.length || isActiveLoginInput, 'input-small-text-size': firstFormFibex.get('dni')?.value.length > 8 }">
-                    
+
                     {{ firstFormFibex.get('dni')?.value || '_____' }}
 
                     <span *ngIf="(loginTypeSelectValue === 'V' ? (firstFormFibex.get('dni')?.value.length < 7) : firstFormFibex.get('dni')?.value.length < 16)" class="custom-cursor"></span>
@@ -425,7 +425,7 @@
 
     </div>
   </div>
-</form> 
+</form>
 
 <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
   (closeEvent)="showStateTable = false">
@@ -437,6 +437,7 @@
   [paymentType]="selectedPaymentType"
   [dniValue]="this.dni?.value"
   [nroContrato]="this.nroContrato?.value"
+  [amountContrato]="mountTotalMonthBs"
   [mountValue]="mountTotalMonthBs"
   [activeInputFocus]="activeTransactionInputFocus"
 

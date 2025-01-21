@@ -20,14 +20,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
   @Input() mountValue: number = 0;
+  @Input() amountContrato: number = 0;
   @Input() nroContrato: string = ''
   @Input() activeInputFocus: ITransactionInputs = 'dni';
   public formPayment: FormGroup;
   public typeDNI: ITypeDNI = 'V';
   public _dataApi: any;
-  public _dataApiClient: any;
   public sendPayment: boolean = false;
   public isDniDisabled: boolean = true;
+  private mountFormat: string = '0.00';
 
   public formErrorMessage?: {inputName: ITransactionInputs, errorMsg: string}
 
@@ -56,7 +57,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       this.dni?.disable();
     } */
 
-/* 
+/*
     if (this.activeInputFocus === 'dni' && this.inputDni && !this.dni?.disable) {
       console.log('SETEA FOCUS')
       this.inputDni.nativeElement.focus();
@@ -67,7 +68,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    
+
   }
 
   /**
@@ -108,7 +109,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             title: 'Ha ocurrido un error, intente nuevamente más tarde',
             showConfirmButton: false,
             allowOutsideClick: true,
-            timer: 4000, 
+            timer: 4000,
           })
         }
 
@@ -249,21 +250,26 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       let macAddress = '';
 
       try {
-        // macAddress  = await this.getMacAddress();
-        macAddress  = '2223:2324:c:PRUEBA'
+        macAddress  = await this.getMacAddress();
+        // macAddress  = '2223:2324:c:PRUEBA'
       } catch (error) {
         console.error(error)
       }
 
       console.log('macAddress', macAddress);
-      // Monto dincamico #String(this.mount?.value)#
       console.log('this.mount?.value', this.mount?.value)
-      const mount: string = String(this.mount?.value).replace(/\,/g, '');
-      console.log('MOUNT', mount)
-      
-      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, '1', this.nroContrato, macAddress);
+      this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
+      console.log('MOUNT', this.mountFormat)
 
-      console.log('responseJSON', responseJSON);
+      let _desciptionText: string =
+      Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago de Mensualidad' :
+      Number(this.mountFormat) < Number(this.amountContrato) ? 'Adelanto de Mensualidad' :
+      Number(this.mountFormat) > Number(this.amountContrato) ? 'Abono de Mensualidad' :
+      'Pago';
+
+      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', Number(this.amountContrato) , 'Mount:', Number(this.mountFormat),'Mensaje:',_desciptionText);
+
+      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, this.mountFormat, this.nroContrato, macAddress);
 
       return responseJSON;
 
@@ -294,6 +300,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public async generarPDF() {
 
     let _dataApiClient = []; // Data to tiket print
+    let _desciptionText: string =
+      Number(this.mountFormat) === this.amountContrato ? 'Pago de Mensualidad' :
+      Number(this.mountFormat) > this.amountContrato ? 'Adelanto de Mensualidad' :
+        Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' :
+      'Pago';
+
+    console.log(this.amountContrato, this.mount,_desciptionText);
 
     // to genarate tiket and printer this
     _dataApiClient = [
@@ -304,7 +317,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         'numSeq': this._dataApi.data.data.numSeq,
         'ciClient': this.dniValue || 'unknown',
         'abonumber': this.nroContrato,
-        'describe': 'Pago',
+        'describe': _desciptionText,
         'amount': String(this.mount?.value),
         'methodPayment': this._dataApi.data.data.tipoProducto,
         'totalAmount': String(this.mount?.value),
@@ -333,8 +346,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         'refundNumber': this._dataApi.data.data.numeroReferencia,
         'numSeq': this._dataApi.data.data.numSeq,
         'ciClient': this._dataApi.data.data.cedula,
-        'abonumber': 'false',
-        'describe': 'Pago',
+        'abonumber': this.nroContrato,
+        'describe': 'Pago Fallido',
         'amount': '00.00',
         'methodPayment': this._dataApi.data.data.tipoProducto,
         'totalAmount': '00.00Bs.',
@@ -466,7 +479,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       }
 
       this.formErrorMessage = {inputName:'mount', errorMsg: ''}
-        
+
     } catch (error) {
       console.error(error)
     }
