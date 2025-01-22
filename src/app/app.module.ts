@@ -42,6 +42,8 @@ import { WelcomeViewComponent } from './components/welcome-view/welcome-view.com
 import { BtnTransactionComponent } from './components/buttons/btn-transaction/btn-transaction.component';
 import { UniquePaymentComponent } from './components/unique-payment/unique-payment.component';
 import { MultiplePaymentComponent } from './components/multiple-payment/multiple-payment.component';
+import { CurrencyPipe } from '@angular/common';
+import { UserItemCardComponent } from './components/cards/user-item-card/user-item-card.component';
 
 
 const routes: Routes = [
@@ -84,7 +86,8 @@ const routes: Routes = [
     WelcomeViewComponent,
     BtnTransactionComponent,
     UniquePaymentComponent,
-    MultiplePaymentComponent
+    MultiplePaymentComponent,
+    UserItemCardComponent
   ],
   imports: [
     BrowserModule,
@@ -97,7 +100,8 @@ const routes: Routes = [
     NgxStripeModule.forRoot(environment.TokenStripe),
     NgxPayPalModule,
     RouterModule.forRoot(routes),
-    QRCodeModule
+    QRCodeModule,
+    CurrencyPipe
     /* NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language

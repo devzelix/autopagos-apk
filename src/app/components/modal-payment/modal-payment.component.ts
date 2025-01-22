@@ -40,7 +40,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   ) {
     this.formPayment = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
-      mount: [{value:''}, [Validators.required, Validators.min(0), Validators.pattern(/\./g)]], // Validación requerida y monto positivo
+      mount: [{value:''}, [Validators.required ]], //Validators.min(0), Validators.pattern(/\./g) // Validación requerida y monto positivo
       accountType: ['Corriente', Validators.required] // Valor por defecto y validación requerida
     });
   }
@@ -251,7 +251,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       try {
         macAddress  = await this.getMacAddress();
-        // macAddress  = '2223:2324:c:PRUEBA'
       } catch (error) {
         console.error(error)
       }

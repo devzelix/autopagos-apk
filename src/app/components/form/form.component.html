@@ -57,12 +57,18 @@
 
       </div>
 
+      
       <div *ngIf="AppFibex && userGreeting" class="subtitle-info">
         <h1 class="name-client text-2xl txt-dark">
           {{ userGreeting }}
         </h1>
       </div>
-
+      
+      <span *ngIf="mainTitle" class="title-info-container">
+        <h4 >
+          {{ mainTitle }}
+        </h4>
+      </span>
       <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
       <!-- showDniForm && !AppFibex -->
       <div *ngIf="navActive === ENUM_NAV.LOGIN" class="section-step-item keypad-form-step">
@@ -163,6 +169,22 @@
 
       </div>
 
+      <div *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT" class="section-step-item">
+        <div class="user-list-select-content w-full flex justify-center txt-dark flex-col">
+          
+          <div class="user-list-select-grid">
+
+            <app-user-item-card *ngFor="let user of userSelectList"
+              [userItem]="user"
+              (onUserSelected)="onUserSelected($event)"
+            >
+            </app-user-item-card>
+            
+          </div>
+
+        </div>
+      </div>
+
       <!-- PAYMENT CARDS STEP -->
       <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
         <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
@@ -184,6 +206,7 @@
             [mountTotalMonthBs]="mountTotalMonthBs"
             [subscription]="subscription"
             [monthPayCount]="monthPayCount"
+            [setTitleFn]="setMainTitle"
 
             (totalBs)="mountsToPaymentBs($event)"
             (totalUSD)="mountsToPaymentUSD($event)"
