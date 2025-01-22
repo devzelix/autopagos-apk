@@ -25,7 +25,7 @@ import { isNegativeNumber } from '../../validators/customValidatorAmount';
 import { nanoid } from 'nanoid';
 import { BankList } from '../../interfaces/bankList';
 import { BanksDays } from '../../interfaces/banksDays';
-import { Contratos } from '../../interfaces/contratos';
+import { Contratos, IUserListItem, IUserSaldo } from '../../interfaces/contratos';
 import {
   DataSlide,
   TypeAccount,
@@ -79,7 +79,8 @@ enum PAGES_NAVIGATION {
   LOGIN,
   MAIN_MENU,
   PAYMENT_CARDS,
-  PAYMENT_FORMS
+  PAYMENT_FORMS,
+  USER_LIST_SELECT,
 }
 
 type IHandlerNav = {
@@ -289,6 +290,9 @@ export class FormComponent implements AfterViewInit, OnInit {
   public showFormView: boolean = false;
   public activeTransactionInputFocus: ITransactionInputs = 'dni';
   public isActiveLoginInput: boolean = false;
+  public mainTitle: string = '';
+  public userSelectList: IUserListItem[] = []
+  public clientNames: string = '';
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -1128,7 +1132,10 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.PagoPendiente = false;
       this.PagoMetodosHTML2 = FormasDePago;
     }
-    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+
+    if (this.userSelectList.length === 1) {
+      this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+    }
     this.loadInitMonthMountValues()
     console.log('FORMA PAGO', this.PagoMetodosHTML2, x)
   }
@@ -2953,7 +2960,8 @@ export class FormComponent implements AfterViewInit, OnInit {
 
         //Busco por su Cédula
         //this.SearchDataClient(dni_)
-        this.registerPayService.getSaldoByDni(dni_).then((res: any) => {
+        this.registerPayService.getSaldoByDni(dni_).then((res: IUserSaldo[]) => {
+          console.log('RES USER 2', res)
           this.lastDni = dni_;
           this.closeAlert();
 
@@ -2963,15 +2971,25 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.registerPayService.linkedToContractProcess === 'approved'
             ) {
               this.listContratos = [];
+              this.userSelectList = [];
               this.ComprobantesPago = [];
               this.SendOption(0, 0, dni_);
               if (this.registerPayService.linkedToContractProcess != 'approved') {
                 //Valido los estatus de los contratos
-                res.forEach((dataContrato: any, index: number) => {
-                  var ValidOno = this.ValidStatusContrato(
+                res.forEach((dataContrato: IUserSaldo, index: number) => {
+                  let isValid: boolean = this.ValidStatusContrato(
                     dataContrato.status_contrato
                   );
-                  if (ValidOno) {
+                  
+                  this.userSelectList.push({
+                    ...dataContrato,
+                    is_user_valid: isValid,
+                    saldo: (parseFloat(dataContrato.saldo) > 0) ? parseFloat(dataContrato.saldo) : Math.abs(parseFloat(dataContrato.saldo)),
+                    status_contrato: dataContrato.status_contrato.toLowerCase(),
+                    isDebtor: (parseFloat(dataContrato.saldo) > 0)
+                  });
+
+                  if (isValid) {
                     this.listContratos.push({
                       id_contrato: dataContrato.id_contrato,
                       contrato: dataContrato.nro_contrato,
@@ -2982,17 +3000,25 @@ export class FormComponent implements AfterViewInit, OnInit {
                       franquicia: dataContrato.franquicia,
                       status_contrato: dataContrato.status_contrato,
                     });
-                    this.cambio_act = dataContrato.cambio_act;
+                    this.cambio_act = parseFloat(dataContrato.cambio_act);
                   }
                   if (dataContrato.franquicia.includes('FIBEX ARAGUA')) {
                     this.paymentMethod = 'aragua';
                   }
                   if (index == res.length - 1 && this.paymentMethod != 'aragua') {
                     this.AppFibex = true;
-                    this.showMainMenuPage2 = true
                     this.showDniForm = false;
-                    // this.navActive = PAGES_NAVIGATION.MAIN_MENU
-                    this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+
+                    console.log('userSelectList', this.userSelectList)
+                    if (this.userSelectList.length === 1) {
+                      this.showMainMenuPage2 = true
+                      this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+                    }
+                    else {
+                      this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
+                      this.setMainTitle('Seleccione una cuenta para continuar')
+                    }
+
                     console.warn('HACE RESOLVEE 1')
                     resolve()
                   }
@@ -3024,6 +3050,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                       this.showMainMenuPage2 = true;
                       this.showDniForm = false;
                       // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+                      console.warn('GO TO PAYMENT_CARD 2')
                       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
                       console.warn('HACE RESOLVEEE 2')
                       resolve()
@@ -3034,19 +3061,19 @@ export class FormComponent implements AfterViewInit, OnInit {
                     } else {
                       //console.log('Estoy aca');
                       this.invalidForm('Esta cuenta es exonerada');
-                      this.lastDni = '';
+                      /* this.lastDni = '';
                       this.AppFibex = false;
                       this.showMainMenuPage2 = false;
                       this.navActive = PAGES_NAVIGATION.LOGIN;
-                      return reject();
+                      return reject(); */
                     }
                   } else {
                     console.log('PAsar por la funcion SearchSectorAbonado')
+
                     this.SearchSectorAbonado();
                   }
                 }
               } else {
-                console.error('pasa por aquiiiiiii 1 y se tranca')
                 this.dni?.setValue(dni_);
                 this.nameClient = String(dni_);
                 this.setGreeting(this.nameClient)
@@ -3068,6 +3095,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                 this.readonlyDNI = true;
                 this.idContrato = this.listContratos[0].id_contrato;
                 this.nameClient = this.listContratos[0].cliente;
+                console.error('ERROR NO PASA POR AQUI')
                 this.setGreeting(this.nameClient)
                 this.name?.setValue(res[0].cliente);
                 this.nroContrato?.setValue(this.listContratos[0].contrato);
@@ -3100,110 +3128,14 @@ export class FormComponent implements AfterViewInit, OnInit {
                             b.Fecha.getTime() - a.Fecha.getTime()
                         );
                       temp = temp.slice(0, 5);
+                      console.log(' pasa por ValidateReferenciaLast')
                       this.ValidateReferenciaLast(temp);
                     }
                   })
                   .catch((error: any) => console.error(error));
               }
 
-              /*Esto se hacer por si el usuario preciomente selecciona un banco */
-              if (this.BancoNacional(this.banco)) {
-                if (
-                  !Number.isNaN(parseFloat(this.listContratos[0].saldo)) ||
-                  !Number.isNaN(
-                    parseFloat(this.registerPayService.amountCustomerContract)
-                  )
-                ) {
-                  if (
-                    this.registerPayService.linkedToContractProcess != 'approved'
-                  ) {
-                    this.validateIfAmountIsNegativer(
-                      this.listContratos[0].saldo,
-                      true
-                    );
-
-                    this.lastAmount = parseFloat(
-                      this.listContratos[0].saldo
-                    ).toFixed(2);
-
-                    this.saldoUSD = parseFloat(
-                      this.listContratos[0].saldo
-                    ).toFixed(2);
-                    this.saldoBs = (
-                      parseFloat(this.listContratos[0].saldo) * this.cambio_act
-                    ).toFixed(2);
-                    this.subscription = parseFloat(
-                      this.listContratos[0].subscription
-                    ).toFixed(2);
-                  } else {
-                    // this.registerPayService.amountCustomerContract
-                    this.validateIfAmountIsNegativer(
-                      this.registerPayService.amountCustomerContract,
-                      true
-                    );
-
-                    this.lastAmount = parseFloat(
-                      this.registerPayService.amountCustomerContract
-                    ).toFixed(2);
-
-                    this.saldoUSD = parseFloat(
-                      this.registerPayService.amountCustomerContract
-                    ).toFixed(2);
-                    this.saldoBs = (
-                      parseFloat(this.registerPayService.amountCustomerContract) *
-                      this.cambio_act
-                    ).toFixed(2);
-                    this.subscription = parseFloat('0').toFixed(2);
-                  }
-                } else {
-                  this.amount?.setValue(0);
-                  this.lastAmount = '0';
-                }
-              } else {
-                //this.validateIfAmountIsNegativer(this.listContratos[0].saldo);
-                this.lastAmount = parseFloat(this.listContratos[0].saldo).toFixed(
-                  2
-                );
-                this.saldoUSD = parseFloat(this.listContratos[0].saldo).toFixed(
-                  2
-                );
-                this.saldoBs = (
-                  parseFloat(this.listContratos[0].saldo) * this.cambio_act
-                ).toFixed(2);
-                this.subscription = parseFloat(
-                  this.listContratos[0].subscription
-                ).toFixed(2);
-              }
-
-              //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
-              localStorage.setItem(
-                'Name',
-                this._seguridadDatos.encrypt(this.nameClient)
-              );
-              localStorage.setItem(
-                'Monto',
-                this._seguridadDatos.encrypt(this.saldoUSD)
-              );
-              localStorage.setItem(
-                'MontoBs',
-                this._seguridadDatos.encrypt(this.saldoBs)
-              );
-              localStorage.setItem(
-                'Subscription',
-                this._seguridadDatos.encrypt(this.subscription)
-              );
-              localStorage.setItem(
-                'idContrato',
-                this._seguridadDatos.encrypt(this.idContrato)
-              );
-              localStorage.setItem(
-                'dni',
-                this._seguridadDatos.encrypt(this.dni?.value)
-              );
-              localStorage.setItem(
-                'Abonado',
-                this._seguridadDatos.encrypt(this.abonado)
-              );
+              this.setActiveContrato(this.listContratos[0])
 
               if (this.listContratos.length === 1) {
                 this.listContratos.find((cliente) => {
@@ -3225,16 +3157,19 @@ export class FormComponent implements AfterViewInit, OnInit {
               setTimeout(() => this.closeAlert(), 1000);
               this.banksFiltered = [...this.bankList];
               this.listContratos = [];
+              this.userSelectList = []
               this.banksFiltered = [...this.bankList];
               reject()
             }
           } catch (error) {
+            console.error('ERROR EN EL TRY CATCH DE searchServicesv2', error)
             if (this.registerPayService.linkedToContractProcess == 'approved') {
               this.tasaService.getSaldoBCV().subscribe((res) => {
                 this.tasaCambio = res;
               });
               this.closeAlert2();
               this.listContratos = [];
+              this.userSelectList = []
               this.ComprobantesPago = [];
               //this.verifyDNI = true;
               this.SendOption(0, 0, dni_);
@@ -3249,6 +3184,7 @@ export class FormComponent implements AfterViewInit, OnInit {
               this.showMainMenuPage2 = true;
               this.showDniForm = false;
               // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+              console.warn('GO TO PAYMENT_CARD 3')
               this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
               console.warn('HACE RESOLVEEE 3')
               resolve()
@@ -3299,6 +3235,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                 this.showMainMenuPage2 = true
                 this.showDniForm = false;
                 // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+                console.warn('GO TO PAYMENT_CARD 4')
                 this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
                 console.warn('HACE RESOLVEEE 4')
                 resolve()
@@ -3599,6 +3536,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.showMainMenuPage2 = true;
       this.showDniForm = false;
       // this.navActive = PAGES_NAVIGATION.MAIN_MENU;
+      console.warn('GO TO PAYMENT_CARD 5')
       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
 
       //Para lograr un efecto de transición
@@ -4803,14 +4741,16 @@ export class FormComponent implements AfterViewInit, OnInit {
   /**
    * Function to set the initial client greeting
    */
-  public setGreeting = (nameClient: string): string => this.userGreeting = 'Hola, ' + nameClient.split(' ').map((char) => char.charAt(0).toUpperCase() + char.slice(1).toLowerCase()).join(' ')
+  public setGreeting = (nameClient: string): string => {
+    return this.userGreeting = 'Hola, ' + this.getShortName(nameClient.toLowerCase());
+  }
 
   /**
    * (Function test) to set the form dni value and go to the next page automatically
    */
   public testNextPage = () => {
     if(!environment.production) {
-      this.firstFormFibex.get('dni')?.setValue('1000000')
+      this.firstFormFibex.get('dni')?.setValue('20215281')
     }
     // this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
   }
@@ -4820,16 +4760,31 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public goStepBack = () => {
     /*// * Handler function whose index is the current position of the navigation */
+
+    const goToLoginFn = () => {
+      this.firstFormFibex.get('dni')?.setValue('');
+      this.ResetForm()
+      this.listContratos = [];
+      this.userSelectList = []
+      this.LoadingLengthAbonado = false;
+      this.showMainMenuPage2 = false;
+      this.showDniForm = true;
+      this.navActive = PAGES_NAVIGATION.LOGIN;
+    }
+
     const HANDLE_NAV_FN: Partial<IHandlerNav> = {
 
+      [PAGES_NAVIGATION.USER_LIST_SELECT]: () => goToLoginFn(),
+
       [PAGES_NAVIGATION.PAYMENT_CARDS]: () => {
-        this.firstFormFibex.get('dni')?.setValue('');
-        this.ResetForm()
-        this.listContratos = [];
-        this.LoadingLengthAbonado = false;
-        this.showMainMenuPage2 = false;
-        this.showDniForm = true;
-        this.navActive = PAGES_NAVIGATION.LOGIN;
+
+        if (this.userSelectList.length > 1) {
+          this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
+          
+        }
+        else {
+          goToLoginFn()
+        }
       },
 
       [PAGES_NAVIGATION.PAYMENT_FORMS]: () => {
@@ -4859,7 +4814,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
       this.banksFiltered = [...this.bankList];
 
-      if (dni_ === this.lastDni) return;
+      // if (dni_ === this.lastDni) return;
 
       this.dniConsulted = false;
       if (dni_.length <= 6) {
@@ -4901,11 +4856,13 @@ export class FormComponent implements AfterViewInit, OnInit {
         setTimeout(() => this.closeAlert(), 1000);
         this.banksFiltered = [...this.bankList];
         this.listContratos = [];
+        this.userSelectList = []
         this.banksFiltered = [...this.bankList];
         return
       }
 
       this.listContratos = [];
+      this.userSelectList = []
       this.ComprobantesPago = [];
 
       if (this.registerPayService.linkedToContractProcess != 'approved') {
@@ -5053,6 +5010,198 @@ export class FormComponent implements AfterViewInit, OnInit {
     console.log('SELECTED PAYMENT TYPE', this.selectedPaymentType)
     this.activeTransactionInputFocus = 'mount';
     this.handleShowTransactionModal(true)
+  }
+
+  /**
+   * Function to get the short names
+   * @param allNames All names (first and second name)
+   * @returns just the short name
+   */
+  private getShortName(allNames: string) {
+    const nombres = allNames.split(' ');
+    return (nombres.length > 3) ? `${nombres[0]} ${nombres[nombres.length - 2]}` 
+        : (nombres.length === 3) ? `${nombres[0]} ${nombres[2]}`
+        : allNames;
+  }
+
+  public setMainTitle = (newTitle: string) => {
+    this.mainTitle = newTitle
+  }
+
+  public onUserSelected = (userSelected: IUserListItem): void => {
+    try {
+      console.log('userSaldoSelected', userSelected)
+
+      const activeContrato = this.listContratos.find((contrato: Contratos) => contrato.id_contrato === userSelected.id_contrato)
+
+      if (!activeContrato) {
+        Swal.fire({
+          icon: 'error',
+          // timer: 5000,
+          // title: 'Error en la cuenta seleccionada',
+          text: `El estatus: ${userSelected.status_contrato.toUpperCase()} de la cuenta seleccionada no permite esta operación. Por favor, comuníquese con el proveedor.`,
+          showCloseButton: true,
+          confirmButtonText: 'Cerrar',
+        });
+        return
+      }
+
+      let dni_: string = this.dni?.value ? this.ClearCedula(this.dni?.value) : '';
+      if (!dni_) return; //TODO: Handle error
+
+      this.closeAlert2();
+      this.readonlyDNI = true;
+      this.idContrato = activeContrato.id_contrato;
+      this.nameClient = activeContrato.cliente;
+      this.setGreeting(this.nameClient)
+      this.name?.setValue(this.clientNames);
+      this.nroContrato?.setValue(activeContrato.contrato);
+      this.SendOption(0, 3, activeContrato.contrato);
+      this.monto_pend_conciliar =
+        activeContrato.monto_pend_conciliar;
+      this.filterBankByFranquicia(activeContrato.franquicia);
+      this.dni?.setValue(dni_);
+      this.searchInfoEquipos(dni_)
+      .then(() => {
+
+        this.setActiveContrato(activeContrato)
+
+        this.showMainMenuPage2 = true
+        this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+
+      })
+      .catch((err) => {
+        console.log('falló el ingreso de datos del usuario', err);
+      })
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  private setActiveContrato = (activeContrato: Contratos) => {
+    try {
+      
+      /*Esto se hacer por si el usuario preciomente selecciona un banco */
+      if (this.BancoNacional(this.banco)) {
+        if (
+          !Number.isNaN(parseFloat(activeContrato.saldo)) ||
+          !Number.isNaN(
+            parseFloat(this.registerPayService.amountCustomerContract)
+          )
+        ) {
+          if (
+            this.registerPayService.linkedToContractProcess != 'approved'
+          ) {
+            this.validateIfAmountIsNegativer(
+              activeContrato.saldo,
+              true
+            );
+
+            this.lastAmount = parseFloat(
+              activeContrato.saldo
+            ).toFixed(2);
+
+            this.saldoUSD = parseFloat(
+              activeContrato.saldo
+            ).toFixed(2);
+            this.saldoBs = (
+              parseFloat(activeContrato.saldo) * this.cambio_act
+            ).toFixed(2);
+            this.subscription = parseFloat(
+              activeContrato.subscription
+            ).toFixed(2);
+          } else {
+            // this.registerPayService.amountCustomerContract
+            this.validateIfAmountIsNegativer(
+              this.registerPayService.amountCustomerContract,
+              true
+            );
+
+            this.lastAmount = parseFloat(
+              this.registerPayService.amountCustomerContract
+            ).toFixed(2);
+
+            this.saldoUSD = parseFloat(
+              this.registerPayService.amountCustomerContract
+            ).toFixed(2);
+            this.saldoBs = (
+              parseFloat(this.registerPayService.amountCustomerContract) *
+              this.cambio_act
+            ).toFixed(2);
+            this.subscription = parseFloat('0').toFixed(2);
+          }
+        } else {
+          this.amount?.setValue(0);
+          this.lastAmount = '0';
+        }
+      } else {
+        //this.validateIfAmountIsNegativer(activeContrato.saldo);
+        this.lastAmount = parseFloat(activeContrato.saldo).toFixed(
+          2
+        );
+        this.saldoUSD = parseFloat(activeContrato.saldo).toFixed(
+          2
+        );
+        this.saldoBs = (
+          parseFloat(activeContrato.saldo) * this.cambio_act
+        ).toFixed(2);
+        this.subscription = parseFloat(
+          this.listContratos[0].subscription
+        ).toFixed(2);
+      }
+
+      //Esto lo uso para el CoinCoinx y Paypal NO BORRAR
+      localStorage.setItem(
+        'Name',
+        this._seguridadDatos.encrypt(this.nameClient)
+      );
+      localStorage.setItem(
+        'Monto',
+        this._seguridadDatos.encrypt(this.saldoUSD)
+      );
+      localStorage.setItem(
+        'MontoBs',
+        this._seguridadDatos.encrypt(this.saldoBs)
+      );
+      localStorage.setItem(
+        'Subscription',
+        this._seguridadDatos.encrypt(this.subscription)
+      );
+      localStorage.setItem(
+        'idContrato',
+        this._seguridadDatos.encrypt(this.idContrato)
+      );
+      localStorage.setItem(
+        'dni',
+        this._seguridadDatos.encrypt(this.dni?.value)
+      );
+      localStorage.setItem(
+        'Abonado',
+        this._seguridadDatos.encrypt(this.abonado)
+      );
+
+      console.log('SALDO', this.saldoUSD)
+
+      if (parseFloat(this.saldoUSD) <= 0) {
+
+        Swal.fire({
+          icon: 'error',
+          // timer: 5000,
+          title: 'Usted no posee deuda pendiente',
+          text: (parseFloat(this.saldoUSD) === 0) ? 'Estás al día' : `Tiene un saldo a favor de: ${Math.abs(parseFloat(this.saldoUSD)).toFixed(2).replace('.', ',')}$`,
+          showCloseButton: true,
+          confirmButtonText: 'Registrar Pago Adelantado',
+          didClose: () => {
+            console.warn('EL SWAQL FUE CERRADOOOOOO')
+          }
+        });
+
+      }
+
+    } catch (error) {
+      console.error('Error en setActiveContrato', error)
+    }
   }
 
 }

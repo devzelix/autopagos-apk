@@ -1,0 +1,37 @@
+<button (click)="onUserClick()" class="user-select-item-card">
+    <h1> {{userItem.nro_contrato}} </h1>
+
+    <span class="content-user-select-card">
+
+      <div class="content-user-select-card-item">
+        <h5> Estatus: </h5>
+        <p class="capitalized"> {{userItem.status_contrato}} </p>
+      </div>
+
+      <div class="content-user-select-card-item content-user-select-end-position">
+        <h5> Saldo a {{ ((userItem.isDebtor) ? 'pagar ' : 'favor ') }} </h5>
+        <p> {{userItem.saldo | currency}} </p>
+      </div>
+      
+    </span>
+
+    <span class="user-select-item-content">
+      <ng-container *ngIf="userItem.ultimo_fecha_pago; else elseLastDate">
+        <h5>
+          Última fecha de pago:
+        </h5>
+        
+        <p class="p-text-right">
+          {{userItem.ultimo_fecha_pago | date: 'MMMM dd, yyyy' }}
+        </p>
+      </ng-container>
+
+      <ng-template #elseLastDate>
+        <h5>
+          No hay fecha de pago registrada
+        </h5>
+      </ng-template>
+      
+    </span>
+
+  </button>

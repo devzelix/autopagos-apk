@@ -10,6 +10,7 @@ import { ResponseMethod } from '../interfaces/response';
 import { SearchReference } from '../interfaces/searchreference';
 import { info } from 'console';
 import { EncryptService } from './encrypt.service';
+import { IUserSaldo } from '../interfaces/contratos';
 
 @Injectable({
   providedIn: 'root'
@@ -728,7 +729,7 @@ export class RegisterPayService {
   }
 
   getSaldoByDni(dni: string) {
-    return new Promise(async (resolve: any, reject: any) => {
+    return new Promise<IUserSaldo[]>(async (resolve: any, reject: any) => {
       const headersData = ({
         directory: "SAE",
         method: `SaldoCe`,
