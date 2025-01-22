@@ -303,7 +303,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     let _desciptionText: string =
       Number(this.mountFormat) === this.amountContrato ? 'Pago de Mensualidad' :
       Number(this.mountFormat) > this.amountContrato ? 'Adelanto de Mensualidad' :
-        Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' :
+      Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' :
       'Pago';
 
     console.log(this.amountContrato, this.mount,_desciptionText);
