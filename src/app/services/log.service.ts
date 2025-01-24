@@ -28,10 +28,10 @@ export class LogService {
 
       try {
 
-        const macAddresData: any = await this._printer.getMacAddress();
+        const macAddresData: string = await this._printer.getMacAddress();
         console.log('macAddresData', macAddresData);
-        if (macAddresData?.data?.mac) {
-          mac_address = macAddresData.data.mac;
+        if (macAddresData) {
+          mac_address = macAddresData;
         }
 
       } catch (error) {
@@ -64,10 +64,32 @@ export class LogService {
    * Function to post log to api
    */
   public postLogs = () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
       const allLogs: ILog[] = this._localStorageService.get<ILog[]>('logs') || [];
-      axios.post<ILog[]>(environment.API_URL_VPOS+'log/create', allLogs)
+
+
+      let mac_address: string = '';
+      try {
+
+        const macAddresData: string = await this._printer.getMacAddress();
+        console.log('macAddresData', macAddresData);
+        if (macAddresData) mac_address = macAddresData;
+
+      } catch (error) {
+        console.error('Error en logService > al obtener macAddres', error)
+      }
+
+      const body = {
+        logs: allLogs,
+        register: mac_address
+      }
+      console.log('BODY LOGS', body)
+
+      const headers = {
+        token: environment.TokenAPILaravelVPOS
+      }
+      axios.post<ILog[]>(environment.API_URL_VPOS+'/log/create', body, {headers})
       .then(resLog => {
         console.log('Log Res Api', resLog)
         resolve(resLog)

@@ -114,12 +114,12 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         }
 
         console.log(
-          this._dataApi.data.data.mensajeRespuesta,
-          this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta),
-          this._dataApi.data.data.codRespuesta
+          this._dataApi.data.datavpos.mensajeRespuesta,
+          this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
+          this._dataApi.data.datavpos.codRespuesta
         );
 
-        if(this._dataApi.data.data.codRespuesta === '00'){
+        if(this._dataApi.data.datavpos.codRespuesta === '00'){
 
           this.generarPDF().catch((err) => {
             console.log(err);
@@ -127,7 +127,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           Swal.fire({
             icon: 'success',
-            title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta),
+            title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
@@ -135,7 +135,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           });
         } else {
 
-          if (this._dataApi.data.data.codRespuesta === '51'){
+          if (this._dataApi.data.datavpos.codRespuesta === '51'){
             this.generarPDF().catch((err) => {
               console.log(err);
             });
@@ -143,7 +143,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           Swal.fire({
             icon: 'error',
-            title: this._errorsvpos.getErrorMessage(this._dataApi.data.data.codRespuesta), //'Error al procesar el pago \n'+
+            title: this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta), //'Error al procesar el pago \n'+
             showConfirmButton: false,
             allowOutsideClick: false,
             timer: 4000, // El modal se cerrará después de 5 segundos
@@ -261,14 +261,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       console.log('MOUNT', this.mountFormat)
 
       let _desciptionText: string =
-      Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago de Mensualidad' :
-      Number(this.mountFormat) < Number(this.amountContrato) ? 'Adelanto de Mensualidad' :
-      Number(this.mountFormat) > Number(this.amountContrato) ? 'Abono de Mensualidad' :
+      Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago - Mensualidad' :
+      Number(this.mountFormat) > Number(this.amountContrato) ? 'Adelanto - Mensualidad' :
+      Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
       'Pago';
 
       console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', Number(this.amountContrato) , 'Mount:', Number(this.mountFormat),'Mensaje:',_desciptionText);
 
       const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, this.mountFormat, this.nroContrato, macAddress);
+
+      console.log('responseJSON', responseJSON);
 
       return responseJSON;
 
@@ -283,11 +285,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    */
   public async getMacAddress(){
 
-    const macaddress: any = await this._printer.getMacAddress();
+    const macaddress: string = await this._printer.getMacAddress();
 
-    console.log('macaddress', macaddress.data.mac);
+    console.log('macaddress', macaddress);
 
-    return macaddress.data.mac;
+    return macaddress;
 
   }
 
@@ -312,27 +314,27 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       {
         'date': this.getTime('date'),
         'hours': this.getTime('time'),
-        'refundNumber': this._dataApi.data.data.numeroReferencia,
-        'numSeq': this._dataApi.data.data.numSeq,
+        'refundNumber': this._dataApi.data.datavpos.numeroReferencia,
+        'numSeq': this._dataApi.data.datavpos.numSeq,
         'ciClient': this.dniValue || 'unknown',
         'abonumber': this.nroContrato,
         'describe': _desciptionText,
         'amount': String(this.mount?.value),
-        'methodPayment': this._dataApi.data.data.tipoProducto,
+        'methodPayment': this._dataApi.data.datavpos.tipoProducto,
         'totalAmount': String(this.mount?.value),
         'saldo': String(this.mount?.value),
-        'status': this._dataApi.data.data.mensajeRespuesta,
+        'status': this._dataApi.data.datavpos.mensajeRespuesta,
       }
     ];
 
-    // console.log('My data: '+this._dataApi.data.data.nombreVoucher);
-    // console.log('Ref number: '+this._dataApi.data.data.numeroReferencia);
-    // console.log('Answer Message: '+this._dataApi.data.data.mensajeRespuesta);
-    // console.log('Product type: '+this._dataApi.data.data.tipoProducto);
-    // console.log('Number autoritation: '+this._dataApi.data.data.numeroAutorizacion);
-    // // console.log('Number card: '+this._dataApi.data.data.numeroTarjeta);
-    // console.log('Amount: '+this._dataApi.data.data.montoTransaccion);
-    // console.log('CI: '+this._dataApi.data.data.cedula);
+    // console.log('My data: '+this._dataApi.data.datavpos.nombreVoucher);
+    // console.log('Ref number: '+this._dataApi.data.datavpos.numeroReferencia);
+    // console.log('Answer Message: '+this._dataApi.data.datavpos.mensajeRespuesta);
+    // console.log('Product type: '+this._dataApi.data.datavpos.tipoProducto);
+    // console.log('Number autoritation: '+this._dataApi.data.datavpos.numeroAutorizacion);
+    // // console.log('Number card: '+this._dataApi.data.datavpos.numeroTarjeta);
+    // console.log('Amount: '+this._dataApi.data.datavpos.montoTransaccion);
+    // console.log('CI: '+this._dataApi.data.datavpos.cedula);
 
     // console.log(_dataApiClient);
 
@@ -342,16 +344,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       _dataApiClient = [{
         'date': this.getTime('date'),
         'hours': this.getTime('time'),
-        'refundNumber': this._dataApi.data.data.numeroReferencia,
-        'numSeq': this._dataApi.data.data.numSeq,
-        'ciClient': this._dataApi.data.data.cedula,
+        'refundNumber': this._dataApi.data.datavpos.numeroReferencia,
+        'numSeq': this._dataApi.data.datavpos.numSeq,
+        'ciClient': this._dataApi.data.datavpos.cedula,
         'abonumber': this.nroContrato,
         'describe': 'Pago Fallido',
         'amount': '00.00',
-        'methodPayment': this._dataApi.data.data.tipoProducto,
+        'methodPayment': this._dataApi.data.datavpos.tipoProducto,
         'totalAmount': '00.00Bs.',
         'saldo': '0,00Bs.',
-        'status': this._dataApi.data.data.mensajeRespuesta,
+        'status': this._dataApi.data.datavpos.mensajeRespuesta,
       }];
     }
 

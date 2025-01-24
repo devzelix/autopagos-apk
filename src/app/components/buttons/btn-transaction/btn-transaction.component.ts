@@ -26,7 +26,7 @@ export class BtnTransactionComponent implements OnInit {
 
         this.clickBlockTimer = setTimeout(() => { //* timout that waits 3s until animation finishes
           this.onBtnClick.emit();
-          // btnTransaction?.classList.remove('btnActiveTransaction')
+          btnTransaction?.classList.remove('btnActiveTransaction')
           if (this.clickBlockTimer) clearTimeout(this.clickBlockTimer)
           this.clickBlockTimer = null;
         }, 3000);

@@ -50,22 +50,20 @@ export class PrinterService {
 
   }
 
-  getMacAddress(){
-    return new Promise((resolve, reject)=>{
-      try {
-        axios({
-          method: 'get',
-          url: environment.API_Printer+'/get-macaddress',
-          data: {}
-        }).then(res => {
-            resolve(res)
-          })
-          .catch(err => {
-            reject(err)
+  /**
+   * Function to get the mac address string
+   * @returns `string`
+   */
+  getMacAddress(): Promise<string>{
+    return new Promise<string>((resolve, reject)=>{
+        const url = environment.API_Printer+'/get-macaddress'
+        axios.get<{mac:string}>(url)
+        .then(res => {
+          resolve(res.data.mac)
+        })
+        .catch(err => {
+          reject(err)
         });
-      } catch (error) {
-        reject(error);
-      }
 
     });
 
