@@ -103,7 +103,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
         this._dataApi = await this.requestCard();
 
-        if (!this._dataApi || !this._dataApi?.data?.data) {
+        if (!this._dataApi || !this._dataApi?.data.datavpos) {
           Swal.fire({
             icon: 'error',
             title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -153,12 +153,21 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
 
       } catch (error) {
+
+        let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+        let timeShow: number = 4000;
+
+        if (this.dni?.value === "90000000") {
+          _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
+          timeShow = 6000;
+        }
+
         Swal.fire({
           icon: 'error',
-          title: 'Error al procesar el pago \n'+ (error instanceof Error ? error.message : "Error desconocido"),
+          title: _messageError,
           showConfirmButton: false,
           allowOutsideClick: false,
-          timer: 4000, // El modal se cerrará después de 5 segundos
+          timer: timeShow, // El modal se cerrará después de 5 segundos
           // didClose: () => this.onCloseModal()
         });
       }

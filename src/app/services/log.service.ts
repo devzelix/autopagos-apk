@@ -51,8 +51,8 @@ export class LogService {
       allLogs.push(logItem);
       this._localStorageService.set('logs', allLogs);
 
-      if (allLogs.length >= 20) {
-        this.postLogs()
+      if (allLogs.length > 2) {
+        this.postLogs();
       }
 
     } catch (error) {
@@ -89,8 +89,12 @@ export class LogService {
       const headers = {
         token: environment.TokenAPILaravelVPOS
       }
-      axios.post<ILog[]>(environment.API_URL_VPOS+'/log/create', body, {headers})
+      axios.post<ILog[],any>(environment.API_URL_VPOS+'/log/create', body, {headers})
       .then(resLog => {
+        if(resLog.status === 201) {
+          localStorage.removeItem('logs');
+          console.log('LOGS REMOVED', resLog);
+        }
         console.log('Log Res Api', resLog)
         resolve(resLog)
       })

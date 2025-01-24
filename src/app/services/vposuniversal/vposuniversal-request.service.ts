@@ -50,18 +50,44 @@ export class VposuniversalRequestService {
         })
         .then(res => {
           console.log('RES', res)
-          this._logService.storagelog({ciClient: _ci, http_method: 'POST', request_body: {"monto": _amount,"ci": _ci,"subscriber": _subscriber,"register": _register}, response_code: res.data?.status ?? res.status, url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': true})
+          this._logService.storagelog({
+              ciClient: _ci,
+              http_method: 'POST',
+              status: res.data?.datavpos.status ?? res.status,
+              request_body: {
+                "monto": _amount,
+                "ci": _ci,
+                "subscriber": _subscriber,
+                "register": _register
+              },
+              response_code: res.data.datavpos.codRespuesta ?? 'response_code undefined',
+              url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+              'is_success': true})
             resolve(res)
           })
           .catch(err => {
             console.error(err)
-            const response_code = err.response ? err.response.status : undefined;
-            this._logService.storagelog({ciClient: _ci, http_method: 'POST', url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': false, response_code})
+            const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
+            this._logService.storagelog({
+              ciClient: _ci,
+              status: err.response.status,
+              http_method: 'POST',
+              url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+              'is_success': false,
+              response_code: response_code
+            })
             reject(err)
           });
       } catch (error) {
-        const response_code = (error as any).response ? (error as any).response.status : undefined;
-        this._logService.storagelog({ciClient: _ci, http_method: 'POST', url_api: environment.API_URL_VPOS+'/metodo/request/cardpay', 'is-success': false, response_code})
+        const response_code = (error as any).response.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
+        this._logService.storagelog({
+          ciClient: _ci,
+          http_method: 'POST',
+          status:  (error as any).response.status,
+          url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+          'is_success': false,
+          response_code: response_code
+        })
         reject(error);
       }
 

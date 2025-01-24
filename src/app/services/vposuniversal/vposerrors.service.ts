@@ -205,7 +205,7 @@ export class VposerrorsService {
     ["XA", "Error en sistema Merchant"],
     ["XB", "Error de comando"],
     ["XC", "Error de comunicacion"],
-    ["XD", "Terminal o Payment no disponible"],
+    ["XD", "Metodo de pago no disponible"],
     ["XE", "TID it has a pending Settlement Transaction."],
     ["XF", "Transaccion invalida para el adquiriente"],
     ["XG", "Invalid referred transaction"],
