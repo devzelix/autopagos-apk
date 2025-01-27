@@ -16,9 +16,10 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
-  
+
       &.activeTab {
-        background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+        // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+        background: var(--primary-accent-color);
       }
       svg {
         font-size: 1.9rem;

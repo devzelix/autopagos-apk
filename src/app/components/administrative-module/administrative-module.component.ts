@@ -12,4 +12,9 @@ export class AdministrativeModuleComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public closeBox() {
+    // Emitir evento para cerrar la caja de administración
+    alert("Acción aministrativa ejecutada");
+  }
+
 }

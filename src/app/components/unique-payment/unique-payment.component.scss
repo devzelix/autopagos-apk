@@ -5,9 +5,21 @@
   align-items: end;
   margin: 0.4rem;
 
+  .btn-one-payment {
+    width: 15rem;
+    background: var(--primary-accent-color);
+    border-radius: 3rem;
+    color: white;
+    font-size: 1.2rem;
+    position: relative;
+    display: inline-block;
+    margin: 1.2rem;
+    padding: 0.8rem;
+  }
+
   .btn-more-payments {
     width: 15rem;
-    background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    background: var(--primary-accent-color);
     border-radius: 3rem;
     color: white;
     font-size: 1.2rem;

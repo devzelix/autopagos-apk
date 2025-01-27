@@ -465,7 +465,8 @@ label.form-control-label {
     background: lightblue;
 
     &.input-active-color {
-      background: linear-gradient(36deg, rgb(59 143 239 / 75%) 18%, rgb(48 201 228 / 74%) 100%);
+      // background: linear-gradient(36deg, rgb(59 143 239 / 75%) 18%, rgb(48 201 228 / 74%) 100%);
+      background: var(--primary-accent-color);
     }
 
 
@@ -495,12 +496,14 @@ label.form-control-label {
 
   &:disabled {
     // background: #f8f8ff63;
-    background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    background: var(--primary-accent-color);
     opacity: 0.6;
   }
   &:not(:disabled) {
     // background: linear-gradient(36deg, rgba(69, 127, 192, 1) 18%, rgba(7, 195, 176, 1) 100%);
-    background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+    background: var(--primary-accent-color);
   }
 
   svg {
@@ -731,7 +734,7 @@ label.form-control-label {
     flex-wrap: wrap;
     justify-content: center;
 
-   
+
   }
 }
 .text-center {

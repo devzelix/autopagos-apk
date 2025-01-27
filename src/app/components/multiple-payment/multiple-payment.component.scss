@@ -80,7 +80,7 @@
     color: rgb(89, 152, 224);
 
     &.payment-grid-item-active {
-      background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+      background: var(--primary-accent-color);
       color: white;
       border: initial;
     }

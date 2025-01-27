@@ -26,6 +26,7 @@ export class UniquePaymentComponent implements OnInit {
   public viewMultiplePayments: boolean = true;
   public viewUniquePayments: boolean = false;
   public morePayment: string = 'Adelanta tus pagos!!!';
+  public classBtn: string = 'btn-more-payments';
 
   private lastMountBsValue: number = 0;
   private lastMountUSDValue: number = 0;
@@ -45,7 +46,8 @@ export class UniquePaymentComponent implements OnInit {
 
       this.viewMultiplePayments = false; // To show multiple payments
       this.viewUniquePayments = true; // To hidden view unique payments
-      this.morePayment = 'Volver'; // To change text from button click
+      this.morePayment = 'Pagar un mes'; // To change text from button click
+      this.classBtn = 'btn-one-payment'; // To change Class from button click
       this.setTitleFn('Seleccione  cuantos meses desea adelantar adicionalmente'); // To change title on view
       this.multiplePaymentComponent.setMonthPayment(1)
 
@@ -57,7 +59,8 @@ export class UniquePaymentComponent implements OnInit {
       // this.mountTotalMonthUSD = parseFloat(parseFloat(this.saldoUSD).toFixed(2)) // To show total month in USD
       this.mountTotalMonthBs = this.lastMountBsValue;
       this.mountTotalMonthUSD = this.lastMountUSDValue;
-      this.morePayment = 'Adelanta tus pagos!!!'; // To change text from button click
+      this.morePayment = 'Adelanta tus pagos'; // To change text from button click
+      this.classBtn = 'btn-more-payments'; // To change Class from button click
       this.setTitleFn('Paga tu mensualidad'); // To change title on view
       this.totalBs.emit(this.mountTotalMonthBs.toFixed(2)); // To emit Total in BS
       this.totalUSD.emit(this.mountTotalMonthUSD.toFixed(2)); // To emit Total in USD

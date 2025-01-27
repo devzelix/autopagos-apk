@@ -126,7 +126,8 @@
   letter-spacing: 2px;
   font-weight: 600;
   text-transform: uppercase;
-  background: linear-gradient(135deg, #273bf1, #2575fc);
+  // background: linear-gradient(135deg, #273bf1, #2575fc);
+  background: var(--primary-accent-color);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 
