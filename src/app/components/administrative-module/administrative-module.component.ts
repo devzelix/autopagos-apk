@@ -7,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdministrativeModuleComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    // private administrativeAction
+  ) { }
 
   ngOnInit(): void {
   }

@@ -21,7 +21,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Input() dniValue: string;
   @Input() mountValue: number = 0;
   @Input() amountContrato: number = 0;
-  @Input() nroContrato: string = ''
+  @Input() nroContrato: string = '';
+  @Input() nroAbonado: string = '';
   @Input() activeInputFocus: ITransactionInputs = 'dni';
   public formPayment: FormGroup;
   public typeDNI: ITypeDNI = 'V';
@@ -275,9 +276,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
       'Pago';
 
-      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', Number(this.amountContrato) , 'Mount:', Number(this.mountFormat),'Mensaje:',_desciptionText);
+      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado);
 
-      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, this.mountFormat, this.nroContrato, macAddress);
+      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, this.mountFormat, this.nroAbonado, this.nroContrato, macAddress);
 
       console.log('responseJSON', responseJSON);
 

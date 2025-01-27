@@ -29,9 +29,9 @@ export class VposuniversalRequestService {
   //#--------------------------------------------------------------------------------------#//
 
   //#--------------------------------Card pay Simple---------------------------------------#//
-  cardRequest(_ci: string, _amount: string, _subscriber: string, _register: string){ //Pay Card Simple
+  cardRequest(_ci: string, _amount: string, _subscriber: string, _contract: string, _register: string){ //Pay Card Simple
     return new Promise<AxiosResponse<any>>((resolve, reject)=>{
-      console.log('in cardRequest')
+      // console.log('in cardRequest')
       try {
         axios({
           method: 'post',
@@ -45,6 +45,7 @@ export class VposuniversalRequestService {
              "monto": _amount,
               "ci": _ci,
               "subscriber": _subscriber,
+              "contract": _contract,
               "register": _register
           }
         })
@@ -99,81 +100,81 @@ export class VposuniversalRequestService {
   //#--------------------------------------------------------------------------------------#//
 
   //#---------------------------------Card pay Zelle--------------------------------------#//
-  zelleRequest(_ci: string, _amount: number,  _refZelle: number){ //Pay Zelle
+  // zelleRequest(_ci: string, _amount: number,  _refZelle: number){ //Pay Zelle
 
-    return new Promise((resolve, reject)=>{
-      try {
+  //   return new Promise((resolve, reject)=>{
+  //     try {
 
-        if(_ci != null && _ci != '' && Number.isFinite(_amount) && Number.isInteger(_refZelle)) {
-          axios({
-            method: 'post',
-            url: environment.API_URL_VPOS+'/api/metodo/request/zelle/'+_ci+'/'+_amount+'/'+_refZelle,
-            /*data: {
-              "accion":"tarjeta",
-              "montoTransaccion": _amount,
-              "cedula": _ci,
-              "referencia": _refZelle,
-            }*/
-          }).then(res => {
-              console.log(res);
-              resolve(res)
-            })
-            .catch(err => {
-              console.log(err);
-              reject(err)
-          });
-        }else{
-          reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
-        }
+  //       if(_ci != null && _ci != '' && Number.isFinite(_amount) && Number.isInteger(_refZelle)) {
+  //         axios({
+  //           method: 'post',
+  //           url: environment.API_URL_VPOS+'/api/metodo/request/zelle/'+_ci+'/'+_amount+'/'+_refZelle,
+  //           /*data: {
+  //             "accion":"tarjeta",
+  //             "montoTransaccion": _amount,
+  //             "cedula": _ci,
+  //             "referencia": _refZelle,
+  //           }*/
+  //         }).then(res => {
+  //             console.log(res);
+  //             resolve(res)
+  //           })
+  //           .catch(err => {
+  //             console.log(err);
+  //             reject(err)
+  //         });
+  //       }else{
+  //         reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
+  //       }
 
-      } catch (error) {
-        reject(error);
-      }
+  //     } catch (error) {
+  //       reject(error);
+  //     }
 
-    });
+  //   });
 
-    //this.closeAPI();
+  //   //this.closeAPI();
 
-  }
+  // }
   //#-------------------------------------------------------------------------------------#//
 
   //#-----------------------------Pay From change option----------------------------------#//
-  cambioRequest(_ci: string, _amount: number,  _typeCoin: string){ //Pay From change option (Mobile Pay)
+  // cambioRequest(_ci: string, _amount: number,  _typeCoin: string){ //Pay From change option (Mobile Pay)
 
-    return new Promise((resolve, reject)=>{
-      try {
+  //   return new Promise((resolve, reject)=>{
+  //     try {
 
-        if(_ci != null && _ci != '' && Number.isFinite(_amount) && _typeCoin != '') {
-          axios({
-            method: 'post',
-            url: environment.API_URL_VPOS+'/api/metodo/request/paymentchange/'+_ci+'/'+_amount+'/'+_typeCoin,
-            /*data: {
-              "accion": "cambio",
-              "montoTransaccion": _amount,
-              "cedula": _ci,
-              "tipoMoneda": _typeCoin //#Los valores admitidos son: VES (Bolívares), USD (Dólares), EUR (Euro)#//
-            }*/
-          }).then(res => {
-              console.log(res);
-              resolve(res)
-            })
-            .catch(err => {
-              console.log(err);
-              reject(err)
-          });
-        }else{
-          reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
-        }
+  //       if(_ci != null && _ci != '' && Number.isFinite(_amount) && _typeCoin != '') {
+  //         axios({
+  //           method: 'post',
+  //           url: environment.API_URL_VPOS+'/api/metodo/request/paymentchange/'+_ci+'/'+_amount+'/'+_typeCoin,
+  //           /*data: {
+  //             "accion": "cambio",
+  //             "montoTransaccion": _amount,
+  //             "cedula": _ci,
+  //             "tipoMoneda": _typeCoin //#Los valores admitidos son: VES (Bolívares), USD (Dólares), EUR (Euro)#//
+  //           }*/
+  //         }).then(res => {
+  //             console.log(res);
+  //             resolve(res)
+  //           })
+  //           .catch(err => {
+  //             console.log(err);
+  //             reject(err)
+  //         });
+  //       }else{
+  //         reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
+  //       }
 
-      } catch (error) {
-        reject(error);
-      }
+  //     } catch (error) {
+  //       reject(error);
+  //     }
 
-    });
+  //   });
 
-    //this.closeAPI();
+  //   //this.closeAPI();
 
-  }
+  // }
   //#-------------------------------------------------------------------------------------#//
 
 }
