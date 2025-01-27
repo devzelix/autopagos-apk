@@ -57,13 +57,13 @@
 
       </div>
 
-      
+
       <div *ngIf="AppFibex && userGreeting" class="subtitle-info">
         <h1 class="name-client text-2xl txt-dark">
           {{ userGreeting }}
         </h1>
       </div>
-      
+
       <span *ngIf="mainTitle" class="title-info-container">
         <h4 >
           {{ mainTitle }}
@@ -171,7 +171,7 @@
 
       <div *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT" class="section-step-item">
         <div class="user-list-select-content w-full flex justify-center txt-dark flex-col">
-          
+
           <div class="user-list-select-grid">
 
             <app-user-item-card *ngFor="let user of userSelectList"
@@ -179,7 +179,7 @@
               (onUserSelected)="onUserSelected($event)"
             >
             </app-user-item-card>
-            
+
           </div>
 
         </div>
@@ -196,6 +196,9 @@
             </h4>
           </div>
 
+          <app-administrative-module>
+
+          </app-administrative-module>
 
           <!-- UNIQUE PAYMENT -->
           <app-unique-payment

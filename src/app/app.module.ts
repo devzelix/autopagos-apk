@@ -44,6 +44,7 @@ import { UniquePaymentComponent } from './components/unique-payment/unique-payme
 import { MultiplePaymentComponent } from './components/multiple-payment/multiple-payment.component';
 import { CurrencyPipe } from '@angular/common';
 import { UserItemCardComponent } from './components/cards/user-item-card/user-item-card.component';
+import { AdministrativeModuleComponent } from './components/administrative-module/administrative-module.component';
 
 
 const routes: Routes = [
@@ -87,7 +88,8 @@ const routes: Routes = [
     BtnTransactionComponent,
     UniquePaymentComponent,
     MultiplePaymentComponent,
-    UserItemCardComponent
+    UserItemCardComponent,
+    AdministrativeModuleComponent
   ],
   imports: [
     BrowserModule,

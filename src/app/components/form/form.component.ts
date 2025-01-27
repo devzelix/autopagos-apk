@@ -2980,7 +2980,7 @@ export class FormComponent implements AfterViewInit, OnInit {
                   let isValid: boolean = this.ValidStatusContrato(
                     dataContrato.status_contrato
                   );
-                  
+
                   this.userSelectList.push({
                     ...dataContrato,
                     is_user_valid: isValid,
@@ -4780,7 +4780,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
         if (this.userSelectList.length > 1) {
           this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
-          
+
         }
         else {
           goToLoginFn()
@@ -4792,7 +4792,7 @@ export class FormComponent implements AfterViewInit, OnInit {
         this.ScrollUp()
         this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
       },
-      
+
     }
 
     const handleStepFn: (() => void) | undefined = HANDLE_NAV_FN[this.navActive]
@@ -5019,7 +5019,7 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   private getShortName(allNames: string) {
     const nombres = allNames.split(' ');
-    return (nombres.length > 3) ? `${nombres[0]} ${nombres[nombres.length - 2]}` 
+    return (nombres.length > 3) ? `${nombres[0]} ${nombres[nombres.length - 2]}`
         : (nombres.length === 3) ? `${nombres[0]} ${nombres[2]}`
         : allNames;
   }
@@ -5081,7 +5081,7 @@ export class FormComponent implements AfterViewInit, OnInit {
 
   private setActiveContrato = (activeContrato: Contratos) => {
     try {
-      
+
       /*Esto se hacer por si el usuario preciomente selecciona un banco */
       if (this.BancoNacional(this.banco)) {
         if (
