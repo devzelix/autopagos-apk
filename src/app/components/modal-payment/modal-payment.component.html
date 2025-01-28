@@ -21,17 +21,31 @@
 
 
                 <div (click)="setInputFocus('dni')">
-                    <label for="dni">Cédula del cliente:</label>
+                    <label for="dni">Cédula del cliente</label>
                     <span class="input-dni-container flex items-center w-full">
                         <span class="icon-type-dni">
                             {{typeDNI}}
                         </span>
 
                         <input id="dni" formControlName="dni" type="tel" required #inputDni (input)="onInputValueChange($event, 'dni')"
-                        [ngClass]="{'input-focused-style': activeInputFocus === 'dni' && !isDniInputDisabled}" maxlength="16" />
+                        [ngClass]="{'input-focused-style': activeInputFocus === 'dni' && !isDniInputDisabled}" maxlength="16"/>
 
                         <button (click)="onEditDniValue()" class="dni-edit-value" [ngClass]="{'show-btn-visible': isDniDisabled}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24">
+                              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                <path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                                  <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/>
+                                </path>
+                                <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                                  <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/>
+                                </path><path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                                  <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/>
+                                </path>
+                              </g>
+                              <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
+                                <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/>
+                              </path>
+                            </svg>
                         </button>
                     </span>
                     <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched) : true">
@@ -44,17 +58,43 @@
                 </div>
 
                 <div (click)="setInputFocus('mount')">
-                    <label for="mount">Monto Bs:</label>
-                    <input id="mount" formControlName="mount" type="tel" required #inputMount (input)="onInputValueChange($event, 'mount')"
-                    [ngClass]="{'input-focused-style': activeInputFocus === 'mount' && !isMountInputDisabled}" maxlength="12" />
-                    <!-- [disabled]="blockInputs ? activeInputFocus !== 'mount' : false"  -->
+                    <label for="mount">Monto</label>
+
+                    <span _ngcontent-ujo-c100="" class="input-dni-container flex items-center w-full">
+
+                      <span _ngcontent-ujo-c100="" class="icon-type-dni"> Bs. </span>
+
+                      <input id="mount" formControlName="mount" type="tel" required #inputMount (input)="onInputValueChange($event, 'mount')"
+                      [ngClass]="{'input-focused-style': activeInputFocus === 'mount' && !isMountInputDisabled}" maxlength="12"/>
+                      <!-- [disabled]="blockInputs ? activeInputFocus !== 'mount' : false"  -->
+
+                      <button (click)="onEditMountValue()" class="dni-edit-value" [ngClass]="{'show-btn-visible': isMountDisabled}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24">
+                          <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                              <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path>
+                              <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/>
+                              </path>
+                              <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/>
+                              </path>
+                            </g>
+                            <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
+                              <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/>
+                            </path>
+                          </svg>
+                      </button>
+                    </span>
+
                     <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('mount')?.invalid && formPayment.get('mount')?.touched) : true">
-                        <small *ngIf="formPayment.get('mount')?.errors?.['required']">El monto es requerido.</small>
-                        <small *ngIf="formPayment.get('mount')?.errors?.['min']">El monto debe ser mayor que 0.</small>
-                        <small *ngIf="formErrorMessage?.inputName === 'mount' && formErrorMessage?.errorMsg">
-                            {{formErrorMessage?.errorMsg}}
-                        </small>
+                      <small *ngIf="formPayment.get('mount')?.errors?.['required']">El monto es requerido.</small>
+                      <small *ngIf="formPayment.get('mount')?.errors?.['min']">El monto debe ser mayor que 0.</small>
+                      <small *ngIf="formErrorMessage?.inputName === 'mount' && formErrorMessage?.errorMsg">
+                          {{formErrorMessage?.errorMsg}}
+                      </small>
                     </div>
+
                 </div>
 
                 <!-- <div>

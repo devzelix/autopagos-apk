@@ -29,6 +29,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public _dataApi: any;
   public sendPayment: boolean = false;
   public isDniDisabled: boolean = true;
+  public isMountDisabled: boolean = true;
   private mountFormat: string = '0.00';
 
   public formErrorMessage?: {inputName: ITransactionInputs, errorMsg: string}
@@ -465,6 +466,18 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       this.inputDni.nativeElement.focus();
       this.isDniDisabled = false;
       if (this.dni) this.dni.enable()
+    }
+    this.validateFormErrors()
+  }
+
+  public onEditMountValue = () => {
+    if (this.inputMount) {
+      console.log('SETEA FOCUSS')
+      this.inputMount.nativeElement.disabled = false;
+      this.mount?.setValue('')
+      this.inputMount.nativeElement.focus();
+      this.isMountDisabled = false;
+      if (this.mount) this.mount.enable()
     }
     this.validateFormErrors()
   }
