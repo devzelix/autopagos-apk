@@ -559,7 +559,8 @@ export class VposerrorsService {
     ["verifone76", "ERROR EN MONTO TRANSACCION O MONTO ADICIONAL"],
     ["verifone09", "TRANSACCION CANCELADA. TIEMPO DE ESPERA PIN FUERA DE LINEA AGOTADO"],
     ["A3", "FALLA EN LA EJECUCION DE LA LECTURA DE LOS DATOS"],
-    ["verifone80", "ERROR INICIO TARJETA CHIP EMV"]
+    ["verifone80", "ERROR INICIO TARJETA CHIP EMV"],
+    ["Error Server", "OCURRIO UN ERROR AL PROCESAR EL PAGO, INTENTE DE NUEVO."]
   ]);
 
   getErrorMessage(code: string): string {

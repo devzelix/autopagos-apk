@@ -183,7 +183,7 @@ export class AdministrativeRequestService {
   //#-----------------------------------------------------------------------------------------#//
 
   //#-----------------------Reprint of the last Closing Voucher-------------------------------#//
-  publicre_printLastCloseVoucher(ci: string, register: string){ //Reprint of the last Closing Voucher
+  re_printLastCloseVoucher(ci: string, register: string){ //Reprint of the last Closing Voucher
 
     const url = environment.API_URL_VPOS+'/administrative/request/re-print-last-closing-vouche';
 
