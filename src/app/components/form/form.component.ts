@@ -293,6 +293,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   public mainTitle: string = '';
   public userSelectList: IUserListItem[] = []
   public clientNames: string = '';
+  // para mostrar o ocultar el modulo administrativo
+  public showadmin: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -4936,10 +4938,14 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public goToPayment = async () => {
     try {
+      this.showAdminist(this.dni?.value)
+
       await this.searchServicesv2(this.dni, false, true) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
+
+
 
     } catch (error) {
       console.error(error)
@@ -5201,6 +5207,18 @@ export class FormComponent implements AfterViewInit, OnInit {
 
     } catch (error) {
       console.error('Error en setActiveContrato', error)
+    }
+  }
+
+  /*
+   * To show administrative module
+   * @return Boolean | undefined
+   */
+  public showAdminist(dni_value: string): boolean | undefined {
+    if(dni_value === '12345678'){
+      return this.showadmin = true;
+    } else {
+      return this.showadmin = false;
     }
   }
 

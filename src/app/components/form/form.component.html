@@ -185,8 +185,17 @@
         </div>
       </div>
 
+      <!-- Administrative module -->
+      <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item" [hidden]="!showadmin">
+        <app-administrative-module
+        [userData]="dni?.value"
+        >
+        </app-administrative-module>
+      </div>
+
       <!-- PAYMENT CARDS STEP -->
-      <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
+      <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item" [hidden]="showadmin">
+
         <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
 
           <div class="payment-menu-subscription-section">
@@ -196,24 +205,20 @@
             </h4>
           </div>
 
-          <app-administrative-module>
-
-          </app-administrative-module>
-
           <!-- UNIQUE PAYMENT -->
           <app-unique-payment
-            [tasaCambio]="tasaCambio"
-            [saldoBs]="saldoBs"
-            [saldoUSD]="saldoUSD"
-            [mountTotalMonthUSD]="mountTotalMonthUSD"
-            [mountTotalMonthBs]="mountTotalMonthBs"
-            [subscription]="subscription"
-            [monthPayCount]="monthPayCount"
-            [setTitleFn]="setMainTitle"
+          [tasaCambio]="tasaCambio"
+          [saldoBs]="saldoBs"
+          [saldoUSD]="saldoUSD"
+          [mountTotalMonthUSD]="mountTotalMonthUSD"
+          [mountTotalMonthBs]="mountTotalMonthBs"
+          [subscription]="subscription"
+          [monthPayCount]="monthPayCount"
+          [setTitleFn]="setMainTitle"
 
-            (totalBs)="mountsToPaymentBs($event)"
-            (totalUSD)="mountsToPaymentUSD($event)"
-            (onEditAmountEvent)="onEditAmountClick()"
+          (totalBs)="mountsToPaymentBs($event)"
+          (totalUSD)="mountsToPaymentUSD($event)"
+          (onEditAmountEvent)="onEditAmountClick()"
           ></app-unique-payment>
 
         </div>
