@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-administrative-module',
@@ -29,7 +30,14 @@ export class AdministrativeModuleComponent implements OnInit {
    * @returns
    */
   public async closeBox() {
-    //
+    //Alerts to show message on all the process
+    // Swal.fire({
+    //   title: 'Success',
+    //   text: 'The last voucher was printed successfully',
+    //   icon: 'success',
+    //   confirmButtonText: 'OK'
+    // });
+
     try {
 
     console.log('in CloseBox');
