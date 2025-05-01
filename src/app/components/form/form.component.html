@@ -185,8 +185,15 @@
         </div>
       </div>
 
+      <!-- BTN to select option test and Admin panel -->
+      <div class="section-step-item" [hidden]="showaBtnAdmin">
+        <app-btn-to-option
+        (btnOption)="handlerAdminPanel($event)"
+        ></app-btn-to-option>
+      </div>
+
       <!-- Administrative module -->
-      <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item" [hidden]="!showadmin">
+      <div class="section-step-item" [hidden]="!showadmin">
         <app-administrative-module
         [userData]="dni?.value"
         >

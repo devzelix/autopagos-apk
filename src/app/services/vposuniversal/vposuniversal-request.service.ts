@@ -89,7 +89,7 @@ export class VposuniversalRequestService {
           'is_success': false,
           response_code: response_code
         })
-        reject(error);
+        return error;
       }
 
     });

@@ -294,6 +294,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   public userSelectList: IUserListItem[] = []
   public clientNames: string = '';
   // para mostrar o ocultar el modulo administrativo
+  public showaBtnAdmin: boolean = true;
   public showadmin: boolean = false;
 
   constructor(
@@ -4772,6 +4773,8 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.showMainMenuPage2 = false;
       this.showDniForm = true;
       this.navActive = PAGES_NAVIGATION.LOGIN;
+      this.showaBtnAdmin = true;
+      this.showadmin = false;
     }
 
     const HANDLE_NAV_FN: Partial<IHandlerNav> = {
@@ -4782,7 +4785,8 @@ export class FormComponent implements AfterViewInit, OnInit {
 
         if (this.userSelectList.length > 1) {
           this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
-
+          // this.showaBtnAdmin = true;
+          this.showadmin = false;
         }
         else {
           goToLoginFn()
@@ -4938,6 +4942,7 @@ export class FormComponent implements AfterViewInit, OnInit {
    */
   public goToPayment = async () => {
     try {
+      // For Show Administrative panel
       this.showAdminist(this.dni?.value)
 
       await this.searchServicesv2(this.dni, false, true) //* => to login
@@ -5215,10 +5220,25 @@ export class FormComponent implements AfterViewInit, OnInit {
    * @return Boolean | undefined
    */
   public showAdminist(dni_value: string): boolean | undefined {
-    if(dni_value === '12345678'){
-      return this.showadmin = true;
-    } else {
-      return this.showadmin = false;
+    if(dni_value === '1000000'){
+      return this.showaBtnAdmin = false;
+    }
+    return this.showaBtnAdmin = true;
+  }
+
+  /**
+   *
+   * @param $event Event to show or hide the admin panel
+   * @returns void
+   */
+  public handlerAdminPanel ($event: string): void {
+    console.log('EVENT', $event)
+    if ($event === 'test') {
+      this.showadmin = false;
+      console.log('EVENT IF', $event, this.showadmin)
+    } else if ($event === 'admin') {
+      this.showadmin = true;
+      console.log('EVENT ELSE IF', $event, this.showadmin)
     }
   }
 

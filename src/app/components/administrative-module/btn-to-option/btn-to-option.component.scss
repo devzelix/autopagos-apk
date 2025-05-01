@@ -1,0 +1,59 @@
+.div-option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0rem;
+  padding-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.btn-option {
+  background: transparent;
+  padding: 1rem 0;
+  color: ghostwhite;
+  border-radius: 3rem;
+  font-size: 1rem;
+  border: 1px solid black;
+  transition: all 0.4s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 14rem;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.5);
+    border-color: var(--primary-accent-color);
+  }
+
+  &:disabled {
+    background: var(--primary-accent-color);
+    opacity: 0.6;
+  }
+  &:not(:disabled) {
+    background: var(--primary-accent-color);
+  }
+}
+
+.btn-test {
+  // @apply px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 ;
+
+  // background-color: #357cff;
+
+  @extend .btn-option;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+
+}
+
+.btn-admin {
+  // @apply px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 ;
+
+  // background-color: #357cff;
+
+  @extend .btn-option;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+
+}

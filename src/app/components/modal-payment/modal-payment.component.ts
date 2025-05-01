@@ -260,10 +260,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       console.log('in requestCard')
       let macAddress = '';
 
-      try {
-        macAddress  = await this.getMacAddress();
-      } catch (error) {
-        console.error(error)
+      macAddress  = await this.getMacAddress();
+
+      if (!macAddress) {
+        throw new Error('No se pudo obtener la dirección MAC del dispositivo');
       }
 
       console.log('macAddress', macAddress);
@@ -277,16 +277,35 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
       'Pago';
 
-      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado);
+      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado, this.dni?.value,
+        this.mountFormat,
+        this.nroAbonado,
+        this.nroContrato,
+        macAddress);
 
-      const responseJSON = await this._ApiVPOS.cardRequest(this.dni?.value, this.mountFormat, this.nroAbonado, this.nroContrato, macAddress);
+      try {
+        const response = await this._ApiVPOS.cardRequest(
+          this.dni?.value,
+          this.mountFormat,
+          this.nroAbonado,
+          this.nroContrato,
+          macAddress
+        );
 
-      console.log('responseJSON', responseJSON);
+        if (!response) {
+          throw new Error('No se pudo conectar con el servicio de pago');
+        }
 
-      return responseJSON;
+        console.log('responseJSON', response);
+        return response;
 
+      } catch (error) {
+        console.error('Error en la solicitud de pago:', error);
+        throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
+      }
     } catch (error) {
-      console.error(error)
+      console.error('Error general:', error);
+      throw error;
     }
   }
 
@@ -328,7 +347,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         'refundNumber': this._dataApi.data.datavpos.numeroReferencia,
         'numSeq': this._dataApi.data.datavpos.numSeq,
         'ciClient': this.dniValue || 'unknown',
-        'abonumber': this.nroContrato,
+        'abonumber': this.nroAbonado,
         'describe': _desciptionText,
         'amount': String(this.mount?.value),
         'methodPayment': this._dataApi.data.datavpos.tipoProducto,

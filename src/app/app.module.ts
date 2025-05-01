@@ -45,6 +45,7 @@ import { MultiplePaymentComponent } from './components/multiple-payment/multiple
 import { CurrencyPipe } from '@angular/common';
 import { UserItemCardComponent } from './components/cards/user-item-card/user-item-card.component';
 import { AdministrativeModuleComponent } from './components/administrative-module/administrative-module.component';
+import { BtnToOptionComponent } from './components/administrative-module/btn-to-option/btn-to-option.component';
 
 
 const routes: Routes = [
@@ -89,7 +90,8 @@ const routes: Routes = [
     UniquePaymentComponent,
     MultiplePaymentComponent,
     UserItemCardComponent,
-    AdministrativeModuleComponent
+    AdministrativeModuleComponent,
+    BtnToOptionComponent
   ],
   imports: [
     BrowserModule,
