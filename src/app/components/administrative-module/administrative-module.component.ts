@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 })
 export class AdministrativeModuleComponent implements OnInit {
 
-  @Input() userData = '9000000';
+  @Input() userData: string = '';
 
   constructor(
     private _adminAction: AdministrativeRequestService,
@@ -40,7 +40,7 @@ export class AdministrativeModuleComponent implements OnInit {
 
     try {
 
-    console.log('in requestCard')
+    console.log('in CloseBox');
     let macAddress = '';
 
     try {
@@ -57,6 +57,8 @@ export class AdministrativeModuleComponent implements OnInit {
 
   } catch (error) {
     console.error(error)
+
+    return `error: ${error}`;
   }
 
   }
@@ -69,7 +71,7 @@ export class AdministrativeModuleComponent implements OnInit {
     //
     try {
 
-    console.log('in requestCard')
+    console.log('in pre_closeBox');
     let macAddress = '';
 
     try {
@@ -86,6 +88,8 @@ export class AdministrativeModuleComponent implements OnInit {
 
   } catch (error) {
     console.error(error)
+
+    return `error: ${error}`;
   }
 
   }
@@ -98,7 +102,7 @@ export class AdministrativeModuleComponent implements OnInit {
     //
     try {
 
-    console.log('in requestCard')
+    console.log('in printLastVoucher')
     let macAddress = '';
 
     try {
@@ -114,7 +118,9 @@ export class AdministrativeModuleComponent implements OnInit {
     return responseJSON;
 
     } catch (error) {
-    console.error(error)
+      console.error(error)
+
+      return `error: ${error}`;
     }
 
   }
@@ -127,7 +133,7 @@ export class AdministrativeModuleComponent implements OnInit {
     //
     try {
 
-    console.log('in requestCard')
+    console.log('in printLastVoucherpcsd');
     let macAddress = '';
 
     try {
@@ -143,7 +149,9 @@ export class AdministrativeModuleComponent implements OnInit {
     return responseJSON;
 
     } catch (error) {
-    console.error(error)
+      console.error(error)
+
+      return `error: ${error}`;
     }
 
   }
@@ -156,7 +164,7 @@ export class AdministrativeModuleComponent implements OnInit {
     //
     try {
 
-    console.log('in requestCard')
+    console.log('in re_printLastVoucher')
     let macAddress = '';
 
     try {
@@ -172,7 +180,9 @@ export class AdministrativeModuleComponent implements OnInit {
     return responseJSON;
 
     } catch (error) {
-    console.error(error)
+      console.error(error)
+
+      return `error: ${error}`;
     }
 
   }

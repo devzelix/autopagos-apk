@@ -4950,6 +4950,8 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
 
+
+
     } catch (error) {
       console.error(error)
     }
