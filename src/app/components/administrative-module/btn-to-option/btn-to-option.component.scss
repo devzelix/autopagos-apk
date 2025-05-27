@@ -13,7 +13,7 @@
   color: ghostwhite;
   border-radius: 3rem;
   font-size: 1rem;
-  border: 1px solid black;
+  border: 1px solid #1200ff;
   transition: all 0.4s ease-in-out;
   display: flex;
   justify-content: center;
@@ -25,6 +25,7 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.5);
     border-color: var(--primary-accent-color);
+    background: #1200ff !important;
   }
 
   &:disabled {

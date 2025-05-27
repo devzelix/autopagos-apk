@@ -12,6 +12,9 @@ export class AdministrativeModuleComponent implements OnInit {
 
   @Input() userData: string = '';
 
+  public ci_transaction: string = '';
+  public numSeq_transaction: string = '';
+
   constructor(
     private _adminAction: AdministrativeRequestService,
     private _printer: PrinterService,
@@ -95,97 +98,86 @@ export class AdministrativeModuleComponent implements OnInit {
   }
 
   /**
-   * To print last voucher
-   * @returns
+   * To show modal to anulate transaction
+   * @returns ci, numSeq
    */
-  public async printLastVoucher() {
-    //
+  public async showAnulateTransactionModal(): Promise<void | string> {
     try {
 
-    console.log('in printLastVoucher')
-    let macAddress = '';
-
-    try {
-      macAddress  = await this.getMacAddress();
-    } catch (error) {
-      console.error(error)
-    }
-
-    const responseJSON = await this._adminAction.printLastVoucher(this.userData, macAddress);
-
-    console.log('responseJSON', responseJSON);
-
-    return responseJSON;
+      Swal.fire({
+        title: "Submit your Github username",
+        input: "text",
+        inputAttributes: {
+          autocapitalize: "off"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Look up",
+        showLoaderOnConfirm: true,
+        preConfirm: async (login) => {
+          try {
+            const githubUrl = `
+              https://api.github.com/users/${login}
+            `;
+            const response = await fetch(githubUrl);
+            if (!response.ok) {
+              return Swal.showValidationMessage(`
+                ${JSON.stringify(await response.json())}
+              `);
+            }
+            return response.json();
+          } catch (error) {
+            Swal.showValidationMessage(`
+              Request failed: ${error}
+            `);
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: `${result.value.login}'s avatar`,
+            imageUrl: result.value.avatar_url
+          });
+        }
+      });
 
     } catch (error) {
       console.error(error)
 
       return `error: ${error}`;
     }
-
   }
 
   /**
-   * To print last voucher Processed
+   * To anulate transaction
    * @returns
    */
-  public async printLastVoucherPcsd() {
+  public async anulateTransaction() {
     //
     try {
 
-    console.log('in printLastVoucherpcsd');
-    let macAddress = '';
+      console.log('in anulateTransaction');
+      let macAddress = '';
 
-    try {
-      macAddress  = await this.getMacAddress();
-    } catch (error) {
-      console.error(error)
-    }
+      try {
+        macAddress  = await this.getMacAddress();
+      } catch (error) {
+        console.error(error)
+      }
 
-    const responseJSON = await this._adminAction.printLastVoucherP(this.userData, macAddress);
+      const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
 
-    console.log('responseJSON', responseJSON);
+      console.log('responseJSON', responseJSON);
 
-    return responseJSON;
+      return responseJSON;
 
     } catch (error) {
       console.error(error)
 
       return `error: ${error}`;
     }
-
   }
 
-  /**
-   * To re-print last voucher
-   * @returns
-   */
-  public async re_printLastVoucher() {
-    //
-    try {
-
-    console.log('in re_printLastVoucher')
-    let macAddress = '';
-
-    try {
-      macAddress  = await this.getMacAddress();
-    } catch (error) {
-      console.error(error)
-    }
-
-    const responseJSON = await this._adminAction.re_printLastCloseVoucher(this.userData, macAddress);
-
-    console.log('responseJSON', responseJSON);
-
-    return responseJSON;
-
-    } catch (error) {
-      console.error(error)
-
-      return `error: ${error}`;
-    }
-
-  }
 
   /**
    * Function to get the current MAC-ADDRESS
