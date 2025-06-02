@@ -105,6 +105,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
         this._dataApi = await this.requestCard();
 
+        console.warn('this._dataApi', this._dataApi);
+
         if (!this._dataApi || !this._dataApi?.data.datavpos) {
           Swal.fire({
             icon: 'error',
@@ -114,6 +116,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             timer: 4000,
           })
         }
+
+        // if (this._dataApi?.data.message === 'Request card failed') {
+        //   Swal.fire({
+        //     icon: 'error',
+        //     title: 'Ha ocurrido un error en la conexión con el servicio de pago, consulte con el personal de Fibex',
+        //     showConfirmButton: false,
+        //     allowOutsideClick: true,
+        //     timer: 4000,
+        //   })
+        // }
 
         console.log(
           this._dataApi.data.datavpos.mensajeRespuesta,
@@ -292,20 +304,21 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           macAddress
         );
 
-        if (!response) {
-          throw new Error('No se pudo conectar con el servicio de pago');
-        }
+        // if (!response) {
+        //   throw new Error('No se pudo conectar con el servicio de pago');
+        // }
 
         console.log('responseJSON', response);
         return response;
 
       } catch (error) {
         console.error('Error en la solicitud de pago:', error);
-        throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
+        // throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
+        return error;
       }
     } catch (error) {
       console.error('Error general:', error);
-      throw error;
+      return error;
     }
   }
 

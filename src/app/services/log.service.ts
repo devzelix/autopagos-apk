@@ -55,6 +55,8 @@ export class LogService {
         this.postLogs();
       }
 
+      console.log('Log saved to local storage', this._localStorageService.get<ILog[]>('logs'));
+
     } catch (error) {
       console.error(error)
     }

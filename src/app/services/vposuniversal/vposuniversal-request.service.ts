@@ -52,44 +52,50 @@ export class VposuniversalRequestService {
         .then(res => {
           console.log('RES', res)
           this._logService.storagelog({
-              ciClient: _ci,
               http_method: 'POST',
               status: res.data?.datavpos.status ?? res.status,
-              request_body: {
-                "monto": _amount,
-                "ci": _ci,
-                "subscriber": _subscriber,
-                "register": _register
-              },
-              response_code: res.data.datavpos.codRespuesta ?? 'response_code undefined',
+              subscriberNum: _subscriber,
+              mac_address: _register,
+              response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
+              response_message: res.data.datavpos.mensaje ?? 'response message undefined',
               url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-              'is_success': true})
+              'is_success': true
+            })
             resolve(res)
           })
           .catch(err => {
-            console.error(err)
-            const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
+            console.error('Error en cardRequest:', err);
+
+            axios.isAxiosError(err) && console.error('Axios error:', err.message);
+            // resolve(err.response?.data);
+
+            // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({
-              ciClient: _ci,
-              status: err.response.status,
               http_method: 'POST',
+              status: err.data?.datavpos.status ?? err.status,
+              subscriberNum: _subscriber,
+              mac_address: _register,
+              response_code: err.data.datavpos.codRespuesta ?? 'response code undefined',
+              response_message: err.response.codRespuesta ?? 'response message undefined',
               url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-              'is_success': false,
-              response_code: response_code
+              'is_success': true
             })
-            reject(err)
+            reject(err);
           });
       } catch (error) {
-        const response_code = (error as any).response.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
+        console.error('Error al procesar el pago:', error);
+        // const response_code = (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
         this._logService.storagelog({
-          ciClient: _ci,
           http_method: 'POST',
-          status:  (error as any).response.status,
+          status:  (error as any).response?.status,
           url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
           'is_success': false,
-          response_code: response_code
+          subscriberNum: _subscriber,
+          mac_address: _register,
+          response_code: (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : 'response code undefined',
+          response_message: (error as any).response?.mensaje ? (error as any).response.mensaje : 'response message undefined'
         })
-        return error;
+        reject(error);
       }
 
     });
