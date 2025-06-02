@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import Swal from 'sweetalert2';
@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 export class AdministrativeModuleComponent implements OnInit {
 
   @Input() userData: string = '';
+  @Output() showAnulationModal = new EventEmitter<boolean>();
 
   public ci_transaction: string = '';
   public numSeq_transaction: string = '';
@@ -102,50 +103,51 @@ export class AdministrativeModuleComponent implements OnInit {
    * @returns ci, numSeq
    */
   public async showAnulateTransactionModal(): Promise<void | string> {
-    try {
+     this.showAnulationModal.emit(true);
+    // try {
 
-      Swal.fire({
-        title: "Submit your Github username",
-        input: "text",
-        inputAttributes: {
-          autocapitalize: "off"
-        },
-        showCancelButton: true,
-        confirmButtonText: "Look up",
-        showLoaderOnConfirm: true,
-        preConfirm: async (login) => {
-          try {
-            const githubUrl = `
-              https://api.github.com/users/${login}
-            `;
-            const response = await fetch(githubUrl);
-            if (!response.ok) {
-              return Swal.showValidationMessage(`
-                ${JSON.stringify(await response.json())}
-              `);
-            }
-            return response.json();
-          } catch (error) {
-            Swal.showValidationMessage(`
-              Request failed: ${error}
-            `);
-          }
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: `${result.value.login}'s avatar`,
-            imageUrl: result.value.avatar_url
-          });
-        }
-      });
+    //   Swal.fire({
+    //     title: "Submit your Github username",
+    //     input: "text",
+    //     inputAttributes: {
+    //       autocapitalize: "off"
+    //     },
+    //     showCancelButton: true,
+    //     confirmButtonText: "Look up",
+    //     showLoaderOnConfirm: true,
+    //     preConfirm: async (login) => {
+    //       try {
+    //         const githubUrl = `
+    //           https://api.github.com/users/${login}
+    //         `;
+    //         const response = await fetch(githubUrl);
+    //         if (!response.ok) {
+    //           return Swal.showValidationMessage(`
+    //             ${JSON.stringify(await response.json())}
+    //           `);
+    //         }
+    //         return response.json();
+    //       } catch (error) {
+    //         Swal.showValidationMessage(`
+    //           Request failed: ${error}
+    //         `);
+    //       }
+    //     },
+    //     allowOutsideClick: () => !Swal.isLoading()
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       Swal.fire({
+    //         title: `${result.value.login}'s avatar`,
+    //         imageUrl: result.value.avatar_url
+    //       });
+    //     }
+    //   });
 
-    } catch (error) {
-      console.error(error)
+    // } catch (error) {
+    //   console.error(error)
 
-      return `error: ${error}`;
-    }
+    //   return `error: ${error}`;
+    // }
   }
 
   /**
