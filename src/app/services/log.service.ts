@@ -51,7 +51,7 @@ export class LogService {
       allLogs.push(logItem);
       this._localStorageService.set('logs', allLogs);
 
-      if (allLogs.length > 2) {
+      if (allLogs.length > 20) {
         this.postLogs();
       }
 
