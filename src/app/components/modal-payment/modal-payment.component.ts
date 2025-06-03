@@ -96,104 +96,194 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * On submit payment form
    * @param event
    */
-  public  onSubmit = async ()  => {
-    this.sendPayment = true; // Indica que se está enviando el pago al API
+  public onSubmit(): Promise<void> {
+    this.sendPayment = true; // Indicate payment is being processed
 
-    if (this.formPayment.valid) {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.formPayment.valid) {
+        console.log('Form is invalid');
+        this.sendPayment = false;
+        resolve(); // Resolve immediately for invalid forms
+        return;
+      }
 
-      try {
+      // 1. Process card request
+      this.requestCard()
+        .then((_dataApi) => {
+          console.warn('Card request response:', _dataApi);
 
-        this._dataApi = await this.requestCard();
+          // Handle missing response data
+          if (!this._dataApi || !this._dataApi?.data.datavpos) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ha ocurrido un error, intente nuevamente más tarde',
+              showConfirmButton: false,
+              allowOutsideClick: true,
+              timer: 4000,
+            })
+          }
 
-        console.warn('this._dataApi', this._dataApi);
+          const responseCode = _dataApi.data.datavpos.codRespuesta;
+          const message = this._errorsvpos.getErrorMessage(responseCode);
 
-        if (!this._dataApi || !this._dataApi?.data.datavpos) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Ha ocurrido un error, intente nuevamente más tarde',
-            showConfirmButton: false,
-            allowOutsideClick: true,
-            timer: 4000,
-          })
-        }
+          console.log(
+            _dataApi.data.datavpos.mensajeRespuesta,
+            message,
+            responseCode
+          );
 
-        // if (this._dataApi?.data.message === 'Request card failed') {
-        //   Swal.fire({
-        //     icon: 'error',
-        //     title: 'Ha ocurrido un error en la conexión con el servicio de pago, consulte con el personal de Fibex',
-        //     showConfirmButton: false,
-        //     allowOutsideClick: true,
-        //     timer: 4000,
-        //   })
-        // }
+          // 2. Handle success case (code '00')
+          if (responseCode === '00') {
+            this.generarPDF().catch(console.error); // Generate PDF async
 
-        console.log(
-          this._dataApi.data.datavpos.mensajeRespuesta,
-          this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
-          this._dataApi.data.datavpos.codRespuesta
-        );
-
-        if(this._dataApi.data.datavpos.codRespuesta === '00'){
-
-          this.generarPDF().catch((err) => {
-            console.log(err);
-          });
-
-          Swal.fire({
-            icon: 'success',
-            title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            timer: 4000, // El modal se cerrará después de 5 segundos
-            didClose: () => this.onSubmitPayForm.emit()
-          });
-        } else {
-
-          if (this._dataApi.data.datavpos.codRespuesta === '51'){
-            this.generarPDF().catch((err) => {
-              console.log(err);
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago procesado con éxito \n'+message,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000, // El modal se cerrará después de 5 segundos
+              didClose: () => this.onSubmitPayForm.emit()
             });
+          }
+          // 3. Handle other cases
+          else {
+            // Special case for code '51'
+            if (responseCode === '51') {
+              this.generarPDF().catch(console.error);
+            }
+
+            Swal.fire({
+              icon: 'error',
+              title: message,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000,
+              didClose: () => resolve()
+            });
+          }
+        })
+        .catch((error) => {
+          // 4. Handle request errors
+           let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+          let timeShow: number = 4000;
+
+          if (this.dni?.value === "90000000") {
+            _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
+            timeShow = 6000;
           }
 
           Swal.fire({
             icon: 'error',
-            title: this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta), //'Error al procesar el pago \n'+
+            title: _messageError,
             showConfirmButton: false,
             allowOutsideClick: false,
-            timer: 4000, // El modal se cerrará después de 5 segundos
-            // didClose: () => this.onCloseModal()
+            timer: timeShow,
+            didClose: () => resolve()
           });
-        }
-
-
-      } catch (error) {
-
-        let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
-        let timeShow: number = 4000;
-
-        if (this.dni?.value === "90000000") {
-          _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
-          timeShow = 6000;
-        }
-
-        Swal.fire({
-          icon: 'error',
-          title: _messageError,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          timer: timeShow, // El modal se cerrará después de 5 segundos
-          // didClose: () => this.onCloseModal()
+        })
+        .finally(() => {
+          this.sendPayment = !this.formPayment.valid; // Always reset payment flag
         });
-      }
-      finally {
-        this.sendPayment = false;
-      }
-
-    } else {
-      console.log('Formulario no válido');
-    }
-
+    });
   }
+  // public  onSubmit = async ()  => {
+  //   this.sendPayment = true; // Indica que se está enviando el pago al API
+
+  //   if (this.formPayment.valid) {
+
+  //     try {
+
+  //       this._dataApi = await this.requestCard();
+
+  //       console.warn('this._dataApi', this._dataApi);
+
+  //       if (!this._dataApi || !this._dataApi?.data.datavpos) {
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Ha ocurrido un error, intente nuevamente más tarde',
+  //           showConfirmButton: false,
+  //           allowOutsideClick: true,
+  //           timer: 4000,
+  //         })
+  //       }
+
+  //       // if (this._dataApi?.data.message === 'Request card failed') {
+  //       //   Swal.fire({
+  //       //     icon: 'error',
+  //       //     title: 'Ha ocurrido un error en la conexión con el servicio de pago, consulte con el personal de Fibex',
+  //       //     showConfirmButton: false,
+  //       //     allowOutsideClick: true,
+  //       //     timer: 4000,
+  //       //   })
+  //       // }
+
+  //       console.log(
+  //         this._dataApi.data.datavpos.mensajeRespuesta,
+  //         this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
+  //         this._dataApi.data.datavpos.codRespuesta
+  //       );
+
+  //       if(this._dataApi.data.datavpos.codRespuesta === '00'){
+
+  //         this.generarPDF().catch((err) => {
+  //           console.log(err);
+  //         });
+
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
+  //           showConfirmButton: false,
+  //           allowOutsideClick: false,
+  //           timer: 4000, // El modal se cerrará después de 5 segundos
+  //           didClose: () => this.onSubmitPayForm.emit()
+  //         });
+  //       } else {
+
+  //         if (this._dataApi.data.datavpos.codRespuesta === '51'){
+  //           this.generarPDF().catch((err) => {
+  //             console.log(err);
+  //           });
+  //         }
+
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta), //'Error al procesar el pago \n'+
+  //           showConfirmButton: false,
+  //           allowOutsideClick: false,
+  //           timer: 4000, // El modal se cerrará después de 5 segundos
+  //           // didClose: () => this.onCloseModal()
+  //         });
+  //       }
+
+
+  //     } catch (error) {
+
+  //       let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+  //       let timeShow: number = 4000;
+
+  //       if (this.dni?.value === "90000000") {
+  //         _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
+  //         timeShow = 6000;
+  //       }
+
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: _messageError,
+  //         showConfirmButton: false,
+  //         allowOutsideClick: false,
+  //         timer: timeShow, // El modal se cerrará después de 5 segundos
+  //         // didClose: () => this.onCloseModal()
+  //       });
+  //     }
+  //     finally {
+  //       this.sendPayment = false;
+  //     }
+
+  //   } else {
+  //     console.log('Formulario no válido');
+  //   }
+
+  // }
 
   /**
    * Function to handle the keyboard pressed events
@@ -267,59 +357,87 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * Funtions VPOSUniversal PINPAD// -By:MR-
    */
   public async requestCard(): Promise<any> {
-    try {
 
-      console.log('in requestCard')
-      let macAddress = '';
+    console.log('in requestCard');
 
-      macAddress  = await this.getMacAddress();
+    // Primero obtenemos la MAC
+    return this.getMacAddress()
+      .then(macAddress => {
+          console.log('macAddress', macAddress);
 
-      if (!macAddress) {
-        throw new Error('No se pudo obtener la dirección MAC del dispositivo');
-      }
+          this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
 
-      console.log('macAddress', macAddress);
-      console.log('this.mount?.value', this.mount?.value)
-      this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
-      console.log('MOUNT', this.mountFormat)
+          // Lanzamos cardRequest CON la MAC obtenida
+          return this._ApiVPOS.cardRequest(
+              this.dni?.value,
+              this.mountFormat,
+              this.nroAbonado,
+              this.nroContrato,
+              macAddress
+          );
+      })
+      .then(cardData => {
+          return cardData; // Resultado final
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          return error;
+      });
 
-      let _desciptionText: string =
-      Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago - Mensualidad' :
-      Number(this.mountFormat) > Number(this.amountContrato) ? 'Adelanto - Mensualidad' :
-      Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
-      'Pago';
 
-      console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado, this.dni?.value,
-        this.mountFormat,
-        this.nroAbonado,
-        this.nroContrato,
-        macAddress);
+    // try {
 
-      try {
-        const response = await this._ApiVPOS.cardRequest(
-          this.dni?.value,
-          this.mountFormat,
-          this.nroAbonado,
-          this.nroContrato,
-          macAddress
-        );
+    //   console.log('in requestCard')
+    //   let macAddress = '';
 
-        // if (!response) {
-        //   throw new Error('No se pudo conectar con el servicio de pago');
-        // }
+    //   macAddress  = await this.getMacAddress();
 
-        console.log('responseJSON', response);
-        return response;
+    //   if (!macAddress) {
+    //     throw new Error('No se pudo obtener la dirección MAC del dispositivo');
+    //   }
 
-      } catch (error) {
-        console.error('Error en la solicitud de pago:', error);
-        // throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
-        return error;
-      }
-    } catch (error) {
-      console.error('Error general:', error);
-      return error;
-    }
+    //   console.log('macAddress', macAddress);
+    //   console.log('this.mount?.value', this.mount?.value)
+    //   this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
+    //   console.log('MOUNT', this.mountFormat)
+
+    //   let _desciptionText: string =
+    //   Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago - Mensualidad' :
+    //   Number(this.mountFormat) > Number(this.amountContrato) ? 'Adelanto - Mensualidad' :
+    //   Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
+    //   'Pago';
+
+    //   console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado, this.dni?.value,
+    //     this.mountFormat,
+    //     this.nroAbonado,
+    //     this.nroContrato,
+    //     macAddress);
+
+    //   try {
+    //     const response = await this._ApiVPOS.cardRequest(
+    //       this.dni?.value,
+    //       this.mountFormat,
+    //       this.nroAbonado,
+    //       this.nroContrato,
+    //       macAddress
+    //     );
+
+    //     // if (!response) {
+    //     //   throw new Error('No se pudo conectar con el servicio de pago');
+    //     // }
+
+    //     console.log('responseJSON', response);
+    //     return response;
+
+    //   } catch (error) {
+    //     console.error('Error en la solicitud de pago:', error);
+    //     // throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
+    //     return error;
+    //   }
+    // } catch (error) {
+    //   console.error('Error general:', error);
+    //   return error;
+    // }
   }
 
   /**

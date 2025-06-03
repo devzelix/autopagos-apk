@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import axios, { AxiosResponse } from 'axios';
 import { environment } from 'src/environments/environment';
 import { LogService } from '../log.service';
+import { rejects } from 'assert';
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +31,9 @@ export class VposuniversalRequestService {
 
   //#--------------------------------Card pay Simple---------------------------------------#//
   cardRequest(_ci: string, _amount: string, _subscriber: string, _contract: string, _register: string){ //Pay Card Simple
-    return new Promise<AxiosResponse<any>>((resolve, reject)=>{
-      // console.log('in cardRequest')
-      try {
+    return new Promise<any>((resolve, reject)=>{
+      console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+      // try {
         axios({
           method: 'post',
           url: environment.API_URL_VPOS+'/metodo/request/cardpay',
@@ -64,11 +65,7 @@ export class VposuniversalRequestService {
             resolve(res)
           })
           .catch(err => {
-            console.error('Error en cardRequest:', err);
-
-            axios.isAxiosError(err) && console.error('Axios error:', err.message);
-            // resolve(err.response?.data);
-
+            console.log('ERROR', err);
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({
               http_method: 'POST',
@@ -80,23 +77,24 @@ export class VposuniversalRequestService {
               url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
               'is_success': true
             })
+
             reject(err);
           });
-      } catch (error) {
-        console.error('Error al procesar el pago:', error);
-        // const response_code = (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
-        this._logService.storagelog({
-          http_method: 'POST',
-          status:  (error as any).response?.status,
-          url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-          'is_success': false,
-          subscriberNum: _subscriber,
-          mac_address: _register,
-          response_code: (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : 'response code undefined',
-          response_message: (error as any).response?.mensaje ? (error as any).response.mensaje : 'response message undefined'
-        })
-        reject(error);
-      }
+      // } catch (error) {
+      //   console.error('Error al procesar el pago:', error);
+      //   // const response_code = (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
+      //   this._logService.storagelog({
+      //     http_method: 'POST',
+      //     status:  (error as any).response?.status,
+      //     url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+      //     'is_success': false,
+      //     subscriberNum: _subscriber,
+      //     mac_address: _register,
+      //     response_code: (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : 'response code undefined',
+      //     response_message: (error as any).response?.mensaje ? (error as any).response.mensaje : 'response message undefined'
+      //   })
+      //   return error;
+      // }
 
     });
 
