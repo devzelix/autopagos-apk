@@ -98,7 +98,7 @@ export class AdministrativeRequestService {
   //#---------------------------Pre-closing of cash register----------------------------------#//
   pre_closeCashRegister(ci: string, register: string){ //Pre-closing of cash register
 
-    const url = environment.API_URL_VPOS+'/administrative/request/pre-closing-cash-register';
+    const url = environment.API_URL_VPOS+'/administrative/close/pre-closing-cash-register';
 
     const header = {
       'accept': 'application/json',
@@ -141,7 +141,7 @@ export class AdministrativeRequestService {
   //#-------------------------------Closing of cash register----------------------------------#//
   closeCashRegister(ci: string, register: string){ //Closing of cash register
 
-    const url = environment.API_URL_VPOS+'/administrative/request/closing-cash-register';
+    const url = environment.API_URL_VPOS+'/administrative/close/closing-cash-register';
 
     const header = {
       'accept': 'application/json',
