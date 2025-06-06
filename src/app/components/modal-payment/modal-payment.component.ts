@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { log } from 'console';
 import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
+import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 import Swal from 'sweetalert2';
@@ -15,11 +16,13 @@ import Swal from 'sweetalert2';
 export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @ViewChild('inputDni') inputDni: ElementRef<HTMLInputElement>;
   @ViewChild('inputMount') inputMount: ElementRef<HTMLInputElement>;
+  @ViewChild('inputReference') inputReference: ElementRef<HTMLInputElement>;
   @Output() closeEmmit: EventEmitter<void> = new EventEmitter() // => close event emmitter
   @Output() onSubmitPayForm: EventEmitter<void> = new EventEmitter() // => on submit event emitter, resets all
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
   @Input() mountValue: number = 0;
+  @Input() inputType: string;
   @Input() amountContrato: number = 0;
   @Input() nroContrato: string = '';
   @Input() nroAbonado: string = '';
@@ -31,6 +34,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public isDniDisabled: boolean = true;
   public isMountDisabled: boolean = true;
   private mountFormat: string = '0.00';
+  public ci_transaction: string = '';
+  public numSeq_transaction: string = '';
 
   public formErrorMessage?: {inputName: ITransactionInputs, errorMsg: string}
 
@@ -38,17 +43,31 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
     private _printer: PrinterService,
-    private _errorsvpos: VposerrorsService // PrinterService instance used to print on Printer -By:MR-
+    private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
+    private _adminAction: AdministrativeRequestService,
   ) {
-    this.formPayment = this.fb.group({
-      dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
-      mount: [{value:''}, [Validators.required ]], //Validators.min(0), Validators.pattern(/\./g) // Validación requerida y monto positivo
-      accountType: ['Corriente', Validators.required] // Valor por defecto y validación requerida
+    console.log('INPUTTYPE', this.inputType);
+
+      this.formPayment = this.fb.group({
+      dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      mount: [{value:''}, [Validators.required]],
+      reference: [
+        '000',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(15), Validators.pattern('^[0-9]*$')]
+      ],
+      accountType: ['Corriente', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.dni?.setValue(this.dniValue)
+    if (this.inputType === 'reference') {
+      this.dni?.setValue('');
+      this.reference?.setValue('')
+    } else {
+      this.dni?.setValue(this.dniValue)
+    }
+
+
     this.mount?.setValue(this.mountValue)
     this.setCurrencyMountFormat()
 
@@ -82,6 +101,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   get mount() {
     return this.formPayment.get('mount');
   }
+
+  get reference() {
+    return this.formPayment.get('reference');
+  }
+
   get accountType() {
     return this.formPayment.get('accountType');
   }
@@ -283,7 +307,38 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   //     console.log('Formulario no válido');
   //   }
 
-  // }
+  }
+
+
+
+
+  public async anulateTransaction() {
+    //
+    try {
+
+      console.log('in anulateTransaction');
+      let macAddress = '';
+
+      try {
+        macAddress  = await this.getMacAddress();
+      } catch (error) {
+        console.error(error)
+      }
+
+      const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
+
+      console.log('responseJSON', responseJSON);
+
+      return responseJSON;
+
+    } catch (error) {
+      console.error(error)
+
+      return `error: ${error}`;
+    }
+  }
+
+
 
   /**
    * Function to handle the keyboard pressed events
@@ -559,6 +614,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   private setCurrencyMountFormat = (value?: string) => {
     const inputValue: number | string = this.mount?.value;
     console.log('inputValue', inputValue)
+    console.log(this.formPayment);
+
     const currentValue = String(inputValue ?? '').replace(/\./g, '').replace(/\,/g, '')
 
     const newAmountValue: number = parseInt(value ? (currentValue + value) : currentValue)
@@ -593,7 +650,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public onInputValueChange = (event:Event, inputName: ITransactionInputs) => {
     const regex = /^\d+$/;
     let value = (event.target as HTMLInputElement).value;
-    const isMountActive: boolean = (inputName === 'mount')
+    const isMountActive: boolean = (inputName === 'mount' || inputName === 'reference')
 
     if (isMountActive) value = value.replace(/\,/g, '').replace(/\./g, '')
 

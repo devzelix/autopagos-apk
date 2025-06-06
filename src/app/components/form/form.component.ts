@@ -282,6 +282,7 @@ export class FormComponent implements AfterViewInit, OnInit {
   public navActive: PAGES_NAVIGATION = PAGES_NAVIGATION.LOGIN;
   public ENUM_NAV: typeof PAGES_NAVIGATION = PAGES_NAVIGATION;
   public showTransactionModal: boolean = false;
+  public showAnulationModal: boolean = false;
   public selectedPaymentType: IPaymentTypes;
   public monthPayCount: number = 1;
   public mountTotalMonthBs: number = 0;
@@ -4962,7 +4963,8 @@ export class FormComponent implements AfterViewInit, OnInit {
    * @param visibility value
    */
   public handleShowTransactionModal = (valueShow: boolean) => {
-    this.showTransactionModal = valueShow
+    this.showAnulationModal ? this.showAnulationModal = valueShow : this.showTransactionModal = valueShow
+    // this.showTransactionModal = valueShow
   }
 
   /**

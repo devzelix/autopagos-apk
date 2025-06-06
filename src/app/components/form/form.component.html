@@ -196,6 +196,7 @@
       <div class="section-step-item" [hidden]="!showadmin">
         <app-administrative-module
         [userData]="dni?.value"
+        (showAnulationModal)="this.showAnulationModal = $event"
         >
         </app-administrative-module>
       </div>
@@ -471,11 +472,12 @@
 
 
 <!-- MODAL DE TRANSACCION DEL PAGO -->
-<app-modal-payment *ngIf="showTransactionModal"
+<app-modal-payment *ngIf="showTransactionModal || showAnulationModal"
   [paymentType]="selectedPaymentType"
   [dniValue]="this.dni?.value"
   [nroAbonado]="this.nroContrato?.value"
   [nroContrato]="idContrato"
+  [inputType]="showAnulationModal ? 'reference' : showTransactionModal ? 'mount' : ''"
   [amountContrato]="mountTotalMonthBs"
   [mountValue]="mountTotalMonthBs"
   [activeInputFocus]="activeTransactionInputFocus"
@@ -483,3 +485,5 @@
   (closeEmmit)="handleShowTransactionModal(false)"
   (onSubmitPayForm)="resetAllForms()">
 </app-modal-payment>
+
+
