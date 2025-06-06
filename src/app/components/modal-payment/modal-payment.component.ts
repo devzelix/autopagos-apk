@@ -22,7 +22,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
   @Input() mountValue: number = 0;
-  @Input() inputType: string = 'mount';
+  @Input() inputType: string;
   @Input() amountContrato: number = 0;
   @Input() nroContrato: string = '';
   @Input() nroAbonado: string = '';
@@ -46,16 +46,28 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
     private _adminAction: AdministrativeRequestService,
   ) {
-    this.formPayment = this.fb.group({
-      dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Validación requerida y solo números
-      mount: [{value:''}, [Validators.required ]], //Validators.min(0), Validators.pattern(/\./g) // Validación requerida y monto positivo
-      reference: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]],
-      accountType: ['Corriente', Validators.required] // Valor por defecto y validación requerida
+    console.log('INPUTTYPE', this.inputType);
+
+      this.formPayment = this.fb.group({
+      dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      mount: [{value:''}, [Validators.required]],
+      reference: [
+        '000',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(15), Validators.pattern('^[0-9]*$')]
+      ],
+      accountType: ['Corriente', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.inputType === 'reference' ? this.dni?.setValue('') : this.dni?.setValue(this.dniValue)
+    if (this.inputType === 'reference') {
+      this.dni?.setValue('');
+      this.reference?.setValue('')
+    } else {
+      this.dni?.setValue(this.dniValue)
+    }
+
+
     this.mount?.setValue(this.mountValue)
     this.setCurrencyMountFormat()
 
@@ -471,6 +483,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   private setCurrencyMountFormat = (value?: string) => {
     const inputValue: number | string = this.mount?.value;
     console.log('inputValue', inputValue)
+    console.log(this.formPayment);
+
     const currentValue = String(inputValue ?? '').replace(/\./g, '').replace(/\,/g, '')
 
     const newAmountValue: number = parseInt(value ? (currentValue + value) : currentValue)
