@@ -108,7 +108,7 @@
                     <label for="reference">Referencia</label>
 
                     <span class="input-dni-container flex items-center w-full">
-                      <span class="icon-type-dni"> # </span>
+                      <span class="icon-type-dni"> Nro. </span>
 
                       <input id="reference" formControlName="reference" type="tel" required #inputReference (input)="onInputValueChange($event, 'reference')"
                       [ngClass]="{'input-focused-style': activeInputFocus === 'reference' && !isMountDisabled}" maxlength="12"/>

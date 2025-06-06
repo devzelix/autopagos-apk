@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-modal-payment',
   templateUrl: './modal-payment.component.html',
-  styleUrls: ['./modal-payment.component.scss']
+  styleUrls: ['./modal-payment.component.scss'],
 })
 export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @ViewChild('inputDni') inputDni: ElementRef<HTMLInputElement>;
