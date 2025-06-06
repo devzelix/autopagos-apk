@@ -157,7 +157,7 @@ export class AdministrativeModuleComponent implements OnInit {
    * To show modal to anulate transaction
    * @returns ci, numSeq
    */
-  public async showAnulateTransactionModal(): Promise<void | string> {
+  public async showAnulateTransactionModal(macAddres: string): Promise<void | string> {
      this.showAnulationModal.emit(true);
     // try {
 

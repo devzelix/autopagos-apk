@@ -307,7 +307,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   //     console.log('Formulario no válido');
   //   }
 
-  }
+  // }
 
 
 
