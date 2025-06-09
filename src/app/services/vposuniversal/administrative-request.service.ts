@@ -228,43 +228,45 @@ export class AdministrativeRequestService {
   //#-----------------------Anulation Transaction-------------------------------#//
   anulationPayment(ci: string, numSeq: string, register: string){ //Reprint of the last Closing Voucher
 
-    // const url = environment.API_URL_VPOS+'/administrative/request/payment/anulation';
+    console.warn('anulationPayment', 'ci', ci, 'numSeq', numSeq, 'register', register);
 
-    // const header = {
-    //   'accept': 'application/json',
-    //   'token': environment.TokenAPILaravelVPOS,
-    //   'Content-Type': 'application/json',
-    // };
+    const url = environment.API_URL_VPOS+'/administrative/payment/anulation';
 
-    // const body = {
-    //   'ci': ci,
-    //   'register': register,
-    //   'numSeq': numSeq
-    // };
+    const header = {
+      'accept': 'application/json',
+      'token': environment.TokenAPILaravelVPOS,
+      'Content-Type': 'application/json',
+    };
 
-    // return new Promise((resolve, reject)=>{
-    //   try {
-    //     axios({
-    //       method: 'post',
-    //       url: url,
-    //       headers: header,
-    //       data: body
-    //     }).then(res => {
-    //         console.log(res);
-    //         resolve(res)
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-    //         reject(err)
-    //     });
+    const body = {
+      'ci': ci,
+      'register': register,
+      'numSeq': numSeq
+    };
 
-    //   } catch (error) {
-    //     reject(error);
-    //   }
+    return new Promise((resolve, reject)=>{
+      try {
+        axios({
+          method: 'post',
+          url: url,
+          headers: header,
+          data: body
+        }).then(res => {
+            console.log(res);
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err)
+        });
 
-    // });
+      } catch (error) {
+        reject(error);
+      }
 
-    alert('This function is not implemented yet!');
+    });
+
+    // alert('This function is not implemented yet!');
 
   }
   //#-----------------------------------------------------------------------------------------#//

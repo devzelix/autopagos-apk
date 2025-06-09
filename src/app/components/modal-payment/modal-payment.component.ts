@@ -1,3 +1,4 @@
+import { register } from 'swiper/element/bundle';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { log } from 'console';
@@ -210,132 +211,97 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         });
     });
   }
-  // public  onSubmit = async ()  => {
-  //   this.sendPayment = true; // Indica que se está enviando el pago al API
 
-  //   if (this.formPayment.valid) {
+  /**
+   * This method is called when the user clicks on the 'Anular' button.
+   * It sends a request to the server to anulate the transaction.
+   * The method returns a Promise<void>.
+   * @returns Promise<void>
+   */
+  public async anulateTransaction(): Promise<any> {
 
-  //     try {
+    return new Promise(async (resolve, reject) => {
 
-  //       this._dataApi = await this.requestCard();
-
-  //       console.warn('this._dataApi', this._dataApi);
-
-  //       if (!this._dataApi || !this._dataApi?.data.datavpos) {
-  //         Swal.fire({
-  //           icon: 'error',
-  //           title: 'Ha ocurrido un error, intente nuevamente más tarde',
-  //           showConfirmButton: false,
-  //           allowOutsideClick: true,
-  //           timer: 4000,
-  //         })
-  //       }
-
-  //       // if (this._dataApi?.data.message === 'Request card failed') {
-  //       //   Swal.fire({
-  //       //     icon: 'error',
-  //       //     title: 'Ha ocurrido un error en la conexión con el servicio de pago, consulte con el personal de Fibex',
-  //       //     showConfirmButton: false,
-  //       //     allowOutsideClick: true,
-  //       //     timer: 4000,
-  //       //   })
-  //       // }
-
-  //       console.log(
-  //         this._dataApi.data.datavpos.mensajeRespuesta,
-  //         this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
-  //         this._dataApi.data.datavpos.codRespuesta
-  //       );
-
-  //       if(this._dataApi.data.datavpos.codRespuesta === '00'){
-
-  //         this.generarPDF().catch((err) => {
-  //           console.log(err);
-  //         });
-
-  //         Swal.fire({
-  //           icon: 'success',
-  //           title: 'Pago procesado con éxito \n'+this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta),
-  //           showConfirmButton: false,
-  //           allowOutsideClick: false,
-  //           timer: 4000, // El modal se cerrará después de 5 segundos
-  //           didClose: () => this.onSubmitPayForm.emit()
-  //         });
-  //       } else {
-
-  //         if (this._dataApi.data.datavpos.codRespuesta === '51'){
-  //           this.generarPDF().catch((err) => {
-  //             console.log(err);
-  //           });
-  //         }
-
-  //         Swal.fire({
-  //           icon: 'error',
-  //           title: this._errorsvpos.getErrorMessage(this._dataApi.data.datavpos.codRespuesta), //'Error al procesar el pago \n'+
-  //           showConfirmButton: false,
-  //           allowOutsideClick: false,
-  //           timer: 4000, // El modal se cerrará después de 5 segundos
-  //           // didClose: () => this.onCloseModal()
-  //         });
-  //       }
+      this.getMacAddress().then(async (macAddress: string) => {
+        await this._adminAction.anulationPayment(this.dni?.value, this.reference?.value, macAddress)
+        .then((res: any) => {
+          console.log('response', res);
+          const responseCode = res.data.datavpos.codRespuesta;
+          const message = this._errorsvpos.getErrorMessage(responseCode);
 
 
-  //     } catch (error) {
+          // 2. Handle success case (code '00')
+          if (responseCode === '00') {
+            // this.generarPDF().catch(console.error); // Generate PDF async
 
-  //       let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
-  //       let timeShow: number = 4000;
+            Swal.fire({
+              icon: 'success',
+              title: 'Acción realizada exitosamente\n'+message,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000, // El modal se cerrará después de 5 segundos
+            });
+          }
+          // 3. Handle other cases
+          else {
 
-  //       if (this.dni?.value === "90000000") {
-  //         _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
-  //         timeShow = 6000;
-  //       }
+            Swal.fire({
+              icon: 'warning',
+              title: 'Solicitud no procesada.\n'+message,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000,
+              // didClose: () => resolve()
+            });
+          }
+          resolve(res);
+        }).catch((err: Error) => {
+          console.error(err)
+          reject(err);
+        });
+      }).catch((err: Error) => {
+        console.error(err)
+        // 4. Handle request errors
+        let _messageError: string = 'Ha ocurrido un error.';
+        let timeShow: number = 4000;
 
-  //       Swal.fire({
-  //         icon: 'error',
-  //         title: _messageError,
-  //         showConfirmButton: false,
-  //         allowOutsideClick: false,
-  //         timer: timeShow, // El modal se cerrará después de 5 segundos
-  //         // didClose: () => this.onCloseModal()
-  //       });
-  //     }
-  //     finally {
-  //       this.sendPayment = false;
-  //     }
+        // if (this.dni?.value === "90000000") {
+        //   _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
+        //   timeShow = 6000;
+        // }
 
-  //   } else {
-  //     console.log('Formulario no válido');
-  //   }
+        Swal.fire({
+          icon: 'error',
+          title: _messageError +'\n'+ err.message,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: timeShow,
+          // didClose: () => resolve()
+        });
+        reject(err);
+      });
+    });
+    // try {
 
-  // }
+    //   let macAddress = '';
 
+    //   try {
+    //     macAddress  = await this.getMacAddress();
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
 
+    //   const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
 
+    //   console.log('responseJSON', responseJSON);
 
-  public async anulateTransaction() {
-    //
-    try {
+    //   return responseJSON;
 
-      console.log('in anulateTransaction');
-      let macAddress = '';
+    // } catch (error) {
+    //   console.error(error)
 
-      try {
-        macAddress  = await this.getMacAddress();
-      } catch (error) {
-        console.error(error)
-      }
-
-      const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
-
-      console.log('responseJSON', responseJSON);
-
-      return responseJSON;
-
-    } catch (error) {
-      console.error(error)
-
-      return `error: ${error}`;
-    }
+    //   return `error: ${error}`;
+    // }
   }
 
 

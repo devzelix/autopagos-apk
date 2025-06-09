@@ -44,8 +44,8 @@ export class AdministrativeModuleComponent implements OnInit {
         switch (option) {
           case 1:
             await this.pre_closeBox(macAddres)
-            .then((_data) => {
-              this.ShowDiologSuccess(_data);
+            .then((res) => {
+              this.ShowDiologSuccess(res);
             })
             .catch((err) => {
               this.ShowDiologError(err);
@@ -53,22 +53,22 @@ export class AdministrativeModuleComponent implements OnInit {
             break;
           case 2:
             await this.closeBox(macAddres)
-            .then((_data) => {
-              this.ShowDiologSuccess(_data);
+            .then((res) => {
+              this.ShowDiologSuccess(res);
             })
             .catch((err) => {
               this.ShowDiologError(err);
             });
             break;
-          case 3:
-            await this.showAnulateTransactionModal(macAddres)
-            .then((_data) => {
-              this.ShowDiologSuccess(_data);
-            })
-            .catch((err) => {
-              this.ShowDiologError(err);
-            });
-            break;
+          // case 3:
+          //   await this.anulateTransaction(macAddres)
+          //   .then((res) => {
+          //     this.ShowDiologSuccess(res);
+          //   })
+          //   .catch((err) => {
+          //     this.ShowDiologError(err);
+          //   });
+          //   break;
           default:
             // Opcional: Manejar valores inesperados
             console.warn(`Opción ${option} no reconocida`);
@@ -79,12 +79,7 @@ export class AdministrativeModuleComponent implements OnInit {
 
   }
 
-  public closeBox1() {
-    // Emitir evento para cerrar la caja de administración
-    alert("Acción aministrativa ejecutada");
-  }
-
-    /**
+  /**
    * To pre-close box
    * @returns
    */
@@ -157,83 +152,30 @@ export class AdministrativeModuleComponent implements OnInit {
    * To show modal to anulate transaction
    * @returns ci, numSeq
    */
-  public async showAnulateTransactionModal(macAddres: string): Promise<void | string> {
+  public async showAnulateTransactionModal(): Promise<void | string> {
      this.showAnulationModal.emit(true);
-    // try {
-
-    //   Swal.fire({
-    //     title: "Submit your Github username",
-    //     input: "text",
-    //     inputAttributes: {
-    //       autocapitalize: "off"
-    //     },
-    //     showCancelButton: true,
-    //     confirmButtonText: "Look up",
-    //     showLoaderOnConfirm: true,
-    //     preConfirm: async (login) => {
-    //       try {
-    //         const githubUrl = `
-    //           https://api.github.com/users/${login}
-    //         `;
-    //         const response = await fetch(githubUrl);
-    //         if (!response.ok) {
-    //           return Swal.showValidationMessage(`
-    //             ${JSON.stringify(await response.json())}
-    //           `);
-    //         }
-    //         return response.json();
-    //       } catch (error) {
-    //         Swal.showValidationMessage(`
-    //           Request failed: ${error}
-    //         `);
-    //       }
-    //     },
-    //     allowOutsideClick: () => !Swal.isLoading()
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       Swal.fire({
-    //         title: `${result.value.login}'s avatar`,
-    //         imageUrl: result.value.avatar_url
-    //       });
-    //     }
-    //   });
-
-    // } catch (error) {
-    //   console.error(error)
-
-    //   return `error: ${error}`;
-    // }
   }
 
   /**
    * To anulate transaction
    * @returns
    */
-  public async anulateTransaction(macAddress: string) {
-    //
-    try {
+  // public async anulateTransaction(macAddress: string) {
+  //   //
+  //   try {
 
-      // console.log('in anulateTransaction');
-      // let macAddress = '';
+  //     const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
 
-      // try {
-      //   macAddress  = await this.getMacAddress();
-      // } catch (error) {
-      //   console.error(error)
-      // }
+  //     console.log('responseJSON', responseJSON);
 
-      const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
+  //     return responseJSON;
 
-      console.log('responseJSON', responseJSON);
+  //   } catch (error) {
+  //     console.error(error)
 
-      return responseJSON;
-
-    } catch (error) {
-      console.error(error)
-
-      return `error: ${error}`;
-    }
-  }
+  //     return `error: ${error}`;
+  //   }
+  // }
 
 
   /**

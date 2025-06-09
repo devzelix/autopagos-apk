@@ -142,6 +142,7 @@
                     <app-btn-transaction
                     [disabled]="formPayment.invalid || sendPayment || !!formErrorMessage?.errorMsg"
                     [btnType]="'submit'"
+                    [title]="'Anular'"
                     (onBtnClick)="anulateTransaction()"
                     >
                     </app-btn-transaction>
