@@ -3,6 +3,8 @@ import axios, { AxiosResponse } from 'axios';
 import { environment } from 'src/environments/environment';
 import { LogService } from '../log.service';
 import { rejects } from 'assert';
+import Swal from 'sweetalert2';
+import { IPromptLog } from 'src/app/interfaces/log.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -50,20 +52,81 @@ export class VposuniversalRequestService {
               "register": _register
           }
         })
+        // .then(res => {
+        //   console.log('RES', res)
+        //   if (res.data?.status !== 200 ) {
+        //     Swal.fire({
+        //       icon: 'error',
+        //       title: res.data.message,
+        //       showConfirmButton: false,
+        //       allowOutsideClick: false,
+        //       timer: 4000,
+        //     });
+
+        //      this._logService.storagelog({
+        //         http_method: 'POST',
+        //         status: res.data?.datavpos.status ?? res.status,
+        //         subscriberNum: _subscriber,
+        //         mac_address: _register,
+        //         response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
+        //         response_message: res.data.datavpos.mensaje ?? 'response message undefined',
+        //         url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+        //         'is_success': true
+        //       })
+        //   } else {
+        //       this._logService.storagelog({
+        //         http_method: 'POST',
+        //         status: res.data?.datavpos.status ?? res.status,
+        //         subscriberNum: _subscriber,
+        //         mac_address: _register,
+        //         response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
+        //         response_message: res.data.datavpos.mensaje ?? 'response message undefined',
+        //         url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
+        //         'is_success': true
+        //       })
+        //       resolve(res)
+        //   }
+
+
+        //   })
         .then(res => {
-          console.log('RES', res)
-          this._logService.storagelog({
-              http_method: 'POST',
-              status: res.data?.datavpos.status ?? res.status,
-              subscriberNum: _subscriber,
-              mac_address: _register,
-              response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
-              response_message: res.data.datavpos.mensaje ?? 'response message undefined',
-              url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-              'is_success': true
-            })
-            resolve(res)
-          })
+          console.log('RES', res);
+
+          const isSuccess = res.data?.status === 200;
+
+          // Extraer datos comunes para evitar repetición
+         const logData: IPromptLog = {
+          http_method: 'POST',
+          status: res.data?.datavpos?.status ?? res.status,
+          subscriberNum: _subscriber,
+          mac_address: _register,
+          response_code: res.data?.datavpos?.codRespuesta ?? 'response code undefined',
+          response_message: res.data?.datavpos?.mensaje ?? 'response message undefined',
+          url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+          'is_success': isSuccess
+        };
+
+          // Siempre hacer log
+          this._logService.storagelog(logData);
+
+          if (!isSuccess) {
+            // Mostrar error solo si no es exitoso
+            Swal.fire({
+              icon: 'error',
+              title: res.data?.message || 'Error en la operación',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000,
+            });
+
+            // Opcional: rechazar la promesa en caso de error
+            // reject(new Error(res.data?.message || 'Operation failed'));
+            return; // O usar return para no continuar
+          }
+
+          // Resolver solo si es exitoso
+          resolve(res);
+        })
           .catch(err => {
             console.log('ERROR', err);
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";

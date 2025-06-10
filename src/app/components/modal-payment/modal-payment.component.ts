@@ -157,6 +157,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             responseCode
           );
 
+          console.log(responseCode);
+
+
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
             this.generarPDF().catch(console.error); // Generate PDF async
@@ -317,11 +320,12 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       if (this.formPayment.get(this.activeInputFocus)?.disabled) return;
 
-      if (this.activeInputFocus === 'dni' && typeof inputValue === 'string' && inputValue.length < 8) {
+      if (this.activeInputFocus === 'dni'	|| this.activeInputFocus === 'reference' && typeof inputValue === 'string' && inputValue.length < 8) {
 
         this.formPayment.get(this.activeInputFocus)?.setValue(inputValue += value);
 
       }
+
       else if (this.activeInputFocus === 'mount' && (!String(inputValue ?? '') || String(inputValue)?.replace(/\,/g, '').length < 10) ) {
 
         this.setCurrencyMountFormat(value)
