@@ -286,17 +286,17 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public async anulateTransaction(): Promise<any> {
     this.inProcess = true; // Indicate anulation is being processed
 
-    if (this.abonado?.value !== this.dni?.value) {
+    // if (this.abonado?.value !== this.dni?.value) {
 
-      this.inProcess = false;
+    //   this.inProcess = false;
 
-      return Swal.fire({
-        icon: 'warning',
-        title: 'El abonado no coincide con la cédula ingresada.',
-        confirmButtonText: 'Aceptar',
-        allowOutsideClick: false,
-      });
-    }
+    //   return Swal.fire({
+    //     icon: 'warning',
+    //     title: 'El abonado no coincide con la cédula ingresada.',
+    //     confirmButtonText: 'Aceptar',
+    //     allowOutsideClick: false,
+    //   });
+    // }
 
     return new Promise(async (resolve, reject) => {
 
@@ -381,27 +381,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this.inProcess = false; // Reset processing state
       });
     });
-    // try {
-
-    //   let macAddress = '';
-
-    //   try {
-    //     macAddress  = await this.getMacAddress();
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-
-    //   const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
-
-    //   console.log('responseJSON', responseJSON);
-
-    //   return responseJSON;
-
-    // } catch (error) {
-    //   console.error(error)
-
-    //   return `error: ${error}`;
-    // }
   }
 
 
