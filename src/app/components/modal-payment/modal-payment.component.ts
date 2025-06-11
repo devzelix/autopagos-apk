@@ -163,8 +163,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
 
           // Handle missing response data
-          if (!this._dataApi || !this._dataApi?.data.datavpos) {
-
+          if (!_dataApi || !_dataApi?.data.datavpos) {
             Swal.fire({
               icon: 'error',
               title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -175,7 +174,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           }
 
           const responseCode = _dataApi.data.datavpos.codRespuesta;
-          const message = this._errorsvpos.getErrorMessage(responseCode);
+          const message = responseCode === '05' ? this._errorsvpos.getErrorMessage(responseCode) + ' \n' + _dataApi.data.datavpos.mensajeRespuesta : this._errorsvpos.getErrorMessage(responseCode);
 
           console.log(
             _dataApi.data.datavpos.mensajeRespuesta,
@@ -183,8 +182,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             responseCode
           );
 
-          console.log(responseCode);
-
+          this._dataApi = _dataApi;
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
@@ -219,8 +217,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         })
         .catch((error) => {
           // 4. Handle request errors
-
-           let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+          let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
           let timeShow: number = 4000;
 
           if (this.dni?.value === "90000000") {
@@ -359,8 +356,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     //   return `error: ${error}`;
     // }
   }
-
-
 
 
 
