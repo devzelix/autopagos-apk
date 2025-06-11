@@ -128,7 +128,7 @@ export class VposuniversalRequestService {
           resolve(res);
         })
           .catch(err => {
-            console.log('ERROR', err);
+            console.error('ERROR', err);
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({
               http_method: 'POST',
