@@ -140,7 +140,7 @@
                       </small>
                     </div>
                     <app-btn-transaction
-                    [disabled]="formPayment.invalid || sendPayment || !!formErrorMessage?.errorMsg"
+                    [disabled]="formPayment.invalid || sendPayment || inProcess || !!formErrorMessage?.errorMsg"
                     [btnType]="'submit'"
                     [title]="'Anular'"
                     (onBtnClick)="anulateTransaction()"

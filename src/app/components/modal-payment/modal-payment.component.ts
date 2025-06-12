@@ -32,6 +32,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public typeDNI: ITypeDNI = 'V';
   public _dataApi: any;
   public sendPayment: boolean = false;
+  public inProcess: boolean = false;
   public isDniDisabled: boolean = true;
   public isMountDisabled: boolean = true;
   private mountFormat: string = '0.00';
@@ -117,6 +118,23 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     return this.mount?.disabled;
   }
 
+   alertFindDniMercantil(title: string, message: string) {
+      Swal.fire({
+        title,
+        html: message,
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    }
+
+     closeAlert() {
+        setTimeout(() => {
+          Swal.close();
+        }, 2500);
+      }
+
   /**
    * On submit payment form
    * @param event
@@ -132,13 +150,21 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         return;
       }
 
+      this.alertFindDniMercantil(
+          'Realizando operación',
+          'Por favor espere...'
+        );
+
       // 1. Process card request
       this.requestCard()
         .then((_dataApi) => {
           console.warn('Card request response:', _dataApi);
 
+
+
           // Handle missing response data
           if (!this._dataApi || !this._dataApi?.data.datavpos) {
+
             Swal.fire({
               icon: 'error',
               title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -177,6 +203,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           else {
             // Special case for code '51'
             if (responseCode === '51') {
+
               this.generarPDF().catch(console.error);
             }
 
@@ -192,6 +219,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         })
         .catch((error) => {
           // 4. Handle request errors
+
            let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
           let timeShow: number = 4000;
 
@@ -210,6 +238,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           });
         })
         .finally(() => {
+          this.closeAlert();
           this.sendPayment = !this.formPayment.valid; // Always reset payment flag
         });
     });
@@ -222,8 +251,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @returns Promise<void>
    */
   public async anulateTransaction(): Promise<any> {
+    this.inProcess = true; // Indicate anulation is being processed
 
     return new Promise(async (resolve, reject) => {
+
+      this.alertFindDniMercantil(
+          'Realizando operación',
+          'Por favor espere...'
+        );
 
       this.getMacAddress().then(async (macAddress: string) => {
         await this._adminAction.anulationPayment(this.dni?.value, this.reference?.value, macAddress)
@@ -235,19 +270,32 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
+
             // this.generarPDF().catch(console.error); // Generate PDF async
+
+
 
             Swal.fire({
               icon: 'success',
               title: 'Acción realizada exitosamente\n'+message,
-              showConfirmButton: false,
+              timer: 4000,
               allowOutsideClick: false,
-              timer: 4000, // El modal se cerrará después de 5 segundos
+              showConfirmButton: false,
+              didClose: () => {
+                 Swal.fire({
+              icon: 'warning',
+              title: 'DEBE REALIZAR LA MODIFICACIÓN CORRESPONDIENTE EN SAE PLUS PARA  ANULAR EL PAGO DEL SISTEMA ',
+              confirmButtonText: 'Confirmar',
+              confirmButtonColor: '#d33',
+              showConfirmButton: true,
+              allowOutsideClick: false,
+              didClose: () => this.closeEmmit.emit()
+            });
+              }
             });
           }
           // 3. Handle other cases
           else {
-
             Swal.fire({
               icon: 'warning',
               title: 'Solicitud no procesada.\n'+message,
@@ -259,10 +307,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           }
           resolve(res);
         }).catch((err: Error) => {
+          this.closeAlert();
+
           console.error(err)
           reject(err);
         });
       }).catch((err: Error) => {
+        this.closeAlert();
         console.error(err)
         // 4. Handle request errors
         let _messageError: string = 'Ha ocurrido un error.';
@@ -282,6 +333,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           // didClose: () => resolve()
         });
         reject(err);
+      }).finally(() => {
+          this.inProcess = false; // Reset processing state
       });
     });
     // try {
@@ -306,6 +359,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     //   return `error: ${error}`;
     // }
   }
+
+
 
 
 

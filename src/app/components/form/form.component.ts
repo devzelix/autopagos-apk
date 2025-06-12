@@ -2593,6 +2593,8 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.showFormView = false;
       this.activeTransactionInputFocus = 'dni';
       this.isActiveLoginInput = false;
+      this.showaBtnAdmin = true;
+
 
     } catch (error) {
       console.error('Error resetting all forms:', error);
@@ -3618,6 +3620,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       },
     });
   }
+
   alertInfo(title: string, message: string) {
     Swal.fire({
       title,
@@ -4786,6 +4789,8 @@ export class FormComponent implements AfterViewInit, OnInit {
 
         if (this.userSelectList.length > 1) {
           this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
+          console.log(this.navActive);
+
           // this.showaBtnAdmin = true;
           this.showadmin = false;
         }
@@ -4944,13 +4949,11 @@ export class FormComponent implements AfterViewInit, OnInit {
   public goToPayment = async () => {
     try {
       // For Show Administrative panel
-      this.showAdminist(this.dni?.value)
 
-      await this.searchServicesv2(this.dni, false, true) //* => to login
+      await this.searchServicesv2(this.dni, false, true).then(() => {this.showAdminist(this.dni?.value)}) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
-
 
 
     } catch (error) {
