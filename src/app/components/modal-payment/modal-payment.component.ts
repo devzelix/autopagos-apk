@@ -164,7 +164,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           // Handle missing response data
           if (!_dataApi || !_dataApi?.data.datavpos) {
-          if (!_dataApi || !_dataApi?.data.datavpos) {
             Swal.fire({
               icon: 'error',
               title: 'Ha ocurrido un error, intente nuevamente más tarde',
