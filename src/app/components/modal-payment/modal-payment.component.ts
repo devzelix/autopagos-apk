@@ -164,6 +164,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           // Handle missing response data
           if (!_dataApi || !_dataApi?.data.datavpos) {
+          if (!_dataApi || !_dataApi?.data.datavpos) {
             Swal.fire({
               icon: 'error',
               title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -333,27 +334,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this.inProcess = false; // Reset processing state
       });
     });
-    // try {
-
-    //   let macAddress = '';
-
-    //   try {
-    //     macAddress  = await this.getMacAddress();
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-
-    //   const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
-
-    //   console.log('responseJSON', responseJSON);
-
-    //   return responseJSON;
-
-    // } catch (error) {
-    //   console.error(error)
-
-    //   return `error: ${error}`;
-    // }
   }
 
 
