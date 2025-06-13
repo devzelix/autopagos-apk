@@ -101,7 +101,7 @@ export class VposuniversalRequestService {
           subscriberNum: _subscriber,
           mac_address: _register,
           response_code: res.data?.datavpos?.codRespuesta ?? 'response code undefined',
-          response_message: res.data?.datavpos?.mensaje ?? 'response message undefined',
+          response_message: res.data?.datavpos?.mensajeRespuesta ?? 'response message undefined',
           url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
           'is_success': isSuccess
         };
@@ -128,7 +128,7 @@ export class VposuniversalRequestService {
           resolve(res);
         })
           .catch(err => {
-            console.log('ERROR', err);
+            console.error('ERROR', err);
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({
               http_method: 'POST',

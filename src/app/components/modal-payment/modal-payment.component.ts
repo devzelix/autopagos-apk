@@ -199,8 +199,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
 
           // Handle missing response data
-          if (!this._dataApi || !this._dataApi?.data.datavpos) {
-
+          if (!_dataApi || !_dataApi?.data.datavpos) {
             Swal.fire({
               icon: 'error',
               title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -210,17 +209,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             })
           }
 
-          const responseCode = _dataApi.data.datavpos.codRespuesta;
-          const message = this._errorsvpos.getErrorMessage(responseCode);
+          this._dataApi = _dataApi.data.datavpos;
+
+          const responseCode = this._dataApi.codRespuesta;
+          const message = responseCode === '05' ? this._errorsvpos.getErrorMessage(responseCode) + ' \n' + this._dataApi.mensajeRespuesta : this._errorsvpos.getErrorMessage(responseCode);
 
           console.log(
-            _dataApi.data.datavpos.mensajeRespuesta,
+            this._dataApi.mensajeRespuesta,
             message,
             responseCode
           );
-
-          console.log(responseCode);
-
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
@@ -255,8 +253,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         })
         .catch((error) => {
           // 4. Handle request errors
-
-           let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+          let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
           let timeShow: number = 4000;
 
           if (this.dni?.value === "90000000") {
@@ -312,16 +309,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         await this._adminAction.anulationPayment(this.dni?.value, this.reference?.value, macAddress)
         .then((res: any) => {
           console.log('response', res);
-          const responseCode = res.data.datavpos.codRespuesta;
-          const message = this._errorsvpos.getErrorMessage(responseCode);
 
+          this._dataApi = res.data.datavpos;
+
+          const responseCode = this._dataApi.codRespuesta;
+          const message = this._errorsvpos.getErrorMessage(responseCode);
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
-
-            // this.generarPDF().catch(console.error); // Generate PDF async
-
-
+            this.generarPDF('Anulación de pago').catch(console.error); // Generate PDF async
 
             Swal.fire({
               icon: 'success',
@@ -385,30 +381,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this.inProcess = false; // Reset processing state
       });
     });
-    // try {
-
-    //   let macAddress = '';
-
-    //   try {
-    //     macAddress  = await this.getMacAddress();
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-
-    //   const responseJSON = await this._adminAction.anulationPayment(this.ci_transaction, this.numSeq_transaction, macAddress);
-
-    //   console.log('responseJSON', responseJSON);
-
-    //   return responseJSON;
-
-    // } catch (error) {
-    //   console.error(error)
-
-    //   return `error: ${error}`;
-    // }
   }
-
-
 
 
 
@@ -493,6 +466,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       .then(macAddress => {
           console.log('macAddress', macAddress);
 
+          // Obtenemos el formato del monto
           this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
 
           // Lanzamos cardRequest CON la MAC obtenida
@@ -587,14 +561,21 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * Function to generate a PDF with the payment data
    * @param data data to be included in the PDF
    */
-  public async generarPDF() {
+  public async generarPDF(mensajeDefault: string = 'Pago') {
 
     let _dataApiClient = []; // Data to tiket print
-    let _desciptionText: string =
-      Number(this.mountFormat) === this.amountContrato ? 'Pago de Mensualidad' :
-      Number(this.mountFormat) > this.amountContrato ? 'Adelanto de Mensualidad' :
-      Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' :
-      'Pago';
+    let _desciptionText: string = '';
+    let amount: string = '';
+
+    if(mensajeDefault != 'Pago'){
+      _desciptionText = mensajeDefault;
+    }else{
+      _desciptionText = Number(this.mountFormat) === this.amountContrato ? 'Pago de Mensualidad' : Number(this.mountFormat) > this.amountContrato ? 'Adelanto de Mensualidad' : Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' : mensajeDefault;
+    }
+
+    if(this._dataApi.montoTransaccion){
+      amount = this.formatAmount(this._dataApi.montoTransaccion);
+    }
 
     console.log(this.amountContrato, this.mount,_desciptionText);
 
@@ -603,27 +584,25 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       {
         'date': this.getTime('date'),
         'hours': this.getTime('time'),
-        'refundNumber': this._dataApi.data.datavpos.numeroReferencia,
-        'numSeq': this._dataApi.data.datavpos.numSeq,
-        'ciClient': this.dniValue || 'unknown',
+        'refundNumber': this._dataApi.numeroReferencia,
+        'numSeq': this._dataApi.numSeq,
         'abonumber': this.nroAbonado,
         'describe': _desciptionText,
-        'amount': String(this.mount?.value),
-        'methodPayment': this._dataApi.data.datavpos.tipoProducto,
-        'totalAmount': String(this.mount?.value),
-        'saldo': String(this.mount?.value),
-        'status': this._dataApi.data.datavpos.mensajeRespuesta,
+        'amount': amount,
+        'methodPayment': this._dataApi.tipoProducto,
+        'totalAmount': amount,
+        'status': this._dataApi.mensajeRespuesta,
       }
     ];
 
-    // console.log('My data: '+this._dataApi.data.datavpos.nombreVoucher);
-    // console.log('Ref number: '+this._dataApi.data.datavpos.numeroReferencia);
-    // console.log('Answer Message: '+this._dataApi.data.datavpos.mensajeRespuesta);
-    // console.log('Product type: '+this._dataApi.data.datavpos.tipoProducto);
-    // console.log('Number autoritation: '+this._dataApi.data.datavpos.numeroAutorizacion);
-    // // console.log('Number card: '+this._dataApi.data.datavpos.numeroTarjeta);
-    // console.log('Amount: '+this._dataApi.data.datavpos.montoTransaccion);
-    // console.log('CI: '+this._dataApi.data.datavpos.cedula);
+    // console.log('My data: '+this._dataApi.nombreVoucher);
+    // console.log('Ref number: '+this._dataApi.numeroReferencia);
+    // console.log('Answer Message: '+this._dataApi.mensajeRespuesta);
+    // console.log('Product type: '+this._dataApi.tipoProducto);
+    // console.log('Number autoritation: '+this._dataApi.numeroAutorizacion);
+    // // console.log('Number card: '+this._dataApi.numeroTarjeta);
+    // console.log('Amount: '+this._dataApi.montoTransaccion);
+    // console.log('CI: '+this._dataApi.cedula);
 
     // console.log(_dataApiClient);
 
@@ -633,16 +612,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       _dataApiClient = [{
         'date': this.getTime('date'),
         'hours': this.getTime('time'),
-        'refundNumber': this._dataApi.data.datavpos.numeroReferencia,
-        'numSeq': this._dataApi.data.datavpos.numSeq,
-        'ciClient': this._dataApi.data.datavpos.cedula,
+        'refundNumber': this._dataApi.numeroReferencia,
+        'numSeq': this._dataApi.numSeq,
+        'ciClient': this._dataApi.cedula,
         'abonumber': this.nroContrato,
         'describe': 'Pago Fallido',
         'amount': '00.00',
-        'methodPayment': this._dataApi.data.datavpos.tipoProducto,
+        'methodPayment': this._dataApi.tipoProducto,
         'totalAmount': '00.00Bs.',
         'saldo': '0,00Bs.',
-        'status': this._dataApi.data.datavpos.mensajeRespuesta,
+        'status': this._dataApi.mensajeRespuesta,
       }];
     }
 
@@ -787,6 +766,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  public formatAmount(amount: number | string): string {
+    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return (num / 100).toFixed(2);
   }
 
 }
