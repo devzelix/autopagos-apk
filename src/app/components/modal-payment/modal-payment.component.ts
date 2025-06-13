@@ -38,6 +38,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   private mountFormat: string = '0.00';
   public ci_transaction: string = '';
   public numSeq_transaction: string = '';
+  public abonadoInputActive: boolean = false
 
   public formErrorMessage?: {inputName: ITransactionInputs, errorMsg: string}
 
@@ -48,23 +49,23 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
     private _adminAction: AdministrativeRequestService,
   ) {
-    console.log('INPUTTYPE', this.inputType);
+  }
 
-      this.formPayment = this.fb.group({
+  ngOnInit(): void {
+    this.formPayment = this.fb.group({
       dni: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       mount: [{value:''}, [Validators.required]],
       reference: [
         '000',
-        [Validators.required, Validators.minLength(3), Validators.maxLength(15), Validators.pattern('^[0-9]*$')]
+        [Validators.required, Validators.minLength(3), Validators.maxLength(6), Validators.pattern('^[0-9]*$')]
       ],
+      abonado: [!this.abonadoInputActive ? '1234567' : '', [Validators.required, Validators.minLength(6), Validators.maxLength(11)]],
       accountType: ['Corriente', Validators.required]
     });
-  }
 
-  ngOnInit(): void {
     if (this.inputType === 'reference') {
       this.dni?.setValue('');
-      this.reference?.setValue('')
+      this.reference?.setValue('');
     } else {
       this.dni?.setValue(this.dniValue)
     }
@@ -108,6 +109,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     return this.formPayment.get('reference');
   }
 
+  get abonado() {
+    return this.formPayment.get('abonado');
+  }
+
   get accountType() {
     return this.formPayment.get('accountType');
   }
@@ -118,22 +123,53 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     return this.mount?.disabled;
   }
 
-   alertFindDniMercantil(title: string, message: string) {
-      Swal.fire({
-        title,
-        html: message,
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-    }
+  alertFindDniMercantil(title: string, message: string) {
+    Swal.fire({
+      title,
+      html: message,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
-     closeAlert() {
-        setTimeout(() => {
-          Swal.close();
-        }, 2500);
+  closeAlert() {
+    setTimeout(() => {
+      Swal.close();
+    }, 2500);
+  }
+
+  public confirmAnulation(): void {
+    Swal.fire({
+      icon: 'question',
+      title: '¿La cédula ingresada es la misma que la del abonado?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, anular',
+      cancelButtonText: 'No, volver',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Usuario confirmó - ejecutar anulación
+        this.abonado?.setValue(this.dni?.value);
+
+        this.anulateTransaction()
+          .then((response) => {
+            console.log('Anulación completada:', response);
+          })
+          .catch((error) => {
+            console.error('Error en anulación:', error);
+          });
+      } else {
+        // Usuario canceló - cambiar boolean y cerrar
+        this.abonadoInputActive = true;
+        this.abonado?.setValue('')
+        // El Swal se cierra automáticamente
       }
+    });
+}
 
   /**
    * On submit payment form
@@ -252,6 +288,18 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    */
   public async anulateTransaction(): Promise<any> {
     this.inProcess = true; // Indicate anulation is being processed
+
+    if (this.abonado?.value !== this.dni?.value) {
+
+      this.inProcess = false;
+
+      return Swal.fire({
+        icon: 'warning',
+        title: 'El abonado no coincide con la cédula ingresada.',
+        confirmButtonText: 'Aceptar',
+        allowOutsideClick: false,
+      });
+    }
 
     return new Promise(async (resolve, reject) => {
 
@@ -375,7 +423,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       if (this.formPayment.get(this.activeInputFocus)?.disabled) return;
 
-      if (this.activeInputFocus === 'dni'	|| this.activeInputFocus === 'reference' && typeof inputValue === 'string' && inputValue.length < 8) {
+      if (this.activeInputFocus === 'dni'	|| this.activeInputFocus === 'reference' || this.activeInputFocus === 'abonado' && typeof inputValue === 'string' && inputValue.length < 8) {
 
         this.formPayment.get(this.activeInputFocus)?.setValue(inputValue += value);
 
@@ -675,7 +723,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public onInputValueChange = (event:Event, inputName: ITransactionInputs) => {
     const regex = /^\d+$/;
     let value = (event.target as HTMLInputElement).value;
-    const isMountActive: boolean = (inputName === 'mount' || inputName === 'reference')
+    const isMountActive: boolean = (inputName === 'mount' || inputName === 'reference' || inputName === 'abonado')
 
     if (isMountActive) value = value.replace(/\,/g, '').replace(/\./g, '')
 
