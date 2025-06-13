@@ -105,7 +105,7 @@
 
                   <div *ngSwitchCase="'reference'">
 
-                  <div *ngIf="abonadoInputActive" (click)="setInputFocus('abonado')">
+                  <!-- <div *ngIf="abonadoInputActive" (click)="setInputFocus('abonado')">
                      <label for="abonado">Cédula del abonado</label>
 
                     <span class="input-dni-container flex items-center w-full">
@@ -141,7 +141,7 @@
                           {{formErrorMessage?.errorMsg}}
                       </small>
                     </div>
-                  </div>
+                  </div> -->
 
                   <!-- Caso: Referencia -->
                   <div (click)="setInputFocus('reference')">
@@ -183,7 +183,7 @@
                     [disabled]="formPayment.invalid || sendPayment || inProcess || !!formErrorMessage?.errorMsg"
                     [btnType]="'submit'"
                     [title]="'Anular'"
-                    (onBtnClick)="!abonadoInputActive ? confirmAnulation() : anulateTransaction()"
+                    (onBtnClick)="anulateTransaction()"
                     >
                     </app-btn-transaction>
                   </div>

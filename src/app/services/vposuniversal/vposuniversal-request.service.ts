@@ -5,6 +5,7 @@ import { LogService } from '../log.service';
 import { rejects } from 'assert';
 import Swal from 'sweetalert2';
 import { IPromptLog } from 'src/app/interfaces/log.interface';
+import { VposerrorsService } from './vposerrors.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ import { IPromptLog } from 'src/app/interfaces/log.interface';
 export class VposuniversalRequestService {
 
   constructor(
-    private _logService: LogService
+    private _logService: LogService,
+    private errorService: VposerrorsService
   ) {
   }
 
@@ -52,59 +54,37 @@ export class VposuniversalRequestService {
               "register": _register
           }
         })
-        // .then(res => {
-        //   console.log('RES', res)
-        //   if (res.data?.status !== 200 ) {
-        //     Swal.fire({
-        //       icon: 'error',
-        //       title: res.data.message,
-        //       showConfirmButton: false,
-        //       allowOutsideClick: false,
-        //       timer: 4000,
-        //     });
-
-        //      this._logService.storagelog({
-        //         http_method: 'POST',
-        //         status: res.data?.datavpos.status ?? res.status,
-        //         subscriberNum: _subscriber,
-        //         mac_address: _register,
-        //         response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
-        //         response_message: res.data.datavpos.mensaje ?? 'response message undefined',
-        //         url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-        //         'is_success': true
-        //       })
-        //   } else {
-        //       this._logService.storagelog({
-        //         http_method: 'POST',
-        //         status: res.data?.datavpos.status ?? res.status,
-        //         subscriberNum: _subscriber,
-        //         mac_address: _register,
-        //         response_code: res.data.datavpos.codRespuesta ?? 'response code undefined',
-        //         response_message: res.data.datavpos.mensaje ?? 'response message undefined',
-        //         url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-        //         'is_success': true
-        //       })
-        //       resolve(res)
-        //   }
-
-
-        //   })
         .then(res => {
           console.log('RES', res);
 
           const isSuccess = res.data?.status === 200;
 
+          console.log('MENSAJE DE RESPONSE', res.data?.datavpos?.mensajeRespuesta);
+
+          // Obtener el response_code
+          const responseCode = res.data?.datavpos?.codRespuesta ?? 'undefined';
+
+          // Usar el servicio de errores para obtener el mensaje correcto
+          const errorMessage = responseCode !== 'undefined'
+          ? this.errorService.getErrorMessage(responseCode)
+          : 'response message undefined';
+
+          console.log('RESPONSE CODE', responseCode, errorMessage);
+
+
           // Extraer datos comunes para evitar repetición
-         const logData: IPromptLog = {
-          http_method: 'POST',
-          status: res.data?.datavpos?.status ?? res.status,
-          subscriberNum: _subscriber,
-          mac_address: _register,
-          response_code: res.data?.datavpos?.codRespuesta ?? 'response code undefined',
-          response_message: res.data?.datavpos?.mensajeRespuesta ?? 'response message undefined',
-          url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
-          'is_success': isSuccess
-        };
+          const logData: IPromptLog = {
+            http_method: 'POST',
+            status: res.data?.datavpos?.status ?? res.status,
+            subscriberNum: _subscriber,
+            mac_address: _register,
+            response_code: responseCode,
+            response_message: errorMessage,
+            url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+            'is_success': isSuccess
+          };
+
+
 
           // Siempre hacer log
           this._logService.storagelog(logData);
