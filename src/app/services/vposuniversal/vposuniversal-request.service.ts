@@ -35,6 +35,12 @@ export class VposuniversalRequestService {
   cardRequest(_ci: string, _amount: string, _subscriber: string, _contract: string, _register: string){ //Pay Card Simple
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+      console.log('ci', _ci)
+      console.log('amount', _amount)
+      console.log('subscriber', _subscriber)
+      console.log('contract', _contract)
+      console.log('register', _register)
+
       // try {
         axios({
           method: 'post',

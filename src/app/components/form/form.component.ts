@@ -4755,12 +4755,12 @@ export class FormComponent implements AfterViewInit, OnInit {
   /**
    * (Function test) to set the form dni value and go to the next page automatically
    */
-  public testNextPage = () => {
-    if(!environment.production) {
-      this.firstFormFibex.get('dni')?.setValue('1000000')
-    }
+  // public testNextPage = () => {
+    // if(!environment.production) {
+    //   this.firstFormFibex.get('dni')?.setValue('1000000')
+    // }
     // this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
-  }
+  // }
 
   /**
    * Function to go steb back

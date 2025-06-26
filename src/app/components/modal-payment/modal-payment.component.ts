@@ -469,6 +469,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           // Obtenemos el formato del monto
           this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
 
+          console.log(this.mountFormat, 'MOUNT');
+
           // Lanzamos cardRequest CON la MAC obtenida
           return this._ApiVPOS.cardRequest(
               this.dni?.value,
@@ -705,6 +707,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     const isMountActive: boolean = (inputName === 'mount' || inputName === 'reference' || inputName === 'abonado')
 
     if (isMountActive) value = value.replace(/\,/g, '').replace(/\./g, '')
+
+    if (inputName === 'mount') {
+      alert(this.amountContrato)
+    }
 
     if (!regex.test(value)) {
       this[inputName]?.setValue(this[inputName]?.value.slice(0, -1))
