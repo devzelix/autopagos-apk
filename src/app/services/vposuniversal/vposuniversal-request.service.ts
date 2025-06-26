@@ -95,6 +95,8 @@ export class VposuniversalRequestService {
           // Siempre hacer log
           this._logService.storagelog(logData);
 
+
+
           if (!isSuccess) {
             // Mostrar error solo si no es exitoso
             Swal.fire({
@@ -115,6 +117,14 @@ export class VposuniversalRequestService {
         })
           .catch(err => {
             console.error('ERROR', err);
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Hubo un error con el servidor. Comuníquese con el personal de FIBEX.',
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              timer: 4000,
+            });
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({
               http_method: 'POST',

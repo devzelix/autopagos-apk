@@ -472,7 +472,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           return cardData; // Resultado final
       })
       .catch(error => {
-          console.error('Error:', error);
+          console.error('SUPER ERRORRRORORORORO:', error);
           return error;
       });
 
