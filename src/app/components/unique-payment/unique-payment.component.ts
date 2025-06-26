@@ -38,8 +38,16 @@ export class UniquePaymentComponent implements OnInit {
     this.setTitleFn('Pago de mensualidad')
     this.lastMountBsValue = this.mountTotalMonthBs
     this.lastMountUSDValue = this.mountTotalMonthUSD;
-    console.log('this.lastmount Valueee', this.lastMountBsValue, this.lastMountUSDValue)
+    // console.log('this.lastmount Valueee', this.lastMountBsValue, this.lastMountUSDValue)
   }
+
+  // onDestroy() {
+  //   // Aquí puedes limpiar cualquier recurso o suscripción si es necesario
+  //   console.log('UniquePaymentComponent destroyed');
+  //   this.setTitleFn('');
+  //   // this.onEditAmountEvent.emit();
+  //   this.multiplePaymentComponent.onDestroy();
+  // }
 
   public morePayments(){
     if (this.viewMultiplePayments){

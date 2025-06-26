@@ -24,8 +24,14 @@ export class MultiplePaymentComponent implements AfterViewInit {
 
   /* ngOnInit(): void {
   } */
- ngAfterViewInit(): void {
- }
+  ngAfterViewInit(): void {
+  }
+
+  // onDestroy() {
+  //   console.log('MultiplePaymentComponent destroyed');
+  //   // this.totalBs.emit(String(this.mountTotalMonthBs));
+  //   // this.totalUSD.emit(String(this.mountTotalMonthUSD));
+  // }
 
   public setMonthPayment (numMonth:number) {
     let subscriptionBs = parseFloat( (parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2) );

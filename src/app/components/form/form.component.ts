@@ -69,6 +69,7 @@ import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
+import { UniquePaymentComponent } from '../unique-payment/unique-payment.component';
 
 export interface DialogData {
   animal: string;
@@ -107,6 +108,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   }
   @ViewChild('stepper') stepper: MatStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
+
+  @ViewChild('viewUnique') viewUniquePayments: UniquePaymentComponent;
 
   public PlantillaTempPago: any = JSON.parse(
     JSON.stringify(PlantillaConfirmPago)
