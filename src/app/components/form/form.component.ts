@@ -4779,6 +4779,7 @@ export class FormComponent implements AfterViewInit, OnInit {
       this.navActive = PAGES_NAVIGATION.LOGIN;
       this.showaBtnAdmin = true;
       this.showadmin = false;
+      this.setMainTitle('')
     }
 
     const HANDLE_NAV_FN: Partial<IHandlerNav> = {
