@@ -25,7 +25,7 @@ export class UniquePaymentComponent implements OnInit {
   public activePaymentMonth: number = 1;
   public viewMultiplePayments: boolean = true;
   public viewUniquePayments: boolean = false;
-  public morePayment: string = 'Adelanta tus pagos!!!';
+  public morePayment: string = 'Adelanta tus pagos';
   public classBtn: string = 'btn-more-payments';
 
   private lastMountBsValue: number = 0;

@@ -17,6 +17,10 @@
     padding: 0.8rem;
   }
 
+  .animation-class {
+    animation: moveUpDown 0.9s infinite ease-in-out;
+  }
+
   .btn-more-payments {
     width: 15rem;
     background: var(--primary-accent-color);

@@ -23,9 +23,9 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.5);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 1);
     border-color: var(--primary-accent-color);
-    background: #1200ff !important;
+    background: #0556ec !important;
   }
 
   &:disabled {
@@ -45,6 +45,32 @@
   @extend .btn-option;
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
+
+}
+
+.btn-test-active {
+  // @apply px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 ;
+
+  // background-color: #357cff;
+
+  @extend .btn-option;
+  background: #0556ec !important;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 1);
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+
+}
+
+.btn-admin-active {
+  // @apply px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 ;
+
+  // background-color: #357cff;
+
+  @extend .btn-option;
+  background: #0556ec !important;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 1);
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
 
 }
 

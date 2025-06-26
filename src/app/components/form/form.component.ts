@@ -4769,53 +4769,97 @@ export class FormComponent implements AfterViewInit, OnInit {
    * Function to go steb back
    */
   public goStepBack = () => {
-    /*// * Handler function whose index is the current position of the navigation */
+    // Definir títulos para cada paso
+    const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
+      [PAGES_NAVIGATION.LOGIN]: '',
+      [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
+      [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
+      [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+    };
+
+    // Función para actualizar el título basado en el paso
+    const updateTitleForStep = (step: PAGES_NAVIGATION) => {
+      const title = STEP_TITLES[step] || '';
+      this.setMainTitle(title);
+      // O si tienes una función titleFn específica:
+      // this.titleFn(title);
+    };
 
     const goToLoginFn = () => {
       this.firstFormFibex.get('dni')?.setValue('');
-      this.ResetForm()
+      this.ResetForm();
       this.listContratos = [];
-      this.userSelectList = []
+      this.userSelectList = [];
       this.LoadingLengthAbonado = false;
       this.showMainMenuPage2 = false;
       this.showDniForm = true;
       this.navActive = PAGES_NAVIGATION.LOGIN;
       this.showaBtnAdmin = true;
       this.showadmin = false;
-      this.setMainTitle('')
-    }
+
+      // Actualizar título para LOGIN
+      updateTitleForStep(PAGES_NAVIGATION.LOGIN);
+    };
 
     const HANDLE_NAV_FN: Partial<IHandlerNav> = {
-
-      [PAGES_NAVIGATION.USER_LIST_SELECT]: () => goToLoginFn(),
+      [PAGES_NAVIGATION.USER_LIST_SELECT]: () => {
+        goToLoginFn();
+      },
 
       [PAGES_NAVIGATION.PAYMENT_CARDS]: () => {
-
         if (this.userSelectList.length > 1) {
           this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
-          console.log(this.navActive);
-
-          // this.showaBtnAdmin = true;
           this.showadmin = false;
-        }
-        else {
-          goToLoginFn()
+
+          // Actualizar título para USER_LIST_SELECT
+          updateTitleForStep(PAGES_NAVIGATION.USER_LIST_SELECT);
+        } else {
+          goToLoginFn();
         }
       },
 
       [PAGES_NAVIGATION.PAYMENT_FORMS]: () => {
-        this.ResetFormCD()
-        this.ScrollUp()
-        this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
-      },
+        this.ResetFormCD();
+        this.ScrollUp();
+        this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
 
+        // Actualizar título para PAYMENT_CARDS
+        updateTitleForStep(PAGES_NAVIGATION.PAYMENT_CARDS);
+      }
+    };
+
+    const handleStepFn: (() => void) | undefined = HANDLE_NAV_FN[this.navActive];
+
+    if (handleStepFn !== undefined) {
+      handleStepFn();
     }
+};
 
-    const handleStepFn: (() => void) | undefined = HANDLE_NAV_FN[this.navActive]
+// Método adicional para navegar hacia adelante con títulos
+public goStepForward = (nextStep: PAGES_NAVIGATION) => {
+  const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
+    [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
+    [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
+    [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
+    [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+  };
 
-    if (handleStepFn !== undefined) handleStepFn();
+  this.navActive = nextStep;
+  const title = STEP_TITLES[nextStep] || '';
+  this.setMainTitle(title);
+};
 
-  }
+// Método helper para obtener el título del paso actual
+public getCurrentStepTitle = (): string => {
+  const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
+    [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
+    [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
+    [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
+    [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+  };
+
+  return STEP_TITLES[this.navActive] || '';
+};
 
   /**
    * Function to check for lastest payments
