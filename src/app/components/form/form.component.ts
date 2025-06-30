@@ -4998,6 +4998,8 @@ public getCurrentStepTitle = (): string => {
     try {
       // For Show Administrative panel
 
+      console.warn('GO TO PAYMENT CARDS', this.dni, this.nroContrato, this.userGreeting);
+
       await this.searchServicesv2(this.dni, false, true).then(() => {this.showAdminist(this.dni?.value)}) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
