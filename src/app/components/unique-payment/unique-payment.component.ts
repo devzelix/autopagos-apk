@@ -14,8 +14,8 @@ export class UniquePaymentComponent implements OnInit {
   @Input() saldoBs: string = '0.00';
   @Input() subscription: string = '0.00';
   @Input() monthPayCount: number = 1;
-  @Input() mountTotalMonthBs: number = 0;
-  @Input() mountTotalMonthUSD: number = 0;
+  @Input() mountTotalMonthBs: string = '0.00';
+  @Input() mountTotalMonthUSD: string = '0.00';
   @Input() setTitleFn: (newTitle:string) => void;
 
   @Output() totalBs = new EventEmitter<string>();
@@ -28,8 +28,8 @@ export class UniquePaymentComponent implements OnInit {
   public morePayment: string = 'Adelanta tus pagos';
   public classBtn: string = 'btn-more-payments';
 
-  private lastMountBsValue: number = 0;
-  private lastMountUSDValue: number = 0;
+  private lastMountBsValue: string = '0.00';
+  private lastMountUSDValue: string = '0.00';
 
   constructor() {}
 
@@ -70,20 +70,20 @@ export class UniquePaymentComponent implements OnInit {
       this.morePayment = 'Adelanta tus pagos'; // To change text from button click
       this.classBtn = 'btn-more-payments'; // To change Class from button click
       this.setTitleFn('Paga tu mensualidad'); // To change title on view
-      this.totalBs.emit(this.mountTotalMonthBs.toFixed(2)); // To emit Total in BS
-      this.totalUSD.emit(this.mountTotalMonthUSD.toFixed(2)); // To emit Total in USD
+      this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2)); // To emit Total in BS
+      this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2)); // To emit Total in USD
 
     }
   }
 
   public mountsToPaymentBs(moutnBs: string){
-    this.mountTotalMonthBs = parseFloat(moutnBs)
-    this.totalBs.emit(this.mountTotalMonthBs.toFixed(2));
+    this.mountTotalMonthBs = parseFloat(moutnBs).toFixed(2);
+    this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2));
   }
 
   public mountsToPaymentUSD(mountUSD: string){
-    this.mountTotalMonthUSD = parseFloat(mountUSD)
-    this.totalUSD.emit(this.mountTotalMonthUSD.toFixed(2));
+    this.mountTotalMonthUSD = parseFloat(mountUSD).toFixed(2);
+    this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2));
   }
 
   public onEditAmount = () => {

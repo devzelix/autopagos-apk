@@ -72,7 +72,7 @@ export class VposuniversalRequestService {
 
           // Usar el servicio de errores para obtener el mensaje correcto
           const errorMessage = responseCode !== 'undefined'
-          ? this.errorService.getErrorMessage(responseCode)
+          ? this.errorService.getErrorMessageCode(responseCode)
           : 'response message undefined';
 
           console.log('RESPONSE CODE', responseCode, errorMessage);

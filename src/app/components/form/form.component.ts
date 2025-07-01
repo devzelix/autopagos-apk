@@ -288,8 +288,8 @@ export class FormComponent implements AfterViewInit, OnInit {
   public showAnulationModal: boolean = false;
   public selectedPaymentType: IPaymentTypes;
   public monthPayCount: number = 1;
-  public mountTotalMonthBs: number = 0;
-  public mountTotalMonthUSD: number = 0;
+  public mountTotalMonthBs: string = '0.00';
+  public mountTotalMonthUSD: string = '0.00';
   public activePaymentMonth: number = 1;
   public showFormView: boolean = false;
   public activeTransactionInputFocus: ITransactionInputs = 'dni';
@@ -4996,14 +4996,10 @@ public getCurrentStepTitle = (): string => {
    */
   public goToPayment = async () => {
     try {
-      // For Show Administrative panel
-
       await this.searchServicesv2(this.dni, false, true).then(() => {this.showAdminist(this.dni?.value)}) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
-
-
     } catch (error) {
       console.error(error)
     }
@@ -5045,8 +5041,8 @@ public getCurrentStepTitle = (): string => {
 
     this.monthPayCount = Math.round(saldoUSD / subscription)
     console.log('SUBSCRIPTION', this.cambio_act, this.saldoBs, parseFloat(this.saldoBs))
-    this.mountTotalMonthUSD = saldoUSD > 0 ? parseFloat(this.saldoUSD) : parseFloat(subscription.toFixed(2))
-    this.mountTotalMonthBs = saldoUSD > 0 ? parseFloat(this.saldoBs) : parseFloat((this.mountTotalMonthUSD * this.cambio_act).toFixed(2))
+    this.mountTotalMonthUSD = saldoUSD > 0 ? parseFloat(this.saldoUSD).toFixed(2) : parseFloat(subscription.toFixed(2)).toFixed(2)
+    this.mountTotalMonthBs = saldoUSD > 0 ? parseFloat(this.saldoBs).toFixed(2) : parseFloat((parseFloat(this.mountTotalMonthUSD) * this.cambio_act).toFixed(2)).toFixed(2)
   }
 
   // public setMonthPayment (numMonth:number) {
@@ -5055,11 +5051,11 @@ public getCurrentStepTitle = (): string => {
   // }
 
   public mountsToPaymentBs(moutnBs: string){
-    this.mountTotalMonthBs = parseFloat(moutnBs)
+    this.mountTotalMonthBs = parseFloat(moutnBs).toFixed(2);
   }
 
   public mountsToPaymentUSD(mountUSD: string){
-    this.mountTotalMonthUSD = parseFloat(mountUSD)
+    this.mountTotalMonthUSD = parseFloat(mountUSD).toFixed(2);
   }
 
   public handleShowFormView = (showValue: boolean) => {

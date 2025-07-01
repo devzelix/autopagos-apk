@@ -1,3 +1,4 @@
+import { Debit100x100 } from './../debito-100%/debito-100%';
 import { register } from 'swiper/element/bundle';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -22,9 +23,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Output() onSubmitPayForm: EventEmitter<void> = new EventEmitter() // => on submit event emitter, resets all
   @Input() paymentType: IPaymentTypes;
   @Input() dniValue: string;
-  @Input() mountValue: number = 0;
+  @Input() mountValue: string = '0.00';
   @Input() inputType: string;
-  @Input() amountContrato: number = 0;
+  @Input() saldoBs: string = '0.00';
+  @Input() tasaCambio: string = '0.00';
+  @Input() subscription: string = '0';
   @Input() nroContrato: string = '';
   @Input() nroAbonado: string = '';
   @Input() activeInputFocus: ITransactionInputs = 'dni';
@@ -212,7 +215,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this._dataApi = _dataApi.data.datavpos;
 
           const responseCode = this._dataApi.codRespuesta;
-          const message = responseCode === '05' ? this._errorsvpos.getErrorMessage(responseCode) + ' \n' + this._dataApi.mensajeRespuesta : this._errorsvpos.getErrorMessage(responseCode);
+          const messageResponse = this._errorsvpos.getErrorMessageLeter(this._dataApi.mensajeRespuesta) ?? this._dataApi.mensajeRespuesta;
+          const messageCodeRes = this._errorsvpos.getErrorMessageCode(responseCode)
+          const message = responseCode === '05' ? messageCodeRes + ' \n' + messageResponse : messageCodeRes;
 
           console.log(
             this._dataApi.mensajeRespuesta,
@@ -301,7 +306,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this._dataApi = res.data.datavpos;
 
           const responseCode = this._dataApi.codRespuesta;
-          const message = this._errorsvpos.getErrorMessage(responseCode);
+          const message = this._errorsvpos.getErrorMessageCode(responseCode);
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
@@ -475,61 +480,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           console.error('SUPER ERRORRRORORORORO:', error);
           return error;
       });
-
-
-    // try {
-
-    //   console.log('in requestCard')
-    //   let macAddress = '';
-
-    //   macAddress  = await this.getMacAddress();
-
-    //   if (!macAddress) {
-    //     throw new Error('No se pudo obtener la dirección MAC del dispositivo');
-    //   }
-
-    //   console.log('macAddress', macAddress);
-    //   console.log('this.mount?.value', this.mount?.value)
-    //   this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
-    //   console.log('MOUNT', this.mountFormat)
-
-    //   let _desciptionText: string =
-    //   Number(this.mountFormat) === Number(this.amountContrato) ? 'Pago - Mensualidad' :
-    //   Number(this.mountFormat) > Number(this.amountContrato) ? 'Adelanto - Mensualidad' :
-    //   Number(this.mountFormat) < Number(this.amountContrato) ? 'Abono - Mensualidad' :
-    //   'Pago';
-
-    //   console.log('MENSAJE AQUÏ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>','Contrato:', this.nroContrato, 'Abonado:', this.nroAbonado, this.dni?.value,
-    //     this.mountFormat,
-    //     this.nroAbonado,
-    //     this.nroContrato,
-    //     macAddress);
-
-    //   try {
-    //     const response = await this._ApiVPOS.cardRequest(
-    //       this.dni?.value,
-    //       this.mountFormat,
-    //       this.nroAbonado,
-    //       this.nroContrato,
-    //       macAddress
-    //     );
-
-    //     // if (!response) {
-    //     //   throw new Error('No se pudo conectar con el servicio de pago');
-    //     // }
-
-    //     console.log('responseJSON', response);
-    //     return response;
-
-    //   } catch (error) {
-    //     console.error('Error en la solicitud de pago:', error);
-    //     // throw new Error('El servicio de pago no está disponible en este momento. Por favor intente más tarde.');
-    //     return error;
-    //   }
-    // } catch (error) {
-    //   console.error('Error general:', error);
-    //   return error;
-    // }
   }
 
   /**
@@ -560,14 +510,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     if(mensajeDefault != 'Pago'){
       _desciptionText = mensajeDefault;
     }else{
-      _desciptionText = Number(this.mountFormat) === this.amountContrato ? 'Pago de Mensualidad' : Number(this.mountFormat) > this.amountContrato ? 'Adelanto de Mensualidad' : Number(this.mountFormat) < this.amountContrato ? 'Abono de Mensualidad' : mensajeDefault;
+      _desciptionText = Number(this.mountFormat) === Number(this.subscription) ? 'Pago de Mensualidad' : Number(this.mountFormat) > Number(this.subscription) ? 'Adelanto de Mensualidad' : Number(this.mountFormat) < Number(this.subscription) ? 'Abono de Mensualidad' : mensajeDefault;
     }
 
     if(this._dataApi.montoTransaccion){
       amount = this.formatAmount(this._dataApi.montoTransaccion);
     }
 
-    console.log(this.amountContrato, this.mount,_desciptionText);
+    console.log(this.subscription, this.mount,_desciptionText);
 
     // to genarate tiket and printer this
     _dataApiClient = [
@@ -584,17 +534,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         'status': this._dataApi.mensajeRespuesta,
       }
     ];
-
-    // console.log('My data: '+this._dataApi.nombreVoucher);
-    // console.log('Ref number: '+this._dataApi.numeroReferencia);
-    // console.log('Answer Message: '+this._dataApi.mensajeRespuesta);
-    // console.log('Product type: '+this._dataApi.tipoProducto);
-    // console.log('Number autoritation: '+this._dataApi.numeroAutorizacion);
-    // // console.log('Number card: '+this._dataApi.numeroTarjeta);
-    // console.log('Amount: '+this._dataApi.montoTransaccion);
-    // console.log('CI: '+this._dataApi.cedula);
-
-    // console.log(_dataApiClient);
 
     if(_dataApiClient[0]['status'] === 'NEGADA 116          NEGADA') {
 
@@ -653,23 +592,56 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     return time;
   }
 
+  /**
+   * Function to set the currency format in the mount input
+   * @param value Value to be added to the current input value
+   */
   private setCurrencyMountFormat = (value?: string) => {
-    const inputValue: number | string = this.mount?.value;
-    console.log('inputValue', inputValue)
-    console.log(this.formPayment);
+    // 1. Obtener el valor actual del input y limpiarlo (eliminar puntos y comas)
+    const inputValue: string | number = this.mount?.value;
+    const currentValue = String(inputValue ?? '').replace(/[.,]/g, '');
 
-    const currentValue = String(inputValue ?? '').replace(/\./g, '').replace(/\,/g, '')
+    // 2. Construir el nuevo valor (concatenar si se pasa un nuevo dígito)
+    const newAmountValue: string = parseFloat(value ? (currentValue + value) : currentValue || '0').toFixed(2);
 
-    const newAmountValue: number = parseInt(value ? (currentValue + value) : currentValue)
+    // 3. Formatear como moneda (USD) con 2 decimales fijos
+    const formattedValue = (Number(newAmountValue) / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-    const currency = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(newAmountValue / 100);
-    console.log('currency', currency)
+    // 4. Calcular montos de comparación (subscriptionBs y mount6Month)
+    const subscriptionBs = parseFloat((parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2));
+    let mount6Month = parseFloat(((parseFloat(this.saldoBs) > 0 ? parseFloat(this.saldoBs) : 0) + (subscriptionBs * 6)).toFixed(2));
 
-    this.mount?.setValue(currency);
-  }
+    // 5. Validar si el monto ingresado es mayor que mount6Month
+    const isValidMount = parseFloat(formattedValue.replace(/,/g, '')) > mount6Month;
+
+    // console.log(
+    //   'subscription: ',this.subscription,
+    //   'subscriptionBs: ', subscriptionBs,
+    //   'saldoBs: ', this.saldoBs,
+    //   'Amount6Month1: ', mount6Month,
+    //   'Currency: ', formattedValue,
+    //   'IsValidMount: ', isValidMount,
+    // )
+
+    if (isValidMount) {
+
+      const defaultValue = parseFloat(this.mountValue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+      // Si el monto es mayor que mount6Month, mostrar alerta
+      Swal.fire({
+        icon: 'warning',
+        title: 'Monto ingresado es mayor al monto máximo permitido',
+        text: `El monto máximo permitido es Bs.${mount6Month.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`,
+        confirmButtonText: 'Aceptar',
+        allowOutsideClick: false
+      }).then(() => {
+        this.mount?.setValue(defaultValue);
+      })
+    }
+
+    // 6. Asignar el valor formateado al control del formulario
+    this.mount?.setValue(formattedValue);
+  };
 
   public setInputFocus = (input: ITransactionInputs) => {
 
@@ -694,10 +666,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     let value = (event.target as HTMLInputElement).value;
     const isMountActive: boolean = (inputName === 'mount' || inputName === 'reference')
 
-    if (isMountActive) value = value.replace(/\,/g, '').replace(/\./g, '')
-
-    if (inputName === 'mount') {
-      alert(this.amountContrato)
+    if (isMountActive) {
+      value = value.replace(/\,/g, '').replace(/\./g, '')
     }
 
     if (!regex.test(value)) {
