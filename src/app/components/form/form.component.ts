@@ -4796,6 +4796,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     const goToLoginFn = () => {
       this.firstFormFibex.get('dni')?.setValue('');
       this.ResetForm();
+      this.loginTypeSelectValue = 'V';
       this.listContratos = [];
       this.userSelectList = [];
       this.LoadingLengthAbonado = false;
