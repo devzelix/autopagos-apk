@@ -186,7 +186,7 @@
       </div>
 
       <!-- BTN to select option test and Admin panel -->
-      <div class="section-step-item" [hidden]="showaBtnAdmin">
+      <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="section-step-item" [hidden]="showaBtnAdmin">
         <app-btn-to-option
         (btnOption)="handlerAdminPanel($event)"
         ></app-btn-to-option>
