@@ -327,7 +327,7 @@ export class FormComponent implements AfterViewInit, OnInit {
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    private _localStorageService: LocalstorageService
+    // private _localStorageService: LocalstorageService
     // private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
   ) //private hcaptchaService: NgHcaptchaService
   {
@@ -3103,8 +3103,12 @@ export class FormComponent implements AfterViewInit, OnInit {
                 this.closeAlert2();
                 this.readonlyDNI = true;
                 this.idContrato = this.listContratos[0].id_contrato;
+                this.nroContrato?.setValue(this.listContratos[0].contrato);
+                this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
                 this.nameClient = this.listContratos[0].cliente;
                 console.error('ERROR NO PASA POR AQUI')
+                console.log('EL DNI MENORRR', this.subscription);
+
                 this.setGreeting(this.nameClient)
                 this.name?.setValue(res[0].cliente);
                 this.nroContrato?.setValue(this.listContratos[0].contrato);
@@ -3185,6 +3189,8 @@ export class FormComponent implements AfterViewInit, OnInit {
 
               this.dni?.setValue(dni_);
               // this.searchInfoEquipos(dni_);
+              console.log('EL DNI MENORRR', dni_);
+
               this.nameClient = String(dni_);
               this.setGreeting(this.nameClient)
               this.name?.setValue(String(dni_));
@@ -4752,6 +4758,8 @@ export class FormComponent implements AfterViewInit, OnInit {
    * Function to set the initial client greeting
    */
   public setGreeting = (nameClient: string): string => {
+    console.log('nameClient', this.nroContrato?.value);
+
     return this.userGreeting = 'Hola, ' + this.getShortName(nameClient.toLowerCase());
   }
 
@@ -5090,9 +5098,9 @@ public getCurrentStepTitle = (): string => {
 
   public onUserSelected = (userSelected: IUserListItem): void => {
     try {
-      console.log('userSaldoSelected', userSelected)
 
       const activeContrato = this.listContratos.find((contrato: Contratos) => contrato.id_contrato === userSelected.id_contrato)
+      console.log('userSaldoSelected', this.navActive)
 
       if (!activeContrato) {
         Swal.fire({

@@ -460,6 +460,7 @@ export class RegisterPayService {
         valor: Cedula,
       };
       this.MasterGETDBFULL(headersData, this.URLDBFULL).then((data) => {
+
         resolve(data);
       }).catch((error: any) => {
         reject(error)
@@ -633,6 +634,7 @@ export class RegisterPayService {
               } else {
                 jsonres = res
               }
+
               resolve(jsonres);
             }catch (error) {
               console.log(error)
