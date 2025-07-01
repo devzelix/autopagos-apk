@@ -63,7 +63,7 @@
           {{ userGreeting }}
         </h1>
 
-        <div class="flex flex-col gap-2">
+        <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="flex flex-col gap-2">
           <h2 class="name-client text-2xl txt-dark">
           Nro. Contrato: {{nroContrato?.value}}
         </h2>
