@@ -4996,16 +4996,10 @@ public getCurrentStepTitle = (): string => {
    */
   public goToPayment = async () => {
     try {
-      // For Show Administrative panel
-
-      console.warn('GO TO PAYMENT CARDS', this.dni, this.nroContrato, this.userGreeting);
-
       await this.searchServicesv2(this.dni, false, true).then(() => {this.showAdminist(this.dni?.value)}) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
-
-
     } catch (error) {
       console.error(error)
     }

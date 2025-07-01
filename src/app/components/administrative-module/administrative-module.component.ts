@@ -194,7 +194,7 @@ export class AdministrativeModuleComponent implements OnInit {
   private ShowDiologSuccess(dataRes: any){
     console.log('dataRes', dataRes);
     const responseCode = dataRes.data.datavpos.codRespuesta;
-    const message = this._errorsvpos.getErrorMessage(responseCode);
+    const message = this._errorsvpos.getErrorMessageCode(responseCode);
 
 
     // 2. Handle success case (code '00')

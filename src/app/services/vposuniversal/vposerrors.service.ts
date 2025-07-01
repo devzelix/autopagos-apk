@@ -7,7 +7,7 @@ export class VposerrorsService {
 
   constructor() { }
 
-  private errors = new Map<string, string>([
+  private errorsCode = new Map<string, string>([
     /*
     *-------------------------------------*
     *   Errores del Merchant Server       *
@@ -265,7 +265,7 @@ export class VposerrorsService {
     ["B30", "ERROR EN NOTIFICACION DE CAMBIO DE PINPAD"],
     ["B31", "ERROR CAPTURANDO DATOS CONFIRMACION"],
     ["B40", "MANEJO DE MENSAJES POR PANTALLA DEL PINPAD"],
-    ["NA", "ERROR EN ABRIENDO EL PUERTO PINPAD"],
+    ["NA", "ERROR ABRIENDO EL PUERTO PINPAD"],
     ["NB", "TIMEOUT DEBE SER MAYOR QUE CERO"],
     ["NC", "NUMERO DE PUERTO INVALIDO EN PINPAD"],
     ["ND", "PROPIEDAD DISPONIBLE EN RUNTIME"],
@@ -563,8 +563,19 @@ export class VposerrorsService {
     ["Error Server", "OCURRIO UN ERROR AL PROCESAR EL PAGO, INTENTE DE NUEVO."]
   ]);
 
-  getErrorMessage(code: string): string {
-    return this.errors.get(code) || "CÓDIGO DESCONOCIDO";
+
+  private errorsMessage = new Map<string, string>([
+    ["MONTO NO AUTORIZADO MONTO NO AUTORIZADO", "MONTO NO AUTORIZADO"],
+    ["NEGADA 190          NEGADA", "NEGADA"],
+  ]);
+
+  getErrorMessageCode(code: string): string {
+    return this.errorsCode.get(code) || "CÓDIGO DESCONOCIDO";
+  }
+
+  getErrorMessageLeter(string: string): string {
+    const code = string.substring(0, 2).toUpperCase();
+    return this.errorsMessage.get(string) || "ERROR DESCONOCIDO";
   }
 
 }

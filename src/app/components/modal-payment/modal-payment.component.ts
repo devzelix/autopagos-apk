@@ -215,7 +215,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this._dataApi = _dataApi.data.datavpos;
 
           const responseCode = this._dataApi.codRespuesta;
-          const message = responseCode === '05' ? this._errorsvpos.getErrorMessage(responseCode) + ' \n' + this._dataApi.mensajeRespuesta : this._errorsvpos.getErrorMessage(responseCode);
+          const messageResponse = this._errorsvpos.getErrorMessageLeter(this._dataApi.mensajeRespuesta) ?? this._dataApi.mensajeRespuesta;
+          const messageCodeRes = this._errorsvpos.getErrorMessageCode(responseCode)
+          const message = responseCode === '05' ? messageCodeRes + ' \n' + messageResponse : messageCodeRes;
 
           console.log(
             this._dataApi.mensajeRespuesta,
@@ -304,7 +306,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this._dataApi = res.data.datavpos;
 
           const responseCode = this._dataApi.codRespuesta;
-          const message = this._errorsvpos.getErrorMessage(responseCode);
+          const message = this._errorsvpos.getErrorMessageCode(responseCode);
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
