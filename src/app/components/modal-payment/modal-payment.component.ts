@@ -241,8 +241,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             this._dataApi.mensajeRespuesta,
             message,
             responseCode,
-            saeRegister,
-            saeRegister.success
           );
 
           // 2. Handle success case (code '00')
@@ -289,6 +287,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
               this.generarPDF().catch(console.error);
             }
 
+            console.log('CODIGO DE RESPUESTA', responseCode);
+
+
             Swal.fire({
               icon: 'error',
               title: message,
@@ -300,9 +301,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           }
         })
         .catch((error) => {
+          console.log('ESTO ES ERROR', error);
+
+          // const messageCodeRes =
+            // this._errorsvpos.getErrorMessageCode(responseCode);
           // 4. Handle request errors
-          let _messageError: string =
-            'Ha ocurrido un error\nConsulte con el personal de Fibex';
+          let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+
           let timeShow: number = 4000;
 
           if (this.dni?.value === '90000000') {
