@@ -6,6 +6,9 @@
     <h1 class="title-info-pay">Información de sus últimos pagos</h1>
   </span>
   <div class="w-100" *ngIf="stateTableData && stateTableData.length>0">
+    <div class="p-4 font-semibold text-xl">
+      Saldo disponible: <span class="pr-1">{{saldoMounted | currency:'VES':'symbol':'1.2-2'}}</span> <span>{{ saldoReal < 0 ? 'a favor' : 'a pagar'}}</span>
+    </div>
     <table class="info-pay-table">
       <tbody>
         <tr class="table-header">

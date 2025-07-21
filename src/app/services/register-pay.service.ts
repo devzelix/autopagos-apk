@@ -269,8 +269,6 @@ export class RegisterPayService {
   StatusPayAbonadoTeen(Abonado: string) {
     return new Promise(async (resolve: any, reject: any) => {
       try {
-        console.log("Me llego esto");
-        console.log(Abonado);
         const DataQuery = {
           Abonado:Abonado
         }
