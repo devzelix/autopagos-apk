@@ -22,6 +22,7 @@ import { AdministrativeRequestService } from 'src/app/services/vposuniversal/adm
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
 import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
+import { IPrintTicket } from 'src/app/interfaces/printer.interface';
 
 @Component({
   selector: 'app-modal-payment',
@@ -74,7 +75,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         '000',
         [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(2),
           Validators.maxLength(6),
           Validators.pattern('^[0-9]*$'),
         ],
@@ -560,7 +561,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @param data data to be included in the PDF
    */
   public async generarPDF(mensajeDefault: string = 'Pago') {
-    let _dataApiClient = []; // Data to tiket print
+    let _dataApiClient: IPrintTicket; // Data to tiket print
     let _desciptionText: string = '';
     let amount: string = '';
 
@@ -584,43 +585,35 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     console.log(this.subscription, this.mount, _desciptionText);
 
     // to genarate tiket and printer this
-    _dataApiClient = [
-      {
+    _dataApiClient = {
         date: this.getTime('date'),
         hours: this.getTime('time'),
         refundNumber: this._dataApi.numeroReferencia,
         numSeq: this._dataApi.numSeq,
-        abonumber: this.nroAbonado,
+        abononumber: this.nroAbonado,
+        status: this._dataApi.mensajeRespuesta,
         describe: _desciptionText,
         amount: amount,
         methodPayment: this._dataApi.tipoProducto,
-        totalAmount: amount,
-        status: this._dataApi.mensajeRespuesta,
-      },
-    ];
+    };
 
-    if (_dataApiClient[0]['status'] === 'NEGADA 116          NEGADA') {
+    if (_dataApiClient.status === 'NEGADA 116          NEGADA') {
       // TODO ANALIZAR ESTO QUE ESTA CABLEADO
-      _dataApiClient = [
-        {
-          date: this.getTime('date'),
-          hours: this.getTime('time'),
-          refundNumber: this._dataApi.numeroReferencia,
-          numSeq: this._dataApi.numSeq,
-          ciClient: this._dataApi.cedula,
-          abonumber: this.nroContrato,
-          describe: 'Pago Fallido',
-          amount: '00.00',
-          methodPayment: this._dataApi.tipoProducto,
-          totalAmount: '00.00Bs.',
-          saldo: '0,00Bs.',
-          status: this._dataApi.mensajeRespuesta,
-        },
-      ];
+      _dataApiClient = {
+        date: this.getTime('date'),
+        hours: this.getTime('time'),
+        refundNumber: this._dataApi.numeroReferencia,
+        numSeq: this._dataApi.numSeq,
+        abononumber: this.nroContrato,
+        status: this._dataApi.mensajeRespuesta,
+        describe: 'Pago Fallido',
+        amount: '00.00',
+        methodPayment: this._dataApi.tipoProducto
+      };
     }
 
     // Validación de campos indefinidos
-    const hasUndefinedFields = Object.values(_dataApiClient[0]).some(
+    const hasUndefinedFields = Object.values(_dataApiClient).some(
       (value) => value === undefined || value === null || value === ''
     );
 

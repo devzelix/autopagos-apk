@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
+import { IPrintTicket, IUploadFile } from 'src/app/interfaces/printer.interface';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -7,9 +8,14 @@ import { environment } from 'src/environments/environment';
 })
 export class PrinterService {
 
+  private headersReq = {
+    'Content-Type': 'application/json',
+    'x-tkn': environment.API_PRINTER_TOKEN
+  }
+
   constructor() { }
 
-  printTitek(_dataTiket: any){
+  printTitek(_dataTiket: IPrintTicket){
 
     return new Promise((resolve, reject)=>{
       try {
@@ -17,20 +23,18 @@ export class PrinterService {
         if(_dataTiket) {
           axios({
             method: 'post',
-            url: environment.API_Printer+'/tikect/generate-print',
+            url: environment.API_Printer+'/pdf',
+            headers: this.headersReq,
             data: {
-              'date': String(_dataTiket[0]['date']),
-              'hours': String(_dataTiket[0]['hours']),
-              'refNumber': String(_dataTiket[0]['refundNumber']),
-              'numSeq': String(_dataTiket[0]['numSeq']),
-              'ciClient': String(_dataTiket[0]['ciClient']),
-              'abononumber': String(_dataTiket[0]['abonumber']),
-              'describe': String(_dataTiket[0]['describe']),
-              'amount': String(_dataTiket[0]['amount']),
-              'methodPayment': String(_dataTiket[0]['methodPayment']),
-              'totalAmount': String(_dataTiket[0]['totalAmount']),
-              'saldo': String(_dataTiket[0]['saldo']),
-              'status': String(_dataTiket[0]['status']),
+              'date': String(_dataTiket.date),
+              'hours': String(_dataTiket.hours),
+              'refNumber': String(_dataTiket.refundNumber),
+              'numSeq': String(_dataTiket.numSeq),
+              'abononumber': String(_dataTiket.abononumber),
+              'status': String(_dataTiket.status),
+              'describe': String(_dataTiket.describe),
+              'amount': String(_dataTiket.amount),
+              'methodPayment': String(_dataTiket.methodPayment),
             }
           }).then(res => {
               resolve(res)
@@ -56,17 +60,32 @@ export class PrinterService {
    */
   getMacAddress(): Promise<string>{
     return new Promise<string>((resolve, reject)=>{
-        const url = environment.API_Printer+'/get-macaddress'
-        axios.get<{mac:string}>(url)
-        .then(res => {
-          resolve(res.data.mac)
-        })
-        .catch(err => {
-          reject(err)
-        });
-
+      const url = environment.API_Printer+'/divice-info/mac'
+      axios.get(url, {headers: this.headersReq})
+      .then(res => {
+        resolve(res.data.data)
+      })
+      .catch(err => {
+        reject(err)
+      });
     });
+  }
 
+  /**
+   * Function to upload the file to the printer
+   * @param file `File` to upload
+   */
+  uploadFile(data: IUploadFile): Promise<any>{
+    return new Promise((resolve, reject)=>{
+      const url = environment.API_Printer+'/upload-file';
+      axios.post(url, data, {headers: this.headersReq})
+      .then(res => {
+        resolve(res.data);
+      })
+      .catch(err => {
+        reject(err);
+      });
+    });
   }
 
 }
