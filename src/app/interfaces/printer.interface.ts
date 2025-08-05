@@ -8,6 +8,8 @@ export interface IPrintTicket {
   describe: string;
   amount: string;
   methodPayment: string;
+  mac_address: string;
+  is_anulation: boolean;
 }
 
 export interface IUploadFile {

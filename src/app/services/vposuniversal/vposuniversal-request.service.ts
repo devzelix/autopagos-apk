@@ -37,11 +37,11 @@ export class VposuniversalRequestService {
   cardRequest(_ci: string, _amount: string, _subscriber: string, _contract: string, _register: string){ //Pay Card Simple
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-      console.log('ci', _ci)
-      console.log('amount', _amount)
-      console.log('subscriber', _subscriber)
-      console.log('contract', _contract)
-      console.log('register', _register)
+      // console.log('ci', _ci)
+      // console.log('amount', _amount)
+      // console.log('subscriber', _subscriber)
+      // console.log('contract', _contract)
+      // console.log('register', _register)
 
       // try {
         axios({
@@ -85,7 +85,7 @@ export class VposuniversalRequestService {
             subscriberNum: _subscriber,
             mac_address: _register,
             response_code: responseCode,
-            response_message: errorMessage,
+            response: res.data.datavpos ?? 'response undefined',
             url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
             'is_success': isSuccess
           };
@@ -132,7 +132,7 @@ export class VposuniversalRequestService {
               subscriberNum: _subscriber,
               mac_address: _register,
               response_code: err.data.datavpos.codRespuesta ?? 'response code undefined',
-              response_message: err.response.codRespuesta ?? 'response message undefined',
+              response: err.data.datavpos ?? 'response undefined',
               url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
               'is_success': true
             })

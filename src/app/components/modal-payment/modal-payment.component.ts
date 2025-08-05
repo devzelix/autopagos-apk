@@ -56,6 +56,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public ci_transaction: string = '';
   public numSeq_transaction: string = '';
   public abonadoInputActive: boolean = false;
+  public macaddress: string = '';
 
   public formErrorMessage?: { inputName: ITransactionInputs; errorMsg: string };
 
@@ -241,12 +242,12 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             '<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
             this._dataApi.mensajeRespuesta,
             message,
-            responseCode,
+            responseCode
           );
 
           // 2. Handle success case (code '00')
           if (responseCode === '00') {
-            this.generarPDF().catch(console.error); // Generate PDF async
+            this.generarPDF(false).catch(console.error); // Generate PDF async
 
             if (saeRegister !== null && !saeRegister.success) {
               Swal.fire({
@@ -268,7 +269,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
                   });
                 },
               });
-
             } else {
               Swal.fire({
                 icon: 'success',
@@ -279,17 +279,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
                 didClose: () => this.onSubmitPayForm.emit(),
               });
             }
-
           }
           // 3. Handle other cases
           else {
             // Special case for code '51'
             if (responseCode === '51') {
-              this.generarPDF().catch(console.error);
+              this.generarPDF(false).catch(console.error);
             }
 
             console.log('CODIGO DE RESPUESTA', responseCode);
-
 
             Swal.fire({
               icon: 'error',
@@ -305,9 +303,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           console.log('ESTO ES ERROR', error);
 
           // const messageCodeRes =
-            // this._errorsvpos.getErrorMessageCode(responseCode);
+          // this._errorsvpos.getErrorMessageCode(responseCode);
           // 4. Handle request errors
-          let _messageError: string = 'Ha ocurrido un error\nConsulte con el personal de Fibex';
+          let _messageError: string =
+            'Ha ocurrido un error\nConsulte con el personal de Fibex';
 
           let timeShow: number = 4000;
 
@@ -365,7 +364,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
               // 2. Handle success case (code '00')
               if (responseCode === '00') {
-                this.generarPDF('Anulación de pago').catch(console.error); // Generate PDF async
+                this.generarPDF(true, 'Anulación de pago').catch(console.error); // Generate PDF async
 
                 Swal.fire({
                   icon: 'success',
@@ -549,18 +548,21 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @param type Type of string
    */
   public async getMacAddress() {
-    const macaddress: string = await this._printer.getMacAddress();
+    this.macaddress = await this._printer.getMacAddress();
 
-    console.log('macaddress', macaddress);
+    console.log('macaddress', this.macaddress);
 
-    return macaddress;
+    return this.macaddress;
   }
 
   /**
    * Function to generate a PDF with the payment data
    * @param data data to be included in the PDF
    */
-  public async generarPDF(mensajeDefault: string = 'Pago') {
+  public async generarPDF(
+    is_anulation: boolean,
+    mensajeDefault: string = 'Pago'
+  ) {
     let _dataApiClient: IPrintTicket; // Data to tiket print
     let _desciptionText: string = '';
     let amount: string = '';
@@ -586,29 +588,33 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     // to genarate tiket and printer this
     _dataApiClient = {
-        date: this.getTime('date'),
-        hours: this.getTime('time'),
-        refundNumber: this._dataApi.numeroReferencia,
-        numSeq: this._dataApi.numSeq,
-        abononumber: this.nroAbonado,
-        status: this._dataApi.mensajeRespuesta,
-        describe: _desciptionText,
-        amount: amount,
-        methodPayment: this._dataApi.tipoProducto,
+      date: this.getTime('date').toString(),
+      hours: this.getTime('time').toString(),
+      refundNumber: this._dataApi.numeroReferencia,
+      numSeq: this._dataApi.numSeq,
+      abononumber: this.nroAbonado,
+      status: this._dataApi.mensajeRespuesta,
+      describe: _desciptionText,
+      amount: amount,
+      methodPayment: this._dataApi.tipoProducto,
+      mac_address: this.macaddress,
+      is_anulation: is_anulation,
     };
 
     if (_dataApiClient.status === 'NEGADA 116          NEGADA') {
       // TODO ANALIZAR ESTO QUE ESTA CABLEADO
       _dataApiClient = {
-        date: this.getTime('date'),
-        hours: this.getTime('time'),
+        date: this.getTime('date').toString(),
+        hours: this.getTime('time').toString(),
         refundNumber: this._dataApi.numeroReferencia,
         numSeq: this._dataApi.numSeq,
         abononumber: this.nroContrato,
         status: this._dataApi.mensajeRespuesta,
         describe: 'Pago Fallido',
         amount: '00.00',
-        methodPayment: this._dataApi.tipoProducto
+        methodPayment: this._dataApi.tipoProducto,
+        mac_address: this.macaddress,
+        is_anulation: is_anulation,
       };
     }
 
