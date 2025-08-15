@@ -45,6 +45,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Input() nroContrato: string = '';
   @Input() nroAbonado: string = '';
   @Input() activeInputFocus: ITransactionInputs = 'dni';
+  public dolarBalance: string = '0.00';
   public formPayment: FormGroup;
   public typeDNI: ITypeDNI = 'V';
   public _dataApi: any;
@@ -95,6 +96,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     this.mount?.setValue(this.mountValue);
     this.setCurrencyMountFormat();
 
+    this.updateDolarBalance();
+
+    this.mount?.valueChanges.subscribe(() => {
+        // Cada vez que el monto cambie, llama a tu nueva función
+        this.updateDolarBalance();
+    });
+
+
     /* if (this.activeInputFocus === 'dni') {
       this.mount?.disable();
     }
@@ -128,10 +137,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     return this.formPayment.get('reference');
   }
 
-  // get abonado() {
-  //   return this.formPayment.get('abonado');
-  // }
-
   get accountType() {
     return this.formPayment.get('accountType');
   }
@@ -158,37 +163,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       Swal.close();
     }, 2500);
   }
-
-  //   public confirmAnulation(): void {
-  //     Swal.fire({
-  //       icon: 'question',
-  //       title: '¿La cédula ingresada es la misma que la del abonado?',
-  //       showCancelButton: true,
-  //       confirmButtonText: 'Sí, anular',
-  //       cancelButtonText: 'No, volver',
-  //       confirmButtonColor: '#d33',
-  //       cancelButtonColor: '#3085d6',
-  //       allowOutsideClick: false
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         // Usuario confirmó - ejecutar anulación
-  //         this.abonado?.setValue(this.dni?.value);
-
-  //         this.anulateTransaction()
-  //           .then((response) => {
-  //             console.log('Anulación completada:', response);
-  //           })
-  //           .catch((error) => {
-  //             console.error('Error en anulación:', error);
-  //           });
-  //       } else {
-  //         // Usuario canceló - cambiar boolean y cerrar
-  //         this.abonadoInputActive = true;
-  //         this.abonado?.setValue('')
-  //         // El Swal se cierra automáticamente
-  //       }
-  //     });
-  // }
 
   /**
    * On submit payment form
@@ -679,6 +653,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
     // 4. Calcular montos de comparación (subscriptionBs y mount6Month)
+    console.log('TASA DE CAMBIO', this.tasaCambio);
+
     const subscriptionBs = parseFloat(
       (parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2)
     );
@@ -761,6 +737,24 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     this.validateFormErrors();
   };
+
+  private updateDolarBalance(): void {
+    // 1. Obtiene el valor numérico de los bolívares, limpiando comas
+    const mountValueBs = parseFloat(String(this.mount?.value).replace(/,/g, '')) || 0;
+
+    // 2. Asegúrate de que la tasa de cambio sea un número válido para evitar errores
+    const tasa = parseFloat(this.tasaCambio);
+    if (isNaN(tasa) || tasa === 0) {
+        this.dolarBalance = '0.00';
+        return;
+    }
+
+    // 3. Calcula el equivalente en dólares
+    const balanceInUsd = mountValueBs / tasa;
+
+    // 4. Actualiza la propiedad con 2 decimales
+    this.dolarBalance = balanceInUsd.toFixed(2);
+}
 
   public onEditDniValue = () => {
     if (this.inputDni) {
