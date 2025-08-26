@@ -84,7 +84,7 @@ export class PrinterService {
    */
   uploadFile(data: IUploadFile): Promise<any> {
     return new Promise((resolve, reject) => {
-      const url = environment.API_Printer + '/upload-file';
+      const url = environment.API_Printer + '/upload-file/admin';
       axios
         .post(url, data, { headers: this.headersReq })
         .then((res) => {

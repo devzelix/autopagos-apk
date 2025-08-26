@@ -34,7 +34,7 @@ export class VposuniversalRequestService {
   //#--------------------------------------------------------------------------------------#//
 
   //#--------------------------------Card pay Simple---------------------------------------#//
-  cardRequest(_ci: string, _amount: string, _subscriber: string, _contract: string, _register: string){ //Pay Card Simple
+  cardRequest(_ci: string, _amount: string, _subscriber: string, _balnace: string, _contract: string, _register: string){ //Pay Card Simple
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
       // console.log('ci', _ci)
@@ -56,6 +56,7 @@ export class VposuniversalRequestService {
              "monto": _amount,
               "ci": _ci,
               "subscriber": _subscriber,
+              "balance": _balnace,
               "contract": _contract,
               "register": _register
           }
@@ -116,14 +117,32 @@ export class VposuniversalRequestService {
           resolve(res);
         })
           .catch(err => {
-            console.error('ERROR', err);
+            // console.error('ERROR', err);
+            let _messageError: string =
+            'Ha ocurrido un error\nConsulte con el personal de Fibex';
+            // 'Hubo un error con el servidor. Comuníquese con el personal de FIBEX.'
+
+            let timeShow: number = 4000;
+
+            // console.warn('DNI TO LOOK ERROR', _ci, _ci === '90000000');
+
+            if (_ci === '90000000') {
+              // console.warn('ENTER ON IF TO UPDATE MESSAGE', _messageError);
+              _messageError =
+                'Muestrele este error a un técnico \n Error: ' +
+                (err instanceof Error ? err.message : 'Desconocido');
+              timeShow = 6000;
+              // console.warn('EXIT ON IF TO UPDATE MESSAGE', _messageError);
+            }
+
+            // console.warn('OUT IF MESSAGE', _messageError);
 
             Swal.fire({
               icon: 'error',
-              title: 'Hubo un error con el servidor. Comuníquese con el personal de FIBEX.',
+              title: _messageError,
               showConfirmButton: false,
               allowOutsideClick: false,
-              timer: 4000,
+              timer: timeShow,
             });
             // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
             this._logService.storagelog({

@@ -115,28 +115,17 @@ export class AdministrativeModuleComponent implements OnInit {
    * @returns
    */
   public async closeBox(macAddress: string) {
-    //Alerts to show message on all the process
-    // Swal.fire({
-    //   title: 'Success',
-    //   text: 'The last voucher was printed successfully',
-    //   icon: 'success',
-    //   confirmButtonText: 'OK'
-    // });
-
     try {
 
       console.log('in CloseBox');
-      // let macAddress = '';
-
-      // try {
-      //   macAddress  = await this.getMacAddress();
-      // } catch (error) {
-      //   console.error(error)
-      // }
 
       const responseJSON = await this._adminAction.closeCashRegister(this.userData, macAddress);
 
       console.log('responseJSON', responseJSON);
+
+      // if(responseJSON.data.datavpos.codRespuesta === "00"){
+
+      // }
 
       return responseJSON;
 

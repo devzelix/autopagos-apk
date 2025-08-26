@@ -284,6 +284,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
           let timeShow: number = 4000;
 
+          console.warn('DNI TO LOOK ERROR', this.dni?.value);
+
           if (this.dni?.value === '90000000') {
             _messageError =
               'Muestrele este error a un técnico \n Error: ' +
@@ -497,13 +499,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         // Obtenemos el formato del monto
         this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
 
-        console.log(this.mountFormat, 'MOUNT');
+        console.log(this.mountFormat, 'MOUNT', this.saldoBs, 'SALDO BS');
 
         // Lanzamos cardRequest CON la MAC obtenida
         return this._ApiVPOS.cardRequest(
           this.dni?.value,
           this.mountFormat,
           this.nroAbonado,
+          this.saldoBs,
           this.nroContrato,
           macAddress
         );
