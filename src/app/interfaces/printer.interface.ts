@@ -13,6 +13,8 @@ export interface IPrintTicket {
 }
 
 export interface IUploadFile {
-  register: string;
-  path: string;
+  pathRoute: string,
+  register: string,
+  typeFile: boolean /** @true (anulation files)(closing files) <-----> @false (ticket files)(pre-closing files) */
+  adminFile: boolean /** @true (admin files) <-----> @false (Invoice files)*/
 }

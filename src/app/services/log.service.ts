@@ -42,7 +42,6 @@ export class LogService {
       const logItem: ILog = {
         ...logData,
         dateTime: new Date(),
-        mac_address
       }
 
       console.log('new log item', logItem)

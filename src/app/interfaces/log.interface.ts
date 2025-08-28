@@ -1,31 +1,28 @@
 export interface ILog {
-    'dateTime': Date,
-    'http_method': 'GET' | 'POST' | 'PUT' | 'DELETE',
-    'status': number,
-    'url_api': string,
-    // 'ipAddress': string | number,
-    // 'ciClient': string | number,
-    'subscriberNum': string | number,
-    // 'id_sede': string | number,
-    // 'id_checkout': string | number,
-    'mac_address': string | number,
-    'response_code': string | Array<string>,
-    'response': string,
-    // 'additional_data'?: unknown,
-    // 'duration_ms'?: number, // Obtener la duración de los atributos del request
-    'is_success'?: boolean
-    // 'request_body'?: any | undefined,
+  // id_log: number,
+  dateTime: Date; // ISO string format
+  // id_checkout: number,
+  log_type: string;
+  is_success: boolean;
+  http_method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  status: number;
+  route_api: string;
+  // ip_address: string,
+  req_body: string;
+  res_code: string;
+  res_body?: string | null;
+  numSubscriber?: string | null;
 }
 
 export type IPromptLog = {
+  dateTime: ILog['dateTime'],
+  log_type: ILog['log_type'],
   http_method: ILog['http_method'],
   status: ILog['status'],
-  // ciClient: ILog['ciClient'],
-  subscriberNum: ILog['subscriberNum'],
-  mac_address: ILog['mac_address'],
-  response_code: ILog['response_code'],
-  response: ILog['response'],
-  url_api: ILog['url_api'],
-  'is_success': ILog['is_success'],/* The `request_body` property in the `ILog` interface is used to store the body of the HTTP request. It can hold any type of data or be undefined if there is no request body associated with the log entry. In the `IPromptLog` type, `request_body` is an optional property that can be included when creating a prompt log object. */
-  // request_body?: ILog['request_body']
+  numSubscriber: ILog['numSubscriber'],
+  req_body: ILog['req_body'],
+  res_code: ILog['res_code'],
+  res_body: ILog['res_body'],
+  route_api: ILog['route_api'],
+  is_success: ILog['is_success'],/* The `request_body` property in the `ILog` interface is used to store the body of the HTTP request. It can hold any type of data or be undefined if there is no request body associated with the log entry. In the `IPromptLog` type, `request_body` is an optional property that can be included when creating a prompt log object. */
 }

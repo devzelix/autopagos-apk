@@ -19,12 +19,6 @@ export class VposuniversalRequestService {
   }
 
   //#-----------------------------Conect to API and Test-----------------------------------#//
-  // closeAPI(){//Close Conecction to API
-  //   axios.get(environment.API_URL_VPOS+'/api/donwservice')
-  //   .then(res => console.log(res))
-  //   .catch(err => console.log(err));
-  // }
-
   statusOK(_dataApi: any){//Test connection to API
     axios.get(environment.API_URL_VPOS+'/api/pingpage')
     .then(res => _dataApi = res).then(res => console.log(res))
@@ -37,226 +31,130 @@ export class VposuniversalRequestService {
   cardRequest(_ci: string, _amount: string, _subscriber: string, _balnace: string, _contract: string, _register: string){ //Pay Card Simple
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-      // console.log('ci', _ci)
-      // console.log('amount', _amount)
-      // console.log('subscriber', _subscriber)
-      // console.log('contract', _contract)
-      // console.log('register', _register)
 
-      // try {
-        axios({
-          method: 'post',
-          url: environment.API_URL_VPOS+'/metodo/request/cardpay',
-          headers: {
-            'accept': 'application/json',
-            'token': environment.TokenAPILaravelVPOS,
-            'Content-Type': 'application/json',
-            },
-          data : {
-             "monto": _amount,
-              "ci": _ci,
-              "subscriber": _subscriber,
-              "balance": _balnace,
-              "contract": _contract,
-              "register": _register
-          }
-        })
-        .then(res => {
-          console.log('RES', res);
+      const dataReq = {
+        "monto": _amount,
+        "ci": _ci,
+        "subscriber": _subscriber,
+        "balance": _balnace,
+        "contract": _contract,
+        "register": _register
+      }
 
-          const isSuccess = res.data?.status === 200;
+      axios({
+        method: 'post',
+        url: environment.API_URL_VPOS+'/metodo/request/cardpay',
+        headers: {
+          'accept': 'application/json',
+          'token': environment.TokenAPILaravelVPOS,
+          'Content-Type': 'application/json',
+          },
+        data : dataReq
+      })
+      .then(res => {
+        console.log('RES', res);
 
-          console.log('MENSAJE DE RESPONSE', res.data?.datavpos?.mensajeRespuesta);
+        const isSuccess = res.data?.status === 200;
 
-          // Obtener el response_code
-          const responseCode = res.data?.datavpos?.codRespuesta ?? 'undefined';
+        console.log('MENSAJE DE RESPONSE', res.data?.datavpos?.mensajeRespuesta);
 
-          // Usar el servicio de errores para obtener el mensaje correcto
-          const errorMessage = responseCode !== 'undefined'
-          ? this.errorService.getErrorMessageCode(responseCode)
-          : 'response message undefined';
+        // Obtener el response_code
+        const responseCode = res.data?.datavpos?.codRespuesta ?? 'undefined';
 
-          console.log('RESPONSE CODE', responseCode, errorMessage);
+        // Usar el servicio de errores para obtener el mensaje correcto
+        const errorMessage = responseCode !== 'undefined'
+        ? this.errorService.getErrorMessageCode(responseCode)
+        : 'response message undefined';
 
+        console.log('RESPONSE CODE', responseCode, errorMessage);
 
-          // Extraer datos comunes para evitar repetición
-          const logData: IPromptLog = {
-            http_method: 'POST',
-            status: res.data?.datavpos?.status ?? res.status,
-            subscriberNum: _subscriber,
-            mac_address: _register,
-            response_code: responseCode,
-            response: res.data.datavpos ?? 'response undefined',
-            url_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
-            'is_success': isSuccess
-          };
+        // TODO : VALIDAR COMO SE ESTAN GUARDANDO LOS LOGS EN LOCAL STORAGE Y VALIDADR SI EL LOCAL STORAGE CONTEMPLA LOS NUEVOS CAMPOS
 
-
-
-          // Siempre hacer log
-          this._logService.storagelog(logData);
+        // Extraer datos comunes para evitar repetición
+        const logData: IPromptLog = {
+          dateTime: new Date(),
+          log_type: 'TRANSACCION',
+          http_method: 'POST',
+          status: res.status,
+          numSubscriber: _subscriber,
+          req_body: JSON.stringify(dataReq),
+          res_code: responseCode,
+          res_body: JSON.stringify(res.data.datavpos) ?? 'response undefined',
+          route_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+          is_success: isSuccess
+        };
 
 
 
-          if (!isSuccess) {
-            // Mostrar error solo si no es exitoso
-            Swal.fire({
-              icon: 'error',
-              title: res.data?.message || 'Error en la operación',
-              showConfirmButton: false,
-              allowOutsideClick: false,
-              timer: 4000,
-            });
+        // Siempre hacer log
+        this._logService.storagelog(logData);
 
-            // Opcional: rechazar la promesa en caso de error
-            // reject(new Error(res.data?.message || 'Operation failed'));
-            return; // O usar return para no continuar
-          }
 
-          // Resolver solo si es exitoso
-          resolve(res);
-        })
-          .catch(err => {
-            // console.error('ERROR', err);
-            let _messageError: string =
-            'Ha ocurrido un error\nConsulte con el personal de Fibex';
-            // 'Hubo un error con el servidor. Comuníquese con el personal de FIBEX.'
 
-            let timeShow: number = 4000;
-
-            // console.warn('DNI TO LOOK ERROR', _ci, _ci === '90000000');
-
-            if (_ci === '90000000') {
-              // console.warn('ENTER ON IF TO UPDATE MESSAGE', _messageError);
-              _messageError =
-                'Muestrele este error a un técnico \n Error: ' +
-                (err instanceof Error ? err.message : 'Desconocido');
-              timeShow = 6000;
-              // console.warn('EXIT ON IF TO UPDATE MESSAGE', _messageError);
-            }
-
-            // console.warn('OUT IF MESSAGE', _messageError);
-
-            Swal.fire({
-              icon: 'error',
-              title: _messageError,
-              showConfirmButton: false,
-              allowOutsideClick: false,
-              timer: timeShow,
-            });
-            // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
-            this._logService.storagelog({
-              http_method: 'POST',
-              status: err.data?.datavpos.status ?? err.status,
-              subscriberNum: _subscriber,
-              mac_address: _register,
-              response_code: err.data.datavpos.codRespuesta ?? 'response code undefined',
-              response: err.data.datavpos ?? 'response undefined',
-              url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-              'is_success': true
-            })
-
-            reject(err);
+        if (!isSuccess) {
+          // Mostrar error solo si no es exitoso
+          Swal.fire({
+            icon: 'error',
+            title: res.data?.message || 'Error en la operación',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 4000,
           });
-      // } catch (error) {
-      //   console.error('Error al procesar el pago:', error);
-      //   // const response_code = (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : "unknown error";
-      //   this._logService.storagelog({
-      //     http_method: 'POST',
-      //     status:  (error as any).response?.status,
-      //     url_api: environment.API_URL_VPOS+'/metodo/request/cardpay',
-      //     'is_success': false,
-      //     subscriberNum: _subscriber,
-      //     mac_address: _register,
-      //     response_code: (error as any).response?.codRespuesta ? (error as any).response.codRespuesta : 'response code undefined',
-      //     response_message: (error as any).response?.mensaje ? (error as any).response.mensaje : 'response message undefined'
-      //   })
-      //   return error;
-      // }
+
+          // Opcional: rechazar la promesa en caso de error
+          // reject(new Error(res.data?.message || 'Operation failed'));
+          return; // O usar return para no continuar
+        }
+
+        // Resolver solo si es exitoso
+        resolve(res);
+      })
+      .catch(err => {
+        // console.error('ERROR', err);
+        let _messageError: string =
+        'Ha ocurrido un error\nConsulte con el personal de Fibex';
+        // 'Hubo un error con el servidor. Comuníquese con el personal de FIBEX.'
+
+        let timeShow: number = 4000;
+
+        // console.warn('DNI TO LOOK ERROR', _ci, _ci === '90000000');
+
+        if (_ci === '90000000') {
+          // console.warn('ENTER ON IF TO UPDATE MESSAGE', _messageError);
+          _messageError =
+            'Muestrele este error a un técnico \n Error: ' +
+            (err instanceof Error ? err.message : 'Desconocido');
+          timeShow = 6000;
+          // console.warn('EXIT ON IF TO UPDATE MESSAGE', _messageError);
+        }
+
+        // console.warn('OUT IF MESSAGE', _messageError);
+
+        Swal.fire({
+          icon: 'error',
+          title: _messageError,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: timeShow,
+        });
+        // const response_code = err.response.codRespuesta ? err.response.codRespuesta : "unknown error";
+        this._logService.storagelog({
+          dateTime: new Date(),
+          log_type: 'TRANSACCION',
+          http_method: 'POST',
+          status: err.status,
+          numSubscriber: _subscriber,
+          req_body: JSON.stringify(dataReq),
+          res_code: 'ERROR',
+          res_body: JSON.stringify(err.data.datavpos) ?? 'response undefined',
+          route_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+          is_success: false
+        })
+
+        reject(err);
+      });
 
     });
-
-    //this.closeAPI();
-
   }
   //#--------------------------------------------------------------------------------------#//
-
-  //#---------------------------------Card pay Zelle--------------------------------------#//
-  // zelleRequest(_ci: string, _amount: number,  _refZelle: number){ //Pay Zelle
-
-  //   return new Promise((resolve, reject)=>{
-  //     try {
-
-  //       if(_ci != null && _ci != '' && Number.isFinite(_amount) && Number.isInteger(_refZelle)) {
-  //         axios({
-  //           method: 'post',
-  //           url: environment.API_URL_VPOS+'/api/metodo/request/zelle/'+_ci+'/'+_amount+'/'+_refZelle,
-  //           /*data: {
-  //             "accion":"tarjeta",
-  //             "montoTransaccion": _amount,
-  //             "cedula": _ci,
-  //             "referencia": _refZelle,
-  //           }*/
-  //         }).then(res => {
-  //             console.log(res);
-  //             resolve(res)
-  //           })
-  //           .catch(err => {
-  //             console.log(err);
-  //             reject(err)
-  //         });
-  //       }else{
-  //         reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
-  //       }
-
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-
-  //   });
-
-  //   //this.closeAPI();
-
-  // }
-  //#-------------------------------------------------------------------------------------#//
-
-  //#-----------------------------Pay From change option----------------------------------#//
-  // cambioRequest(_ci: string, _amount: number,  _typeCoin: string){ //Pay From change option (Mobile Pay)
-
-  //   return new Promise((resolve, reject)=>{
-  //     try {
-
-  //       if(_ci != null && _ci != '' && Number.isFinite(_amount) && _typeCoin != '') {
-  //         axios({
-  //           method: 'post',
-  //           url: environment.API_URL_VPOS+'/api/metodo/request/paymentchange/'+_ci+'/'+_amount+'/'+_typeCoin,
-  //           /*data: {
-  //             "accion": "cambio",
-  //             "montoTransaccion": _amount,
-  //             "cedula": _ci,
-  //             "tipoMoneda": _typeCoin //#Los valores admitidos son: VES (Bolívares), USD (Dólares), EUR (Euro)#//
-  //           }*/
-  //         }).then(res => {
-  //             console.log(res);
-  //             resolve(res)
-  //           })
-  //           .catch(err => {
-  //             console.log(err);
-  //             reject(err)
-  //         });
-  //       }else{
-  //         reject(new Error('Validacion invalida, verifica los campos e intenta de nuevo.'));
-  //       }
-
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-
-  //   });
-
-  //   //this.closeAPI();
-
-  // }
-  //#-------------------------------------------------------------------------------------#//
-
 }
