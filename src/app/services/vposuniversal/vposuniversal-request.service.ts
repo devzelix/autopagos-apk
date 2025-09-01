@@ -84,12 +84,8 @@ export class VposuniversalRequestService {
           is_success: isSuccess
         };
 
-
-
         // Siempre hacer log
         this._logService.storagelog(logData);
-
-
 
         if (!isSuccess) {
           // Mostrar error solo si no es exitoso

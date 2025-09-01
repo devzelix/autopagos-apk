@@ -11,7 +11,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { log } from 'console';
 import {
   IPaymentTypes,
   ITransactionInputs,
@@ -567,7 +566,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     _dataApiClient = {
       date: this.getTime('date').toString(),
       hours: this.getTime('time').toString(),
-      refundNumber: this._dataApi.numeroReferencia,
+      refNumber: this._dataApi.numeroReferencia,
       numSeq: this._dataApi.numSeq,
       abononumber: this.nroAbonado,
       status: this._dataApi.mensajeRespuesta,
@@ -583,7 +582,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       _dataApiClient = {
         date: this.getTime('date').toString(),
         hours: this.getTime('time').toString(),
-        refundNumber: this._dataApi.numeroReferencia,
+        refNumber: this._dataApi.numeroReferencia,
         numSeq: this._dataApi.numSeq,
         abononumber: this.nroContrato,
         status: this._dataApi.mensajeRespuesta,

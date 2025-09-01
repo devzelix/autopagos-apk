@@ -14,8 +14,7 @@ export class LogService {
   constructor(
     private _localStorageService: LocalstorageService,
     private _printer: PrinterService
-  ) {
-  }
+  ) {}
 
   /**
    * Function to save log to local storage

@@ -30,7 +30,7 @@ export class PrinterService {
             data: {
               date: _dataTiket.date.toString(),
               hours: _dataTiket.hours.toString(),
-              refNumber: _dataTiket.refundNumber.toString(),
+              refNumber: _dataTiket.refNumber.toString(),
               numSeq: _dataTiket.numSeq.toString(),
               abononumber: _dataTiket.abononumber.toString(),
               status: _dataTiket.status.toString(),

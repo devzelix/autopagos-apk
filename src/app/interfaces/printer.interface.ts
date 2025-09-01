@@ -1,7 +1,7 @@
 export interface IPrintTicket {
   date: string;
   hours: string;
-  refundNumber: string;
+  refNumber: string;
   numSeq: string;
   abononumber: string;
   status: string;
