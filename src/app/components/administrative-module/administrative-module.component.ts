@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IUploadFile } from 'src/app/interfaces/printer.interface';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
@@ -84,28 +85,43 @@ export class AdministrativeModuleComponent implements OnInit {
    * @returns
    */
   public async pre_closeBox(macAddress: string) {
-
     try {
 
+      let dataRes: any;
+
       console.log('in pre_closeBox');
-      // let macAddress = '';
 
-      // try {
-      //   macAddress  = await this.getMacAddress();
-      // } catch (error) {
-      //   console.error(error)
-      // }
+      const responseJSON: any = await this._adminAction.pre_closeCashRegister(this.userData, macAddress);
 
-      const responseJSON = await this._adminAction.pre_closeCashRegister(this.userData, macAddress);
+      console.log('responseJSON', responseJSON.data);
 
-      console.log('responseJSON', responseJSON);
+      if (responseJSON.data.datavpos.codRespuesta === '00') {
+        const dataReq: IUploadFile = {
+          pathRoute: responseJSON.data.datavpos.nombreVoucher,
+          register: macAddress,
+          typeFile: false,
+          adminFile: true,
+        };
 
-      return responseJSON;
+        console.log('dataReq', dataReq);
 
-    } catch (error) {
-      console.error(error)
+        dataRes = await this._printer.uploadFile(dataReq);
 
-      return `error: ${error}`;
+        console.log('UPLOAD FILE', dataRes.message);
+      }
+
+      const dataReturn: any = {
+        datavpos: responseJSON.data.datavpos,
+        uploadFile: dataRes.data
+      };
+
+      console.log('RETURN DATA', dataReturn);
+
+      // creo que esto va entre paréntesis
+      return dataReturn
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
     }
 
   }
@@ -116,23 +132,42 @@ export class AdministrativeModuleComponent implements OnInit {
    */
   public async closeBox(macAddress: string) {
     try {
+      let dataRes: any;
 
       console.log('in CloseBox');
 
-      const responseJSON = await this._adminAction.closeCashRegister(this.userData, macAddress);
+      const responseJSON: any = await this._adminAction.closeCashRegister(
+        this.userData,
+        macAddress
+      );
 
-      console.log('responseJSON', responseJSON);
+      console.log('responseJSON', responseJSON['data']);
 
-      // if(responseJSON.data.datavpos.codRespuesta === "00"){
+      if (responseJSON.data.datavpos.codRespuesta === '00') {
+        const dataReq: IUploadFile = {
+          pathRoute: responseJSON.data.datavpos.nombreVoucher,
+          register: macAddress,
+          typeFile: true,
+          adminFile: true,
+        };
 
-      // }
+        dataRes = await this._printer.uploadFile(dataReq);
 
-      return responseJSON;
+        console.log('UPLOAD FILE', dataRes['message']);
+      }
 
-    } catch (error) {
-      console.error(error)
+      const dataReturn: any = {
+        closeBox: responseJSON.data.datavpos,
+        uploadFile: dataRes.data
+      };
 
-      return `error: ${error}`;
+      console.log('RETURN DATA', dataReturn);
+
+      return dataReturn
+
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
     }
 
   }
@@ -166,7 +201,6 @@ export class AdministrativeModuleComponent implements OnInit {
   //   }
   // }
 
-
   /**
    * Function to get the current MAC-ADDRESS
    * @param type Type of string
@@ -182,7 +216,7 @@ export class AdministrativeModuleComponent implements OnInit {
 
   private ShowDiologSuccess(dataRes: any){
     console.log('dataRes', dataRes);
-    const responseCode = dataRes.data.datavpos.codRespuesta;
+    const responseCode = dataRes.datavpos.codRespuesta;
     const message = this._errorsvpos.getErrorMessageCode(responseCode);
 
 

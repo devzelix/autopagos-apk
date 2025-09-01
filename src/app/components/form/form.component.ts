@@ -1285,6 +1285,8 @@ private closeInactivitySwal(): void {
       this.handleShowFormView(false);
       this.isActiveLoginInput = false;
       this.showaBtnAdmin = true;
+      this.showadmin = false;
+      this.setMainTitle('');
 
 
     } catch (error) {

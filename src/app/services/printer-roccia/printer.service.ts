@@ -25,7 +25,7 @@ export class PrinterService {
         if (_dataTiket) {
           axios({
             method: 'post',
-            url: environment.API_Printer + '/pdf',
+            url: environment.API_Printer + '/pdf/ticket-and-print',
             headers: this.headersReq,
             data: {
               date: _dataTiket.date.toString(),
@@ -84,7 +84,7 @@ export class PrinterService {
    */
   uploadFile(data: IUploadFile): Promise<any> {
     return new Promise((resolve, reject) => {
-      const url = environment.API_Printer + '/upload-file/admin';
+      const url = environment.API_Printer + '/pdf/closing-and-upload';
       axios
         .post(url, data, { headers: this.headersReq })
         .then((res) => {
