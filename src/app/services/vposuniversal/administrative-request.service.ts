@@ -12,11 +12,11 @@ export class AdministrativeRequestService {
   //#------------------------------Print the Last Voucher-------------------------------------#//
   // printLastVoucher(ci: string, register: string){ //Print the Last Voucher
 
-  //   const url = environment.API_URL_VPOS+'/administrative/print/last-voucher';
+  //   const url = environment.URL_API_MASTER+'/administrative/print/last-voucher';
 
   //   const header = {
   //     'accept': 'application/json',
-  //     'token': environment.TokenAPILaravelVPOS,
+  //     'token': environment.TOKEN_API_MASTER,
   //     'Content-Type': 'application/json',
   //   };
 
@@ -55,11 +55,11 @@ export class AdministrativeRequestService {
   //#-------------------------Print the last processed voucher--------------------------------#//
   // printLastVoucherP(ci: string, register: string){ //Print the last processed voucher
 
-  //   const url = environment.API_URL_VPOS+'/administrative/print/last-voucher-processed';
+  //   const url = environment.URL_API_MASTER+'/administrative/print/last-voucher-processed';
 
   //   const header = {
   //     'accept': 'application/json',
-  //     'token': environment.TokenAPILaravelVPOS,
+  //     'token': environment.TOKEN_API_MASTER,
   //     'Content-Type': 'application/json',
   //   };
 
@@ -98,11 +98,11 @@ export class AdministrativeRequestService {
   //#-----------------------Reprint of the last Closing Voucher-------------------------------#//
   // re_printLastCloseVoucher(ci: string, register: string){ //Reprint of the last Closing Voucher
 
-  //   const url = environment.API_URL_VPOS+'/administrative/request/re-print-last-closing-vouche';
+  //   const url = environment.URL_API_MASTER+'/administrative/request/re-print-last-closing-vouche';
 
   //   const header = {
   //     'accept': 'application/json',
-  //     'token': environment.TokenAPILaravelVPOS,
+  //     'token': environment.TOKEN_API_MASTER,
   //     'Content-Type': 'application/json',
   //   };
 
@@ -141,11 +141,11 @@ export class AdministrativeRequestService {
   //#---------------------------Pre-closing of cash register----------------------------------#//
   pre_closeCashRegister(ci: string, register: string){ //Pre-closing of cash register
 
-    const url = environment.API_URL_VPOS+'/administrative/close/pre-closing-cash-register';
+    const url = environment.URL_API_MASTER+'/administrative/close/pre-closing-cash-register';
 
     const header = {
       'accept': 'application/json',
-      'token': environment.TokenAPILaravelVPOS,
+      'token': environment.TOKEN_API_MASTER,
       'Content-Type': 'application/json',
     };
 
@@ -184,11 +184,11 @@ export class AdministrativeRequestService {
   //#-------------------------------Closing of cash register----------------------------------#//
   closeCashRegister(ci: string, register: string){ //Closing of cash register
 
-    const url = environment.API_URL_VPOS+'/administrative/close/closing-cash-register';
+    const url = environment.URL_API_MASTER+'/administrative/close/closing-cash-register';
 
     const header = {
       'accept': 'application/json',
-      'token': environment.TokenAPILaravelVPOS,
+      'token': environment.TOKEN_API_MASTER,
       'Content-Type': 'application/json',
     };
 
@@ -229,11 +229,11 @@ export class AdministrativeRequestService {
 
     // console.warn('anulationPayment', 'ci', ci, 'numSeq', numSeq, 'register', register);
 
-    const url = environment.API_URL_VPOS+'/administrative/payment/anulation';
+    const url = environment.URL_API_MASTER+'/administrative/payment/anulation';
 
     const header = {
       'accept': 'application/json',
-      'token': environment.TokenAPILaravelVPOS,
+      'token': environment.TOKEN_API_MASTER,
       'Content-Type': 'application/json',
     };
 

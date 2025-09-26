@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { environment } from 'src/environments/environment';
 import { LogService } from '../log.service';
-import { rejects } from 'assert';
 import Swal from 'sweetalert2';
 import { IPromptLog } from 'src/app/interfaces/log.interface';
 import { VposerrorsService } from './vposerrors.service';
@@ -20,7 +19,7 @@ export class VposuniversalRequestService {
 
   //#-----------------------------Conect to API and Test-----------------------------------#//
   statusOK(_dataApi: any){//Test connection to API
-    axios.get(environment.API_URL_VPOS+'/api/pingpage')
+    axios.get(environment.URL_API_MASTER+'/api/pingpage')
     .then(res => _dataApi = res).then(res => console.log(res))
     .catch(err => console.log(err));
     //this.closeAPI();
@@ -32,21 +31,36 @@ export class VposuniversalRequestService {
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
+      // const dataReq = {
+      //   "monto": _amount,
+      //   "ci": _ci,
+      //   "subscriber": _subscriber,
+      //   "balance": _balnace,
+      //   "contract": _contract,
+      //   "register": _register
+      // }
+
       const dataReq = {
-        "monto": _amount,
-        "ci": _ci,
-        "subscriber": _subscriber,
-        "balance": _balnace,
-        "contract": _contract,
-        "register": _register
+        "accion":"COMPRA",
+        "monto":"1.00",
+        "seqNum": "",
+        "vtid": "fibexval01",
+        "medio": "P2C",
+        "cedula":"19845077",
+        "tipoDocumento": "V",
+        "blockCedula":false,
+        "showVoucher":true,
+        "getCorreo":false,
+        "imprimirVoucherCliente": true,
+        "blockStandALone": false
       }
 
       axios({
         method: 'post',
-        url: environment.API_URL_VPOS+'/metodo/request/cardpay',
+        url: environment.URL_API_MASTER+'/compra',
         headers: {
           'accept': 'application/json',
-          'token': environment.TokenAPILaravelVPOS,
+          'token': environment.TOKEN_API_MASTER,
           'Content-Type': 'application/json',
           },
         data : dataReq
@@ -80,7 +94,7 @@ export class VposuniversalRequestService {
           req_body: JSON.stringify(dataReq),
           res_code: responseCode,
           res_body: JSON.stringify(res.data.datavpos) ?? 'response undefined',
-          route_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+          route_api: `${environment.URL_API_MASTER}/metodo/request/cardpay`,
           is_success: isSuccess
         };
 
@@ -143,7 +157,7 @@ export class VposuniversalRequestService {
           req_body: JSON.stringify(dataReq),
           res_code: 'ERROR',
           res_body: JSON.stringify(err.data.datavpos) ?? 'response undefined',
-          route_api: `${environment.API_URL_VPOS}/metodo/request/cardpay`,
+          route_api: `${environment.URL_API_MASTER}/metodo/request/cardpay`,
           is_success: false
         })
 

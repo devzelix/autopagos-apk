@@ -87,9 +87,9 @@ export class LogService {
       console.log('BODY LOGS', body)
 
       const headers = {
-        token: environment.TokenAPILaravelVPOS
+        token: environment.TOKEN_API_MASTER
       }
-      axios.post<ILog[],any>(environment.API_URL_VPOS+'/log/create', body, {headers})
+      axios.post<ILog[],any>(environment.URL_API_MASTER+'/log/create', body, {headers})
       .then(resLog => {
         if(resLog.status === 201) {
           localStorage.removeItem('logs');
