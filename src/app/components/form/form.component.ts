@@ -66,6 +66,7 @@ import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { UniquePaymentComponent } from '../unique-payment/unique-payment.component';
+import { LocalstorageService } from 'src/app/services/localstorage.service';
 
 enum PAGES_NAVIGATION {
   LOGIN,
@@ -297,6 +298,7 @@ export class FormComponent implements OnInit {
   // para mostrar o ocultar el modulo administrativo
   public showaBtnAdmin: boolean = true;
   public showadmin: boolean = false;
+  public ipUbiiPos: boolean = true;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -324,10 +326,18 @@ export class FormComponent implements OnInit {
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    // private _localStorageService: LocalstorageService
-    // private _ApiVPOS: VposuniversalRequestService,//API VPOSUniversal PINPAD -By:MR-
-  ) //private hcaptchaService: NgHcaptchaService
+    private _localStorageService: LocalstorageService
+  )
   {
+
+    if(this._localStorageService.get('ubiiposHost')) {
+      console.log('IP de Ubiipos cargada desde LocalStorage:', this._localStorageService.get('ubiiposHost'));
+      this.ipUbiiPos = false;
+    } else {
+      this.ipUbiiPos = true;
+      console.log('No se encontró IP de Ubiipos en LocalStorage.');
+    }
+
     this.cacheService.clear();
 
     this.dataBankService.bankList.subscribe((banks) => {
@@ -2690,6 +2700,15 @@ public getCurrentStepTitle = (): string => {
       this.showadmin = true;
       console.log('EVENT ELSE IF', $event, this.showadmin)
     }
+  }
+
+  /**
+   * Function to handle the IP UBII POS switch
+   * @param $event boolean value
+   */
+  public handlerIpUbiiPos ($event: boolean): void {
+    console.log('EVENT IP UBII POS', $event)
+    this.ipUbiiPos = $event;
   }
 
 }

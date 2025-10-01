@@ -2,29 +2,23 @@
  * Interface to request payment to Ubiipos
  */
 export interface UbiiposDataSend {
-    paymentId: string;
-    amount?: number;
-    uniqueSpId: string;
-    customerId: string;
-    stationId: string;
-    userId: string;
-    bOffice: string;
-    license: string;
-    operation: 'PAYMENT' | 'SETTLEMENT';
-    settleType?: 'N' | 'Q';
-}
-
-export interface UbiiposRequest {
-    posData: UbiiposDataSend;
+  paymentId?: string; // Unique payment identifier
+  amount?: number; // Amount to be paid
+  uniqueSpId?: string;
+  customerId: string; // Customer identifier (cedula or rif)
+  stationId?: string;
+  userId?: string;
+  bOffice?: string;
+  license?: string;
+  operation: 'PAYMENT' | 'SETTLEMENT'; // Type of operation (PAYMENT=Pagos or SETTLEMENT=Cierre de lote)
+  settleType?: 'N' | 'Q'; // Settlement type (N: Cierre Normal, Q: Cierre inmediato)
 }
 
 /**
  * Interface to response payment to Ubiipos
  */
 export interface UbiiposResponse {
-    status: string;
+    status: number;
     message: string;
-    data: {
-        // Information about the payment    
-    }    
+    data: any | null;
 }

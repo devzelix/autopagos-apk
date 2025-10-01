@@ -1,0 +1,87 @@
+<div class="ip-ubiipos-warning-container">
+  <div class="ip-warning-header">
+    <!-- <div class="ip-warning-icon"></div> -->
+    <h2 class="ip-ubiipos-warning-text">
+      No se ha configurado la dirección IP del dispositivo Ubiipos.
+    </h2>
+  </div>
+
+  <p class="ip-ubiipos-warning-detail">
+    Por favor, contacte al administrador o introduzca la IP y el Puerto para configurar el sistema.
+  </p>
+
+  <form #ipForm="ngForm" (ngSubmit)="onSubmit(ipForm)" class="ip-config-form">
+    <div class="ip-form-row">
+      <div class="ip-form-group ip-group-ip">
+        <label for="ipAddressInput" class="ip-label">
+          Dirección IP:
+        </label>
+
+        <div class="ip-input-container">
+          <input
+            type="text"
+            id="ipAddressInput"
+            placeholder="Ej: 192.168.1.1"
+            class="ip-input"
+            name="ipAddress"
+            [(ngModel)]="ipAddress"
+            required
+            #ipField="ngModel"
+            [ngClass]="{'is-invalid': ipField.invalid && isFormSubmitted}"
+          >
+          <button
+            *ngIf="ipAddress"
+            (click)="ipAddress = ''"
+            type="button"
+            class="ip-input-clear"
+            aria-label="Limpiar campo IP">
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <div class="ip-form-group ip-group-port">
+        <label for="portInput" class="ip-label">
+          Puerto:
+        </label>
+
+        <div class="ip-input-container">
+          <input
+            type="text"
+            id="portInput"
+            placeholder="Ej: 8080"
+            class="ip-input"
+            name="portNumber"
+            [(ngModel)]="portNumber"
+            required
+            min="1"
+            max="65535"
+            #portField="ngModel"
+            [ngClass]="{'is-invalid': portField.invalid && isFormSubmitted}"
+          >
+          <button
+            *ngIf="portNumber"
+            (click)="portNumber = null"
+            type="button"
+            class="ip-input-clear"
+            aria-label="Limpiar campo Puerto">
+            &times;
+          </button>
+        </div>
+      </div>
+    </div>
+    <p class="ip-validation-message"
+      [ngClass]="{'success': isIpValid}"
+      *ngIf="validationMessage">
+      {{ validationMessage }}
+    </p>
+
+    <button
+      type="submit"
+      class="ip-button"
+      [disabled]="isIpValid"
+    >
+      <span class="button-text">Guardar y Conectar</span>
+    </button>
+  </form>
+</div>
