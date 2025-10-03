@@ -23,7 +23,8 @@ import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vpos
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { IPrintTicket } from 'src/app/interfaces/printer.interface';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
-import { UbiiposDataSend, UbiiposResponse } from 'src/app/interfaces/api/ubiipos';
+import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
+import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 
 @Component({
   selector: 'app-modal-payment',
@@ -328,7 +329,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       this.alertFindDniMercantil('Realizando operación', 'Por favor espere...');
 
       // 1. Process card request
-      const resPay: UbiiposResponse = await this.requestCardUbiiPos();
+      const resPay: IResponse = await this.requestCardUbiiPos();
 
       console.warn('Card request response:', resPay);
 
@@ -347,7 +348,27 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      if(resPay.data.TRANS_CODE_RESULT !== '00'){
+      if (resPay.data.TRANS_CODE_RESULT === '00'){
+        let messageText: string = '';
+        //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
+        console.log('Registrar en SAE...');
+        console.log('Registrar en Thomas Cobertura...');
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Transacción Procesada',
+          text: messageText,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 4000,
+          didClose: () => this.onSubmitPayForm.emit(),
+        });
+
+        this.closeAlert();
+        this.sendPayment = !this.formPayment.valid; // Always reset payment flag
+        return;
+
+      } else {
         Swal.fire({
           icon: 'error',
           title: resPay.data.TRANS_MESSAGE_RESULT,
@@ -362,142 +383,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         return;
       }
 
-
-
-
     } catch (error) {
       console.log('ESTO ES ERROR', error);
     }
 
-
-    //   this.alertFindDniMercantil('Realizando operación', 'Por favor espere...');
-
-    //   // 1. Process card request
-    //   this.requestCard()
-    //     .then((_dataApi) => {
-    //       console.warn('Card request response:', _dataApi);
-
-    //       // Handle missing response data
-    //       if (!_dataApi || !_dataApi?.data.datavpos) {
-    //         Swal.fire({
-    //           icon: 'error',
-    //           title: 'Ha ocurrido un error, intente nuevamente más tarde',
-    //           showConfirmButton: false,
-    //           allowOutsideClick: true,
-    //           timer: 4000,
-    //         });
-    //       }
-
-    //       this._dataApi = _dataApi.data.datavpos;
-
-    //       const responseCode = this._dataApi.codRespuesta;
-    //       const messageResponse =
-    //         this._errorsvpos.getErrorMessageLeter(
-    //           this._dataApi.mensajeRespuesta
-    //         ) ?? this._dataApi.mensajeRespuesta;
-    //       const messageCodeRes =
-    //         this._errorsvpos.getErrorMessageCode(responseCode);
-    //       const saeRegister = _dataApi.data.saeReport;
-    //       let message =
-    //         responseCode === '05'
-    //           ? messageCodeRes + ' \n' + messageResponse
-    //           : messageCodeRes;
-
-    //       console.log(
-    //         '<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
-    //         this._dataApi.mensajeRespuesta,
-    //         message,
-    //         responseCode
-    //       );
-
-    //       // 2. Handle success case (code '00')
-    //       if (responseCode === '00') {
-    //         this.generarPDF(false).catch(console.error); // Generate PDF async
-
-    //         if (saeRegister !== null && !saeRegister.success) {
-    //           Swal.fire({
-    //             icon: 'success',
-    //             title: 'Pago procesado con éxito \n' + message,
-    //             showConfirmButton: false,
-    //             allowOutsideClick: false,
-    //             timer: 4000,
-    //             didClose: () => {
-    //               Swal.fire({
-    //                 icon: 'warning',
-    //                 title:
-    //                   'Pago aprobado. Requiere registro manual en el sistema. \n Por favor, contacte a soporte.',
-    //                 confirmButtonText: 'Confirmar',
-    //                 confirmButtonColor: '#d33',
-    //                 showConfirmButton: true,
-    //                 allowOutsideClick: false,
-    //                 didClose: () => this.onSubmitPayForm.emit(),
-    //               });
-    //             },
-    //           });
-    //         } else {
-    //           Swal.fire({
-    //             icon: 'success',
-    //             title: 'Pago procesado con éxito \n' + message,
-    //             showConfirmButton: false,
-    //             allowOutsideClick: false,
-    //             timer: 4000,
-    //             didClose: () => this.onSubmitPayForm.emit(),
-    //           });
-    //         }
-    //       }
-    //       // 3. Handle other cases
-    //       else {
-    //         // Special case for code '51'
-    //         if (responseCode === '51') {
-    //           this.generarPDF(false).catch(console.error);
-    //         }
-
-    //         console.log('CODIGO DE RESPUESTA', responseCode);
-
-    //         Swal.fire({
-    //           icon: 'error',
-    //           title: message,
-    //           showConfirmButton: false,
-    //           allowOutsideClick: false,
-    //           timer: 4000,
-    //           didClose: () => resolve(),
-    //         });
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.log('ESTO ES ERROR', error);
-
-    //       // const messageCodeRes =
-    //       // this._errorsvpos.getErrorMessageCode(responseCode);
-    //       // 4. Handle request errors
-    //       let _messageError: string =
-    //         'Ha ocurrido un error\nConsulte con el personal de Fibex';
-
-    //       let timeShow: number = 4000;
-
-    //       console.warn('DNI TO LOOK ERROR', this.dni?.value);
-
-    //       if (this.dni?.value === '90000000') {
-    //         _messageError =
-    //           'Muestrele este error a un técnico \n Error: ' +
-    //           (error instanceof Error ? error.message : 'Desconocido');
-    //         timeShow = 6000;
-    //       }
-
-    //       Swal.fire({
-    //         icon: 'error',
-    //         title: _messageError,
-    //         showConfirmButton: false,
-    //         allowOutsideClick: false,
-    //         timer: timeShow,
-    //         didClose: () => resolve(),
-    //       });
-    //     })
-    //     .finally(() => {
-    //       this.closeAlert();
-    //       this.sendPayment = !this.formPayment.valid; // Always reset payment flag
-    //     });
-    // });
   }
 
   /**
@@ -712,7 +601,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   *
+   * Reque
    * @returns
    */
   public async requestCardUbiiPos(): Promise<any> {
@@ -733,7 +622,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       const amountFormat = Math.round(parseFloat(this.mount?.value.replace(',', '')) * 100);
 
-      const bodyUbiipos: UbiiposDataSend = {
+      const bodyUbiipos: IUbiiposDataSend = {
         customerId: this.dni?.value,
         amount: amountFormat,
         operation: 'PAYMENT',
@@ -741,13 +630,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       console.log('bodyUbiipos', bodyUbiipos);
 
-      const payRes: UbiiposResponse = await this._ubiipos.paymentUbiipos(bodyUbiipos);
+      const payRes: IResponse = await this._ubiipos.paymentUbiipos(bodyUbiipos);
 
       console.log('payRes', payRes);
 
       return payRes;
     } catch (error) {
-      console.error('SUPER ERRORRRORORORORO:', error);
+      console.error('ERROR requestCardUbiiPos:', error);
       return error;
     }
 

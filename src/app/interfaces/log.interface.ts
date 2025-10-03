@@ -15,14 +15,14 @@ export interface ILog {
 }
 
 export type IPromptLog = {
-  dateTime: ILog['dateTime'],
-  log_type: ILog['log_type'],
-  http_method: ILog['http_method'],
-  status: ILog['status'],
-  numSubscriber: ILog['numSubscriber'],
-  req_body: ILog['req_body'],
-  res_code: ILog['res_code'],
-  res_body: ILog['res_body'],
-  route_api: ILog['route_api'],
-  is_success: ILog['is_success'],/* The `request_body` property in the `ILog` interface is used to store the body of the HTTP request. It can hold any type of data or be undefined if there is no request body associated with the log entry. In the `IPromptLog` type, `request_body` is an optional property that can be included when creating a prompt log object. */
+  dateTime: ILog['dateTime'];
+  log_type: ILog['log_type'];
+  is_success: ILog['is_success'];/* The `request_body` property in the `ILog` interface is used to store the body of the HTTP request. It can hold any type of data or be undefined if there is no request body associated with the log entry. In the `IPromptLog` type, `request_body` is an optional property that can be included when creating a prompt log object. */
+  http_method: ILog['http_method'];
+  status: ILog['status'];
+  route_api: ILog['route_api'];
+  req_body: ILog['req_body'];
+  res_code: ILog['res_code'];
+  res_body: ILog['res_body'];
+  numSubscriber: ILog['numSubscriber'];
 }

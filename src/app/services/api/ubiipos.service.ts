@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-// import { LogService } from '../log.service';
 import axios from 'axios';
-import { UbiiposDataSend, UbiiposResponse } from 'src/app/interfaces/api/ubiipos';
+import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
+import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LocalstorageService } from '../localstorage.service';
-// import { IPromptLog } from 'src/app/interfaces/log.interface';
+import { LogService } from '../log.service';
+import { ILog } from 'src/app/interfaces/log.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,83 +15,135 @@ export class UbiiposService {
   // POST ipAddress:8080/api/spPayment
 
   constructor(
-    // private _logService: LogService,
+    private _logService: LogService,
     private _localStorageService: LocalstorageService
   ) { }
 
     //#--------------------------------Test Ubiipos---------------------------------------#//
-  async testUbiipos(iptest: string): Promise<UbiiposResponse> {
+  async testUbiipos(iptest: string): Promise<IResponse> {
+
+    let resReturn: IResponse;
 
     try {
-
       // Validate `iptest`
       if (!iptest) {
-        throw new Error('IP address is required');
+        resReturn = {
+          status: 400,
+          message: 'IP address is required'
+        }
+
+        return resReturn;
       }
 
-      // Make request
-      const response = await axios.post(
-        `${iptest}/api/spPayment`,
-        {
+      const bodyReq: IRequest = {
+        url: `${iptest}/api/spPayment`,
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        data: {
           paymentId: 'fibexUbii',
           customerId: '1000000',
           amount: 100,
           operation: 'PAYMENT'
         },
-        {
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
-        }
-      );
+      }
 
-      const res: UbiiposResponse = {
+      // Make request
+      const response = await axios(bodyReq);
+
+      resReturn = {
         status: response.status,
         message: response.statusText,
         data: response.data as any
       }
 
-      return res;
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-TEST',
+        is_success: true,
+        http_method: 'POST',
+        status: resReturn.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyReq.data),
+        res_code: response.data.TRANS_CODE_RESULT,
+        res_body: resReturn.data,
+        numSubscriber: 'N/A',
+      });
+
+      return resReturn;
     } catch (error) {
       console.error(error);
+
+      // Body Request
+      const bodyReq: IRequest = {
+        url: `${iptest}/api/spPayment`,
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        data: {
+          paymentId: 'fibexUbii',
+          customerId: '1000000',
+          amount: 100,
+          operation: 'PAYMENT'
+        },
+      }
 
       let statusCode = 500;
       let errorMessage = 'Unknown error';
 
       if (axios.isAxiosError(error)) {
-          // Ahora TypeScript sabe que 'error' es un error de Axios
-          if (error.response) {
-              // Error del servidor (4xx o 5xx)
-              statusCode = error.response.status;
-              errorMessage = error.response.data?.message || error.message;
-          } else if (error.message === 'Network Error') {
-              // Error de red
-              statusCode = 0;
-              errorMessage = 'Network Error: The request could not be completed.';
-          } else {
-              // Otros errores de Axios (como configuración)
-              errorMessage = error.message;
-          }
+        // Ahora TypeScript sabe que 'error' es un error de Axios
+        if (error.response) {
+          // Error del servidor (4xx o 5xx)
+          statusCode = error.response.status;
+          errorMessage = error.response.data?.message || error.message;
+        } else if (error.message === 'Network Error') {
+          // Error de red
+          statusCode = 0;
+          errorMessage = 'Network Error: The request could not be completed.';
+        } else {
+          // Otros errores de Axios (como configuración)
+          errorMessage = error.message;
+        }
 
       } else if (error instanceof Error) {
-          // Tu error de validación ('IP address is required')
-          statusCode = 400;
-          errorMessage = error.message;
+        // Tu error de validación ('IP address is required')
+        statusCode = 400;
+        errorMessage = error.message;
       }
 
-      const errRes: UbiiposResponse = {
-          status: statusCode,
-          message: errorMessage,
-          data: {}
+      const errRes: IResponse = {
+        status: statusCode,
+        message: errorMessage
       }
+
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-TEST',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyReq.data),
+        res_code: 'ERROR',
+        res_body: errRes.message,
+        numSubscriber: 'N/A',
+      });
+
       return errRes;
     }
   }
   //#--------------------------------------------------------------------------------------#//
 
   //#--------------------------------Payment Ubiipos---------------------------------------#//
-  async paymentUbiipos(request: UbiiposDataSend){
+  async paymentUbiipos(request: IUbiiposDataSend){
+    let resReturn: IResponse;
 
     try {
       // Get host
@@ -101,68 +154,105 @@ export class UbiiposService {
 
       // Validate url
       if (!url) {
-        const res: UbiiposResponse = {
+        resReturn = {
           status: 400,
-          message: 'Ubiipos host is not configured',
-          data: {}
+          message: 'Ubiipos host is not configured'
         }
-        return res;
+        return resReturn;
       }
 
       // Get body
-      const body: UbiiposDataSend = {
+      const body: IUbiiposDataSend = {
         paymentId: "fibexUbii",
         ...request
       };
 
       // Get headers
-      const headers = {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
+      const bodyReq: IRequest = {
+        url: url,
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        data: body
       }
 
       // Make request
-      const response = await axios.post<UbiiposResponse, any>(url, body, {headers})
+      const response = await axios(bodyReq);
 
-      const res: UbiiposResponse = {
+      resReturn = {
         status: response.status,
         message: response.statusText,
         data: response.data as any
       }
 
-      return res;
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS',
+        is_success: true,
+        http_method: bodyReq.method as ILog['http_method'],
+        status: resReturn.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(body),
+        res_code: response.data.TRANS_CODE_RESULT,
+        res_body: resReturn.data,
+        numSubscriber: 'N/A',
+      });
+
+      return resReturn;
     } catch (error) {
       console.error(error);
 
       let statusCode = 500;
       let errorMessage = 'Unknown error';
+      // Get body
+      const body: IUbiiposDataSend = {
+        paymentId: "fibexUbii",
+        ...request
+      };
 
       if (axios.isAxiosError(error)) {
-          // Ahora TypeScript sabe que 'error' es un error de Axios
-          if (error.response) {
-              // Error del servidor (4xx o 5xx)
-              statusCode = error.response.status;
-              errorMessage = error.response.data?.message || error.message;
-          } else if (error.message === 'Network Error') {
-              // Error de red
-              statusCode = 0;
-              errorMessage = 'Network Error: The request could not be completed.';
-          } else {
-              // Otros errores de Axios (como configuración)
-              errorMessage = error.message;
-          }
+        // Ahora TypeScript sabe que 'error' es un error de Axios
+        if (error.response) {
+          // Error del servidor (4xx o 5xx)
+          statusCode = error.response.status;
+          errorMessage = error.response.data?.message || error.message;
+        } else if (error.message === 'Network Error') {
+          // Error de red
+          statusCode = 0;
+          errorMessage = 'Network Error: The request could not be completed.';
+        } else {
+          // Otros errores de Axios (como configuración)
+          errorMessage = error.message;
+        }
 
       } else if (error instanceof Error) {
-          // Tu error de validación ('IP address is required')
-          statusCode = 400;
-          errorMessage = error.message;
+        // Tu error de validación ('IP address is required')
+        statusCode = 400;
+        errorMessage = error.message;
       }
 
-      const errRes: UbiiposResponse = {
-          status: statusCode,
-          message: errorMessage,
-          data: {}
+      const errRes: IResponse = {
+        status: statusCode,
+        message: errorMessage
       }
+
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
+        req_body: JSON.stringify(body),
+        res_code: 'ERROR',
+        res_body: errRes.message,
+        numSubscriber: 'N/A',
+      });
+
       return errRes;
     }
   }

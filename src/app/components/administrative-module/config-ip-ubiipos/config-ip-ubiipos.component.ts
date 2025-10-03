@@ -5,7 +5,7 @@ import { LocalstorageService } from 'src/app/services/localstorage.service';
 import { EventEmitter } from '@angular/core';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import Swal from 'sweetalert2';
-import { UbiiposResponse } from 'src/app/interfaces/api/ubiipos';
+import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 
 @Component({
   selector: 'app-config-ip-ubiipos',
@@ -74,7 +74,7 @@ export class ConfigIpUbiiposComponent implements OnInit {
       this.isIpValid = true;
       // Si tu servicio usa HttpClient de Angular, esto ya ocurre.
       this.showModal('Cancele la operación en el punto de venta si es necesario.', 'warning', 22000);
-      const testConnection: UbiiposResponse = await this._ubiiposService.testUbiipos(fullAddress);
+      const testConnection: IResponse = await this._ubiiposService.testUbiipos(fullAddress);
 
       console.log('testConnection>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', testConnection, testConnection.status);
 

@@ -1,7 +1,7 @@
 /**
  * Interface to request payment to Ubiipos
  */
-export interface UbiiposDataSend {
+export interface IUbiiposDataSend {
   paymentId?: string; // Unique payment identifier
   amount?: number; // Amount to be paid
   uniqueSpId?: string;
@@ -14,11 +14,3 @@ export interface UbiiposDataSend {
   settleType?: 'N' | 'Q'; // Settlement type (N: Cierre Normal, Q: Cierre inmediato)
 }
 
-/**
- * Interface to response payment to Ubiipos
- */
-export interface UbiiposResponse {
-    status: number;
-    message: string;
-    data: any | null;
-}
