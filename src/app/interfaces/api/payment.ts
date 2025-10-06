@@ -1,12 +1,12 @@
 export interface IPaymentRegister {
   id_contrato: string;
-  mount: number;
+  mount: string;
   date: string;
   reference: string;
   comment: string;
   dni: string;
   abonado: string;
-  balance: number;
+  balance: string;
 }
 
 export interface IPaymentCreate {
@@ -15,6 +15,6 @@ export interface IPaymentCreate {
   numRef: string;
   numSubscriber: string;
   lastCardNum: string;
-  amount: number;
+  amount: string;
   terminalVirtual: string;
 }

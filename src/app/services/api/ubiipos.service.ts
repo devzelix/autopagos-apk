@@ -59,6 +59,8 @@ export class UbiiposService {
         data: response.data as any
       }
 
+      console.log('testUbiipos: \n', resReturn);
+
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
         dateTime: new Date(),
@@ -69,29 +71,13 @@ export class UbiiposService {
         route_api: bodyReq.url,
         req_body: JSON.stringify(bodyReq.data),
         res_code: response.data.TRANS_CODE_RESULT,
-        res_body: resReturn.data,
-        numSubscriber: 'N/A',
+        res_body: JSON.stringify(resReturn.data),
+        numSubscriber: null,
       });
 
       return resReturn;
     } catch (error) {
       console.error(error);
-
-      // Body Request
-      const bodyReq: IRequest = {
-        url: `${iptest}/api/spPayment`,
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        data: {
-          paymentId: 'fibexUbii',
-          customerId: '1000000',
-          amount: 100,
-          operation: 'PAYMENT'
-        },
-      }
 
       let statusCode = 500;
       let errorMessage = 'Unknown error';
@@ -122,6 +108,8 @@ export class UbiiposService {
         message: errorMessage
       }
 
+      console.error('ERROR - testUbiipos: \n', errRes);
+
       // LOGS SAVE ERROR
       this._logService.storagelog({
         dateTime: new Date(),
@@ -129,11 +117,16 @@ export class UbiiposService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: bodyReq.url,
-        req_body: JSON.stringify(bodyReq.data),
+        route_api: `${iptest}/api/spPayment`,
+        req_body: JSON.stringify({
+          paymentId: 'fibexUbii',
+          customerId: '1000000',
+          amount: 100,
+          operation: 'PAYMENT'
+        }),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber: 'N/A',
+        numSubscriber: null,
       });
 
       return errRes;
@@ -197,8 +190,8 @@ export class UbiiposService {
         route_api: bodyReq.url,
         req_body: JSON.stringify(body),
         res_code: response.data.TRANS_CODE_RESULT,
-        res_body: resReturn.data,
-        numSubscriber: 'N/A',
+        res_body: JSON.stringify(resReturn.data),
+        numSubscriber:  null,
       });
 
       return resReturn;
@@ -207,11 +200,6 @@ export class UbiiposService {
 
       let statusCode = 500;
       let errorMessage = 'Unknown error';
-      // Get body
-      const body: IUbiiposDataSend = {
-        paymentId: "fibexUbii",
-        ...request
-      };
 
       if (axios.isAxiosError(error)) {
         // Ahora TypeScript sabe que 'error' es un error de Axios
@@ -246,11 +234,14 @@ export class UbiiposService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
-        req_body: JSON.stringify(body),
+        route_api: `${this._localStorageService.get<string>('ubiiposHost') ?? 'NotFound'}/api/spPayment`,
+        req_body: JSON.stringify({
+          paymentId: "fibexUbii",
+          ...request
+        }),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber: 'N/A',
+        numSubscriber:  null,
       });
 
       return errRes;

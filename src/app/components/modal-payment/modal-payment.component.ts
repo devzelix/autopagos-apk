@@ -25,6 +25,8 @@ import { IPrintTicket } from 'src/app/interfaces/printer.interface';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
 import { IResponse } from 'src/app/interfaces/api/handlerResReq';
+import { PaymentsService } from 'src/app/services/api/payments.service';
+import { IPaymentCreate, IPaymentRegister } from 'src/app/interfaces/api/payment';
 
 @Component({
   selector: 'app-modal-payment',
@@ -69,7 +71,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     private _ApiVPOS: VposuniversalRequestService, //API VPOSUniversal PINPAD -By:MR-
     private _printer: PrinterService, // API driver -By:MR-
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
-    private _adminAction: AdministrativeRequestService
+    private _adminAction: AdministrativeRequestService,
+    private _registerTransaction: PaymentsService
   ) {}
 
   ngOnInit(): void {
@@ -349,10 +352,65 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       }
 
       if (resPay.data.TRANS_CODE_RESULT === '00'){
+        /**
+          {
+            id_contrato: string;
+            mount: number;
+            date: string;
+            reference: string;
+            comment: string;
+            dni: string;
+            abonado: string;
+            balance: number;
+          }
+
+          {
+            "RESPONSE_TYPE": "PAYMENT",
+            "TRANS_CODE_RESULT": "00",
+            "TRANS_MESSAGE_RESULT": "",
+            "TRANS_CONFIRM_NUM": "184449",
+            "FECHA": "1006211413",
+            "BIN": "54346421",
+            "TERMINAL": "U1000273",
+            "AFILIADO": "000000000100344",
+            "LOTE": "000001",
+            "TRACE": "000069",
+            "REFERENCIA": "251006000069",
+            "METODO_ENTRADA": "CONTACTLESS",
+            "TIPO_TARJETA": "CREDITO",
+            "PAN": "543464******3894"
+          }
+         */
         let messageText: string = '';
+
+        const bodyResgister: IPaymentRegister = {
+          dni: this.dni?.value,
+          mount: this.mountFormat,
+          abonado: this.nroAbonado,
+          balance: this.saldoBs,
+          id_contrato: this.nroContrato,
+          reference: resPay.data.REFERENCIA,
+          comment: `PAGO POR CAJA AUTOMATICA - ${resPay.data.FECHA} - ${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
+          date: new Date().toDateString()
+        }
         //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
         console.log('Registrar en SAE...');
+        const saeRegister = this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
+        console.log('Registrado en SAE\n', saeRegister);
+
+        const bodyCreate: IPaymentCreate = {
+          dateTransaction: new Date(),
+          numSeq: resPay.data.TRANS_CONFIRM_NUM,
+          numRef: resPay.data.REFERENCIA,
+          numSubscriber: this.nroAbonado,
+          lastCardNum: resPay.data.PAN.slice(-4),
+          amount: this.mountFormat,
+          terminalVirtual: 'fibexUbii'
+        }
+
         console.log('Registrar en Thomas Cobertura...');
+        const createTransaction = this._registerTransaction.paymentCreate(bodyCreate);
+        console.log('Registrado en Thomas Cobertura\n', createTransaction);
 
         Swal.fire({
           icon: 'success',
@@ -601,7 +659,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Reque
+   * Request UBIIPOS
    * @returns
    */
   public async requestCardUbiiPos(): Promise<any> {
@@ -623,7 +681,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       const amountFormat = Math.round(parseFloat(this.mount?.value.replace(',', '')) * 100);
 
       const bodyUbiipos: IUbiiposDataSend = {
-        customerId: this.dni?.value,
+        customerId: `${this.typeDNI}${this.dni?.value}`,
         amount: amountFormat,
         operation: 'PAYMENT',
       }

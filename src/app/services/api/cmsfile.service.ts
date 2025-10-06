@@ -5,6 +5,7 @@ import { Base64Service } from "./base64.service";
 import * as mime from "mime-types";
 import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
+import { LogService } from '../log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,60 +13,16 @@ import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 export class CMSfileService {
 
   constructor(
-    private _base64Service: Base64Service
+    private _base64Service: Base64Service,
+    private _logService: LogService
   ) { }
 
+
   /**
-   * @description Upload files to the server through API-Master
-   * @param fileInfo
-   * @param is_anulation
-   */
-  // public async uploadFile(pathRoute: string, name: string) {
-  //   try {
-  //     // Validate file data
-  //     if (!pathRoute) {
-  //       throw new Error('No se ha proporcionado la ruta del archivo para subir');
-  //     }
-
-  //     const type = mime.lookup(pathRoute);
-  //     const base64 = await this._base64Service.encodeFile(pathRoute);
-
-  //     const headers_req = {
-  //       Accept: "application/json",
-  //       'TokenAuth': environment.TOKEN_CMS,
-  //       'Authorization': `Basic ${btoa(`${environment.USER_CMS}:${environment.PASS_CMS}`)}`,
-  //     };
-
-  //     const data_req = {
-  //       file: `data:${type};base64, ${base64}`,
-  //       name: name,
-  //       folder: 'Auto_Pago_Files',
-  //     };
-
-  //     return await axios({
-  //       url: `${environment.URL_API_CMS}/${environment.SUFIJOUP_CMS}`,
-  //       method: "POST",
-  //       headers: headers_req,
-  //       data: data_req,
-  //     })
-  //     .then((res) => {
-  //       return Promise.resolve(res.data);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       return Promise.reject(err);
-  //     });
-
-  //   } catch (err) {
-  //     console.error(err);
-  //     throw new Error('Error al subir el archivo');
-  //   }
-  // }
-
-   /**
-   * @description Upload files to the server through API-Master
-   * @param fileInfo
-   * @param is_anulation
+   * @description Upload File to cms server
+   * @param pathRoute
+   * @param name
+   * @returns url: string
    */
   public async uploadFile(pathRoute: string, name: string) {
     let resReturn: IResponse;
@@ -84,7 +41,7 @@ export class CMSfileService {
       const type = mime.lookup(pathRoute);
       const base64 = await this._base64Service.encodeFile(pathRoute);
 
-      const dataReq: IRequest = {
+      const bodyReq: IRequest = {
         url: `${environment.URL_API_CMS}/${environment.SUFIJOUP_CMS}`,
         method: 'POST',
         headers: {
@@ -99,9 +56,9 @@ export class CMSfileService {
         }
       }
 
-      const resultReq = await axios(dataReq);
+      const resultReq = await axios(bodyReq);
 
-      console.log(resultReq);
+      console.log('uploadFile: \n', resultReq);
 
       resReturn = {
         status: resultReq.status,
@@ -109,10 +66,24 @@ export class CMSfileService {
         data: resultReq.data
       }
 
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UPLOAD-FILE-TO-CMS',
+        is_success: true,
+        http_method: 'POST',
+        status: resReturn.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyReq.data),
+        res_code: resReturn.status.toString(),
+        res_body: JSON.stringify(resReturn.data),
+        numSubscriber:  null,
+      });
+
       return resReturn;
 
     } catch (error) {
-     console.error(error);
+      console.error(error);
 
       let statusCode = 500;
       let errorMessage = 'Unknown error';
@@ -141,41 +112,29 @@ export class CMSfileService {
       const errRes: IResponse = {
         status: statusCode,
         message: errorMessage,
-        data: {}
       }
+
+      console.error('ERROR - uploadFile: \n', errRes);
+
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UPLOAD-FILE-TO-CMS',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: `${environment.URL_API_CMS}/${environment.SUFIJOUP_CMS}`,
+        req_body: JSON.stringify({
+          file: `data:Type;base64, base64`,
+          name: name,
+          folder: 'Auto_Pago_Files'
+        }),
+        res_code: errRes.status.toString(),
+        res_body: errRes.message,
+        numSubscriber:  null,
+      });
+
       return errRes;
     }
   }
 }
-
-/**
- // ---------------------------------- LOGS try
- // LOGS SAVE SUCCESS
-      this._logService.storagelog({
-        dateTime: new Date(),
-        log_type: 'UBIIPOS-TEST',
-        is_success: true,
-        http_method: 'POST',
-        status: resReturn.status,
-        route_api: bodyReq.url,
-        req_body: JSON.stringify(bodyReq.data),
-        res_code: response.data.TRANS_CODE_RESULT,
-        res_body: resReturn.data,
-        numSubscriber: 'N/A',
-      });
-
-    // ---------------------------------- LOGS CATCH
-    // LOGS SAVE ERROR
-      this._logService.storagelog({
-        dateTime: new Date(),
-        log_type: 'UBIIPOS-TEST',
-        is_success: false,
-        http_method: 'POST',
-        status: errRes.status,
-        route_api: bodyReq.url,
-        req_body: JSON.stringify(bodyReq.data),
-        res_code: 'ERROR',
-        res_body: errRes.message,
-        numSubscriber: 'N/A',
-      });
- */

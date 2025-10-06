@@ -29,37 +29,3 @@ export class Base64Service {
     return decode;
   }
 }
-
-// TODO: METER UN TRY CATCH A ESTAS FUNCIONES
-
-/**
- // ---------------------------------- LOGS try
- // LOGS SAVE SUCCESS
-      this._logService.storagelog({
-        dateTime: new Date(),
-        log_type: 'UBIIPOS-TEST',
-        is_success: true,
-        http_method: 'POST',
-        status: resReturn.status,
-        route_api: bodyReq.url,
-        req_body: JSON.stringify(bodyReq.data),
-        res_code: response.data.TRANS_CODE_RESULT,
-        res_body: resReturn.data,
-        numSubscriber: 'N/A',
-      });
-
-    // ---------------------------------- LOGS CATCH
-    // LOGS SAVE ERROR
-      this._logService.storagelog({
-        dateTime: new Date(),
-        log_type: 'UBIIPOS-TEST',
-        is_success: false,
-        http_method: 'POST',
-        status: errRes.status,
-        route_api: bodyReq.url,
-        req_body: JSON.stringify(bodyReq.data),
-        res_code: 'ERROR',
-        res_body: errRes.message,
-        numSubscriber: 'N/A',
-      });
- */

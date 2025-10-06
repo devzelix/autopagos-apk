@@ -22,22 +22,6 @@ export class LogService {
    */
   public storagelog = async (logData: IPromptLog) => {
     try {
-
-      let mac_address = '';
-
-      try {
-
-        const macAddresData: string = await this._printer.getMacAddress();
-        console.log('macAddresData', macAddresData);
-        if (macAddresData) {
-          mac_address = macAddresData;
-        }
-
-      } catch (error) {
-        console.error('Error en logService > al obtener macAddres', error)
-      }
-
-
       const logItem: ILog = {
         ...logData,
         dateTime: new Date(),

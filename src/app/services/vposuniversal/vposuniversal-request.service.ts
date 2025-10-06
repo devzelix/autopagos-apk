@@ -31,28 +31,13 @@ export class VposuniversalRequestService {
     return new Promise<any>((resolve, reject)=>{
       console.log('<<<<<<<<<<<<<<<<<<<<<<<<<in cardRequest>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
-      // const dataReq = {
-      //   "monto": _amount,
-      //   "ci": _ci,
-      //   "subscriber": _subscriber,
-      //   "balance": _balnace,
-      //   "contract": _contract,
-      //   "register": _register
-      // }
-
       const dataReq = {
-        "accion":"COMPRA",
-        "monto":"1.00",
-        "seqNum": "",
-        "vtid": "fibexval01",
-        "medio": "P2C",
-        "cedula":"19845077",
-        "tipoDocumento": "V",
-        "blockCedula":false,
-        "showVoucher":true,
-        "getCorreo":false,
-        "imprimirVoucherCliente": true,
-        "blockStandALone": false
+        "monto": _amount,
+        "ci": _ci,
+        "subscriber": _subscriber,
+        "balance": _balnace,
+        "contract": _contract,
+        "register": _register
       }
 
       axios({

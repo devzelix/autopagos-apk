@@ -60,22 +60,25 @@ export class PrinterService {
     });
   }
 
+  // TODO: ESTA CLABEADO ORDENAR EL TEMA DE UN INICIO DE SESION PARA ESTAS MAQUINAS YA QUE NO PRODREMOS OBTENER LAS MAC ADDRESS
   /**
    * @description: Function to get the mac address string
    * @returns `string`
    */
   getMacAddress(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      const url = environment.API_Printer + '/divice-info/mac';
-      axios
-        .get(url, { headers: this.headersReq })
-        .then((res) => {
-          resolve(res.data.data);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+    // return new Promise<string>((resolve, reject) => {
+    //   const url = environment.API_Printer + '/divice-info/mac';
+    //   axios
+    //     .get(url, { headers: this.headersReq })
+    //     .then((res) => {
+    //       resolve(res.data.data);
+    //     })
+    //     .catch((err) => {
+    //       reject(err);
+    //     });
+    // });
+
+    return new Promise<string>(() => '50:9a:4c:50:df:4e');
   }
 
   /**
