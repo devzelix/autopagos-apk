@@ -76,8 +76,6 @@ export class ConfigIpUbiiposComponent implements OnInit {
       this.showModal('Cancele la operación en el punto de venta si es necesario.', 'warning', 22000);
       const testConnection: IResponse = await this._ubiiposService.testUbiipos(fullAddress);
 
-      console.log('testConnection>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', testConnection, testConnection.status);
-
       if(testConnection.status !== 200){
         this.validationMessage = `No se pudo conectar a ${fullAddress}. Verifica que la IP y el Puerto sean correctos y que el servicio esté activo.`;
         this.showModal(this.validationMessage, 'error', 6000);

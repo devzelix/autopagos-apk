@@ -5,21 +5,23 @@ import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LocalstorageService } from '../localstorage.service';
 import { LogService } from '../log.service';
 import { ILog } from 'src/app/interfaces/log.interface';
+import { handleApiError } from 'src/app/utils/api-tools';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UbiiposService {
 
-  // Endpoint
-  // POST ipAddress:8080/api/spPayment
-
   constructor(
     private _logService: LogService,
     private _localStorageService: LocalstorageService
   ) { }
 
-    //#--------------------------------Test Ubiipos---------------------------------------#//
+  /**
+   * UBIIPOS TEST
+   * @param iptest: string
+   * @returns resReturn: IResponse
+   */
   async testUbiipos(iptest: string): Promise<IResponse> {
 
     let resReturn: IResponse;
@@ -39,7 +41,7 @@ export class UbiiposService {
         url: `${iptest}/api/spPayment`,
         method: 'POST',
         headers: {
-          'accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         data: {
@@ -51,11 +53,11 @@ export class UbiiposService {
       }
 
       // Make request
-      const response = await axios(bodyReq);
+      const response = await axios.request(bodyReq);
 
       resReturn = {
         status: response.status,
-        message: response.statusText,
+        message: response.data.TRANS_MESSAGE_RESULT !== '' ? response.data.TRANS_MESSAGE_RESULT : response.statusText,
         data: response.data as any
       }
 
@@ -77,38 +79,8 @@ export class UbiiposService {
 
       return resReturn;
     } catch (error) {
-      console.error(error);
 
-      let statusCode = 500;
-      let errorMessage = 'Unknown error';
-
-      if (axios.isAxiosError(error)) {
-        // Ahora TypeScript sabe que 'error' es un error de Axios
-        if (error.response) {
-          // Error del servidor (4xx o 5xx)
-          statusCode = error.response.status;
-          errorMessage = error.response.data?.message || error.message;
-        } else if (error.message === 'Network Error') {
-          // Error de red
-          statusCode = 0;
-          errorMessage = 'Network Error: The request could not be completed.';
-        } else {
-          // Otros errores de Axios (como configuración)
-          errorMessage = error.message;
-        }
-
-      } else if (error instanceof Error) {
-        // Tu error de validación ('IP address is required')
-        statusCode = 400;
-        errorMessage = error.message;
-      }
-
-      const errRes: IResponse = {
-        status: statusCode,
-        message: errorMessage
-      }
-
-      console.error('ERROR - testUbiipos: \n', errRes);
+      const errRes: IResponse = handleApiError(error);
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
@@ -132,10 +104,13 @@ export class UbiiposService {
       return errRes;
     }
   }
-  //#--------------------------------------------------------------------------------------#//
 
-  //#--------------------------------Payment Ubiipos---------------------------------------#//
-  async paymentUbiipos(request: IUbiiposDataSend){
+  /**
+   * PAYMENT UBIIPOS
+   * @param request: IUbiiposDataSend
+   * @returns resReturn: IResponse
+   */
+  async paymentUbiipos(request: IUbiiposDataSend): Promise<IResponse>{
     let resReturn: IResponse;
 
     try {
@@ -151,6 +126,24 @@ export class UbiiposService {
           status: 400,
           message: 'Ubiipos host is not configured'
         }
+
+        // LOGS SAVE ERROR
+        this._logService.storagelog({
+          dateTime: new Date(),
+          log_type: 'UBIIPOS',
+          is_success: false,
+          http_method: 'POST',
+          status: resReturn.status,
+          route_api: this._localStorageService.get<string>('ubiiposHost') ? `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment` : resReturn.message,
+          req_body: JSON.stringify({
+            paymentId: "fibexUbii",
+            ...request
+          }),
+          res_code: 'ERROR',
+          res_body: JSON.stringify(resReturn.message),
+          numSubscriber:  null,
+        });
+
         return resReturn;
       }
 
@@ -165,18 +158,20 @@ export class UbiiposService {
         url: url,
         method: 'POST',
         headers: {
-          'accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         data: body
       }
 
       // Make request
-      const response = await axios(bodyReq);
+      const response = await axios.request(bodyReq);
+
+      console.log('RESPONSE UBIIPOS: \n', response);
 
       resReturn = {
         status: response.status,
-        message: response.statusText,
+        message: response.data.TRANS_MESSAGE_RESULT !== '' ? response.data.TRANS_MESSAGE_RESULT : response.statusText,
         data: response.data as any
       }
 
@@ -196,36 +191,7 @@ export class UbiiposService {
 
       return resReturn;
     } catch (error) {
-      console.error(error);
-
-      let statusCode = 500;
-      let errorMessage = 'Unknown error';
-
-      if (axios.isAxiosError(error)) {
-        // Ahora TypeScript sabe que 'error' es un error de Axios
-        if (error.response) {
-          // Error del servidor (4xx o 5xx)
-          statusCode = error.response.status;
-          errorMessage = error.response.data?.message || error.message;
-        } else if (error.message === 'Network Error') {
-          // Error de red
-          statusCode = 0;
-          errorMessage = 'Network Error: The request could not be completed.';
-        } else {
-          // Otros errores de Axios (como configuración)
-          errorMessage = error.message;
-        }
-
-      } else if (error instanceof Error) {
-        // Tu error de validación ('IP address is required')
-        statusCode = 400;
-        errorMessage = error.message;
-      }
-
-      const errRes: IResponse = {
-        status: statusCode,
-        message: errorMessage
-      }
+      const errRes: IResponse = handleApiError(error);
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
@@ -234,7 +200,7 @@ export class UbiiposService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${this._localStorageService.get<string>('ubiiposHost') ?? 'NotFound'}/api/spPayment`,
+        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
         req_body: JSON.stringify({
           paymentId: "fibexUbii",
           ...request
@@ -247,6 +213,103 @@ export class UbiiposService {
       return errRes;
     }
   }
-  //#--------------------------------------------------------------------------------------#//
+
+  /**
+   * UBIPOS PRINT TICKET
+   * @returns resReturn: IResponse
+   */
+  async printTicket(): Promise<IResponse>{
+    let resReturn: IResponse;
+
+    const bodyPrint: IUbiiposDataSend = {
+      paymentId: "fibexUbii",
+      operation: "PRINT"
+    }
+
+    try {
+      // Get host
+      const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
+
+      // Get url
+      const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
+
+      // Validate url
+      if (!url) {
+        resReturn = {
+          status: 400,
+          message: 'Ubiipos host is not configured'
+        }
+
+        // LOGS SAVE ERROR
+        this._logService.storagelog({
+          dateTime: new Date(),
+          log_type: 'UBIIPOS-PRINT',
+          is_success: false,
+          http_method: 'POST',
+          status: resReturn.status,
+          route_api: this._localStorageService.get<string>('ubiiposHost') ? `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment` : resReturn.message ,
+          req_body: JSON.stringify(bodyPrint),
+          res_code: 'ERROR',
+          res_body: JSON.stringify(resReturn.message),
+          numSubscriber:  null,
+        });
+
+        return resReturn;
+      }
+      // Get headers
+      const bodyReq: IRequest = {
+        url: url,
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        data: bodyPrint
+      }
+
+      // Make request
+      const response = await axios.request(bodyReq);
+
+      resReturn = {
+        status: response.status,
+        message: response.statusText,
+        data: response.data as any
+      }
+
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-PRINT',
+        is_success: true,
+        http_method: bodyReq.method as ILog['http_method'],
+        status: resReturn.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyPrint),
+        res_code: resReturn.message,
+        res_body: JSON.stringify(resReturn.data),
+        numSubscriber:  null,
+      });
+
+      return resReturn;
+    } catch (error) {
+      const errRes: IResponse = handleApiError(error);
+
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-PRINT',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
+        req_body: JSON.stringify(bodyPrint),
+        res_code: 'ERROR',
+        res_body: errRes.message,
+        numSubscriber:  null,
+      });
+
+      return errRes;
+    }
+  }
 
 }

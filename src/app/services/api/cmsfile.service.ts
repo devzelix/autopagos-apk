@@ -6,6 +6,7 @@ import * as mime from "mime-types";
 import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LogService } from '../log.service';
+import { handleApiError } from 'src/app/utils/api-tools';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +57,7 @@ export class CMSfileService {
         }
       }
 
-      const resultReq = await axios(bodyReq);
+      const resultReq = await axios.request(bodyReq);
 
       console.log('uploadFile: \n', resultReq);
 
@@ -83,38 +84,7 @@ export class CMSfileService {
       return resReturn;
 
     } catch (error) {
-      console.error(error);
-
-      let statusCode = 500;
-      let errorMessage = 'Unknown error';
-
-      if (axios.isAxiosError(error)) {
-        // Ahora TypeScript sabe que 'error' es un error de Axios
-        if (error.response) {
-            // Error del servidor (4xx o 5xx)
-            statusCode = error.response.status;
-            errorMessage = error.response.data?.message || error.message;
-        } else if (error.message === 'Network Error') {
-            // Error de red
-            statusCode = 0;
-            errorMessage = 'Network Error: The request could not be completed.';
-        } else {
-            // Otros errores de Axios (como configuración)
-            errorMessage = error.message;
-        }
-
-      } else if (error instanceof Error) {
-        // Tu error de validación ('IP address is required')
-        statusCode = 400;
-        errorMessage = error.message;
-      }
-
-      const errRes: IResponse = {
-        status: statusCode,
-        message: errorMessage,
-      }
-
-      console.error('ERROR - uploadFile: \n', errRes);
+      const errRes: IResponse = handleApiError(error);
 
       // LOGS SAVE ERROR
       this._logService.storagelog({

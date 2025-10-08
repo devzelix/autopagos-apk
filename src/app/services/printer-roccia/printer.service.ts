@@ -77,8 +77,10 @@ export class PrinterService {
     //       reject(err);
     //     });
     // });
+    return new Promise<string>((resolve, _reject) => {
+      resolve('50:9a:4c:50:df:4e')
+    });
 
-    return new Promise<string>(() => '50:9a:4c:50:df:4e');
   }
 
   /**

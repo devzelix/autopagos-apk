@@ -4,6 +4,7 @@ import { IPaymentCreate, IPaymentRegister } from "../../interfaces/api/payment";
 import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LogService } from '../log.service';
+import { handleApiError } from 'src/app/utils/api-tools';
 
 @Injectable({
   providedIn: 'root'
@@ -37,21 +38,20 @@ export class PaymentsService {
         url: `${environment.URL_API_MASTER}/administrative/payment/register-payment`,
         method: 'POST',
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
           token: environment.TOKEN_API_MASTER,
         },
         data: paymenteInfo
       };
 
-      const resultReq = await axios(bodyReq);
+      const resultReq = await axios.request(bodyReq);
 
       resPay = {
         status: resultReq.status,
-        message: 'Transacción Creada en DB',
+        message: 'Transacción Registrada en SAE',
         data: resultReq.data
       }
-
-      console.log('paymentRegisterOnSAE: \n', resPay);
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
@@ -70,36 +70,7 @@ export class PaymentsService {
       return resPay;
 
     } catch (error) {
-      console.error(error);
-
-      let statusCode = 500;
-      let errorMessage = 'Unknown error';
-
-      if (axios.isAxiosError(error)) {
-        // Ahora TypeScript sabe que 'error' es un error de Axios
-        if (error.response) {
-            // Error del servidor (4xx o 5xx)
-            statusCode = error.response.status;
-            errorMessage = error.response.data?.message || error.message;
-        } else if (error.message === 'Network Error') {
-            // Error de red
-            statusCode = 0;
-            errorMessage = 'Network Error: The request could not be completed.';
-        } else {
-            // Otros errores de Axios (como configuración)
-            errorMessage = error.message;
-        }
-
-      } else if (error instanceof Error) {
-        // Tu error de validación ('IP address is required')
-        statusCode = 400;
-        errorMessage = error.message;
-      }
-
-      const errRes: IResponse = {
-        status: statusCode,
-        message: errorMessage
-      }
+      const errRes: IResponse = handleApiError(error);
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
@@ -143,15 +114,14 @@ export class PaymentsService {
         url: `${environment.URL_API_MASTER}/administrative/payment/create-transaction`,
         method: 'POST',
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
           token: environment.TOKEN_API_MASTER,
         },
         data: paymenteInfo
       };
 
-      const resultReq = await axios(bodyReq);
-
-      console.log(resultReq);
+      const resultReq = await axios.request(bodyReq);
 
       resPay = {
         status: resultReq.status,
@@ -176,36 +146,7 @@ export class PaymentsService {
       return resPay;
 
     } catch (error) {
-      console.error(error);
-
-      let statusCode = 500;
-      let errorMessage = 'Unknown error';
-
-      if (axios.isAxiosError(error)) {
-        // Ahora TypeScript sabe que 'error' es un error de Axios
-        if (error.response) {
-            // Error del servidor (4xx o 5xx)
-            statusCode = error.response.status;
-            errorMessage = error.response.data?.message || error.message;
-        } else if (error.message === 'Network Error') {
-            // Error de red
-            statusCode = 0;
-            errorMessage = 'Network Error: The request could not be completed.';
-        } else {
-            // Otros errores de Axios (como configuración)
-            errorMessage = error.message;
-        }
-
-      } else if (error instanceof Error) {
-        // Tu error de validación ('IP address is required')
-        statusCode = 400;
-        errorMessage = error.message;
-      }
-
-      const errRes: IResponse = {
-        status: statusCode,
-        message: errorMessage
-      }
+      const errRes: IResponse = handleApiError(error);
 
       // LOGS SAVE ERROR
       this._logService.storagelog({

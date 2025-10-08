@@ -171,151 +171,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * On submit payment form
-   * @param event
-   */
-  // public onSubmit(): Promise<void> {
-  //   this.sendPayment = true; // Indicate payment is being processed
-
-  //   return new Promise<void>((resolve, reject) => {
-  //     if (!this.formPayment.valid) {
-  //       console.log('Form is invalid');
-  //       this.sendPayment = false;
-  //       resolve(); // Resolve immediately for invalid forms
-  //       return;
-  //     }
-
-  //     this.alertFindDniMercantil('Realizando operación', 'Por favor espere...');
-
-  //     // 1. Process card request
-  //     this.requestCard()
-  //       .then((_dataApi) => {
-  //         console.warn('Card request response:', _dataApi);
-
-  //         // Handle missing response data
-  //         if (!_dataApi || !_dataApi?.data.datavpos) {
-  //           Swal.fire({
-  //             icon: 'error',
-  //             title: 'Ha ocurrido un error, intente nuevamente más tarde',
-  //             showConfirmButton: false,
-  //             allowOutsideClick: true,
-  //             timer: 4000,
-  //           });
-  //         }
-
-  //         this._dataApi = _dataApi.data.datavpos;
-
-  //         const responseCode = this._dataApi.codRespuesta;
-  //         const messageResponse =
-  //           this._errorsvpos.getErrorMessageLeter(
-  //             this._dataApi.mensajeRespuesta
-  //           ) ?? this._dataApi.mensajeRespuesta;
-  //         const messageCodeRes =
-  //           this._errorsvpos.getErrorMessageCode(responseCode);
-  //         const saeRegister = _dataApi.data.saeReport;
-  //         let message =
-  //           responseCode === '05'
-  //             ? messageCodeRes + ' \n' + messageResponse
-  //             : messageCodeRes;
-
-  //         console.log(
-  //           '<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',
-  //           this._dataApi.mensajeRespuesta,
-  //           message,
-  //           responseCode
-  //         );
-
-  //         // 2. Handle success case (code '00')
-  //         if (responseCode === '00') {
-  //           this.generarPDF(false).catch(console.error); // Generate PDF async
-
-  //           if (saeRegister !== null && !saeRegister.success) {
-  //             Swal.fire({
-  //               icon: 'success',
-  //               title: 'Pago procesado con éxito \n' + message,
-  //               showConfirmButton: false,
-  //               allowOutsideClick: false,
-  //               timer: 4000,
-  //               didClose: () => {
-  //                 Swal.fire({
-  //                   icon: 'warning',
-  //                   title:
-  //                     'Pago aprobado. Requiere registro manual en el sistema. \n Por favor, contacte a soporte.',
-  //                   confirmButtonText: 'Confirmar',
-  //                   confirmButtonColor: '#d33',
-  //                   showConfirmButton: true,
-  //                   allowOutsideClick: false,
-  //                   didClose: () => this.onSubmitPayForm.emit(),
-  //                 });
-  //               },
-  //             });
-  //           } else {
-  //             Swal.fire({
-  //               icon: 'success',
-  //               title: 'Pago procesado con éxito \n' + message,
-  //               showConfirmButton: false,
-  //               allowOutsideClick: false,
-  //               timer: 4000,
-  //               didClose: () => this.onSubmitPayForm.emit(),
-  //             });
-  //           }
-  //         }
-  //         // 3. Handle other cases
-  //         else {
-  //           // Special case for code '51'
-  //           if (responseCode === '51') {
-  //             this.generarPDF(false).catch(console.error);
-  //           }
-
-  //           console.log('CODIGO DE RESPUESTA', responseCode);
-
-  //           Swal.fire({
-  //             icon: 'error',
-  //             title: message,
-  //             showConfirmButton: false,
-  //             allowOutsideClick: false,
-  //             timer: 4000,
-  //             didClose: () => resolve(),
-  //           });
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log('ESTO ES ERROR', error);
-
-  //         // const messageCodeRes =
-  //         // this._errorsvpos.getErrorMessageCode(responseCode);
-  //         // 4. Handle request errors
-  //         let _messageError: string =
-  //           'Ha ocurrido un error\nConsulte con el personal de Fibex';
-
-  //         let timeShow: number = 4000;
-
-  //         console.warn('DNI TO LOOK ERROR', this.dni?.value);
-
-  //         if (this.dni?.value === '90000000') {
-  //           _messageError =
-  //             'Muestrele este error a un técnico \n Error: ' +
-  //             (error instanceof Error ? error.message : 'Desconocido');
-  //           timeShow = 6000;
-  //         }
-
-  //         Swal.fire({
-  //           icon: 'error',
-  //           title: _messageError,
-  //           showConfirmButton: false,
-  //           allowOutsideClick: false,
-  //           timer: timeShow,
-  //           didClose: () => resolve(),
-  //         });
-  //       })
-  //       .finally(() => {
-  //         this.closeAlert();
-  //         this.sendPayment = !this.formPayment.valid; // Always reset payment flag
-  //       });
-  //   });
-  // }
-
-  /**
    * On submit payment form async/await
    * @returns
    */
@@ -352,37 +207,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       }
 
       if (resPay.data.TRANS_CODE_RESULT === '00'){
-        /**
-          {
-            id_contrato: string;
-            mount: number;
-            date: string;
-            reference: string;
-            comment: string;
-            dni: string;
-            abonado: string;
-            balance: number;
-          }
 
-          {
-            "RESPONSE_TYPE": "PAYMENT",
-            "TRANS_CODE_RESULT": "00",
-            "TRANS_MESSAGE_RESULT": "",
-            "TRANS_CONFIRM_NUM": "184449",
-            "FECHA": "1006211413",
-            "BIN": "54346421",
-            "TERMINAL": "U1000273",
-            "AFILIADO": "000000000100344",
-            "LOTE": "000001",
-            "TRACE": "000069",
-            "REFERENCIA": "251006000069",
-            "METODO_ENTRADA": "CONTACTLESS",
-            "TIPO_TARJETA": "CREDITO",
-            "PAN": "543464******3894"
-          }
-         */
-        let messageText: string = '';
+        let titleText: string = 'Transacción Procesada';
+        let messageText: string = 'APROBADA';
 
+        // Body to Register on SAE
         const bodyResgister: IPaymentRegister = {
           dni: this.dni?.value,
           mount: this.mountFormat,
@@ -393,11 +222,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           comment: `PAGO POR CAJA AUTOMATICA - ${resPay.data.FECHA} - ${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
           date: new Date().toDateString()
         }
+
         //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
         console.log('Registrar en SAE...');
-        const saeRegister = this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
-        console.log('Registrado en SAE\n', saeRegister);
+        const saeRegister = await this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
+        console.log('Registrado en SAE\n', saeRegister.data);
 
+        // Body to Create Payment on DB
         const bodyCreate: IPaymentCreate = {
           dateTransaction: new Date(),
           numSeq: resPay.data.TRANS_CONFIRM_NUM,
@@ -405,25 +236,64 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           numSubscriber: this.nroAbonado,
           lastCardNum: resPay.data.PAN.slice(-4),
           amount: this.mountFormat,
-          terminalVirtual: 'fibexUbii'
+          terminalVirtual: 'fibexUbii',
+          status: saeRegister.data.success && saeRegister.data.message === 'ok' ? 'APPROVED' : 'PENDING'
         }
 
+        // Request to create on DB
         console.log('Registrar en Thomas Cobertura...');
-        const createTransaction = this._registerTransaction.paymentCreate(bodyCreate);
-        console.log('Registrado en Thomas Cobertura\n', createTransaction);
+        const createTransaction = await this._registerTransaction.paymentCreate(bodyCreate);
+        console.log('Registrado en Thomas Cobertura\n', createTransaction.data);
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Transacción Procesada',
-          text: messageText,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          timer: 4000,
-          didClose: () => this.onSubmitPayForm.emit(),
-        });
+        // Request to Print ticket
+        const printRes: IResponse = await this._ubiipos.printTicket();
 
-        this.closeAlert();
-        this.sendPayment = !this.formPayment.valid; // Always reset payment flag
+        if(printRes.status !== 200 && printRes.message === 'PRINTER_NO_PAPER'){
+          Swal.fire({
+            icon: 'warning',
+            title:  `${titleText} \n Impersora sin papel.`,
+            text: 'Para imprimir ticket Contate al personal de fibex para suministrar papel a la impresora y presione aceptar.',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar',
+            allowOutsideClick: false,
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              const printRes: IResponse = await this._ubiipos.printTicket();
+
+              if(printRes.status !== 200){
+                messageText = `${messageText} \n Contate al personal de fibex para obtener su ticket de froma manual`;
+              }
+
+              Swal.fire({
+                icon: 'success',
+                title: titleText,
+                text: messageText,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 6000,
+                didClose: () => this.onSubmitPayForm.emit(),
+              });
+
+              this.closeAlert();
+              this.sendPayment = !this.formPayment.valid; // Always reset payment flag
+              return;
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: titleText,
+            text: messageText,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 4000,
+            didClose: () => this.onSubmitPayForm.emit(),
+          });
+
+          this.closeAlert();
+          this.sendPayment = !this.formPayment.valid; // Always reset payment flag
+        }
         return;
 
       } else {
@@ -433,7 +303,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           text: 'Transacción no aprobada',
           showConfirmButton: false,
           allowOutsideClick: false,
-          timer: 6000,
+          timer: 7000,
         });
 
         this.closeAlert();

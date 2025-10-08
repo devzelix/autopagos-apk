@@ -17,4 +17,5 @@ export interface IPaymentCreate {
   lastCardNum: string;
   amount: string;
   terminalVirtual: string;
+  status: 'APPROVED' | 'PENDING' | 'DECLINED' | 'CANCELLED'
 }

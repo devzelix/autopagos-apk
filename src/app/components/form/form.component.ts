@@ -2709,7 +2709,6 @@ public getCurrentStepTitle = (): string => {
   public handlerIpUbiiPos ($event: boolean): void {
     console.log('EVENT IP UBII POS', $event)
     this.ipUbiiPos = $event;
-    console.warn(this._localStorageService.get('logs'));
   }
 
 }

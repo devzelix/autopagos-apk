@@ -33,8 +33,15 @@ export class LogService {
       allLogs.push(logItem);
       this._localStorageService.set('logs', allLogs);
 
-      if (allLogs.length > 20) {
-        this.postLogs();
+      console.log('LOG LENGTH: \n', allLogs.length, '\nEnviar para crear: \n', allLogs.length > 50);
+
+      if (allLogs.length > 1) {
+        console.log('Entre para enviar los log...');
+        await this.postLogs().then((res) => {
+          console.log('Res: \n', res);
+        }).catch((err) => {
+          console.log('Err: \n', err);
+        })
       }
 
       console.log('Log saved to local storage', this._localStorageService.get<ILog[]>('logs'));
@@ -49,13 +56,11 @@ export class LogService {
    */
   public postLogs = () => {
     return new Promise(async (resolve, reject) => {
-
       const allLogs: ILog[] = this._localStorageService.get<ILog[]>('logs') || [];
 
 
       let mac_address: string = '';
       try {
-
         const macAddresData: string = await this._printer.getMacAddress();
         console.log('macAddresData', macAddresData);
         if (macAddresData) mac_address = macAddresData;
@@ -73,6 +78,7 @@ export class LogService {
       const headers = {
         token: environment.TOKEN_API_MASTER
       }
+
       axios.post<ILog[],any>(environment.URL_API_MASTER+'/log/create', body, {headers})
       .then(resLog => {
         if(resLog.status === 201) {
@@ -93,5 +99,54 @@ export class LogService {
     })
 
   }
+
+  /**
+   * Function to post log to api
+   */
+  // public postLogs = () =>{
+  //   return new Promise(async (resolve, reject) => {
+
+  //     const allLogs: ILog[] = this._localStorageService.get<ILog[]>('logs') || [];
+
+
+  //     let mac_address: string = '';
+  //     try {
+
+  //       const macAddresData: string = await this._printer.getMacAddress();
+  //       console.log('macAddresData', macAddresData);
+  //       if (macAddresData) mac_address = macAddresData;
+
+  //     } catch (error) {
+  //       console.error('Error en logService > al obtener macAddres', error)
+  //     }
+
+  //     const body = {
+  //       logs: allLogs,
+  //       register: mac_address
+  //     }
+  //     console.log('BODY LOGS', body)
+
+  //     const headers = {
+  //       token: environment.TOKEN_API_MASTER
+  //     }
+  //     axios.post<ILog[],any>(environment.URL_API_MASTER+'/log/create', body, {headers})
+  //     .then(resLog => {
+  //       if(resLog.status === 201) {
+  //         localStorage.removeItem('logs');
+  //         console.log('LOGS REMOVED', resLog);
+  //       }
+  //       console.log('Log Res Api', resLog)
+  //       resolve(resLog)
+  //     })
+  //     .catch(error => {
+  //       console.error(error)
+  //       reject(error)
+  //     })
+
+  //   })
+  //   .catch(error => {
+  //     console.error(error)
+  //   })
+  // }
 
 }
