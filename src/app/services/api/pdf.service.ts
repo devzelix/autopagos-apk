@@ -1,664 +1,187 @@
-// // import { Injectable } from '@angular/core';
-// // import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { Injectable } from '@angular/core';
+import axios from 'axios';
+import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
+import { IPrintTicket, IUploadFile } from 'src/app/interfaces/printer.interface';
+import { handleApiError } from 'src/app/utils/api-tools';
+import { environment } from 'src/environments/environment';
+import { LogService } from '../log.service';
 
-// // // Las interfaces ReceiptData y PDFGenerationResult ya no necesitan 'path'
-// // interface ReceiptData {
-// //   date: string;
-// //   hours: string;
-// //   refNumber: string;
-// //   numSeq: string;
-// //   abononumber: string;
-// //   status: string;
-// //   describe: string;
-// //   amount: string;
-// //   methodPayment: string;
-// // }
+@Injectable({
+  providedIn: 'root',
+})
+export class PdfService {
 
-// // // El resultado ahora será los bytes del PDF, no una ruta en disco.
-// // type PDFGenerationResult = Uint8Array;
+  private dateNew: Date = new Date();
+  private headersReq = {
+    'Content-Type': 'application/json',
+    'x-tkn': environment.API_PRINTER_TOKEN,
+  };
 
-// // @Injectable({
-// //   providedIn: 'root'
-// // })
-// // export class PdfService {
-// //   private readonly defaultFontSize = 7.3;
-// //   private readonly pageWidth = 57 * 2.83465;
-// //   private readonly pageHeight = 250;
-// //   private readonly leftMargin = 10;
-// //   private readonly lineHeight = 10;
+  constructor(
+    private _logService: LogService
+  ) {}
 
-// //   /**
-// //    * @description Formats a line with left and right text.
-// //    * @param leftText : string
-// //    * @param rightText : string
-// //    * @param bold : boolean
-// //    * @returns json object with text and bold
-// //    */
-// //   private formatLineWithBold = (
-// //     leftText: string,
-// //     rightText: string,
-// //     bold = false
-// //   ) => {
-// //     const leftWidth = 12;
-// //     const rightWidth = 20;
-// //     const formattedLeft = leftText.padEnd(leftWidth, " ");
-// //     const formattedRight = rightText.padStart(rightWidth, " ");
-// //     return {
-// //       text: formattedLeft + formattedRight,
-// //       bold,
-// //     };
-// //   };
+  /**
+   * @description: Funcion para imprimir un ticket
+   * @param _dataTiket
+   * @returns
+   */
+  // printTitek(_dataTiket: IPrintTicket) {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       if (_dataTiket) {
+  //         axios({
+  //           method: 'post',
+  //           url: environment.API_Printer + '/pdf/ticket-and-print',
+  //           headers: this.headersReq,
+  //           data: {
+  //             date: _dataTiket.date.toString(),
+  //             hours: _dataTiket.hours.toString(),
+  //             refNumber: _dataTiket.refNumber.toString(),
+  //             numSeq: _dataTiket.numSeq.toString(),
+  //             abononumber: _dataTiket.abononumber.toString(),
+  //             status: _dataTiket.status.toString(),
+  //             describe: _dataTiket.describe.toString(),
+  //             amount: _dataTiket.amount.toString(),
+  //             methodPayment: _dataTiket.methodPayment.toString(),
+  //             mac_address: _dataTiket.mac_address.toString(),
+  //             is_anulation: _dataTiket.is_anulation,
+  //           },
+  //         })
+  //           .then((res) => {
+  //             resolve(res);
+  //           })
+  //           .catch((err) => {
+  //             reject(err);
+  //           });
+  //       } else {
+  //         reject(
+  //           new Error(
+  //             'Validacion invalida, verifica los campos e intenta de nuevo.'
+  //           )
+  //         );
+  //       }
+  //     } catch (error) {
+  //       reject(error);
+  //     }
+  //   });
+  // }
 
-// //   /**
-// //    * @description Create Ticket Contents
-// //    * @param data : ReceiptData
-// //    * @param font : any
-// //    * @returns json body of the ticket content
-// //    */
-// //   private async createTicketContents(data: ReceiptData, doc: PDFDocument) {
-// //     const separator = "-".repeat(35);
-// //     const courierBoldFont = await doc.embedFont(StandardFonts.CourierBold);
-// //     const courierFont = await doc.embedFont(StandardFonts.Courier);
+    /**
+   * @description: Funcion para imprimir un ticket
+   * @param _dataTiket
+   * @returns
+   */
+  public async ticketCreateAndUpload(dataTiket: IPrintTicket) {
+    let res: IResponse;
 
-// //     return [
-// //       {
-// //         text: "CORPORACIÓN FIBEXTELECOM C.A.",
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: "CARACAS, PARAÍSO, URB. LAS FUENTES",
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: "CALLE II Y III-QUINTA SAN JOSÉ NRO 8",
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: separator,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Fecha:", data.date).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Hora:", data.hours).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Referencia:", data.refNumber).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Num.Seq:", data.numSeq).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Abonado:", data.abononumber).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: separator,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: data.status,
-// //         font: courierBoldFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: separator,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Descripción:", data.describe).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Monto:", `${data.amount}Bs.`).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("Forma Pago:", data.methodPayment).text,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: separator,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: this.formatLineWithBold("TOTAL:", `${data.amount}Bs.`, true).text,
-// //         font: courierBoldFont,
-// //         size: this.defaultFontSize,
-// //       },
-// //       {
-// //         text: separator,
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: "¡Gracias por su pago!",
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: "Fibex Telecom C.A.",
-// //         font: courierFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //       {
-// //         text: "¡EL INTERNET QUE SÍ FUNCIONA!",
-// //         font: courierBoldFont,
-// //         size: this.defaultFontSize,
-// //         alignment: "center",
-// //       },
-// //     ];
-// //   }
+    try {
+      // Validate file data
+      if (!dataTiket) {
+        res = {
+          status: 400,
+          message: 'No se ha proporcionado la informacion para generar el ticket digital.'
+        }
 
-// //   /**
-// //    * @description Generate Ticket PDF
-// //    * @param data : ReceiptData
-// //    * @returns Promise<Uint8Array> - Los bytes del PDF en memoria
-// //    */
-// //   public async generateTicket(data: ReceiptData): Promise<PDFGenerationResult> {
-// //     try {
-// //       const pdfDoc = await PDFDocument.create();
-// //       const page = pdfDoc.addPage([this.pageWidth, this.pageHeight]);
-// //       let yPosition = this.pageHeight - this.leftMargin - 15;
+        return res;
+      }
 
-// //       // Cargamos las fuentes aquí y las pasamos al método de contenido
-// //       const courierFont = await pdfDoc.embedFont(StandardFonts.Courier);
-// //       const contents = await this.createTicketContents(data, pdfDoc);
+      const bodyReq: IRequest = {
+        url: `${environment.API_Printer}/pdf/ticket-and-print`,
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'x-tkn': environment.API_PRINTER_TOKEN,
+        },
+        data: dataTiket
+      };
 
-// //       for (const item of contents) {
-// //         const textWidth = item.font.widthOfTextAtSize(
-// //           item.text,
-// //           item.size || this.defaultFontSize
-// //         );
-// //         let xPosition = this.leftMargin;
+      const resultReq = await axios.request(bodyReq);
 
-// //         if (item.alignment === "center") {
-// //           xPosition = (this.pageWidth - textWidth) / 2;
-// //         } else if (item.alignment === "right") {
-// //           xPosition = this.pageWidth - textWidth - this.leftMargin;
-// //         }
+      res = {
+        status: resultReq.status,
+        message: 'Ticket digital creado.',
+        data: resultReq.data
+      }
 
-// //         page.drawText(item.text, {
-// //           x: xPosition,
-// //           y: yPosition,
-// //           size: item.size || this.defaultFontSize,
-// //           font: item.font,
-// //           color: rgb(0, 0, 0),
-// //         });
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: this.dateNew,
+        log_type: 'TICKET-FILE',
+        is_success: true,
+        http_method: 'POST',
+        status: res.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyReq.data),
+        res_code: res.status.toString(),
+        res_body: JSON.stringify(res.data),
+        numSubscriber:  null,
+      });
 
-// //         yPosition -= this.lineHeight;
-// //         if (item.text.startsWith("-")) {
-// //           yPosition -= 3;
-// //         }
-// //       }
+      console.log('TICKET CREATE Y UPLOAD: \n', res)
 
-// //       // Ya no guardamos en disco, solo devolvemos los bytes
-// //       return await pdfDoc.save();
+      return res;
 
-// //     } catch (error) {
-// //       console.error("Error al generar el ticket:", error);
-// //       throw new Error(
-// //         `Error al generar el PDF: ${
-// //           error instanceof Error ? error.message : String(error)
-// //         }`
-// //       );
-// //     }
-// //   }
+    } catch (error) {
+      const errRes: IResponse = handleApiError(error);
 
-// //   /**
-// //    * @description Text Content to PDF
-// //    * @param textContent : string - El contenido del archivo TXT
-// //    * @returns Promise<Uint8Array> - Los bytes del PDF en memoria
-// //    */
-// //   public async textContentToPdf(textContent: string): Promise<PDFGenerationResult> {
-// //     try {
-// //       const pdfDoc = await PDFDocument.create();
-// //       const font = await pdfDoc.embedFont(StandardFonts.Courier);
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: this.dateNew,
+        log_type: 'PAYMENT-CREATE',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: `${environment.URL_API_MASTER}/administrative/payment/create-transaction`,
+        req_body: JSON.stringify(dataTiket),
+        res_code: 'ERROR',
+        res_body: errRes.message,
+        numSubscriber:  null,
+      });
 
-// //       const pageWidth = 165;
-// //       const fontSize = 7.3;
-// //       const margin = 5;
-// //       const lineHeight = fontSize + 2;
-// //       const lines = textContent.split("\n");
-// //       const totalLinesHeight = lines.length * lineHeight;
-// //       const pageHeight = totalLinesHeight + (margin * 2);
+      return errRes;
+    }
+  }
 
-// //       const page = pdfDoc.addPage([pageWidth, pageHeight]);
-// //       let y = page.getHeight() - margin;
+  // TODO: ESTA CLABEADO ORDENAR EL TEMA DE UN INICIO DE SESION PARA ESTAS MAQUINAS YA QUE NO PRODREMOS OBTENER LAS MAC ADDRESS
+  /**
+   * @description: Function to get the mac address string
+   * @returns `string`
+   */
+  getMacAddress(): Promise<string> {
+    // return new Promise<string>((resolve, reject) => {
+    //   const url = environment.API_Printer + '/divice-info/mac';
+    //   axios
+    //     .get(url, { headers: this.headersReq })
+    //     .then((res) => {
+    //       resolve(res.data.data);
+    //     })
+    //     .catch((err) => {
+    //       reject(err);
+    //     });
+    // });
+    return new Promise<string>((resolve, _reject) => {
+      resolve('50:9a:4c:50:df:4e')
+    });
 
-// //       for (const line of lines) {
-// //         page.drawText(line, {
-// //           x: margin,
-// //           y: y,
-// //           size: fontSize,
-// //           font: font,
-// //           color: rgb(0, 0, 0),
-// //         });
-// //         y -= lineHeight;
-// //       }
+  }
 
-// //       return await pdfDoc.save();
-
-// //     } catch (error) {
-// //       console.error("Error al crear PDF térmico:", error);
-// //       throw error;
-// //     }
-// //   }
-// // }
-
-// // src/app/services/pdf.service.ts
-// import { Injectable } from '@angular/core';
-// import { Capacitor } from '@capacitor/core';
-// import { Directory, Filesystem } from '@capacitor/filesystem';
-// import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-
-// export interface ReceiptData {
-//   date: string;
-//   hours: string;
-//   refNumber: string;
-//   numSeq: string;
-//   abononumber: string;
-//   status: string;
-//   describe: string;
-//   amount: string;
-//   methodPayment: string;
-// }
-
-// export interface PDFGenerationResult {
-//   success: boolean;
-//   path?: string;
-//   message: string;
-// }
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class PdfService {
-//   private readonly defaultFontSize = 7.3;
-//   private readonly pageWidth = 57 * 2.83465; // 58mm exactos
-//   private readonly pageHeight = 250;
-//   private readonly leftMargin = 10;
-//   private readonly lineHeight = 10;
-
-//   constructor() { }
-
-//   /**
-//    * @description Formats a line with left and right text.
-//    * @param leftText : string
-//    * @param rightText : string
-//    * @param bold : boolean
-//    * @returns json object with text and bold
-//    */
-//   private formatLineWithBold = (
-//     leftText: string,
-//     rightText: string,
-//     bold = false
-//   ) => {
-//     const leftWidth = 12;
-//     const rightWidth = 20;
-//     const formattedLeft = leftText.padEnd(leftWidth, " ");
-//     const formattedRight = rightText.padStart(rightWidth, " ");
-//     return {
-//       text: formattedLeft + formattedRight,
-//       bold,
-//     };
-//   };
-
-//   /**
-//    * @description Create Ticket Contents
-//    * @param data : ReceiptData
-//    * @param font : any
-//    * @returns json body of the ticket content
-//    */
-//   private async createTicketContents(data: ReceiptData, font: any) {
-//     const separator = "-".repeat(35);
-//     const courierBoldFont = await font.doc.embedFont(StandardFonts.CourierBold);
-
-//     return [
-//       {
-//         text: "CORPORACIÓN FIBEXTELECOM C.A.",
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: "CARACAS, PARAÍSO, URB. LAS FUENTES",
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: "CALLE II Y III-QUINTA SAN JOSÉ NRO 8",
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: separator,
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: this.formatLineWithBold("Fecha:", data.date).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Hora:", data.hours).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Referencia:", data.refNumber).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Num.Seq:", data.numSeq).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Abonado:", data.abononumber).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: separator,
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: data.status,
-//         font: courierBoldFont,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: separator,
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: this.formatLineWithBold("Descripción:", data.describe).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Monto:", `${data.amount}Bs.`).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: this.formatLineWithBold("Forma Pago:", data.methodPayment).text,
-//         font,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: separator,
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: this.formatLineWithBold("TOTAL:", `${data.amount}Bs.`, true).text,
-//         font: courierBoldFont,
-//         size: this.defaultFontSize,
-//       },
-//       {
-//         text: separator,
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: "¡Gracias por su pago!",
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: "Fibex Telecom C.A.",
-//         font,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//       {
-//         text: "¡EL INTERNET QUE SÍ FUNCIONA!",
-//         font: courierBoldFont,
-//         size: this.defaultFontSize,
-//         alignment: "center",
-//       },
-//     ];
-//   }
-
-//   /**
-//    * @description Generate Ticket PDF
-//    * @param data
-//    * @param fileName
-//    * @returns Promise<PDFGenerationResult>
-//    */
-//   public async generateTicket(
-//     data: ReceiptData,
-//     fileName: string
-//   ): Promise<PDFGenerationResult> {
-//     try {
-//       const pdfDoc = await PDFDocument.create();
-//       const page = pdfDoc.addPage([this.pageWidth, this.pageHeight]);
-
-//       const courierFont = await pdfDoc.embedFont(StandardFonts.Courier);
-//       let yPosition = this.pageHeight - this.leftMargin - 15;
-
-//       const contents = await this.createTicketContents(data, courierFont);
-
-//       for (const item of contents) {
-//         const textWidth = courierFont.widthOfTextAtSize(
-//           item.text,
-//           item.size || this.defaultFontSize
-//         );
-//         let xPosition = this.leftMargin;
-
-//         if (item.alignment === "center") {
-//           xPosition = (this.pageWidth - textWidth) / 2;
-//         } else if (item.alignment === "right") {
-//           xPosition = this.pageWidth - textWidth - this.leftMargin;
-//         }
-
-//         page.drawText(item.text, {
-//           x: xPosition,
-//           y: yPosition,
-//           size: item.size || this.defaultFontSize,
-//           font: item.font,
-//           color: rgb(0, 0, 0),
-//         });
-
-//         yPosition -= this.lineHeight;
-
-//         if (item.text.startsWith("-")) {
-//           yPosition -= 3;
-//         }
-//       }
-
-//       const pdfBytes = await pdfDoc.save();
-
-//       // Guardar el PDF usando Capacitor Filesystem
-//       if (Capacitor.isNativePlatform()) {
-//         const fileNameWithExt = await this.formatFileName(fileName);
-//         const result = await Filesystem.writeFile({
-//           path: fileNameWithExt,
-//           data: Array.from(pdfBytes),
-//           directory: Directory.Documents,
-//           recursive: true
-//         });
-
-//         return {
-//           success: true,
-//           path: result.uri,
-//           message: "Ticket generado exitosamente",
-//         };
-//       } else {
-//         // Para web, creamos un blob y lo descargamos
-//         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-//         const url = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = url;
-//         a.download = await this.formatFileName(fileName);
-//         document.body.appendChild(a);
-//         a.click();
-//         document.body.removeChild(a);
-//         URL.revokeObjectURL(url);
-
-//         return {
-//           success: true,
-//           message: "Ticket generado exitosamente",
-//         };
-//       }
-//     } catch (error) {
-//       console.error("Error al generar el ticket:", error);
-//       return {
-//         success: false,
-//         message: `Error al generar el PDF: ${
-//           error instanceof Error ? error.message : String(error)
-//         }`
-//       };
-//     }
-//   }
-
-//   /**
-//    * @description Format file Name
-//    * @param data : string
-//    * @returns Promise<string>
-//    */
-//   public async formatFileName(data: string): Promise<string> {
-//     return `${data.replace(/[^a-zA-Z0-9_-]/g, "_")}_ticket.pdf`;
-//   }
-
-//   /**
-//    * @description Txt to PDF
-//    * @param textContent
-//    * @param fileName
-//    * @returns Promise<PDFGenerationResult>
-//    */
-//   public async txtToPdf(
-//     textContent: string,
-//     fileName: string
-//   ): Promise<PDFGenerationResult> {
-//     try {
-//       // Solo eliminar los \r que causan error, mantener TODO lo demás
-//       textContent = textContent.replace(/\r/g, '');
-
-//       const pdfDoc: PDFDocument = await PDFDocument.create();
-//       const font = await pdfDoc.embedFont(StandardFonts.Courier); // Courier mantiene espaciado exacto
-
-//       // Configuración
-//       const pageWidth = 165; // 58mm en puntos
-//       const fontSize: number = 7.3;
-//       const margin: number = 5;
-//       const lineHeight: number = fontSize + 2; // Un poco más de espacio entre líneas
-
-//       // Conservar TODAS las líneas exactamente como están en el TXT
-//       const lines: string[] = textContent.split("\n");
-
-//       // Calcular el alto necesario respetando todas las líneas
-//       const totalLinesHeight = lines.length * lineHeight;
-//       const verticalMargin = margin * 2;
-//       const pageHeight = totalLinesHeight + verticalMargin;
-
-//       // Crear UNA SOLA PÁGINA con el alto calculado
-//       const page = pdfDoc.addPage([pageWidth, pageHeight]);
-
-//       // Dibujar el texto MANTENIENDO TODOS los espacios y formato original
-//       let y: number = page.getHeight() - margin;
-
-//       for (const line of lines) {
-//         // Dibujar la línea exactamente como está (con espacios, tabs, etc.)
-//         page.drawText(line, {
-//           x: margin,
-//           y: y,
-//           size: fontSize,
-//           font: font,
-//           color: rgb(0, 0, 0),
-//         });
-//         y -= lineHeight;
-//       }
-
-//       // Guardar el PDF
-//       const pdfBytes: Uint8Array = await pdfDoc.save();
-
-//       // Guardar el PDF usando Capacitor Filesystem
-//       if (Capacitor.isNativePlatform()) {
-//         const fileNameWithExt = await this.formatFileName(fileName);
-//         const result = await Filesystem.writeFile({
-//           path: fileNameWithExt,
-//           data: Array.from(pdfBytes),
-//           directory: Directory.Documents,
-//           recursive: true
-//         });
-
-//         return {
-//           success: true,
-//           path: result.uri,
-//           message: "PDF térmico creado manteniendo formato original",
-//         };
-//       } else {
-//         // Para web, creamos un blob y lo descargamos
-//         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-//         const url = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = url;
-//         a.download = await this.formatFileName(fileName);
-//         document.body.appendChild(a);
-//         a.click();
-//         document.body.removeChild(a);
-//         URL.revokeObjectURL(url);
-
-//         return {
-//           success: true,
-//           message: "PDF térmico creado manteniendo formato original",
-//         };
-//       }
-//     } catch (error) {
-//       console.error("Error al crear PDF térmico:", error);
-//       return {
-//         success: false,
-//         message: `Error al crear el PDF: ${
-//           error instanceof Error ? error.message : String(error)
-//         }`
-//       };
-//     }
-//   }
-// }
+  /**
+   * @description: Function to upload the file to the printer
+   * @param file `File` to upload
+   */
+  /* uploadFile(data: IUploadFile): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const url = environment.API_Printer + '/pdf/closing-and-upload';
+      axios
+        .post(url, data, { headers: this.headersReq })
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  } */
+}

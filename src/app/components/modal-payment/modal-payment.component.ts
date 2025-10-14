@@ -27,6 +27,8 @@ import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
 import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { PaymentsService } from 'src/app/services/api/payments.service';
 import { IPaymentCreate, IPaymentRegister } from 'src/app/interfaces/api/payment';
+import { PdfService } from 'src/app/services/api/pdf.service';
+import { getPaymentDescription } from 'src/app/utils/api-tools';
 
 @Component({
   selector: 'app-modal-payment',
@@ -62,14 +64,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   public numSeq_transaction: string = '';
   public abonadoInputActive: boolean = false;
   public macaddress: string = '';
+  private dateNew: Date = new Date();
 
   public formErrorMessage?: { inputName: ITransactionInputs; errorMsg: string };
 
   constructor(
     private fb: FormBuilder,
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
-    private _ApiVPOS: VposuniversalRequestService, //API VPOSUniversal PINPAD -By:MR-
-    private _printer: PrinterService, // API driver -By:MR-
+    private _pdfService: PdfService, //
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
     private _adminAction: AdministrativeRequestService,
     private _registerTransaction: PaymentsService
@@ -178,6 +180,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     this.sendPayment = true; // Indicate payment is being processed
 
     try {
+      this.mountFormat = this.mount?.value.replace(',', '');
+
       if (!this.formPayment.valid) {
         console.log('Form is invalid');
         this.sendPayment = false;
@@ -220,33 +224,68 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           id_contrato: this.nroContrato,
           reference: resPay.data.REFERENCIA,
           comment: `PAGO POR CAJA AUTOMATICA - ${resPay.data.FECHA} - ${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
-          date: new Date().toDateString()
+          date: this.dateNew.toDateString()
         }
 
         //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
-        console.log('Registrar en SAE...');
+        console.log('Registrar en SAE...\n', bodyResgister);
         const saeRegister = await this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
         console.log('Registrado en SAE\n', saeRegister.data);
 
         // Body to Create Payment on DB
         const bodyCreate: IPaymentCreate = {
-          dateTransaction: new Date(),
+          dateTransaction: this.dateNew,
           numSeq: resPay.data.TRANS_CONFIRM_NUM,
           numRef: resPay.data.REFERENCIA,
           numSubscriber: this.nroAbonado,
           lastCardNum: resPay.data.PAN.slice(-4),
           amount: this.mountFormat,
-          terminalVirtual: 'fibexUbii',
-          status: saeRegister.data.success && saeRegister.data.message === 'ok' ? 'APPROVED' : 'PENDING'
+          terminalVirtual: resPay.data.TERMINAL,
+          status: (saeRegister.data.data.success && saeRegister.data.data.message === 'ok') ? 'APPROVED' : 'PENDING'
         }
 
         // Request to create on DB
-        console.log('Registrar en Thomas Cobertura...');
+        console.log('Registrar en Thomas Cobertura...\n', bodyCreate);
         const createTransaction = await this._registerTransaction.paymentCreate(bodyCreate);
         console.log('Registrado en Thomas Cobertura\n', createTransaction.data);
 
         // Request to Print ticket
         const printRes: IResponse = await this._ubiipos.printTicket();
+
+        /* RESPONSE ANULATION
+        {
+          RESPONSE_TYPE:"PAYMENT",
+          TRANS_CODE_RESULT:"00",
+          TRANS_MESSAGE_RESULT:"",
+          TRANS_CONFIRM_NUM:"799146",
+          FECHA:"1008195203",
+          BIN:"54346421",
+          TERMINAL:"U1000273",
+          AFILIADO:"000000000100344",
+          LOTE:"000003",
+          TRACE:"000110",
+          REFERENCIA:"251008000110",
+          METODO_ENTRADA:"CHIP",
+          TIPO_TARJETA:"CREDITO",
+          PAN:"543464******3894"
+        }
+        */
+        // Body to create digital ticket
+        const digitalTicket: IPrintTicket = {
+          date: this.dateNew.toLocaleDateString(),
+          hours: this.dateNew.toLocaleTimeString(),
+          refNumber: resPay.data.REFERENCIA,
+          numSeq: resPay.data.TRANS_CONFIRM_NUM,
+          abononumber: this.nroAbonado,
+          status: resPay.data.TRANS_CODE_RESULT === '00' ? 'APROBADO' : resPay.data.TRANS_MESSAGE_RESULT,
+          describe: getPaymentDescription(this.mountFormat, this.subscription),
+          amount: this.mountFormat,
+          methodPayment: `${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
+          mac_address: (await this.getMacAddress()).toString(),
+          is_anulation: false,
+        }
+
+        const ticketupload = await this._pdfService.ticketCreateAndUpload(digitalTicket);
 
         if(printRes.status !== 200 && printRes.message === 'PRINTER_NO_PAPER'){
           Swal.fire({
@@ -313,7 +352,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     } catch (error) {
       console.log('ESTO ES ERROR', error);
-    }
+      this.closeAlert();
+      this.sendPayment = !this.formPayment.valid; // Always reset payment flag
+      return;
+  }
 
   }
 
@@ -324,98 +366,99 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @returns Promise<void>
    */
   public async anulateTransaction(): Promise<any> {
-    this.inProcess = true; // Indicate anulation is being processed
+    // this.inProcess = true; // Indicate anulation is being processed
 
-    return new Promise(async (resolve, reject) => {
-      this.alertFindDniMercantil('Realizando operación', 'Por favor espere...');
+    // return new Promise(async (resolve, reject) => {
+    //   this.alertFindDniMercantil('Realizando operación', 'Por favor espere...');
 
-      this.getMacAddress()
-        .then(async (macAddress: string) => {
-          await this._adminAction
-            .anulationPayment(
-              this.dni?.value,
-              this.reference?.value,
-              macAddress
-            )
-            .then((res: any) => {
-              console.log('response', res);
+    //   this.getMacAddress()
+    //     .then(async (macAddress: string) => {
+    //       await this._adminAction
+    //         .anulationPayment(
+    //           this.dni?.value,
+    //           this.reference?.value,
+    //           macAddress
+    //         )
+    //         .then((res: any) => {
+    //           console.log('response', res);
 
-              this._dataApi = res.data.datavpos;
+    //           this._dataApi = res.data.datavpos;
 
-              const responseCode = this._dataApi.codRespuesta;
-              const message =
-                this._errorsvpos.getErrorMessageCode(responseCode);
+    //           const responseCode = this._dataApi.codRespuesta;
+    //           const message =
+    //             this._errorsvpos.getErrorMessageCode(responseCode);
 
-              // 2. Handle success case (code '00')
-              if (responseCode === '00') {
-                this.generarPDF(true, 'Anulación de pago').catch(console.error); // Generate PDF async
+    //           // 2. Handle success case (code '00')
+    //           if (responseCode === '00') {
+    //             this.generarPDF(true, 'Anulación de pago').catch(console.error); // Generate PDF async
 
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Acción realizada exitosamente\n' + message,
-                  timer: 4000,
-                  allowOutsideClick: false,
-                  showConfirmButton: false,
-                  didClose: () => {
-                    Swal.fire({
-                      icon: 'warning',
-                      title:
-                        'DEBE REALIZAR LA MODIFICACIÓN CORRESPONDIENTE EN SAE PLUS PARA  ANULAR EL PAGO DEL SISTEMA ',
-                      confirmButtonText: 'Confirmar',
-                      confirmButtonColor: '#d33',
-                      showConfirmButton: true,
-                      allowOutsideClick: false,
-                      didClose: () => this.closeEmmit.emit(),
-                    });
-                  },
-                });
-              }
-              // 3. Handle other cases
-              else {
-                Swal.fire({
-                  icon: 'warning',
-                  title: 'Solicitud no procesada.\n' + message,
-                  showConfirmButton: false,
-                  allowOutsideClick: false,
-                  timer: 4000,
-                  // didClose: () => resolve()
-                });
-              }
-              resolve(res);
-            })
-            .catch((err: Error) => {
-              this.closeAlert();
+    //             Swal.fire({
+    //               icon: 'success',
+    //               title: 'Acción realizada exitosamente\n' + message,
+    //               timer: 4000,
+    //               allowOutsideClick: false,
+    //               showConfirmButton: false,
+    //               didClose: () => {
+    //                 Swal.fire({
+    //                   icon: 'warning',
+    //                   title:
+    //                     'DEBE REALIZAR LA MODIFICACIÓN CORRESPONDIENTE EN SAE PLUS PARA  ANULAR EL PAGO DEL SISTEMA ',
+    //                   confirmButtonText: 'Confirmar',
+    //                   confirmButtonColor: '#d33',
+    //                   showConfirmButton: true,
+    //                   allowOutsideClick: false,
+    //                   didClose: () => this.closeEmmit.emit(),
+    //                 });
+    //               },
+    //             });
+    //           }
+    //           // 3. Handle other cases
+    //           else {
+    //             Swal.fire({
+    //               icon: 'warning',
+    //               title: 'Solicitud no procesada.\n' + message,
+    //               showConfirmButton: false,
+    //               allowOutsideClick: false,
+    //               timer: 4000,
+    //               // didClose: () => resolve()
+    //             });
+    //           }
+    //           resolve(res);
+    //         })
+    //         .catch((err: Error) => {
+    //           this.closeAlert();
 
-              console.error(err);
-              reject(err);
-            });
-        })
-        .catch((err: Error) => {
-          this.closeAlert();
-          console.error(err);
-          // 4. Handle request errors
-          let _messageError: string = 'Ha ocurrido un error.';
-          let timeShow: number = 4000;
+    //           console.error(err);
+    //           reject(err);
+    //         });
+    //     })
+    //     .catch((err: Error) => {
+    //       this.closeAlert();
+    //       console.error(err);
+    //       // 4. Handle request errors
+    //       let _messageError: string = 'Ha ocurrido un error.';
+    //       let timeShow: number = 4000;
 
-          // if (this.dni?.value === "90000000") {
-          //   _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
-          //   timeShow = 6000;
-          // }
+    //       // if (this.dni?.value === "90000000") {
+    //       //   _messageError = 'Muestrele este error a un técnico \n Error: '+(error instanceof Error ? error.message : 'Desconocido');
+    //       //   timeShow = 6000;
+    //       // }
 
-          Swal.fire({
-            icon: 'error',
-            title: _messageError + '\n' + err.message,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            timer: timeShow,
-            // didClose: () => resolve()
-          });
-          reject(err);
-        })
-        .finally(() => {
-          this.inProcess = false; // Reset processing state
-        });
-    });
+    //       Swal.fire({
+    //         icon: 'error',
+    //         title: _messageError + '\n' + err.message,
+    //         showConfirmButton: false,
+    //         allowOutsideClick: false,
+    //         timer: timeShow,
+    //         // didClose: () => resolve()
+    //       });
+    //       reject(err);
+    //     })
+    //     .finally(() => {
+    //       this.inProcess = false; // Reset processing state
+    //     });
+    // });
+    return true;
   }
 
   /**
@@ -493,42 +536,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   };
 
   /**
-   * Function to call api method and reliaze payment
-   * Funtions VPOSUniversal PINPAD// -By:MR-
-   */
-  public async requestCard(): Promise<any> {
-    console.log('in requestCard');
-
-    // Primero obtenemos la MAC
-    return this.getMacAddress()
-      .then((macAddress) => {
-        console.log('macAddress', macAddress);
-
-        // Obtenemos el formato del monto
-        this.mountFormat = String(this.mount?.value).replace(/\,/g, '');
-
-        console.log(this.mountFormat, 'MOUNT', this.saldoBs, 'SALDO BS');
-
-        // Lanzamos cardRequest CON la MAC obtenida
-        return this._ApiVPOS.cardRequest(
-          this.dni?.value,
-          this.mountFormat,
-          this.nroAbonado,
-          this.saldoBs,
-          this.nroContrato,
-          macAddress
-        );
-      })
-      .then((cardData) => {
-        return cardData; // Resultado final
-      })
-      .catch((error) => {
-        console.error('SUPER ERRORRRORORORORO:', error);
-        return error;
-      });
-  }
-
-  /**
    * Request UBIIPOS
    * @returns
    */
@@ -574,8 +581,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * Function to get the current MAC-ADDRESS
    * @param type Type of string
    */
-  public async getMacAddress() {
-    this.macaddress = await this._printer.getMacAddress();
+  public async getMacAddress(): Promise<String> {
+    this.macaddress = await this._pdfService.getMacAddress();
 
     console.log('macaddress', this.macaddress);
 
@@ -652,7 +659,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     if (!hasUndefinedFields) {
       // Generar PDF con los datos del comprobante
-      await this._printer.printTitek(_dataApiClient);
+      await this._pdfService.ticketCreateAndUpload(_dataApiClient);
       console.log('PDF genetrado');
     } else {
       console.error(

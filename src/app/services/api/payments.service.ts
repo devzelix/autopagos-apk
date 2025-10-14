@@ -164,7 +164,6 @@ export class PaymentsService {
 
       return errRes;
     }
-
   }
 
 }

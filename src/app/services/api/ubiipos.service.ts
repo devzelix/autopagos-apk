@@ -17,6 +17,21 @@ export class UbiiposService {
     private _localStorageService: LocalstorageService
   ) { }
 
+  private getHostUbii(){
+    // try{
+      // Get host
+      const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
+
+      // Get url
+      const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
+
+      return url;
+    // } catch {
+    //   return null;
+    // }
+
+  }
+
   /**
    * UBIIPOS TEST
    * @param iptest: string
@@ -114,11 +129,8 @@ export class UbiiposService {
     let resReturn: IResponse;
 
     try {
-      // Get host
-      const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
-
       // Get url
-      const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
+      const url: string | null = this.getHostUbii();
 
       // Validate url
       if (!url) {
@@ -134,7 +146,7 @@ export class UbiiposService {
           is_success: false,
           http_method: 'POST',
           status: resReturn.status,
-          route_api: this._localStorageService.get<string>('ubiiposHost') ? `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment` : resReturn.message,
+          route_api: this._localStorageService.get<string>('ubiiposHost') ? this.getHostUbii() ?? 'Ubiipos host is not configured' : resReturn.message,
           req_body: JSON.stringify({
             paymentId: "fibexUbii",
             ...request
@@ -200,7 +212,7 @@ export class UbiiposService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
+        route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
         req_body: JSON.stringify({
           paymentId: "fibexUbii",
           ...request
@@ -227,11 +239,8 @@ export class UbiiposService {
     }
 
     try {
-      // Get host
-      const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
-
       // Get url
-      const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
+      const url: string | null = this.getHostUbii();
 
       // Validate url
       if (!url) {
@@ -247,7 +256,7 @@ export class UbiiposService {
           is_success: false,
           http_method: 'POST',
           status: resReturn.status,
-          route_api: this._localStorageService.get<string>('ubiiposHost') ? `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment` : resReturn.message ,
+          route_api: this._localStorageService.get<string>('ubiiposHost') ? this.getHostUbii() ?? 'Ubiipos host is not configured' : resReturn.message ,
           req_body: JSON.stringify(bodyPrint),
           res_code: 'ERROR',
           res_body: JSON.stringify(resReturn.message),
@@ -301,7 +310,7 @@ export class UbiiposService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${this._localStorageService.get<string>('ubiiposHost')}/api/spPayment`,
+        route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
         req_body: JSON.stringify(bodyPrint),
         res_code: 'ERROR',
         res_body: errRes.message,
@@ -312,4 +321,132 @@ export class UbiiposService {
     }
   }
 
+  async closeBatch(): Promise<IResponse>{
+    let resReturn: IResponse;
+
+    const bodyClose: IUbiiposDataSend = {
+      paymentId: "fibexUbii",
+      operation: "SETTLEMENT",
+      settleType: "N"
+    }
+
+    try {
+      // Get url
+      const url: string | null = this.getHostUbii();
+
+      // Validate url
+      if (!url) {
+        resReturn = {
+          status: 400,
+          message: 'Ubiipos host is not configured'
+        }
+
+        // LOGS SAVE ERROR
+        this._logService.storagelog({
+          dateTime: new Date(),
+          log_type: 'UBIIPOS-CLOSE-BATCH',
+          is_success: false,
+          http_method: 'POST',
+          status: resReturn.status,
+          route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
+          req_body: JSON.stringify(bodyClose),
+          res_code: 'ERROR',
+          res_body: JSON.stringify(resReturn.message),
+          numSubscriber:  null,
+        });
+
+        return resReturn;
+      }
+      // Get headers
+      const bodyReq: IRequest = {
+        url: url,
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        data: bodyClose
+      }
+
+      // Make request
+      const response = await axios.request(bodyReq);
+
+      resReturn = {
+        status: response.status,
+        message: response.statusText,
+        data: response.data as any
+      }
+
+      // LOGS SAVE SUCCESS
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-CLOSE-BATCH',
+        is_success: true,
+        http_method: bodyReq.method as ILog['http_method'],
+        status: resReturn.status,
+        route_api: bodyReq.url,
+        req_body: JSON.stringify(bodyClose),
+        res_code: resReturn.message,
+        res_body: JSON.stringify(resReturn.data),
+        numSubscriber:  null,
+      });
+
+      return resReturn;
+    } catch (error) {
+      const errRes: IResponse = handleApiError(error);
+
+      // LOGS SAVE ERROR
+      this._logService.storagelog({
+        dateTime: new Date(),
+        log_type: 'UBIIPOS-CLOSE-BATCH',
+        is_success: false,
+        http_method: 'POST',
+        status: errRes.status,
+        route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
+        req_body: JSON.stringify(bodyClose),
+        res_code: 'ERROR',
+        res_body: errRes.message,
+        numSubscriber:  null,
+      });
+
+      return errRes;
+    }
+  }
+
 }
+
+// RESPONSE SUCCESS PAYMENT
+/* {
+    "RESPONSE_TYPE": "PAYMENT",
+    "TRANS_CODE_RESULT": "00",
+    "TRANS_MESSAGE_RESULT": "",
+    "TRANS_CONFIRM_NUM": "460622",
+    "FECHA": "1008135155",
+    "BIN": "54346421",
+    "TERMINAL": "U1000273",
+    "AFILIADO": "000000000100344",
+    "LOTE": "000003",
+    "TRACE": "000106",
+    "REFERENCIA": "251008000106",
+    "METODO_ENTRADA": "CONTACTLESS",
+    "TIPO_TARJETA": "CREDITO",
+    "PAN": "543464******3894"
+} */
+
+// RESPONSE CIERRE DE LOTE
+/* {
+    "RESPONSE_TYPE": "SETTLEMENT",
+    "TRANS_CODE_RESULT": "00",
+    "TRANS_MESSAGE_RESULT": "",
+    "TRANS_CONFIRM_NUM": "595729",
+    "FECHA": "1009150938",
+    "BIN": "NO_BIN",
+    "TERMINAL": "U1000273",
+    "AFILIADO": "000000000100344",
+    "LOTE": "NO_LOTE",
+    "TRACE": "NO_TRACE",
+    "REFERENCIA": "NO_REFERENCIA",
+    "METODO_ENTRADA": "NO_METODO_ENTRADA",
+    "TIPO_TARJETA": "NO_TIPO_TARJETA",
+    "PAN": "NO_PAN"
+} */
