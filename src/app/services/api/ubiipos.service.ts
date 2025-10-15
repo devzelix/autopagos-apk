@@ -18,7 +18,7 @@ export class UbiiposService {
   ) { }
 
   private getHostUbii(){
-    // try{
+    try{
       // Get host
       const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
 
@@ -26,9 +26,9 @@ export class UbiiposService {
       const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
 
       return url;
-    // } catch {
-    //   return null;
-    // }
+    } catch {
+      return null;
+    }
 
   }
 

@@ -215,6 +215,27 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         let titleText: string = 'Transacción Procesada';
         let messageText: string = 'APROBADA';
 
+        // Body to Create digital ticket
+        const digitalTicket: IPrintTicket = {
+          date: this.dateNew.toLocaleDateString(),
+          hours: this.dateNew.toLocaleTimeString(),
+          refNumber: resPay.data.REFERENCIA,
+          numSeq: resPay.data.TRANS_CONFIRM_NUM,
+          abononumber: this.nroAbonado,
+          status: resPay.data.TRANS_CODE_RESULT === '00' ? 'APROBADO' : resPay.data.TRANS_MESSAGE_RESULT,
+          describe: getPaymentDescription(this.mountFormat, this.subscription),
+          amount: this.mountFormat,
+          methodPayment: `${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
+          mac_address: (await this.getMacAddress()).toString(),
+          is_anulation: false,
+        }
+        //Request to create a digital
+        console.log('Cargando Ticket...\n', digitalTicket);
+        const ticketDigital = this._pdfService.ticketCreateAndUpload(digitalTicket);
+        setTimeout(() => {
+          console.log('Ticket Cargado\n', ticketDigital);
+        }, 5000)
+
         // Body to Register on SAE
         const bodyResgister: IPaymentRegister = {
           dni: this.dni?.value,
@@ -251,41 +272,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
         // Request to Print ticket
         const printRes: IResponse = await this._ubiipos.printTicket();
-
-        /* RESPONSE ANULATION
-        {
-          RESPONSE_TYPE:"PAYMENT",
-          TRANS_CODE_RESULT:"00",
-          TRANS_MESSAGE_RESULT:"",
-          TRANS_CONFIRM_NUM:"799146",
-          FECHA:"1008195203",
-          BIN:"54346421",
-          TERMINAL:"U1000273",
-          AFILIADO:"000000000100344",
-          LOTE:"000003",
-          TRACE:"000110",
-          REFERENCIA:"251008000110",
-          METODO_ENTRADA:"CHIP",
-          TIPO_TARJETA:"CREDITO",
-          PAN:"543464******3894"
-        }
-        */
-        // Body to create digital ticket
-        const digitalTicket: IPrintTicket = {
-          date: this.dateNew.toLocaleDateString(),
-          hours: this.dateNew.toLocaleTimeString(),
-          refNumber: resPay.data.REFERENCIA,
-          numSeq: resPay.data.TRANS_CONFIRM_NUM,
-          abononumber: this.nroAbonado,
-          status: resPay.data.TRANS_CODE_RESULT === '00' ? 'APROBADO' : resPay.data.TRANS_MESSAGE_RESULT,
-          describe: getPaymentDescription(this.mountFormat, this.subscription),
-          amount: this.mountFormat,
-          methodPayment: `${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
-          mac_address: (await this.getMacAddress()).toString(),
-          is_anulation: false,
-        }
-
-        const ticketupload = await this._pdfService.ticketCreateAndUpload(digitalTicket);
 
         if(printRes.status !== 200 && printRes.message === 'PRINTER_NO_PAPER'){
           Swal.fire({

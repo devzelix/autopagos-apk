@@ -26,53 +26,7 @@ export class PdfService {
    * @param _dataTiket
    * @returns
    */
-  // printTitek(_dataTiket: IPrintTicket) {
-  //   return new Promise((resolve, reject) => {
-  //     try {
-  //       if (_dataTiket) {
-  //         axios({
-  //           method: 'post',
-  //           url: environment.API_Printer + '/pdf/ticket-and-print',
-  //           headers: this.headersReq,
-  //           data: {
-  //             date: _dataTiket.date.toString(),
-  //             hours: _dataTiket.hours.toString(),
-  //             refNumber: _dataTiket.refNumber.toString(),
-  //             numSeq: _dataTiket.numSeq.toString(),
-  //             abononumber: _dataTiket.abononumber.toString(),
-  //             status: _dataTiket.status.toString(),
-  //             describe: _dataTiket.describe.toString(),
-  //             amount: _dataTiket.amount.toString(),
-  //             methodPayment: _dataTiket.methodPayment.toString(),
-  //             mac_address: _dataTiket.mac_address.toString(),
-  //             is_anulation: _dataTiket.is_anulation,
-  //           },
-  //         })
-  //           .then((res) => {
-  //             resolve(res);
-  //           })
-  //           .catch((err) => {
-  //             reject(err);
-  //           });
-  //       } else {
-  //         reject(
-  //           new Error(
-  //             'Validacion invalida, verifica los campos e intenta de nuevo.'
-  //           )
-  //         );
-  //       }
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // }
-
-    /**
-   * @description: Funcion para imprimir un ticket
-   * @param _dataTiket
-   * @returns
-   */
-  public async ticketCreateAndUpload(dataTiket: IPrintTicket) {
+  public async ticketCreateAndUpload(dataTiket: IPrintTicket): Promise<IResponse> {
     let res: IResponse;
 
     try {
@@ -102,7 +56,7 @@ export class PdfService {
       res = {
         status: resultReq.status,
         message: 'Ticket digital creado.',
-        data: resultReq.data
+        data: resultReq.data.data
       }
 
       // LOGS SAVE SUCCESS
@@ -166,22 +120,4 @@ export class PdfService {
     });
 
   }
-
-  /**
-   * @description: Function to upload the file to the printer
-   * @param file `File` to upload
-   */
-  /* uploadFile(data: IUploadFile): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const url = environment.API_Printer + '/pdf/closing-and-upload';
-      axios
-        .post(url, data, { headers: this.headersReq })
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  } */
 }

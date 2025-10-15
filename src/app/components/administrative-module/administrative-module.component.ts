@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { IUploadFile } from 'src/app/interfaces/printer.interface';
+import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
@@ -49,6 +51,7 @@ export class AdministrativeModuleComponent implements OnInit {
     private _adminAction: AdministrativeRequestService,
     private _errorsvpos: VposerrorsService,
     private _printer: PrinterService,
+    private _ubiipos: UbiiposService,
   ) { }
 
   ngOnInit(): void {
@@ -81,7 +84,7 @@ export class AdministrativeModuleComponent implements OnInit {
             // });
             break;
           case 2:
-            await this.closeBox(macAddres)
+            await this.closeBox()
             .then((res) => {
               this.ShowDiologSuccess(res);
             })
@@ -158,7 +161,7 @@ export class AdministrativeModuleComponent implements OnInit {
    * To close box
    * @returns
    */
-  public async closeBox(macAddress: string) {
+  public async closeBoxv1(macAddress: string) {
     try {
       let dataRes: any;
 
@@ -199,6 +202,31 @@ export class AdministrativeModuleComponent implements OnInit {
     }
 
   }
+
+  /**
+   * To close box
+   * @returns
+   */
+  public async closeBox(): Promise<any> {
+      console.log('in closeBatch');
+  
+      try {
+        // PASOS PARA REALIZAR EL PAGO EN UBIIPOS
+        // 1. Hacer lapeticion para cerrar caja
+        // 2. Manejar la respuesta.
+        // 3. Valiar si es necesario hacer algo mas o no.
+  
+        const closeRes: IResponse = await this._ubiipos.closeBatch();
+  
+        console.log('closeRes', closeRes);
+  
+        return closeRes;
+      } catch (error) {
+        console.error('ERROR closeBatch:', error);
+        return error;
+      }
+  
+    }
 
   /**
    * To show modal to anulate transaction
@@ -242,15 +270,16 @@ export class AdministrativeModuleComponent implements OnInit {
     return macaddress;
   }
 
-  private ShowDiologSuccess(dataRes: any){
+  private ShowDiologSuccess(dataRes: IResponse){
     console.log('dataRes', dataRes);
-    const responseCode = dataRes.datavpos.codRespuesta;
-    const message = this._errorsvpos.getErrorMessageCode(responseCode);
+    const responseCode = dataRes.data.TRANS_CODE_RESULT;
+    let message = dataRes.data.TRANS_MESSAGE_RESULT;
 
 
     // 2. Handle success case (code '00')
     if (responseCode === '00') {
-      // this.generarPDF().catch(console.error); // Generate PDF async
+      // Message to success
+      message = '¡Acción exitosa!';
 
       Swal.fire({
         icon: 'success',
