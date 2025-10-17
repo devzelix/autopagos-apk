@@ -565,20 +565,29 @@ label.form-control-label {
   width: fit-content !important;
   font-size: 0.97rem;
 }
-.links-btn-navigation {
-    width: fit-content;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    padding: 0.7rem 1rem;
-    margin-bottom: 1rem;
-    // backdrop-filter: blur(12px);
-    background: var(--primary-accent-color);
-    border-radius: 2rem;
-    overflow: hidden;
-    font-size: 1rem;
-    color: white;
+
+.links-nav-btns-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
+
+  .links-btn-navigation {
+      width: fit-content;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.7rem 1rem;
+      margin-bottom: 1rem;
+      // backdrop-filter: blur(12px);
+      background: var(--primary-accent-color);
+      border-radius: 2rem;
+      overflow: hidden;
+      font-size: 1rem;
+      color: white;
+  }
 }
+
 .grid-cards-btn-with-icons {
   display: flex;
   align-items: center;

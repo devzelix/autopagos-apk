@@ -1,5 +1,10 @@
 .div-container {
-  @apply inline-grid grid-cols-3 gap-4 ;
+  margin: auto;
+  display: inline-grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  justify-content: center;
+  width: 100%;
 }
 
 .btn-actions {

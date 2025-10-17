@@ -1,0 +1,77 @@
+/* Contenedor Principal para centrar el formulario */
+.login-container {
+  display: flex;
+  justify-content: center; // Centrado horizontal
+  align-items: center;    // Centrado vertical
+  min-height: 100vh;      // Ocupa todo el alto de la ventana
+  background-color: #f4f6f9; // Fondo suave
+  padding: 20px;
+}
+
+/* Tarjeta del Login */
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra sutil
+}
+
+/* Título */
+.login-title {
+  text-align: center;
+  color: #333333;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Estilo para cada grupo de formulario (label + input) */
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555555;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box; // Asegura que el padding no cambie el ancho total
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #007bff; // Color de enfoque
+      outline: none; // Remover el outline por defecto del navegador
+    }
+  }
+}
+
+/* Botón de Login */
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; // Color primario
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3; // Color más oscuro al pasar el mouse
+  }
+
+  &:active {
+    background-color: #004085; // Color al hacer click
+  }
+}

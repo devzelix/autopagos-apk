@@ -46,7 +46,6 @@ import { CurrencyPipe } from '@angular/common';
 import { UserItemCardComponent } from './components/cards/user-item-card/user-item-card.component';
 import { AdministrativeModuleComponent } from './components/administrative-module/administrative-module.component';
 import { BtnToOptionComponent } from './components/administrative-module/btn-to-option/btn-to-option.component';
-import { AnulationTransactionModalComponent } from './components/administrative-module/anulation-transaction-modal/anulation-transaction-modal.component';
 import { ConfigIpUbiiposComponent } from "./components/administrative-module/config-ip-ubiipos/config-ip-ubiipos.component";
 
 
@@ -93,8 +92,7 @@ const routes: Routes = [
     MultiplePaymentComponent,
     UserItemCardComponent,
     AdministrativeModuleComponent,
-    BtnToOptionComponent,
-    AnulationTransactionModalComponent
+    BtnToOptionComponent
   ],
   imports: [
     BrowserModule,

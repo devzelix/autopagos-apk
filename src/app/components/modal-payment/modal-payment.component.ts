@@ -1,5 +1,3 @@
-import { Debit100x100 } from './../debito-100%/debito-100%';
-import { register } from 'swiper/element/bundle';
 import {
   AfterViewInit,
   Component,
@@ -16,11 +14,9 @@ import {
   ITransactionInputs,
   ITypeDNI,
 } from 'src/app/interfaces/payment-opt';
-import { PrinterService } from 'src/app/services/printer-roccia/printer.service';
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
-import { VposuniversalRequestService } from 'src/app/services/vposuniversal/vposuniversal-request.service';
-import Swal, { SweetAlertIcon } from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { IPrintTicket } from 'src/app/interfaces/printer.interface';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';

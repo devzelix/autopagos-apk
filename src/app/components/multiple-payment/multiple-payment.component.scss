@@ -66,23 +66,30 @@
   .payment-grid-item {
     display: flex !important;
     flex-direction: column !important;
-    border-radius: 16px;
-    // padding: 23px;
-    padding: .7rem;
+    padding: 0.7rem;
     max-width: 300px !important;
     width: 100%;
     font-size: 1.9rem;
     border-radius: 99px;
     text-align: center;
-
-    background: linear-gradient(36deg, rgb(222 237 255) 18%, rgb(203 220 255) 100%);
-    border: 0.3rem solid rgb(89, 152, 224);
-    color: rgb(89, 152, 224);
+    background: linear-gradient(36deg, rgb(26 91 245) 10%, rgb(53, 124, 255) 100%);
+    border: 0.1rem solid rgb(25 106 255 / 72%);
+    color: rgb(255 255 255);
+    opacity: .6;
 
     &.payment-grid-item-active {
-      background: var(--primary-accent-color);
+      // background: var(--primary-accent-color);
       color: white;
       border: initial;
+      scale: 1.1;
+      box-shadow: 3px 3px 6px rgb(69 69 75 / 93%);
+      opacity: 1 !important;
+    }
+
+    &.payment-grid-item:hover {
+      scale: 1.1;
+      box-shadow: 3px 3px 6px rgb(69 69 75 / 93%);
+      opacity: 1 !important;
     }
 
   }
