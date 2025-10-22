@@ -2442,6 +2442,7 @@ public getCurrentStepTitle = (): string => {
   public handleShowTransactionModal = (valueShow: boolean) => {
     this.showAnulationModal ? this.showAnulationModal = valueShow : this.showTransactionModal = valueShow
     // this.showTransactionModal = valueShow
+    this.showadmin = false;
   }
 
   public loadInitMonthMountValues = () => {

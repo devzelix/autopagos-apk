@@ -1,0 +1,81 @@
+// .div-container {
+//   margin: auto;
+//   display: inline-grid;
+//   grid-template-rows: repeat(3, minmax(0, 1fr));
+//   gap: 1rem;
+//   justify-content: center;
+//   width: 100%;
+// }
+
+// .btn-actions {
+//   // @apply block max-w-sm p-6 bg-blue-500 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 ;
+
+//   // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(82, 230, 215) 100%);
+//   // border-radius: 2rem;
+//   // padding: 2.2rem;
+
+//   background: var(--primary-accent-color);
+//   border-radius: 2rem;
+//   padding: 2.2rem;
+// }
+
+// .option-text {
+//   //@apply  mb-2 text-2xl font-bold tracking-tight dark:text-white ;
+//   color: white;
+//   font-size: 1.2rem;
+//   font-weight: 700;
+// }
+
+/* --- Contenedor Responsive (Flexbox) --- */
+.div-container {
+    margin: 1.5rem auto;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Media Query para Responsividad Móvil */
+@media (max-width: 768px) {
+    .div-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+}
+
+/* --- Estilos de Botón de Acción --- */
+.btn-actions {
+    /* **CLAVE: flex: 1;** Hace que los tres botones crezcan y ocupen el mismo espacio disponible */
+    flex: 1;
+
+    /* En vista móvil, asegúrate de que todos tengan el mismo ancho */
+    width: 100%;
+    max-width: 300px; /* Limita el ancho máximo del botón en pantallas grandes */
+
+    /* Fondo y Diseño */
+    background: var(--primary-accent-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.btn-actions:hover {
+    background: #2565C8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* --- Estilos de Texto --- */
+.option-text {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}

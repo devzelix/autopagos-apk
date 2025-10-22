@@ -24,7 +24,7 @@ import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { PaymentsService } from 'src/app/services/api/payments.service';
 import { IPaymentCreate, IPaymentRegister } from 'src/app/interfaces/api/payment';
 import { PdfService } from 'src/app/services/api/pdf.service';
-import { getPaymentDescription } from 'src/app/utils/api-tools';
+import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
 
 @Component({
   selector: 'app-modal-payment',
@@ -47,6 +47,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   @Input() nroContrato: string = '';
   @Input() nroAbonado: string = '';
   @Input() activeInputFocus: ITransactionInputs = 'dni';
+  @Input() viewAdmin: boolean = true;
   public dolarBalance: string = '0.00';
   public formPayment: FormGroup;
   public typeDNI: ITypeDNI = 'V';
@@ -518,10 +519,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   };
 
   /**
-   * Request UBIIPOS
-   * @returns
+   * Request UBIIPOS payment
+   * @returns Promise<IResponse>
    */
-  public async requestCardUbiiPos(): Promise<any> {
+  public async requestCardUbiiPos(): Promise<IResponse> {
     console.log('in requestCardUbiiPos');
 
     try {
@@ -545,16 +546,17 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         operation: 'PAYMENT',
       }
 
-      console.log('bodyUbiipos', bodyUbiipos);
+      // console.log('bodyUbiipos', bodyUbiipos);
 
       const payRes: IResponse = await this._ubiipos.paymentUbiipos(bodyUbiipos);
 
-      console.log('payRes', payRes);
+      // console.log('payRes', payRes);
 
       return payRes;
     } catch (error) {
-      console.error('ERROR requestCardUbiiPos:', error);
-      return error;
+      const errRes: IResponse = handleApiError(error);
+      console.error('ERROR requestCardUbiiPos:', errRes);
+      return errRes;
     }
 
   }

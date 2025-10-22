@@ -47,6 +47,8 @@ import { UserItemCardComponent } from './components/cards/user-item-card/user-it
 import { AdministrativeModuleComponent } from './components/administrative-module/administrative-module.component';
 import { BtnToOptionComponent } from './components/administrative-module/btn-to-option/btn-to-option.component';
 import { ConfigIpUbiiposComponent } from "./components/administrative-module/config-ip-ubiipos/config-ip-ubiipos.component";
+import { ActionAdminComponent } from './components/administrative-module/action-admin/action-admin.component';
+import { LoginComponent } from './components/administrative-module/login/login.component';
 
 
 const routes: Routes = [
@@ -92,7 +94,9 @@ const routes: Routes = [
     MultiplePaymentComponent,
     UserItemCardComponent,
     AdministrativeModuleComponent,
-    BtnToOptionComponent
+    BtnToOptionComponent,
+    ActionAdminComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

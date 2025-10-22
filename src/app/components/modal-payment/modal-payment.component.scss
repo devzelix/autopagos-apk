@@ -1,129 +1,127 @@
 section.modal-pay-container {
-    background-color: rgba(0, 0, 0, 0.3);
-    display: flex !important;
-    backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex !important;
+  backdrop-filter: blur(5px);
 }
 
 .modal-payment {
-    background: ghostwhite;
-    color: #313131;
-    padding: 1.2rem 2rem;
-    border-radius: 1rem;
-    max-width: 850px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  background: ghostwhite;
+  color: #313131;
+  padding: 1.2rem 2rem;
+  border-radius: 1rem;
+  max-width: 850px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-
 .btn-close-section {
-    display: flex;
-    justify-content: end;
+  display: flex;
+  justify-content: end;
 
-    button {
-
-        font-size: 1.7rem;
-        padding: 0.3rem;
-        background: lightgray;
-        border-radius: 50%;
-    }
+  button {
+    font-size: 1.7rem;
+    padding: 0.3rem;
+    background: lightgray;
+    border-radius: 50%;
+  }
 }
 
 .modal-pay-content {
-    display: flex;
-    gap: 3rem;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-pay-form-section {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 50%;
+
+  div {
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    margin: 0 auto;
-    width: 100%;
-    min-width: 50%;
+    margin-bottom: 2rem;
+    gap: 0.7rem;
 
-    div {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 2rem;
-        gap: 0.7rem;
-
-        label {
-            font-size: 1.3rem;
-        }
-        input {
-            min-height: 3.9rem;
-            border-radius: 11px;
-            font-size: 1.9rem;
-            padding: 0 2rem;
-            transition: all 0.3s ease-in-out;
-            width: calc(100% - 2.5rem);
-        }
+    label {
+      font-size: 1.3rem;
     }
+    input {
+      min-height: 3.9rem;
+      border-radius: 11px;
+      font-size: 1.9rem;
+      padding: 0 2rem;
+      transition: all 0.3s ease-in-out;
+      width: calc(100% - 2.5rem);
+    }
+  }
 }
 app-keyboard-on-screen {
-    width: 50%;
+  width: 50%;
 }
 small {
-    color: #ff85b6;
+  color: #ff85b6;
 }
 .important-row {
-    flex-direction: row !important;
-    label {
-        min-width: 9rem !important; 
-    }
+  flex-direction: row !important;
+  label {
+    min-width: 9rem !important;
+  }
 }
 .not-margin-bottom {
-    margin-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .next-form-pay-btn {
-    color: white;
-    padding: 1rem;
-    width: 100%;
-    border-radius: 1rem;
-    font-size: 1.6rem;
+  color: white;
+  padding: 1rem;
+  width: 100%;
+  border-radius: 1rem;
+  font-size: 1.6rem;
 }
 .activeInputPay {
-    background: lightblue;
+  background: lightblue;
 }
 span span.icon-type-dni {
-    width: 2.5rem;
-    font-size: 2rem;
-    margin-right: 1rem;
-    max-width: 2.5rem;
-    min-width: 2.5rem;
+  width: 2.5rem;
+  font-size: 2rem;
+  margin-right: 1rem;
+  max-width: 2.5rem;
+  min-width: 2.5rem;
 }
 .input-focused-style {
-    background: white !important;
-    outline: 2px solid rgba(52, 132, 222, 0.85) !important;
+  background: white !important;
+  outline: 2px solid rgba(52, 132, 222, 0.85) !important;
 }
 .dni-edit-value {
-    color: rgb(30 108 195);
-    font-size: 0.1rem;
-    padding: 0.4rem;
-    height: 4rem;
-    margin-left: 0.5rem;
-    border-radius: 10px;
-    transition: opacity .3s ease-in-out;
+  color: rgb(30 108 195);
+  font-size: 0.1rem;
+  padding: 0.4rem;
+  height: 4rem;
+  margin-left: 0.5rem;
+  border-radius: 10px;
+  transition: opacity 0.3s ease-in-out;
 
-    &:active {
-        background-color: #eee;
-    }
+  &:active {
+    background-color: #eee;
+  }
 
-    &:not(.show-btn-visible) {
-        opacity: 0;
-        user-select: none;
-    }
+  &:not(.show-btn-visible) {
+    opacity: 0;
+    user-select: none;
+  }
 }
 
 form.modal-pay-form-section {
-    input:disabled {
-        background-color: #eee;
-    }
-    input:not(:disabled) {
-        background-color: white;
-    }
+  input:disabled {
+    background-color: #eee;
+  }
+  input:not(:disabled) {
+    background-color: white;
+  }
 }

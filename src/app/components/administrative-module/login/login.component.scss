@@ -1,77 +1,91 @@
-/* Contenedor Principal para centrar el formulario */
-.login-container {
+// 🎨 Variables para mantener la consistencia
+$color-primario: #007bff; // Azul vibrante para el botón
+$color-fondo: #f8f9fa;   // Fondo gris claro
+$color-borde: #ced4da;   // Borde estándar
+$color-error: #dc3545;   // Rojo para mensajes de error
+$sombra-caja: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra suave
+
+.form-container {
   display: flex;
-  justify-content: center; // Centrado horizontal
-  align-items: center;    // Centrado vertical
-  min-height: 100vh;      // Ocupa todo el alto de la ventana
-  background-color: #f4f6f9; // Fondo suave
-  padding: 20px;
-}
+  justify-content: center; // Centra el formulario horizontalmente
+  align-items: center;     // Centra el formulario verticalmente (si el componente tiene altura)
+  min-height: 30vh;       // Opcional: si quieres centrarlo en toda la vista
 
-/* Tarjeta del Login */
-.login-card {
-  width: 100%;
-  max-width: 380px;
-  padding: 30px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Sombra sutil
-}
-
-/* Título */
-.login-title {
-  text-align: center;
-  color: #333333;
-  margin-bottom: 25px;
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-/* Estilo para cada grupo de formulario (label + input) */
-.form-group {
-  margin-bottom: 20px;
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555555;
-  }
-
-  input {
+  // Estilos para el formulario principal
+  form {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    box-sizing: border-box; // Asegura que el padding no cambie el ancho total
-    transition: border-color 0.3s;
+    max-width: 400px; // Limita el ancho del formulario
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: $sombra-caja;
 
-    &:focus {
-      border-color: #007bff; // Color de enfoque
-      outline: none; // Remover el outline por defecto del navegador
+    // ➡️ Estilos para cada grupo de campo (div contiene label, input y error)
+    div {
+      margin-bottom: 20px;
+
+      label {
+        display: block; // Hace que la etiqueta ocupe su propia línea
+        margin-bottom: 8px;
+        font-weight: 600; // Semi-negrita
+        color: #495057;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid $color-borde;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box; // Asegura que padding no aumente el ancho
+
+        &:focus {
+          border-color: $color-primario;
+          outline: none;
+          box-shadow: 0 0 0 0.2rem rgba($color-primario, 0.25);
+        }
+
+        // ⚠️ Estado de Angular: Campo Inválido y Tocado
+        &.ng-invalid.ng-touched {
+          border-color: $color-error;
+        }
+      }
+
+      // 🛑 Estilo para el mensaje de error
+      div:last-child {
+        // Selecciona el div del error que está inmediatamente después del input
+        color: $color-error;
+        font-size: 0.85em;
+        margin-top: 5px;
+        font-style: italic;
+      }
     }
-  }
-}
 
-/* Botón de Login */
-.login-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff; // Color primario
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    // 🚀 Estilos para el botón
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: $color-primario;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s;
 
-  &:hover {
-    background-color: #0056b3; // Color más oscuro al pasar el mouse
-  }
+      &:hover:not(:disabled) {
+        background-color: darken($color-primario, 10%);
+      }
 
-  &:active {
-    background-color: #004085; // Color al hacer click
+      // Estilo para el botón deshabilitado
+      &:disabled {
+        background-color: #6c757d; // Gris para deshabilitado
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+    }
   }
 }

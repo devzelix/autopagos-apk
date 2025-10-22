@@ -207,17 +207,8 @@
           </div>
         </div>
 
-        <!-- Administrative module -->
-        <div class="section-step-item" [hidden]="!showadmin">
-          <app-administrative-module
-          [userData]="dni?.value"
-          (showAnulationModal)="this.showAnulationModal = $event"
-          >
-          </app-administrative-module>
-        </div>
-
         <!-- PAYMENT CARDS STEP -->
-        <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item" [hidden]="showadmin">
+        <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
 
           <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
 
@@ -265,7 +256,7 @@
 
 
   <!-- MODAL DE TRANSACCION DEL PAGO -->
-  <app-modal-payment *ngIf="showTransactionModal || showAnulationModal"
+  <app-modal-payment *ngIf="showTransactionModal || showAnulationModal || showadmin"
     [paymentType]="selectedPaymentType"
     [dniValue]="this.dni?.value"
     [nroAbonado]="this.nroContrato?.value"
@@ -276,6 +267,7 @@
     [subscription]="subscription"
     [mountValue]="mountTotalMonthBs"
     [activeInputFocus]="activeTransactionInputFocus"
+    [viewAdmin]="showadmin"
 
     (closeEmmit)="handleShowTransactionModal(false)"
     (onSubmitPayForm)="resetAllForms()">
