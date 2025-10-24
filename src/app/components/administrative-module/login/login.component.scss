@@ -10,6 +10,7 @@ $sombra-caja: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra suave
   justify-content: center; // Centra el formulario horizontalmente
   align-items: center;     // Centra el formulario verticalmente (si el componente tiene altura)
   min-height: 30vh;       // Opcional: si quieres centrarlo en toda la vista
+  margin-top: 2rem;
 
   // Estilos para el formulario principal
   form {

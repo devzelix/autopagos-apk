@@ -24,44 +24,57 @@ export class ActionAdminComponent implements OnInit {
 
   public async administrativeMode(option: number){
 
-    Swal.fire({
-      title: '¿Está seguro de que desea realizar esta acción?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, estoy seguro',
-      cancelButtonText: 'Cancelar',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        switch (option) {
-          case 1:
-            await this.printLastTicket()
-            .then((res) => {
-              this.ShowDiologSuccess(res, true);
-            })
-            .catch((err) => {
-              this.ShowDiologError(err);
-            });
-            break;
-          case 2:
-            await this.closeBox()
-            .then((res) => {
-              this.ShowDiologSuccess(res);
-            })
-            .catch((err) => {
-              this.ShowDiologError(err);
-            });
-            break;
-          default:
-            // Opcional: Manejar valores inesperados
-            console.warn(`Opción ${option} no reconocida`);
-            break;
+    if (this.isLogged) {
+      Swal.fire({
+        title: '¿Está seguro de que desea realizar esta acción?',
+        text: 'Esta acción no se puede deshacer',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, estoy seguro',
+        cancelButtonText: 'Cancelar',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          switch (option) {
+            case 1:
+              await this.printLastTicket()
+              .then((res) => {
+                this.ShowDiologSuccess(res, true);
+              })
+              .catch((err) => {
+                this.ShowDiologError(err);
+              });
+              break;
+            case 2:
+              await this.closeBox()
+              .then((res) => {
+                this.ShowDiologSuccess(res);
+              })
+              .catch((err) => {
+                this.ShowDiologError(err);
+              });
+              break;
+            case 3:
+              this.showAnulateTransactionModal();
+              break;
+            default:
+              // Opcional: Manejar valores inesperados
+              console.warn(`Opción ${option} no reconocida`);
+              break;
+          }
         }
-      }
-    });
-
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso denegado',
+        text: 'Debe iniciar sesión para realizar esta acción.',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        timer: 3000,
+      });
+    }
   }
 
   public async printLastTicket(): Promise<IResponse> {
@@ -101,7 +114,14 @@ export class ActionAdminComponent implements OnInit {
    * @returns ci, numSeq
    */
   public async showAnulateTransactionModal(): Promise<void | string> {
-    alert('Mostrar swal para anular transacción');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Anulación de transacciones',
+      text: 'Esta acción debe realizarse desde el sistema Ubiipos a traves del punto de venta dedes el menu de acciones.',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      timer: 6000,
+    });
   }
 
   /**
