@@ -45,6 +45,8 @@ export class ConfigIpUbiiposComponent implements OnInit {
     this.validationMessage = '';
     this.isIpValid = false;
 
+    alert('Configurando la IP del Ubiipos. Por favor, espere...');
+
     // 1. Validación básica: Ambos campos deben tener valor
     if (form.invalid || !this.ipAddress.trim() || !this.portNumber) {
         this.validationMessage = '⚠️ Por favor, introduce la Dirección IP y el Puerto.';
@@ -69,6 +71,7 @@ export class ConfigIpUbiiposComponent implements OnInit {
     this.validationMessage = `Conectando a ${fullAddress}...`; // Mensaje de feedback mientras espera
 
     try {
+      alert(`Probando conexión con el Ubiipos. Por favor, espere... \nIP: ${this.ipAddress} \nPuerto: ${this.portNumber}, URL: ${fullAddress}`);
       // Resetear estado antes de la prueba
       this.validationMessage = '';
       this.isIpValid = true;
@@ -76,7 +79,10 @@ export class ConfigIpUbiiposComponent implements OnInit {
       this.showModal('Cancele la operación en el punto de venta si es necesario.', 'warning', 22000);
       const testConnection: IResponse = await this._ubiiposService.testUbiipos(fullAddress);
 
+      alert(`Conexión probada. Procesando resultado... \n${JSON.stringify(testConnection)}`);
+
       if(testConnection.status !== 200){
+        alert(`Error al conectar con Ubiipos: ${JSON.stringify(testConnection)}`);
         this.validationMessage = `No se pudo conectar a ${fullAddress}. Verifica que la IP y el Puerto sean correctos y que el servicio esté activo.`;
         this.showModal(this.validationMessage, 'error', 6000);
         this.isIpValid = false;
@@ -117,6 +123,7 @@ export class ConfigIpUbiiposComponent implements OnInit {
 
     } catch (error: any) { // Capturamos el error
       console.error('Error al guardar la configuración:', error);
+      alert(`Error al guardar la configuración: ${JSON.stringify(error)}`);
       this.validationMessage = 'Error interno al guardar la configuración. Inténtalo de nuevo.';
       this.isIpValid = false;
       this.ipUbiipos.emit(true); // Emitir true para mantener abierto o mostrar error

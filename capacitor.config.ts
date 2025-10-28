@@ -4,9 +4,9 @@ const config: CapacitorConfig = {
   appId: 'com.fibextelecom.autopago',
   appName: 'AutoPago Fibex Telecom',
   webDir: 'dist/form-pay-fibex',
-  // server: {
-  //   androidScheme: 'https',
-  // },
+  server: {
+    androidScheme: 'http',
+  }
 };
 
 export default config;

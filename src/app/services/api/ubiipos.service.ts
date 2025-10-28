@@ -97,6 +97,8 @@ export class UbiiposService {
 
       const errRes: IResponse = handleApiError(error);
 
+      alert(`Catch: Error al conectar con Ubiipos: ${errRes}`);
+
       // LOGS SAVE ERROR
       this._logService.storagelog({
         dateTime: new Date(),

@@ -31,6 +31,11 @@ export interface IRequest {
    * Encabezados (headers) de la petición (ej: Authorization, Content-Type).
    */
   headers?: Record<string, string>;
+
+  /**
+   * Tiempo máximo de espera (timeout) para la solicitud en milisegundos.
+   */
+  timeout?: number;
 }
 
 /**

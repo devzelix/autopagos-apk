@@ -228,9 +228,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         }
         //Request to create a digital
         console.log('Cargando Ticket...\n', digitalTicket);
-        const ticketDigital = this._pdfService.ticketCreateAndUpload(digitalTicket);
+        const ticketDigital = await this._pdfService.ticketCreateAndUpload(digitalTicket);
         setTimeout(() => {
-          console.log('Ticket Cargado\n', ticketDigital);
+          console.log('Ticket Cargado\n', ticketDigital.data);
         }, 5000)
 
         // Body to Register on SAE

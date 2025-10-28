@@ -17,6 +17,8 @@ import { IResponse } from '../interfaces/api/handlerResReq';
 export const handleApiError = (error: unknown): IResponse => {
   console.error(error);
 
+  alert(`API ERROR: ${JSON.stringify(error)}`);
+
   let statusCode = 500;
   let errorMessage = 'Unknown error';
 

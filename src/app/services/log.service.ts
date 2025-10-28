@@ -35,7 +35,7 @@ export class LogService {
 
       console.log('LOG LENGTH: \n', allLogs.length, '\nEnviar para crear: \n', allLogs.length > 50);
 
-      if (allLogs.length > 200) {
+      if (allLogs.length > 1) {
         console.log('Entre para enviar los log...');
         await this.postLogs().then((res) => {
           console.log('Res: \n', res);
