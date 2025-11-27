@@ -61,6 +61,14 @@ export class ActionAdminComponent implements OnInit {
             default:
               // Opcional: Manejar valores inesperados
               console.warn(`Opción ${option} no reconocida`);
+              Swal.fire({
+                icon: 'error',
+                title: 'Opción no permitida.',
+                text: 'La opción que esta intentado ejcutar no esta permitida.',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                timer: 3000,
+              });
               break;
           }
         }
@@ -118,9 +126,8 @@ export class ActionAdminComponent implements OnInit {
       icon: 'warning',
       title: 'Anulación de transacciones',
       text: 'Esta acción debe realizarse desde el sistema Ubiipos a traves del punto de venta dedes el menu de acciones.',
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      timer: 6000,
+      showConfirmButton: true,
+      allowOutsideClick: false
     });
   }
 
@@ -145,8 +152,8 @@ export class ActionAdminComponent implements OnInit {
 
     // 1. Extract response code and message
     if (printer) {
-      message = dataRes.message === 'PRINTER_NO_PAPER' ? 'La impresora no tiene papel.' : dataRes.message === 'OK' ? 'Ticket impreso.' : dataRes.message;
-      responseCode = dataRes.message === 'PRINTER_NO_PAPER' ? '' : '00';
+      message = dataRes.message === 'OK' ? 'Ticket impreso.' : dataRes.message === 'PRINTER_NO_PAPER' ? 'La impresora no tiene papel.' : 'No hay ticket para imprimir. Realice una transacción primero.';
+      responseCode = dataRes.message !== 'OK' ? '' : '00';
     } else {
       responseCode = dataRes.data.TRANS_CODE_RESULT;
       message = dataRes.data.TRANS_MESSAGE_RESULT || '¡Acción exitosa!';
@@ -170,7 +177,7 @@ export class ActionAdminComponent implements OnInit {
         title: 'Solicitud no procesada.\n'+message,
         showConfirmButton: false,
         allowOutsideClick: false,
-        timer: 4000,
+        timer: 5000,
         // didClose: () => resolve()
       });
     }

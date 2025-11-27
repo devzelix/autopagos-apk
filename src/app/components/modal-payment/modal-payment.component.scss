@@ -7,12 +7,17 @@ section.modal-pay-container {
 .modal-payment {
   background: ghostwhite;
   color: #313131;
-  padding: 1.2rem 2rem;
+  // padding: 1.2rem 2rem;
   border-radius: 1rem;
-  max-width: 850px;
+  // max-width: 850px;
   width: 100%;
   display: flex;
   flex-direction: column;
+  max-height: 80vh;       /* Limita la altura máxima al 80% de la ventana */
+  max-width: 80vw;        /* Limita el ancho máximo al 90% de la ventana */
+  overflow: auto;         /* Activa scroll vertical y horizontal si se necesita */
+  padding: 3rem;          /* Espaciado interno */
+  box-sizing: border-box; /* Asegura que padding no rompa el layout */
 }
 
 .btn-close-section {

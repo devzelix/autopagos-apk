@@ -4,8 +4,6 @@ import { IUpLoadFiles } from "../../interfaces/api/upload-files";
 import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LogService } from '../log.service';
-import { LocalstorageService } from '../localstorage.service';
-import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
 import { ILog } from 'src/app/interfaces/log.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
 
