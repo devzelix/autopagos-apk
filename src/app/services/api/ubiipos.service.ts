@@ -8,19 +8,19 @@ import { ILog } from 'src/app/interfaces/log.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UbiiposService {
-
   constructor(
     private _logService: LogService,
     private _localStorageService: LocalstorageService
-  ) { }
+  ) {}
 
-  private getHostUbii(){
-    try{
+  private getHostUbii() {
+    try {
       // Get host
-      const hostUbii: string = this._localStorageService.get<string>('ubiiposHost') ?? '';
+      const hostUbii: string =
+        this._localStorageService.get<string>('ubiiposHost') ?? '';
 
       // Get url
       const url: string | null = hostUbii ? `${hostUbii}/api/spPayment` : null;
@@ -29,7 +29,6 @@ export class UbiiposService {
     } catch {
       return null;
     }
-
   }
 
   /**
@@ -38,7 +37,6 @@ export class UbiiposService {
    * @returns resReturn: IResponse
    */
   async testUbiipos(iptest: string): Promise<IResponse> {
-
     let resReturn: IResponse;
 
     try {
@@ -46,8 +44,8 @@ export class UbiiposService {
       if (!iptest) {
         resReturn = {
           status: 400,
-          message: 'IP address is required'
-        }
+          message: 'IP address is required',
+        };
 
         return resReturn;
       }
@@ -63,18 +61,21 @@ export class UbiiposService {
           paymentId: 'fibexUbii',
           customerId: '1000000',
           amount: 100,
-          operation: 'PAYMENT'
+          operation: 'PAYMENT',
         },
-      }
+      };
 
       // Make request
       const response = await axios.request(bodyReq);
 
       resReturn = {
         status: response.status,
-        message: response.data.TRANS_MESSAGE_RESULT !== '' ? response.data.TRANS_MESSAGE_RESULT : response.statusText,
-        data: response.data as any
-      }
+        message:
+          response.data.TRANS_MESSAGE_RESULT !== ''
+            ? response.data.TRANS_MESSAGE_RESULT
+            : response.statusText,
+        data: response.data as any,
+      };
 
       console.log('testUbiipos: \n', resReturn);
 
@@ -94,7 +95,6 @@ export class UbiiposService {
 
       return resReturn;
     } catch (error) {
-
       const errRes: IResponse = handleApiError(error);
 
       alert(`Catch: Error al conectar con Ubiipos: ${errRes}`);
@@ -111,7 +111,7 @@ export class UbiiposService {
           paymentId: 'fibexUbii',
           customerId: '1000000',
           amount: 100,
-          operation: 'PAYMENT'
+          operation: 'PAYMENT',
         }),
         res_code: 'ERROR',
         res_body: errRes.message,
@@ -127,7 +127,7 @@ export class UbiiposService {
    * @param request: IUbiiposDataSend
    * @returns resReturn: IResponse
    */
-  async paymentUbiipos(request: IUbiiposDataSend): Promise<IResponse>{
+  async paymentUbiipos(request: IUbiiposDataSend): Promise<IResponse> {
     let resReturn: IResponse;
 
     try {
@@ -138,8 +138,8 @@ export class UbiiposService {
       if (!url) {
         resReturn = {
           status: 400,
-          message: 'Ubiipos host is not configured'
-        }
+          message: 'Ubiipos host is not configured',
+        };
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
@@ -148,14 +148,16 @@ export class UbiiposService {
           is_success: false,
           http_method: 'POST',
           status: resReturn.status,
-          route_api: this._localStorageService.get<string>('ubiiposHost') ? this.getHostUbii() ?? 'Ubiipos host is not configured' : resReturn.message,
+          route_api: this._localStorageService.get<string>('ubiiposHost')
+            ? this.getHostUbii() ?? 'Ubiipos host is not configured'
+            : resReturn.message,
           req_body: JSON.stringify({
-            paymentId: "fibexUbii",
-            ...request
+            paymentId: 'fibexUbii',
+            ...request,
           }),
           res_code: 'ERROR',
           res_body: JSON.stringify(resReturn.message),
-          numSubscriber:  null,
+          numSubscriber: null,
         });
 
         return resReturn;
@@ -163,8 +165,8 @@ export class UbiiposService {
 
       // Get body
       const body: IUbiiposDataSend = {
-        paymentId: "fibexUbii",
-        ...request
+        paymentId: 'fibexUbii',
+        ...request,
       };
 
       // Get headers
@@ -175,8 +177,8 @@ export class UbiiposService {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        data: body
-      }
+        data: body,
+      };
 
       // Make request
       const response = await axios.request(bodyReq);
@@ -185,9 +187,12 @@ export class UbiiposService {
 
       resReturn = {
         status: response.status,
-        message: response.data.TRANS_MESSAGE_RESULT !== '' ? response.data.TRANS_MESSAGE_RESULT : response.statusText,
-        data: response.data as any
-      }
+        message:
+          response.data.TRANS_MESSAGE_RESULT !== ''
+            ? response.data.TRANS_MESSAGE_RESULT
+            : response.statusText,
+        data: response.data as any,
+      };
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
@@ -200,7 +205,7 @@ export class UbiiposService {
         req_body: JSON.stringify(body),
         res_code: response.data.TRANS_CODE_RESULT,
         res_body: JSON.stringify(resReturn.data),
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return resReturn;
@@ -216,12 +221,12 @@ export class UbiiposService {
         status: errRes.status,
         route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
         req_body: JSON.stringify({
-          paymentId: "fibexUbii",
-          ...request
+          paymentId: 'fibexUbii',
+          ...request,
         }),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return errRes;
@@ -232,13 +237,13 @@ export class UbiiposService {
    * UBIPOS PRINT TICKET
    * @returns resReturn: IResponse
    */
-  async printTicket(): Promise<IResponse>{
+  async printTicket(): Promise<IResponse> {
     let resReturn: IResponse;
 
     const bodyPrint: IUbiiposDataSend = {
-      paymentId: "fibexUbii",
-      operation: "PRINT"
-    }
+      paymentId: 'fibexUbii',
+      operation: 'PRINT',
+    };
 
     try {
       // Get url
@@ -248,8 +253,8 @@ export class UbiiposService {
       if (!url) {
         resReturn = {
           status: 400,
-          message: 'Ubiipos host is not configured'
-        }
+          message: 'Ubiipos host is not configured',
+        };
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
@@ -258,11 +263,13 @@ export class UbiiposService {
           is_success: false,
           http_method: 'POST',
           status: resReturn.status,
-          route_api: this._localStorageService.get<string>('ubiiposHost') ? this.getHostUbii() ?? 'Ubiipos host is not configured' : resReturn.message ,
+          route_api: this._localStorageService.get<string>('ubiiposHost')
+            ? this.getHostUbii() ?? 'Ubiipos host is not configured'
+            : resReturn.message,
           req_body: JSON.stringify(bodyPrint),
           res_code: 'ERROR',
           res_body: JSON.stringify(resReturn.message),
-          numSubscriber:  null,
+          numSubscriber: null,
         });
 
         return resReturn;
@@ -275,8 +282,8 @@ export class UbiiposService {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        data: bodyPrint
-      }
+        data: bodyPrint,
+      };
 
       // Make request
       const response = await axios.request(bodyReq);
@@ -284,8 +291,8 @@ export class UbiiposService {
       resReturn = {
         status: response.status,
         message: response.statusText,
-        data: response.data as any
-      }
+        data: response.data as any,
+      };
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
@@ -298,7 +305,7 @@ export class UbiiposService {
         req_body: JSON.stringify(bodyPrint),
         res_code: resReturn.message,
         res_body: JSON.stringify(resReturn.data),
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return resReturn;
@@ -316,21 +323,21 @@ export class UbiiposService {
         req_body: JSON.stringify(bodyPrint),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return errRes;
     }
   }
 
-  async closeBatch(): Promise<IResponse>{
+  async closeBatch(): Promise<IResponse> {
     let resReturn: IResponse;
 
     const bodyClose: IUbiiposDataSend = {
-      paymentId: "fibexUbii",
-      operation: "SETTLEMENT",
-      settleType: "N"
-    }
+      paymentId: 'fibexUbii',
+      operation: 'SETTLEMENT',
+      settleType: 'N',
+    };
 
     try {
       // Get url
@@ -340,8 +347,8 @@ export class UbiiposService {
       if (!url) {
         resReturn = {
           status: 400,
-          message: 'Ubiipos host is not configured'
-        }
+          message: 'Ubiipos host is not configured',
+        };
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
@@ -354,7 +361,7 @@ export class UbiiposService {
           req_body: JSON.stringify(bodyClose),
           res_code: 'ERROR',
           res_body: JSON.stringify(resReturn.message),
-          numSubscriber:  null,
+          numSubscriber: null,
         });
 
         return resReturn;
@@ -367,8 +374,8 @@ export class UbiiposService {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        data: bodyClose
-      }
+        data: bodyClose,
+      };
 
       // Make request
       const response = await axios.request(bodyReq);
@@ -376,8 +383,8 @@ export class UbiiposService {
       resReturn = {
         status: response.status,
         message: response.statusText,
-        data: response.data as any
-      }
+        data: response.data as any,
+      };
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
@@ -390,7 +397,7 @@ export class UbiiposService {
         req_body: JSON.stringify(bodyClose),
         res_code: resReturn.message,
         res_body: JSON.stringify(resReturn.data),
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return resReturn;
@@ -408,13 +415,12 @@ export class UbiiposService {
         req_body: JSON.stringify(bodyClose),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return errRes;
     }
   }
-
 }
 
 // RESPONSE SUCCESS PAYMENT

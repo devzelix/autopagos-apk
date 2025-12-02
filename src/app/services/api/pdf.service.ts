@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
-import { IPrintTicket, IUploadFile } from 'src/app/interfaces/printer.interface';
+import {
+  IPrintTicket,
+  IUploadFile,
+} from 'src/app/interfaces/printer.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
 import { environment } from 'src/environments/environment';
 import { LogService } from '../log.service';
@@ -10,23 +13,22 @@ import { LogService } from '../log.service';
   providedIn: 'root',
 })
 export class PdfService {
-
   private dateNew: Date = new Date();
   private headersReq = {
     'Content-Type': 'application/json',
     'x-tkn': environment.API_PRINTER_TOKEN,
   };
 
-  constructor(
-    private _logService: LogService
-  ) {}
+  constructor(private _logService: LogService) {}
 
   /**
    * @description: Funcion para imprimir un ticket
    * @param _dataTiket
    * @returns
    */
-  public async ticketCreateAndUpload(dataTiket: IPrintTicket): Promise<IResponse> {
+  public async ticketCreateAndUpload(
+    dataTiket: IPrintTicket
+  ): Promise<IResponse> {
     let res: IResponse;
 
     try {
@@ -34,8 +36,9 @@ export class PdfService {
       if (!dataTiket) {
         res = {
           status: 400,
-          message: 'No se ha proporcionado la informacion para generar el ticket digital.'
-        }
+          message:
+            'No se ha proporcionado la informacion para generar el ticket digital.',
+        };
 
         return res;
       }
@@ -48,7 +51,7 @@ export class PdfService {
           'Content-Type': 'application/json',
           'x-tkn': environment.API_PRINTER_TOKEN,
         },
-        data: dataTiket
+        data: dataTiket,
       };
 
       const resultReq = await axios.request(bodyReq);
@@ -56,8 +59,8 @@ export class PdfService {
       res = {
         status: resultReq.status,
         message: 'Ticket digital creado.',
-        data: resultReq.data.data
-      }
+        data: resultReq.data.data,
+      };
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
@@ -70,13 +73,12 @@ export class PdfService {
         req_body: JSON.stringify(bodyReq.data),
         res_code: res.status.toString(),
         res_body: JSON.stringify(res.data),
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
-      console.log('TICKET CREATE Y UPLOAD: \n', res)
+      console.log('TICKET CREATE Y UPLOAD: \n', res);
 
       return res;
-
     } catch (error) {
       const errRes: IResponse = handleApiError(error);
 
@@ -87,11 +89,11 @@ export class PdfService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${environment.URL_API_MASTER}/administrative/payment/create-transaction`,
+        route_api: `${environment.URL_API_MASTER}/pdf/ticket-and-print`,
         req_body: JSON.stringify(dataTiket),
         res_code: 'ERROR',
         res_body: errRes.message,
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return errRes;
@@ -116,8 +118,7 @@ export class PdfService {
     //     });
     // });
     return new Promise<string>((resolve, _reject) => {
-      resolve('50:9a:4c:50:df:4e')
+      resolve('50:9a:4c:50:df:4e');
     });
-
   }
 }
