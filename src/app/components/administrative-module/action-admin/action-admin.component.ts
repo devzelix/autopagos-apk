@@ -87,7 +87,6 @@ export class ActionAdminComponent implements OnInit {
 
   public async printLastTicket(): Promise<IResponse> {
     console.log('in printLastTicket');
-    alert('Imprimiendo último ticket...');
     try {
       const printTicket: IResponse = await this._ubiipos.printTicket();
       console.log('printTicket', printTicket);
@@ -105,7 +104,6 @@ export class ActionAdminComponent implements OnInit {
    */
   public async closeBox(): Promise<IResponse> {
     console.log('in closeBatch');
-    alert('Cerrando caja...');
     try {
       const closeRes: IResponse = await this._ubiipos.closeBatch();
       console.log('closeRes', closeRes);

@@ -22,7 +22,10 @@ import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import { IUbiiposDataSend } from 'src/app/interfaces/api/ubiipos';
 import { IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { PaymentsService } from 'src/app/services/api/payments.service';
-import { IPaymentCreate, IPaymentRegister } from 'src/app/interfaces/api/payment';
+import {
+  IPaymentCreate,
+  IPaymentRegister,
+} from 'src/app/interfaces/api/payment';
 import { PdfService } from 'src/app/services/api/pdf.service';
 import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
 
@@ -104,10 +107,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     this.updateDolarBalance();
 
     this.mount?.valueChanges.subscribe(() => {
-        // Cada vez que el monto cambie, llama a tu nueva función
-        this.updateDolarBalance();
+      // Cada vez que el monto cambie, llama a tu nueva función
+      this.updateDolarBalance();
     });
-
 
     /* if (this.activeInputFocus === 'dni') {
       this.mount?.disable();
@@ -192,7 +194,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
       console.warn('Card request response:', resPay);
 
-      if(resPay.status !== 200){
+      if (resPay.status !== 200) {
         Swal.fire({
           icon: 'error',
           title: 'Ha ocurrido un error, intente nuevamente más tarde',
@@ -207,8 +209,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      if (resPay.data.TRANS_CODE_RESULT === '00'){
-
+      if (resPay.data.TRANS_CODE_RESULT === '00') {
         let titleText: string = 'Transacción Procesada';
         let messageText: string = 'APROBADA';
 
@@ -219,19 +220,24 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           refNumber: resPay.data.REFERENCIA,
           numSeq: resPay.data.TRANS_CONFIRM_NUM,
           abononumber: this.nroAbonado,
-          status: resPay.data.TRANS_CODE_RESULT === '00' ? 'APROBADO' : resPay.data.TRANS_MESSAGE_RESULT,
+          status:
+            resPay.data.TRANS_CODE_RESULT === '00'
+              ? 'APROBADO'
+              : resPay.data.TRANS_MESSAGE_RESULT,
           describe: getPaymentDescription(this.mountFormat, this.subscription),
           amount: this.mountFormat,
           methodPayment: `${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
           mac_address: (await this.getMacAddress()).toString(),
           is_anulation: false,
-        }
+        };
         //Request to create a digital
         console.log('Cargando Ticket...\n', digitalTicket);
-        const ticketDigital = await this._pdfService.ticketCreateAndUpload(digitalTicket);
+        const ticketDigital = await this._pdfService.ticketCreateAndUpload(
+          digitalTicket
+        );
         setTimeout(() => {
           console.log('Ticket Cargado\n', ticketDigital.data);
-        }, 5000)
+        }, 5000);
 
         // Body to Register on SAE
         const bodyResgister: IPaymentRegister = {
@@ -242,12 +248,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           id_contrato: this.nroContrato,
           reference: resPay.data.REFERENCIA,
           comment: `PAGO POR CAJA AUTOMATICA - ${resPay.data.FECHA} - ${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
-          date: this.dateNew.toDateString()
-        }
+          date: this.dateNew.toDateString(),
+        };
 
         //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
         console.log('Registrar en SAE...\n', bodyResgister);
-        const saeRegister = await this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
+        const saeRegister =
+          await this._registerTransaction.paymentRegisterOnSAE(bodyResgister);
         console.log('Registrado en SAE\n', saeRegister.data);
 
         // Body to Create Payment on DB
@@ -259,21 +266,30 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           lastCardNum: resPay.data.PAN.slice(-4),
           amount: this.mountFormat,
           terminalVirtual: resPay.data.TERMINAL,
-          status: (saeRegister.data.data.success && saeRegister.data.data.message === 'ok') ? 'APPROVED' : 'PENDING'
-        }
+          status:
+            saeRegister.data.data.success &&
+            saeRegister.data.data.message === 'ok'
+              ? 'APPROVED'
+              : 'PENDING',
+        };
 
         // Request to create on DB
         console.log('Registrar en Thomas Cobertura...\n', bodyCreate);
-        const createTransaction = await this._registerTransaction.paymentCreate(bodyCreate);
+        const createTransaction = await this._registerTransaction.paymentCreate(
+          bodyCreate
+        );
         console.log('Registrado en Thomas Cobertura\n', createTransaction.data);
 
         // Request to Print ticket
         const printRes: IResponse = await this._ubiipos.printTicket();
 
-        if(printRes.status !== 200 && printRes.message === 'PRINTER_NO_PAPER'){
+        if (
+          printRes.status !== 200 &&
+          printRes.message === 'PRINTER_NO_PAPER'
+        ) {
           Swal.fire({
             icon: 'warning',
-            title:  `${titleText} \n Impersora sin papel.`,
+            title: `${titleText} \n Impersora sin papel.`,
             text: 'Para imprimir ticket Contate al personal de fibex para suministrar papel a la impresora y presione aceptar.',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -283,7 +299,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
             if (result.isConfirmed) {
               const printRes: IResponse = await this._ubiipos.printTicket();
 
-              if(printRes.status !== 200){
+              if (printRes.status !== 200) {
                 messageText = `${messageText} \n Contate al personal de fibex para obtener su ticket de froma manual`;
               }
 
@@ -317,7 +333,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           this.sendPayment = !this.formPayment.valid; // Always reset payment flag
         }
         return;
-
       } else {
         Swal.fire({
           icon: 'error',
@@ -332,14 +347,20 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         this.sendPayment = !this.formPayment.valid; // Always reset payment flag
         return;
       }
-
     } catch (error) {
-      console.log('ESTO ES ERROR', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Ups! Algo salio mal.',
+        text: 'Error en el servidor - Contacte al personal de fibex.',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        timer: 7000,
+      });
+
       this.closeAlert();
       this.sendPayment = !this.formPayment.valid; // Always reset payment flag
       return;
-  }
-
+    }
   }
 
   /**
@@ -538,13 +559,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       // 4. Realizar la petición a ubiipos a través del servicio.
       // 5. Manejar la respuesta.
 
-      const amountFormat = Math.round(parseFloat(this.mount?.value.replace(',', '')) * 100);
+      const amountFormat = Math.round(
+        parseFloat(this.mount?.value.replace(',', '')) * 100
+      );
 
       const bodyUbiipos: IUbiiposDataSend = {
         customerId: `${this.typeDNI}${this.dni?.value}`,
         amount: amountFormat,
         operation: 'PAYMENT',
-      }
+      };
 
       // console.log('bodyUbiipos', bodyUbiipos);
 
@@ -558,7 +581,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       console.error('ERROR requestCardUbiiPos:', errRes);
       return errRes;
     }
-
   }
 
   /**
@@ -784,13 +806,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
   private updateDolarBalance(): void {
     // 1. Obtiene el valor numérico de los bolívares, limpiando comas
-    const mountValueBs = parseFloat(String(this.mount?.value).replace(/,/g, '')) || 0;
+    const mountValueBs =
+      parseFloat(String(this.mount?.value).replace(/,/g, '')) || 0;
 
     // 2. Asegúrate de que la tasa de cambio sea un número válido para evitar errores
     const tasa = parseFloat(this.tasaCambio);
     if (isNaN(tasa) || tasa === 0) {
-        this.dolarBalance = '0.00';
-        return;
+      this.dolarBalance = '0.00';
+      return;
     }
 
     // 3. Calcula el equivalente en dólares
@@ -798,7 +821,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     // 4. Actualiza la propiedad con 2 decimales
     this.dolarBalance = balanceInUsd.toFixed(2);
-}
+  }
 
   public onEditDniValue = () => {
     if (this.inputDni) {
