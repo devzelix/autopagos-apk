@@ -1,10 +1,10 @@
-<div [hidden]="!ipUbiiPos">
-  <app-config-ip-ubiipos
-    (ipUbiipos)="handlerIpUbiiPos($event)"
-  ></app-config-ip-ubiipos>
+<div [hidden]="isAdminLogged">
+  <app-login
+    (loginEvent)="handlerAdminLogin($event)"
+  ></app-login>
 </div>
 
-<div [hidden]="ipUbiiPos">
+<div [hidden]="!isAdminLogged">
   <app-welcome-view *ngIf="!showFormView"
     (showFormEmitter)="handleShowFormView(true)">
   </app-welcome-view>

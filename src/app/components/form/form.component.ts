@@ -89,6 +89,11 @@ export class FormComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboard(event: KeyboardEvent) {
 
+    // NO ejecutar si el login del admin está visible (evita interceptar eventos del formulario de login)
+    if (!this.isAdminLogged) {
+      return; // Salir si el admin no ha iniciado sesión
+    }
+
     if (this.showDniForm && !this.AppFibex && this.listContratos.length < 1 && !this.LoadingLengthAbonado) {
 
       if (event.key === 'Backspace') return this.deleteLastCharacter();
@@ -298,7 +303,8 @@ export class FormComponent implements OnInit {
   // para mostrar o ocultar el modulo administrativo
   public showaBtnAdmin: boolean = true;
   public showadmin: boolean = false;
-  public ipUbiiPos: boolean = true;
+  // Control para mostrar el login del administrador al inicio
+  public isAdminLogged: boolean = false;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -327,16 +333,16 @@ export class FormComponent implements OnInit {
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
     private _localStorageService: LocalstorageService
-  )
-  {
+  ) {
 
-    if(this._localStorageService.get('ubiiposHost')) {
-      console.log('IP de Ubiipos cargada desde LocalStorage:', this._localStorageService.get('ubiiposHost'));
-      this.ipUbiiPos = false;
-    } else {
-      this.ipUbiiPos = true;
-      console.log('No se encontró IP de Ubiipos en LocalStorage.');
-    }
+    // Comentado: Ya no se verifica la IP de UbiiPos al inicio
+    // if (this._localStorageService.get('ubiiposHost')) {
+    //   console.log('IP de Ubiipos cargada desde LocalStorage:', this._localStorageService.get('ubiiposHost'));
+    //   this.isAdminLogged = false;
+    // } else {
+    //   this.isAdminLogged = true;
+    //   console.log('No se encontró IP de Ubiipos en LocalStorage.');
+    // }
 
     this.cacheService.clear();
 
@@ -567,7 +573,7 @@ export class FormComponent implements OnInit {
     // this.getDaysFeriados();
   }
 
- ngOnDestroy(): void {
+  ngOnDestroy(): void {
     // Emite para que el takeUntil() de activity$ funcione
     this.destroy$.next();
     this.destroy$.complete();
@@ -576,9 +582,9 @@ export class FormComponent implements OnInit {
     this.activitySubscription?.unsubscribe();
     this.warningSubscription?.unsubscribe();
     this.logoutSubscription?.unsubscribe();
-}
+  }
 
-private startInactivityTimer(): void {
+  private startInactivityTimer(): void {
     this.stopInactivityTimer();
     console.log("Iniciando el temporizador de inactividad.");
     // --- Tiempos de configuración (en milisegundos) ---
@@ -587,18 +593,18 @@ private startInactivityTimer(): void {
 
     // --- Flujo de actividad del usuario ---
     const activity$ = merge(
-        fromEvent(document, 'click'),
-        fromEvent(document, 'keypress'),
-        fromEvent(document, 'touchstart')
+      fromEvent(document, 'click'),
+      fromEvent(document, 'keypress'),
+      fromEvent(document, 'touchstart')
     ).pipe(takeUntil(this.destroy$)); // Gestiona la limpieza
 
     // ---- SUSCRIPCIÓN 1: INICIA EL AVISO Y EL CONTADOR FINAL ----
     // Esta suscripción se activa solo cuando el usuario ha estado inactivo.
     this.warningSubscription = activity$.pipe(
-        debounceTime(TIME_FOR_WARNING)
+      debounceTime(TIME_FOR_WARNING)
     ).subscribe(() => {
-        // Muestra el aviso
-        Swal.fire({
+      // Muestra el aviso
+      Swal.fire({
         title: '¿Sigues ahí?',
         text: `Tu sesión se cerrará en ${TIME_FOR_LOGOUT / 1000} segundos.`,
         icon: 'warning',
@@ -608,48 +614,48 @@ private startInactivityTimer(): void {
         allowOutsideClick: false,
         allowEscapeKey: false,
         customClass: {
-            popup: 'inactivity-warning-swal' // Clase única para identificarlo
+          popup: 'inactivity-warning-swal' // Clase única para identificarlo
         }
-    });
+      });
 
-        // Inicia el contador final para el reseteo
-        this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
-            console.log("Timeout final alcanzado. Reiniciando.");
-            this.resetAllForms();
-        });
+      // Inicia el contador final para el reseteo
+      this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
+        console.log("Timeout final alcanzado. Reiniciando.");
+        this.resetAllForms();
+      });
     });
 
     // ---- SUSCRIPCIÓN 2: CANCELA EL PROCESO SI HAY ACTIVIDAD ----
     // Esta es la parte clave. Se suscribe a la actividad DIRECTAMENTE.
     this.activitySubscription = activity$.subscribe(() => {
-        // Si el contador final está corriendo, lo cancela.
-        if (this.logoutSubscription) {
-            this.logoutSubscription.unsubscribe();
-        }
-        // Cierra el aviso de SweetAlert si está visible.
-        this.closeInactivitySwal();
+      // Si el contador final está corriendo, lo cancela.
+      if (this.logoutSubscription) {
+        this.logoutSubscription.unsubscribe();
+      }
+      // Cierra el aviso de SweetAlert si está visible.
+      this.closeInactivitySwal();
     });
-}
+  }
 
-private stopInactivityTimer(): void {
+  private stopInactivityTimer(): void {
     console.log("Deteniendo el temporizador de inactividad.");
     this.activitySubscription?.unsubscribe();
     this.warningSubscription?.unsubscribe();
     this.logoutSubscription?.unsubscribe();
     this.closeInactivitySwal(); // Cierra cualquier alerta de Swal que esté abierta
-}
+  }
 
-private closeInactivitySwal(): void {
+  private closeInactivitySwal(): void {
     // Primero, pregunta si hay un Swal abierto
     if (Swal.isVisible()) {
-        // Luego, obtén el elemento del popup y revisa si tiene nuestra clase única
-        const popup = Swal.getPopup();
-        if (popup && popup.classList.contains('inactivity-warning-swal')) {
-            // Solo si es nuestro aviso de inactividad, ciérralo.
-            Swal.close();
-        }
+      // Luego, obtén el elemento del popup y revisa si tiene nuestra clase única
+      const popup = Swal.getPopup();
+      if (popup && popup.classList.contains('inactivity-warning-swal')) {
+        // Solo si es nuestro aviso de inactividad, ciérralo.
+        Swal.close();
+      }
     }
-}
+  }
 
 
   DNIvalidation = (inputDni: any) => {
@@ -1282,8 +1288,8 @@ private closeInactivitySwal(): void {
       this.firstFormFibex.get('dni')?.setValue('')
       this.handleShowTransactionModal(false)
       this.loginTypeSelectValue = 'V';
-      this.userGreeting  = '';
-      this.userServices  = [];
+      this.userGreeting = '';
+      this.userServices = [];
       this.showMainMenuPage2 = false;
       this.showDniForm = true;
       this.navActive = PAGES_NAVIGATION.LOGIN;
@@ -1472,9 +1478,9 @@ private closeInactivitySwal(): void {
                       console.warn('HACE RESOLVEEE 2')
                       resolve()
 
-                     /*  setTimeout(() => {
-                        this.NextMatStepper();
-                      }, 300); */
+                      /*  setTimeout(() => {
+                         this.NextMatStepper();
+                       }, 300); */
                     } else {
                       //console.log('Estoy aca');
                       this.invalidForm('Esta cuenta es exonerada');
@@ -1662,9 +1668,9 @@ private closeInactivitySwal(): void {
                 this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
                 console.warn('HACE RESOLVEEE 4')
                 resolve()
-               /*  setTimeout(() => {
-                  this.NextMatStepper();
-                }, 300); */
+                /*  setTimeout(() => {
+                   this.NextMatStepper();
+                 }, 300); */
               }
             } else {
               this.nameClient = '';
@@ -1901,9 +1907,9 @@ private closeInactivitySwal(): void {
       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS;
 
       //Para lograr un efecto de transición
-     /*  setTimeout(() => {
-        this.NextMatStepper();
-      }, 300); */
+      /*  setTimeout(() => {
+         this.NextMatStepper();
+       }, 300); */
     } else {
       console.log('Pase por aqui2');
       this.invalidForm('Esta cuenta es exonerada');
@@ -2135,7 +2141,7 @@ private closeInactivitySwal(): void {
           this.stateTableData = response.data.length
             ? JSON.parse(response.data)
             : [];
-            console.log('SHOW TABLE VALUE DATA', this.stateTableData, this.showStateTable)
+          console.log('SHOW TABLE VALUE DATA', this.stateTableData, this.showStateTable)
         });
     } catch (error) {
       console.error(error);
@@ -2252,33 +2258,33 @@ private closeInactivitySwal(): void {
     if (handleStepFn !== undefined) {
       handleStepFn();
     }
-};
-
-// Método adicional para navegar hacia adelante con títulos
-public goStepForward = (nextStep: PAGES_NAVIGATION) => {
-  const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
-    [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
-    [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
-    [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
-    [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
   };
 
-  this.navActive = nextStep;
-  const title = STEP_TITLES[nextStep] || '';
-  this.setMainTitle(title);
-};
+  // Método adicional para navegar hacia adelante con títulos
+  public goStepForward = (nextStep: PAGES_NAVIGATION) => {
+    const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
+      [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
+      [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
+      [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
+      [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+    };
 
-// Método helper para obtener el título del paso actual
-public getCurrentStepTitle = (): string => {
-  const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
-    [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
-    [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
-    [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
-    [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+    this.navActive = nextStep;
+    const title = STEP_TITLES[nextStep] || '';
+    this.setMainTitle(title);
   };
 
-  return STEP_TITLES[this.navActive] || '';
-};
+  // Método helper para obtener el título del paso actual
+  public getCurrentStepTitle = (): string => {
+    const STEP_TITLES: Partial<Record<PAGES_NAVIGATION, string>> = {
+      [PAGES_NAVIGATION.LOGIN]: 'Iniciar Sesión',
+      [PAGES_NAVIGATION.USER_LIST_SELECT]: 'Seleccionar Usuario',
+      [PAGES_NAVIGATION.PAYMENT_CARDS]: 'Tarjetas de Pago',
+      [PAGES_NAVIGATION.PAYMENT_FORMS]: 'Formulario de Pago'
+    };
+
+    return STEP_TITLES[this.navActive] || '';
+  };
 
   /**
    * Function to check for lastest payments
@@ -2406,7 +2412,7 @@ public getCurrentStepTitle = (): string => {
 
       if (this.nroContrato?.value.length) {
         this.tasaService.getTasaSae().then((tasaSae) => {
-          console.log('TASA SAEEEE', tasaSae.precio * parseFloat(this.saldoUser), );
+          console.log('TASA SAEEEE', tasaSae.precio * parseFloat(this.saldoUser),);
           const saldoUserBs = tasaSae.precio * parseFloat(this.saldoUser);
           this.saldoMounted = Number(saldoUserBs.toFixed(2))
           console.log('SALDO ABSOLUTO>>>>>>>>', Math.abs(this.saldoMounted));
@@ -2426,7 +2432,7 @@ public getCurrentStepTitle = (): string => {
    */
   public goToPayment = async () => {
     try {
-      await this.searchServicesv2(this.dni, false, true).then(() => {this.showAdminist(this.dni?.value)}) //* => to login
+      await this.searchServicesv2(this.dni, false, true).then(() => { this.showAdminist(this.dni?.value) }) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
       this.loadInitMonthMountValues()
       this.FormaPago(30) //* => go To payment cards
@@ -2458,11 +2464,11 @@ public getCurrentStepTitle = (): string => {
   }
 
 
-  public mountsToPaymentBs(moutnBs: string){
+  public mountsToPaymentBs(moutnBs: string) {
     this.mountTotalMonthBs = parseFloat(moutnBs).toFixed(2);
   }
 
-  public mountsToPaymentUSD(mountUSD: string){
+  public mountsToPaymentUSD(mountUSD: string) {
     this.mountTotalMonthUSD = parseFloat(mountUSD).toFixed(2);
   }
 
@@ -2492,7 +2498,7 @@ public getCurrentStepTitle = (): string => {
   private getShortName(allNames: string) {
     const nombres = allNames.split(' ');
     return (nombres.length > 3) ? `${nombres[0]} ${nombres[nombres.length - 2]}`
-        : (nombres.length === 3) ? `${nombres[0]} ${nombres[2]}`
+      : (nombres.length === 3) ? `${nombres[0]} ${nombres[2]}`
         : allNames;
   }
 
@@ -2534,17 +2540,17 @@ public getCurrentStepTitle = (): string => {
       // this.filterBankByFranquicia(activeContrato.franquicia);
       this.dni?.setValue(dni_);
       this.searchInfoEquipos(dni_)
-      .then(() => {
+        .then(() => {
 
-        this.setActiveContrato(activeContrato)
+          this.setActiveContrato(activeContrato)
 
-        this.showMainMenuPage2 = true
-        this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+          this.showMainMenuPage2 = true
+          this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
 
-      })
-      .catch((err) => {
-        console.log('falló el ingreso de datos del usuario', err);
-      })
+        })
+        .catch((err) => {
+          console.log('falló el ingreso de datos del usuario', err);
+        })
 
     } catch (error) {
       console.error(error)
@@ -2681,7 +2687,7 @@ public getCurrentStepTitle = (): string => {
    * @return Boolean | undefined
    */
   public showAdminist(dni_value: string): boolean | undefined {
-    if(dni_value === '1000000'){
+    if (dni_value === '1000000') {
       return this.showaBtnAdmin = false;
     }
     return this.showaBtnAdmin = true;
@@ -2692,7 +2698,7 @@ public getCurrentStepTitle = (): string => {
    * @param $event Event to show or hide the admin panel
    * @returns void
    */
-  public handlerAdminPanel ($event: string): void {
+  public handlerAdminPanel($event: string): void {
     console.log('EVENT', $event)
     if ($event === 'test') {
       this.showadmin = false;
@@ -2704,12 +2710,12 @@ public getCurrentStepTitle = (): string => {
   }
 
   /**
-   * Function to handle the IP UBII POS switch
-   * @param $event boolean value
+   * Function to handle the admin login event
+   * @param $event boolean value - true if logged in, false otherwise
    */
-  public handlerIpUbiiPos ($event: boolean): void {
-    console.log('EVENT IP UBII POS', $event)
-    this.ipUbiiPos = $event;
+  public handlerAdminLogin($event: boolean): void {
+    console.log('EVENT ADMIN LOGIN', $event)
+    this.isAdminLogged = $event;
   }
 
 }

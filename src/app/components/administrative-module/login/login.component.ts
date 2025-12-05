@@ -1,7 +1,16 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthAdminPanelService } from 'src/app/services/api/auth-admin-panel.service';
+import { ICheckout } from 'src/app/interfaces/checkout.interface';
+import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
 import Swal from 'sweetalert2';
+
+enum LoginStep {
+  LOGIN = 'LOGIN',
+  CHECKOUT_SELECTION = 'CHECKOUT_SELECTION',
+  POS_SELECTION = 'POS_SELECTION',
+  COMPLETED = 'COMPLETED'
+}
 
 @Component({
   selector: 'app-login',
@@ -10,30 +19,36 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent implements OnInit {
 
-  // Para emitir evento al componente padre y mostrar el módulo administrativo con las acciones disponibles
   @Output() loginEvent = new EventEmitter<boolean>();
-  public user: string = '';
-  public pass: string = '';
+
   public formLogin: FormGroup;
   public submitted: boolean = false;
+  public currentStep: LoginStep = LoginStep.LOGIN;
+  public LoginStep = LoginStep; // Para usar en el template
+
+  // Datos del flujo
+  public userIdSede: number | null = null;
+  public selectedCheckout: ICheckout | null = null;
+  public availableCheckouts: ICheckout[] = []; // Array de cajas disponibles
+  public availablePosDevices: IPosDevice[] = [];
+  public filteredPosDevices: IPosDevice[] = [];
+  public selectedPosDevice: IPosDevice | null = null;
+  public searchTerm: string = '';
 
   constructor(
     private authService: AuthAdminPanelService
   ) { }
 
   ngOnInit(): void {
-    // Inicializa el FormGroup con FormControls y validadores
     this.formLogin = new FormGroup({
-      user: new FormControl('', [Validators.required]), // Email requerido y con formato válido
-      pass: new FormControl('', [Validators.required, Validators.minLength(6)]) // Contraseña requerida y con mínimo de 6 caracteres
+      user: new FormControl('', [Validators.required]),
+      pass: new FormControl('', [Validators.required, Validators.minLength(6)])
     });
   }
 
-  // Método para manejar el envío del formulario
   public async onSubmit(): Promise<void> {
     this.submitted = true;
 
-    // Verifica si el formulario es válido antes de proceder
     if (this.formLogin.valid) {
       const user = this.formLogin.get('user')?.value;
       const password = this.formLogin.get('pass')?.value;
@@ -44,29 +59,29 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  /**
-   * Método para autenticar al administrador
-   * @param user
-   * @param pass
-   */
   public async loginAdmin(user: string, pass: string): Promise<void> {
-    const isAuthenticated = await this.authService.authAdmin(user, pass);
+    const { data, isAuthenticated } = await this.authService.authAdmin(user, pass);
 
-    if (isAuthenticated) {
+    if (isAuthenticated && data) {
       console.log('Autenticación exitosa');
-      setTimeout(() => {
-        this.loginEvent.emit(true);
-      }, 1000);
-      Swal.fire({
-        icon: 'success',
-        title: 'Autenticación exitosa',
-        text: 'Bienvenido al panel administrativo.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      this.userIdSede = data.id_sede;
+
+      // Obtener cajas de la sede
+      const checkouts = await this.authService.getUserCheckouts(data.id_sede);
+
+      if (checkouts && checkouts.length > 0) {
+        this.availableCheckouts = checkouts;
+        this.currentStep = LoginStep.CHECKOUT_SELECTION;
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Sin cajas disponibles',
+          text: 'No hay cajas activas disponibles para esta sede.',
+        });
+        this.submitted = false;
+      }
     } else {
       console.log('Error de autenticación');
-      this.loginEvent.emit(false);
       Swal.fire({
         icon: 'error',
         title: 'Error de autenticación',
@@ -74,5 +89,91 @@ export class LoginComponent implements OnInit {
       });
       this.submitted = false;
     }
+  }
+
+  public async onCheckoutSelected(checkout: ICheckout): Promise<void> {
+    if (!checkout) return;
+
+    this.selectedCheckout = checkout;
+
+    // Obtener dispositivos POS disponibles
+    const posDevices = await this.authService.getAvailablePos();
+
+    if (posDevices && posDevices.length > 0) {
+      this.availablePosDevices = posDevices;
+      this.filteredPosDevices = posDevices.filter(device => device.id_checkout === null);
+      this.currentStep = LoginStep.POS_SELECTION;
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Sin dispositivos POS',
+        text: 'No hay dispositivos POS disponibles para asignar.',
+      });
+    }
+  }
+
+  public filterPosDevices(): void {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredPosDevices = this.availablePosDevices
+      .filter(device => device.id_checkout === null)
+      .filter(device =>
+        device.device_model.toLowerCase().includes(term) ||
+        device.serial_number.toLowerCase().includes(term) ||
+        device.terminalVirtual.toLowerCase().includes(term)
+      );
+  }
+
+  public async onPosSelected(posDevice: IPosDevice): Promise<void> {
+    this.selectedPosDevice = posDevice;
+
+    // Confirmar asignación
+    const result = await Swal.fire({
+      title: '¿Confirmar asignación?',
+      html: `
+        <p><strong>Caja:</strong> ${this.selectedCheckout?.checkout_identify}</p>
+        <p><strong>Dispositivo POS:</strong> ${posDevice.terminalVirtual}</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      const success = await this.authService.assignPosToCheckout(
+        posDevice.id_pos_device,
+        this.selectedCheckout!.id_checkout
+      );
+
+      if (success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Asignación exitosa',
+          text: 'El dispositivo POS ha sido asignado correctamente.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        this.currentStep = LoginStep.COMPLETED;
+        this.loginEvent.emit(true);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en la asignación',
+          text: 'No se pudo asignar el dispositivo POS. Inténtelo de nuevo.',
+        });
+      }
+    }
+  }
+
+  public onCancel(): void {
+    this.currentStep = LoginStep.LOGIN;
+    this.selectedCheckout = null;
+    this.selectedPosDevice = null;
+    this.availableCheckouts = []; // Limpiar array de cajas
+    this.availablePosDevices = [];
+    this.filteredPosDevices = [];
+    this.searchTerm = '';
+    this.submitted = false;
   }
 }

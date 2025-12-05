@@ -1,4 +1,8 @@
-<div class="form-container">
+<div class="login-flow-container">
+  
+  <!-- STEP 1: LOGIN FORM -->
+  <div *ngIf="currentStep === LoginStep.LOGIN" class="form-container">
+    <h2>Iniciar Sesión</h2>
     <form [formGroup]="formLogin" (ngSubmit)="onSubmit()">
       <div>
         <label for="user">Usuario:</label>
@@ -12,10 +16,10 @@
         <label for="pass">Contraseña</label>
         <input id="pass" type="password" formControlName="pass">
         <div *ngIf="formLogin.get('pass')?.errors?.['required'] && formLogin.get('pass')?.touched">
-          El pass es obligatorio.
+          La contraseña es obligatoria.
         </div>
-        <div *ngIf="formLogin.get('pass')?.errors?.['pass'] && formLogin.get('pass')?.touched">
-          La contraseña no tiene un formato válido.
+        <div *ngIf="formLogin.get('pass')?.errors?.['minlength'] && formLogin.get('pass')?.touched">
+          La contraseña debe tener al menos 6 caracteres.
         </div>
       </div>
 
@@ -23,4 +27,74 @@
         Entrar
       </button>
     </form>
+  </div>
+
+  <!-- STEP 2: CHECKOUT SELECTION -->
+  <div *ngIf="currentStep === LoginStep.CHECKOUT_SELECTION" class="checkout-selector-container">
+    <h2>Seleccionar Caja</h2>
+    
+    <div class="checkouts-list">
+      <div 
+        *ngFor="let checkout of availableCheckouts" 
+        class="checkout-card"
+        (click)="onCheckoutSelected(checkout)">
+        <div class="checkout-info">
+          <h3>{{ checkout.checkout_identify }}</h3>
+          <p><strong>Modelo:</strong> {{ checkout.checkoutModel }}</p>
+          <p><strong>Serial:</strong> {{ checkout.checkoutSerial }}</p>
+          <p><strong>Estado:</strong> <span class="status-active">Disponible</span></p>
+        </div>
+      </div>
+
+      <div *ngIf="availableCheckouts.length === 0" class="no-results">
+        No hay cajas disponibles para esta sede.
+      </div>
+    </div>
+
+    <div class="actions-container">
+      <button class="btn-secondary" (click)="onCancel()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: POS DEVICE SELECTION -->
+  <div *ngIf="currentStep === LoginStep.POS_SELECTION" class="pos-selector-container">
+    <h2>Seleccionar Dispositivo POS</h2>
+    
+    <div class="search-container">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="filterPosDevices()"
+        placeholder="Buscar por modelo, serial o terminal..."
+        class="search-input">
+    </div>
+
+    <div class="pos-devices-list">
+      <div 
+        *ngFor="let device of filteredPosDevices" 
+        class="pos-device-card"
+        (click)="onPosSelected(device)">
+        <div class="device-info">
+          <h3>{{ device.terminalVirtual }}</h3>
+          <p><strong>Modelo:</strong> {{ device.device_model }}</p>
+          <p><strong>Serial:</strong> {{ device.serial_number }}</p>
+          <p><strong>IP:</strong> {{ device.ip_address }}:{{ device.port }}</p>
+          <p><strong>Estado:</strong> <span class="status-{{ device.status.toLowerCase() }}">{{ device.status }}</span></p>
+        </div>
+      </div>
+
+      <div *ngIf="filteredPosDevices.length === 0" class="no-results">
+        No se encontraron dispositivos POS disponibles.
+      </div>
+    </div>
+
+    <div class="actions-container">
+      <button class="btn-secondary" (click)="onCancel()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
 </div>

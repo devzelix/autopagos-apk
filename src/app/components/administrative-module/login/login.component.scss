@@ -1,92 +1,254 @@
-// 🎨 Variables para mantener la consistencia
-$color-primario: #007bff; // Azul vibrante para el botón
-$color-fondo: #f8f9fa;   // Fondo gris claro
-$color-borde: #ced4da;   // Borde estándar
-$color-error: #dc3545;   // Rojo para mensajes de error
-$sombra-caja: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra suave
+.login-flow-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
+/* LOGIN FORM STYLES */
 .form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.form-container form div {
+  margin-bottom: 15px;
+}
+
+.form-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-container input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.form-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form-container button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.form-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form-container div[class*="ngIf"] {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+/* CHECKOUT SELECTOR STYLES */
+.checkout-selector-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-selector-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.checkouts-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.checkout-card {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.checkout-card:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.checkout-info h3 {
+  margin: 0 0 15px 0;
+  color: #007bff;
+  font-size: 20px;
+}
+
+.checkout-info p {
+  margin: 8px 0;
+  color: #555;
+}
+
+.status-active {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.checkout-actions {
   display: flex;
-  justify-content: center; // Centra el formulario horizontalmente
-  align-items: center;     // Centra el formulario verticalmente (si el componente tiene altura)
-  min-height: 30vh;       // Opcional: si quieres centrarlo en toda la vista
-  margin-top: 2rem;
+  gap: 10px;
+  margin-top: 20px;
+}
 
-  // Estilos para el formulario principal
-  form {
-    width: 100%;
-    max-width: 400px; // Limita el ancho del formulario
-    padding: 30px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: $sombra-caja;
+.btn-primary {
+  flex: 1;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-    // ➡️ Estilos para cada grupo de campo (div contiene label, input y error)
-    div {
-      margin-bottom: 20px;
+.btn-primary:hover {
+  background-color: #0056b3;
+}
 
-      label {
-        display: block; // Hace que la etiqueta ocupe su propia línea
-        margin-bottom: 8px;
-        font-weight: 600; // Semi-negrita
-        color: #495057;
-      }
+.btn-secondary {
+  flex: 1;
+  padding: 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid $color-borde;
-        border-radius: 4px;
-        font-size: 16px;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        box-sizing: border-box; // Asegura que padding no aumente el ancho
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
 
-        &:focus {
-          border-color: $color-primario;
-          outline: none;
-          box-shadow: 0 0 0 0.2rem rgba($color-primario, 0.25);
-        }
+/* POS DEVICE SELECTOR STYLES */
+.pos-selector-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-        // ⚠️ Estado de Angular: Campo Inválido y Tocado
-        &.ng-invalid.ng-touched {
-          border-color: $color-error;
-        }
-      }
+.pos-selector-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
 
-      // 🛑 Estilo para el mensaje de error
-      div:last-child {
-        // Selecciona el div del error que está inmediatamente después del input
-        color: $color-error;
-        font-size: 0.85em;
-        margin-top: 5px;
-        font-style: italic;
-      }
-    }
+.search-container {
+  margin-bottom: 20px;
+}
 
-    // 🚀 Estilos para el botón
-    button[type="submit"] {
-      width: 100%;
-      padding: 12px;
-      background-color: $color-primario;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background-color 0.3s;
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
 
-      &:hover:not(:disabled) {
-        background-color: darken($color-primario, 10%);
-      }
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
 
-      // Estilo para el botón deshabilitado
-      &:disabled {
-        background-color: #6c757d; // Gris para deshabilitado
-        cursor: not-allowed;
-        opacity: 0.7;
-      }
-    }
-  }
+.pos-devices-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.pos-device-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pos-device-card:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.device-info h3 {
+  margin: 0 0 10px 0;
+  color: #007bff;
+  font-size: 18px;
+}
+
+.device-info p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.status-active {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.status-maintenance {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 16px;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: center;
+}
+
+.actions-container button {
+  min-width: 150px;
 }
