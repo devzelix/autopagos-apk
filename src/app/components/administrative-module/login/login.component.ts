@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthAdminPanelService } from 'src/app/services/api/auth-admin-panel.service';
 import { ICheckout } from 'src/app/interfaces/checkout.interface';
 import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
+import { LocalstorageService } from 'src/app/services/localstorage.service';
 import Swal from 'sweetalert2';
 
 enum LoginStep {
@@ -36,7 +37,8 @@ export class LoginComponent implements OnInit {
   public searchTerm: string = '';
 
   constructor(
-    private authService: AuthAdminPanelService
+    private authService: AuthAdminPanelService,
+    private localStorageService: LocalstorageService
   ) { }
 
   ngOnInit(): void {
@@ -146,6 +148,10 @@ export class LoginComponent implements OnInit {
       );
 
       if (success) {
+        // Guardar datos individuales
+        this.localStorageService.set('id_checkout', this.selectedCheckout!.id_checkout);
+        this.localStorageService.set('pos_ip', posDevice.ip_address);
+        this.localStorageService.set('pos_port', posDevice.port);
         Swal.fire({
           icon: 'success',
           title: 'Asignación exitosa',
