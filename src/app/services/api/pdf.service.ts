@@ -19,7 +19,7 @@ export class PdfService {
     'x-tkn': environment.API_PRINTER_TOKEN,
   };
 
-  constructor(private _logService: LogService) {}
+  constructor(private _logService: LogService) { }
 
   /**
    * @description: Funcion para imprimir un ticket
@@ -64,7 +64,7 @@ export class PdfService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: this.dateNew,
+        date_time: this.dateNew,
         log_type: 'TICKET-FILE',
         is_success: true,
         http_method: 'POST',
@@ -84,12 +84,13 @@ export class PdfService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: this.dateNew,
+        date_time: this.dateNew,
         log_type: 'PAYMENT-CREATE',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: `${environment.URL_API_MASTER}/pdf/ticket-and-print`,
+
         req_body: JSON.stringify(dataTiket),
         res_code: 'ERROR',
         res_body: errRes.message,

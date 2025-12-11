@@ -1,5 +1,6 @@
 <div [hidden]="isAdminLogged">
   <app-login
+    [loginMode]="'checkout-init'"
     (loginEvent)="handlerAdminLogin($event)"
   ></app-login>
 </div>

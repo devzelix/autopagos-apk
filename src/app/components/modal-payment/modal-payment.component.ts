@@ -213,7 +213,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         let titleText: string = 'Transacción Procesada';
         let messageText: string = 'APROBADA';
 
-        // Body to Create digital ticket
+        // // Body to Create digital ticket
         const digitalTicket: IPrintTicket = {
           date: this.dateNew.toLocaleDateString(),
           hours: this.dateNew.toLocaleTimeString(),

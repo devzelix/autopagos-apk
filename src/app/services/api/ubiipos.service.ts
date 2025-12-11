@@ -14,7 +14,7 @@ export class UbiiposService {
   constructor(
     private _logService: LogService,
     private _localStorageService: LocalstorageService
-  ) {}
+  ) { }
 
   private getHostUbii() {
     try {
@@ -81,7 +81,7 @@ export class UbiiposService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-TEST',
         is_success: true,
         http_method: 'POST',
@@ -101,7 +101,7 @@ export class UbiiposService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-TEST',
         is_success: false,
         http_method: 'POST',
@@ -143,7 +143,7 @@ export class UbiiposService {
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
-          dateTime: new Date(),
+          date_time: new Date(),
           log_type: 'UBIIPOS',
           is_success: false,
           http_method: 'POST',
@@ -196,7 +196,7 @@ export class UbiiposService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS',
         is_success: true,
         http_method: bodyReq.method as ILog['http_method'],
@@ -214,7 +214,7 @@ export class UbiiposService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS',
         is_success: false,
         http_method: 'POST',
@@ -258,7 +258,7 @@ export class UbiiposService {
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
-          dateTime: new Date(),
+          date_time: new Date(),
           log_type: 'UBIIPOS-PRINT',
           is_success: false,
           http_method: 'POST',
@@ -296,12 +296,13 @@ export class UbiiposService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-PRINT',
         is_success: true,
         http_method: bodyReq.method as ILog['http_method'],
         status: resReturn.status,
         route_api: bodyReq.url,
+
         req_body: JSON.stringify(bodyPrint),
         res_code: resReturn.message,
         res_body: JSON.stringify(resReturn.data),
@@ -314,12 +315,13 @@ export class UbiiposService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-PRINT',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
+
         req_body: JSON.stringify(bodyPrint),
         res_code: 'ERROR',
         res_body: errRes.message,
@@ -352,12 +354,13 @@ export class UbiiposService {
 
         // LOGS SAVE ERROR
         this._logService.storagelog({
-          dateTime: new Date(),
+          date_time: new Date(),
           log_type: 'UBIIPOS-CLOSE-BATCH',
           is_success: false,
           http_method: 'POST',
           status: resReturn.status,
           route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
+
           req_body: JSON.stringify(bodyClose),
           res_code: 'ERROR',
           res_body: JSON.stringify(resReturn.message),
@@ -388,12 +391,13 @@ export class UbiiposService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-CLOSE-BATCH',
         is_success: true,
         http_method: bodyReq.method as ILog['http_method'],
         status: resReturn.status,
         route_api: bodyReq.url,
+
         req_body: JSON.stringify(bodyClose),
         res_code: resReturn.message,
         res_body: JSON.stringify(resReturn.data),
@@ -406,12 +410,13 @@ export class UbiiposService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UBIIPOS-CLOSE-BATCH',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
+
         req_body: JSON.stringify(bodyClose),
         res_code: 'ERROR',
         res_body: errRes.message,

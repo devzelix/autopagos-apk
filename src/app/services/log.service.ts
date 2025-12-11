@@ -14,7 +14,7 @@ export class LogService {
   constructor(
     private _localStorageService: LocalstorageService,
     private _printer: PrinterService
-  ) {}
+  ) { }
 
   /**
    * Function to save log to local storage
@@ -24,7 +24,7 @@ export class LogService {
     try {
       const logItem: ILog = {
         ...logData,
-        dateTime: new Date(),
+        date_time: new Date(),
       }
 
       console.log('new log item', logItem)
@@ -59,19 +59,19 @@ export class LogService {
       const allLogs: ILog[] = this._localStorageService.get<ILog[]>('logs') || [];
 
 
-      let mac_address: string = '';
-      try {
-        const macAddresData: string = await this._printer.getMacAddress();
-        console.log('macAddresData', macAddresData);
-        if (macAddresData) mac_address = macAddresData;
+      // let mac_address: string = '';
+      // try {
+      //   const macAddresData: string = await this._printer.getMacAddress();
+      //   console.log('macAddresData', macAddresData);
+      //   if (macAddresData) mac_address = macAddresData;
 
-      } catch (error) {
-        console.error('Error en logService > al obtener macAddres', error)
-      }
+      // } catch (error) {
+      //   console.error('Error en logService > al obtener macAddres', error)
+      // }
 
       const body = {
         logs: allLogs,
-        register: mac_address
+        register: this._localStorageService.get('checkoutIdentify')
       }
       console.log('BODY LOGS', body)
 
@@ -79,24 +79,24 @@ export class LogService {
         token: environment.TOKEN_API_MASTER
       }
 
-      axios.post<ILog[],any>(environment.URL_API_MASTER+'/log/create', body, {headers})
-      .then(resLog => {
-        if(resLog.status === 201) {
-          localStorage.removeItem('logs');
-          console.log('LOGS REMOVED', resLog);
-        }
-        console.log('Log Res Api', resLog)
-        resolve(resLog)
-      })
-      .catch(error => {
-        console.error(error)
-        reject(error)
-      })
+      axios.post<ILog[], any>(environment.URL_API_MASTER + '/logs/create', body, { headers })
+        .then(resLog => {
+          if (resLog.status === 201) {
+            localStorage.removeItem('logs');
+            console.log('LOGS REMOVED', resLog);
+          }
+          console.log('Log Res Api', resLog)
+          resolve(resLog)
+        })
+        .catch(error => {
+          console.error(error)
+          reject(error)
+        })
 
     })
-    .catch(error => {
-      console.error(error)
-    })
+      .catch(error => {
+        console.error(error)
+      })
 
   }
 

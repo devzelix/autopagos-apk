@@ -5,12 +5,13 @@ import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LogService } from '../log.service';
 import { handleApiError } from 'src/app/utils/api-tools';
+import { LocalstorageService } from '../localstorage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentsService {
-  constructor(private _logService: LogService) {}
+  constructor(private _logService: LogService, private _localStorageService: LocalstorageService) { }
 
   /**
    * Payment Register on SAE PLUS
@@ -53,12 +54,13 @@ export class PaymentsService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'REGISTER-SAE-PLUS',
         is_success: true,
         http_method: 'POST',
         status: resPay.status,
         route_api: bodyReq.url,
+
         req_body: JSON.stringify(bodyReq.data),
         res_code: resPay.status.toString(),
         res_body: JSON.stringify(resPay.data),
@@ -71,12 +73,13 @@ export class PaymentsService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'REGISTER-SAE-PLUS',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: `${environment.URL_API_MASTER}/transactions/register/sae-plus`,
+
         req_body: JSON.stringify(paymenteInfo),
         res_code: 'ERROR',
         res_body: errRes.message,
@@ -128,12 +131,13 @@ export class PaymentsService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'CREATE-TRANSACTION',
         is_success: true,
         http_method: 'POST',
         status: resPay.status,
         route_api: bodyReq.url,
+
         req_body: JSON.stringify(bodyReq.data),
         res_code: resPay.status.toString(),
         res_body: JSON.stringify(resPay.data),
@@ -146,12 +150,13 @@ export class PaymentsService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'PAYMENT-CREATE',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: `${environment.URL_API_MASTER}/administrative/payment/create-transaction`,
+
         req_body: JSON.stringify(paymenteInfo),
         res_code: 'ERROR',
         res_body: errRes.message,

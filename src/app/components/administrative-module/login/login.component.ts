@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthAdminPanelService } from 'src/app/services/api/auth-admin-panel.service';
 import { ICheckout } from 'src/app/interfaces/checkout.interface';
 import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
+import { UbiiposService } from 'src/app/services/api/ubiipos.service';
 import Swal from 'sweetalert2';
 
 enum LoginStep {
@@ -21,6 +22,7 @@ enum LoginStep {
 export class LoginComponent implements OnInit {
 
   @Output() loginEvent = new EventEmitter<boolean>();
+  @Input() loginMode: 'checkout-init' | 'admin-panel' = 'admin-panel';
 
   public formLogin: FormGroup;
   public submitted: boolean = false;
@@ -38,7 +40,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthAdminPanelService,
-    private localStorageService: LocalstorageService
+    private localStorageService: LocalstorageService,
+    private ubiiposService: UbiiposService
   ) { }
 
   ngOnInit(): void {
@@ -68,19 +71,30 @@ export class LoginComponent implements OnInit {
       console.log('Autenticación exitosa');
       this.userIdSede = data.id_sede;
 
-      // Obtener cajas de la sede
-      const checkouts = await this.authService.getUserCheckouts(data.id_sede);
-
-      if (checkouts && checkouts.length > 0) {
-        this.availableCheckouts = checkouts;
-        this.currentStep = LoginStep.CHECKOUT_SELECTION;
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Sin cajas disponibles',
-          text: 'No hay cajas activas disponibles para esta sede.',
-        });
+      // Si es modo admin-panel, solo autenticar y emitir evento
+      if (this.loginMode === 'admin-panel') {
+        console.log('Modo admin-panel: autenticación completada sin selección de caja');
+        this.loginEvent.emit(true);
         this.submitted = false;
+        return;
+      }
+
+      // Si es modo checkout-init, continuar con selección de cajas
+      if (this.loginMode === 'checkout-init') {
+        // Obtener cajas de la sede
+        const checkouts = await this.authService.getUserCheckouts(data.id_sede);
+
+        if (checkouts && checkouts.length > 0) {
+          this.availableCheckouts = checkouts;
+          this.currentStep = LoginStep.CHECKOUT_SELECTION;
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Sin cajas disponibles',
+            text: 'No hay cajas activas disponibles para esta sede.',
+          });
+          this.submitted = false;
+        }
       }
     } else {
       console.log('Error de autenticación');
@@ -142,31 +156,69 @@ export class LoginComponent implements OnInit {
     });
 
     if (result.isConfirmed) {
-      const success = await this.authService.assignPosToCheckout(
-        posDevice.id_pos_device,
-        this.selectedCheckout!.id_checkout
-      );
+      // Mostrar loading de prueba de conexión
+      Swal.fire({
+        title: 'Probando conexión con POS...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
-      if (success) {
-        // Guardar datos individuales
-        this.localStorageService.set('id_checkout', this.selectedCheckout!.id_checkout);
-        this.localStorageService.set('pos_ip', posDevice.ip_address);
-        this.localStorageService.set('pos_port', posDevice.port);
-        Swal.fire({
-          icon: 'success',
-          title: 'Asignación exitosa',
-          text: 'El dispositivo POS ha sido asignado correctamente.',
-          timer: 2000,
-          showConfirmButton: false,
-        });
+      // Construir URL del POS
+      const posUrl = `http://${posDevice.ip_address}:${posDevice.port}`;
 
-        this.currentStep = LoginStep.COMPLETED;
-        this.loginEvent.emit(true);
+      // Probar conexión
+      const connectionTest = await this.ubiiposService.testUbiipos(posUrl);
+
+      // Cerrar loading
+      Swal.close();
+
+      // Verificar resultado
+      if (connectionTest.status === 200) {
+        // Conexión exitosa, proceder con asignación
+        const success = await this.authService.assignPosToCheckout(
+          posDevice.id_pos_device,
+          this.selectedCheckout!.id_checkout
+        );
+
+        if (success) {
+          // Guardar datos individuales
+          this.localStorageService.set('id_checkout', this.selectedCheckout!.id_checkout);
+          this.localStorageService.set('checkoutIdentify', this.selectedCheckout!.checkout_identify);
+          this.localStorageService.set('ubiiposHost', `http://${posDevice.ip_address}:${posDevice.port}`);
+          this.localStorageService.set('terminalVirtual', posDevice.terminalVirtual);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Asignación exitosa',
+            text: 'El dispositivo POS ha sido asignado correctamente.',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
+          this.currentStep = LoginStep.COMPLETED;
+          this.loginEvent.emit(true);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error en la asignación',
+            text: 'No se pudo asignar el dispositivo POS. Inténtelo de nuevo.',
+          });
+        }
       } else {
+        // Conexión fallida
         Swal.fire({
           icon: 'error',
-          title: 'Error en la asignación',
-          text: 'No se pudo asignar el dispositivo POS. Inténtelo de nuevo.',
+          title: 'Error de conexión con POS',
+          html: `
+            <p>No se pudo establecer conexión con el dispositivo POS.</p>
+            <p><strong>IP:</strong> ${posDevice.ip_address}</p>
+            <p><strong>Puerto:</strong> ${posDevice.port}</p>
+            <p><strong>Error:</strong> ${connectionTest.message}</p>
+          `,
+          confirmButtonText: 'Intentar con otro dispositivo'
         });
       }
     }

@@ -6,6 +6,7 @@ import * as mime from "mime-types";
 import { environment } from 'src/environments/environment';
 import { IRequest, IResponse } from 'src/app/interfaces/api/handlerResReq';
 import { LogService } from '../log.service';
+import { LocalstorageService } from '../localstorage.service';
 import { handleApiError } from 'src/app/utils/api-tools';
 
 @Injectable({
@@ -15,7 +16,8 @@ export class CMSfileService {
 
   constructor(
     private _base64Service: Base64Service,
-    private _logService: LogService
+    private _logService: LogService,
+    private _localStorageService: LocalstorageService
   ) { }
 
 
@@ -69,16 +71,17 @@ export class CMSfileService {
 
       // LOGS SAVE SUCCESS
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UPLOAD-FILE-TO-CMS',
         is_success: true,
         http_method: 'POST',
         status: resReturn.status,
         route_api: bodyReq.url,
+
         req_body: JSON.stringify(bodyReq.data),
         res_code: resReturn.status.toString(),
         res_body: JSON.stringify(resReturn.data),
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return resReturn;
@@ -88,12 +91,13 @@ export class CMSfileService {
 
       // LOGS SAVE ERROR
       this._logService.storagelog({
-        dateTime: new Date(),
+        date_time: new Date(),
         log_type: 'UPLOAD-FILE-TO-CMS',
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
         route_api: `${environment.URL_API_CMS}/${environment.SUFIJOUP_CMS}`,
+
         req_body: JSON.stringify({
           file: `data:Type;base64, base64`,
           name: name,
@@ -101,7 +105,7 @@ export class CMSfileService {
         }),
         res_code: errRes.status.toString(),
         res_body: errRes.message,
-        numSubscriber:  null,
+        numSubscriber: null,
       });
 
       return errRes;
