@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthAdminPanelService } from 'src/app/services/api/auth-admin-panel.service';
 import { ICheckout } from 'src/app/interfaces/checkout.interface';
 import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
@@ -17,7 +18,18 @@ enum LoginStep {
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
 

@@ -4,69 +4,335 @@
   padding: 20px;
 }
 
-/* LOGIN FORM STYLES */
-.form-container {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* ============================================
+   LOGIN FORM - MODERN DESIGN
+   ============================================ */
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: transparent;
+  position: relative;
 }
 
-.form-container h2 {
-  margin-bottom: 20px;
-  color: #333;
+.login-container {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(0);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
   text-align: center;
+  margin-bottom: 40px;
 }
 
-.form-container form div {
-  margin-bottom: 15px;
+.login-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  animation: iconFloat 3s ease-in-out infinite;
+
+  i {
+    font-size: 36px;
+    color: white;
+  }
 }
 
-.form-container label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #555;
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-.form-container input {
+.login-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: #718096;
+  margin: 0;
+  font-weight: 400;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 18px;
+  color: #a0aec0;
+  font-size: 18px;
+  z-index: 2;
+  transition: color 0.3s ease;
+  pointer-events: none;
+}
+
+.form-input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.form-container input:focus {
+  padding: 16px 20px 16px 52px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #1a202c;
+  background: #f7fafc;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
-  border-color: #007bff;
+  font-family: 'Poppins', sans-serif;
+
+  &::placeholder {
+    color: #a0aec0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:focus::placeholder {
+    opacity: 1;
+  }
+
+  &:focus {
+    border-color: #667eea;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+
+    ~ .input-icon {
+      color: #667eea;
+    }
+
+    ~ .input-label {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.9);
+      pointer-events: none;
+    }
+  }
+
+  &:not(:placeholder-shown),
+  &:valid {
+    ~ .input-label {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.9);
+      pointer-events: none;
+    }
+
+    &::placeholder {
+      opacity: 0;
+    }
+  }
+
+  &.input-error {
+    border-color: #f56565;
+    background: #fff5f5;
+
+    ~ .input-icon {
+      color: #f56565;
+    }
+  }
 }
 
-.form-container button {
+.input-label {
+  position: absolute;
+  left: 52px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: #a0aec0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
+  user-select: none;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 0 4px;
+  color: #f56565;
+  font-size: 13px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease-out;
+
+  i {
+    font-size: 14px;
+  }
+}
+
+.login-button {
   width: 100%;
-  padding: 12px;
-  background-color: #007bff;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 8px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  &.loading {
+    pointer-events: none;
+  }
 }
 
-.form-container button:hover:not(:disabled) {
-  background-color: #0056b3;
+.button-text,
+.button-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
 }
 
-.form-container button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.button-loading i {
+  animation: spin 1s linear infinite;
 }
 
-.form-container div[class*="ngIf"] {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 5px;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 16px;
+  }
+
+  .login-container {
+    padding: 32px 24px;
+    border-radius: 20px;
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .login-icon {
+    width: 70px;
+    height: 70px;
+
+    i {
+      font-size: 32px;
+    }
+  }
+
+  .form-input {
+    padding: 14px 18px 14px 48px;
+    font-size: 14px;
+  }
+
+  .input-icon {
+    left: 16px;
+    font-size: 16px;
+  }
+
+  .input-label {
+    left: 48px;
+    font-size: 14px;
+  }
+}
+
+/* Optimizaciones de rendimiento */
+.login-container,
+.form-input,
+.login-button {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* CHECKOUT SELECTOR STYLES */
