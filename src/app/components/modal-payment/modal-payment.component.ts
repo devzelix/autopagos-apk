@@ -28,6 +28,7 @@ import {
 } from 'src/app/interfaces/api/payment';
 import { PdfService } from 'src/app/services/api/pdf.service';
 import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
+import { LocalstorageService } from 'src/app/services/localstorage.service';
 
 @Component({
   selector: 'app-modal-payment',
@@ -74,7 +75,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     private _pdfService: PdfService, //
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
     private _adminAction: AdministrativeRequestService,
-    private _registerTransaction: PaymentsService
+    private _registerTransaction: PaymentsService,
+    private _localStorageService: LocalstorageService
   ) {}
 
   ngOnInit(): void {
@@ -227,7 +229,9 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           describe: getPaymentDescription(this.mountFormat, this.subscription),
           amount: this.mountFormat,
           methodPayment: `${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
-          mac_address: (await this.getMacAddress()).toString(),
+          // Obtener checkoutIdentify desde LocalstorageService (valor desencriptado) o usar valor por defecto
+          checkoutIdentify:
+            this._localStorageService.get<string>('checkoutIdentify') || '',
           is_anulation: false,
         };
         //Request to create a digital
@@ -627,6 +631,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     console.log(this.subscription, this.mount, _desciptionText);
 
     // to genarate tiket and printer this
+    // Obtener checkoutIdentify desde LocalstorageService (valor desencriptado) o usar valor por defecto
+    const checkoutIdentify =
+      this._localStorageService.get<string>('checkoutIdentify') || '';
+    
     _dataApiClient = {
       date: this.getTime('date').toString(),
       hours: this.getTime('time').toString(),
@@ -637,25 +645,25 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       describe: _desciptionText,
       amount: amount,
       methodPayment: this._dataApi.tipoProducto,
-      mac_address: this.macaddress,
+      checkoutIdentify: checkoutIdentify,
       is_anulation: is_anulation,
     };
 
     if (_dataApiClient.status === 'NEGADA 116          NEGADA') {
       // TODO ANALIZAR ESTO QUE ESTA CABLEADO
-      _dataApiClient = {
-        date: this.getTime('date').toString(),
-        hours: this.getTime('time').toString(),
-        refNumber: this._dataApi.numeroReferencia,
-        numSeq: this._dataApi.numSeq,
-        abononumber: this.nroContrato,
-        status: this._dataApi.mensajeRespuesta,
-        describe: 'Pago Fallido',
-        amount: '00.00',
-        methodPayment: this._dataApi.tipoProducto,
-        mac_address: this.macaddress,
-        is_anulation: is_anulation,
-      };
+        _dataApiClient = {
+          date: this.getTime('date').toString(),
+          hours: this.getTime('time').toString(),
+          refNumber: this._dataApi.numeroReferencia,
+          numSeq: this._dataApi.numSeq,
+          abononumber: this.nroContrato,
+          status: this._dataApi.mensajeRespuesta,
+          describe: 'Pago Fallido',
+          amount: '00.00',
+          methodPayment: this._dataApi.tipoProducto,
+          checkoutIdentify: checkoutIdentify,
+          is_anulation: is_anulation,
+        };
     }
 
     // Validación de campos indefinidos

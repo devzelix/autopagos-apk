@@ -37,7 +37,7 @@ export class PrinterService {
               describe: _dataTiket.describe.toString(),
               amount: _dataTiket.amount.toString(),
               methodPayment: _dataTiket.methodPayment.toString(),
-              mac_address: _dataTiket.mac_address.toString(),
+              checkoutIdentify: _dataTiket.checkoutIdentify.toString(),
               is_anulation: _dataTiket.is_anulation,
             },
           })

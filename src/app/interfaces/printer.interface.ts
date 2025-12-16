@@ -8,7 +8,7 @@ export interface IPrintTicket {
   describe: string;
   amount: string;
   methodPayment: string;
-  mac_address: string;
+  checkoutIdentify: string;
   is_anulation: boolean;
 }
 

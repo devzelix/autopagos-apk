@@ -9,7 +9,7 @@ export interface ReceiptData {
     describe: string;
     amount: string;
     methodPayment: string;
-    mac_address: string;
+    checkout_identify: string;
     is_anulation: boolean;
 }
 

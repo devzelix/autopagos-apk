@@ -57,6 +57,7 @@
     "@angular-builders/dev-server": "^7.3.1",
     "@angular-devkit/build-angular": "^14.2.7",
     "@angular/compiler-cli": "~14.2.8",
+    "@capacitor/cli": "latest",
     "@types/crypto-js": "^4.1.1",
     "@types/jasmine": "~3.10.0",
     "@types/mime-types": "^3.0.1",
@@ -73,7 +74,6 @@
     "postcss": "^8.4.47",
     "tailwindcss": "3.4.13",
     "typescript": "~4.8.4",
-    "webpack-obfuscator": "^3.5.1",
-    "@capacitor/cli": "latest"
+    "webpack-obfuscator": "^3.5.1"
   }
 }
