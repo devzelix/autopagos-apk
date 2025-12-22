@@ -1,4 +1,4 @@
-<div class="login-flow-container">
+<div class="login-flow-container" [ngClass]="{'checkout-init-mode': loginMode === 'checkout-init'}">
   
   <!-- STEP 1: LOGIN FORM -->
   <div *ngIf="currentStep === LoginStep.LOGIN" class="login-wrapper">
@@ -92,20 +92,20 @@
         (click)="onCheckoutSelected(checkout)">
         <div class="checkout-info">
           <h3>{{ checkout.checkout_identify }}</h3>
-          <p><strong>Modelo:</strong> {{ checkout.checkoutModel }}</p>
-          <p><strong>Serial:</strong> {{ checkout.checkoutSerial }}</p>
-          <p><strong>Estado:</strong> <span class="status-active">Disponible</span></p>
+          <p><strong>📋 Modelo:</strong> {{ checkout.checkoutModel || 'N/A' }}</p>
+          <p><strong>🔢 Serial:</strong> {{ checkout.checkoutSerial || 'N/A' }}</p>
+          <p><strong>✅ Estado:</strong> <span class="status-active">Disponible</span></p>
         </div>
       </div>
 
       <div *ngIf="availableCheckouts.length === 0" class="no-results">
-        No hay cajas disponibles para esta sede.
+        <p>No hay cajas disponibles para esta sede.</p>
       </div>
     </div>
 
     <div class="actions-container">
       <button class="btn-secondary" (click)="onCancel()">
-        Cancelar
+        <span>Cancelar</span>
       </button>
     </div>
   </div>

@@ -83,4 +83,77 @@ export class AuthAdminPanelService {
       return false;
     }
   }
+
+  /**
+   * Obtiene la información actualizada del POS desde la API master
+   * @param idPosDevice ID del dispositivo POS
+   * @returns Información del POS o null si hay error
+   */
+  public async getPosDeviceById(idPosDevice: number): Promise<IPosDevice | null> {
+    try {
+      const response = await axios.get(
+        environment.URL_API_MASTER + `/pos-devices/${idPosDevice}`,
+        {
+          headers: {
+            'token': environment.TOKEN_API_MASTER
+          }
+        }
+      );
+      return response.data.data || null;
+    } catch (error) {
+      console.error('Error en getPosDeviceById:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Actualiza la IP y puerto del POS en la API master
+   * @param idPosDevice ID del dispositivo POS
+   * @param ipAddress Nueva dirección IP
+   * @param port Nuevo puerto
+   * @returns true si se actualizó exitosamente, false en caso contrario
+   */
+  public async updatePosIpAndPort(idPosDevice: number, ipAddress: string, port: number): Promise<boolean> {
+    try {
+      const response = await axios.put(
+        environment.URL_API_MASTER + `/pos-devices/${idPosDevice}`,
+        {
+          ip_address: ipAddress,
+          port: port
+        },
+        {
+          headers: {
+            'token': environment.TOKEN_API_MASTER
+          }
+        }
+      );
+      return response.status === 200;
+    } catch (error) {
+      console.error('Error en updatePosIpAndPort:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Obtiene la información de la sede desde la API master
+   * @param idSede ID de la sede
+   * @returns Información de la sede con nombre o null si hay error
+   */
+  public async getSedeInfo(idSede: number): Promise<{ id_sede: number; name?: string; nombre?: string } | null> {
+    try {
+      const response = await axios.get(
+        environment.URL_API_MASTER + `/sedes/${idSede}`,
+        {
+          headers: {
+            'token': environment.TOKEN_API_MASTER
+          }
+        }
+      );
+      return response.data.data || { id_sede: idSede };
+    } catch (error) {
+      console.error('Error en getSedeInfo:', error);
+      // Si falla, retornar al menos el ID
+      return { id_sede: idSede };
+    }
+  }
 }

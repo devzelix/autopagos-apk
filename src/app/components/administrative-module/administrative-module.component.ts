@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 
 @Component({
@@ -8,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdministrativeModuleComponent implements OnInit {
 
+  @Output() closeModal = new EventEmitter<void>();
+
   public isLogged: boolean = false;
 
   constructor() {}
@@ -16,6 +18,10 @@ export class AdministrativeModuleComponent implements OnInit {
 
   public handlerLogin(isLoggedIn: boolean): void {
     this.isLogged = isLoggedIn;
+  }
+
+  public onClose(): void {
+    this.closeModal.emit();
   }
 
 }

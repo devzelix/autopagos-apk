@@ -1,47 +1,62 @@
-<section *ngIf="showStateTable" class="info-pay-container form-login__group fancy_shadow form-login__group2 animated fadeIn">
-  <span class="header-info-pay">
-    <button class="btn-close" (click)="dismiss()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none"><path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M3.283 10.94a1.5 1.5 0 0 0 0 2.12l5.656 5.658a1.5 1.5 0 1 0 2.122-2.122L7.965 13.5H19.5a1.5 1.5 0 0 0 0-3H7.965l3.096-3.096a1.5 1.5 0 1 0-2.122-2.121z"/></g></svg>
+<section *ngIf="showStateTable" class="info-pay-container animated fadeIn">
+  <div class="info-pay-header">
+    <button class="btn-close" (click)="dismiss()" aria-label="Cerrar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
     </button>
-    <h1 class="title-info-pay">Información de sus últimos pagos</h1>
-  </span>
-  <div class="w-100" *ngIf="stateTableData && stateTableData.length>0">
-    <div class="p-4 font-semibold text-xl">
-      Saldo disponible: <span class="pr-1">{{saldoMounted | currency:'VES':'symbol':'1.2-2'}}</span> <span>{{ saldoReal < 0 ? 'a favor' : 'a pagar'}}</span>
-    </div>
-    <table class="info-pay-table">
-      <tbody>
-        <tr class="table-header">
-          <th>Fecha</th>
-          <th>Comprobante</th>
-          <th>Estado</th>
-        </tr>
-         <tr *ngFor="let item of stateTableData; let i = index">
-           <td> {{item.fecha_reg | date: 'dd/MM/yyyy'}} </td>
-           <td> {{item.numero_ref}} </td>
-           <td> {{item.status_pd}} </td>
-           <!-- <td>
-            <div *ngIf="item.status_pd === 'PROCESADO'" class="pay-icon-checked">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-              </svg>
-            </div>
-             <div *ngIf="item.status_pd === 'RECHAZADO'" class="pay-icon-rejected">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-              </svg>
-             </div>
-            <div *ngIf="item.status_pd === 'REGISTRADO'" class="pay-icon-registered" >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
-              </svg>
-            </div>
-           </td> -->
-         </tr>
-      </tbody>
-    </table>
+    <h1 class="info-pay-title">
+      <span class="title-icon"></span>
+      Información de sus últimos pagos
+    </h1>
   </div>
-  <div class="w-100" *ngIf="!stateTableData.length">
-    <h3 style="text-align: center;">No tienes pagos para mostrar</h3>
+
+  <div class="info-pay-content" *ngIf="stateTableData && stateTableData.length > 0">
+    <div class="balance-card">
+      <div class="balance-label">Saldo disponible</div>
+      <div class="balance-amount">
+        <span class="amount-value">{{saldoMounted | currency:'VES':'symbol':'1.2-2'}}</span>
+        <span class="amount-status" [class.favor]="saldoReal < 0" [class.pagar]="saldoReal >= 0">
+          {{ saldoReal < 0 ? 'a favor' : 'a pagar'}}
+        </span>
+      </div>
+    </div>
+
+    <div class="transactions-container">
+      <div class="transactions-header">
+        <div class="header-cell date-header">Fecha</div>
+        <div class="header-cell receipt-header">Comprobante</div>
+        <div class="header-cell status-header">Estado</div>
+      </div>
+
+      <div class="transactions-list">
+        <div *ngFor="let item of stateTableData; let i = index" class="transaction-item" [class.even]="i % 2 === 0">
+          <div class="transaction-cell date-cell" data-label="Fecha">
+            <span class="date-icon">📅</span>
+            <span class="date-value">{{item.fecha_reg | date: 'dd/MM/yyyy'}}</span>
+          </div>
+          <div class="transaction-cell receipt-cell" data-label="Comprobante">
+            <span class="receipt-value">{{item.numero_ref}}</span>
+          </div>
+          <div class="transaction-cell status-cell" data-label="Estado">
+            <span class="status-badge" 
+                  [class.status-processed]="item.status_pd === 'PROCESADO'"
+                  [class.status-rejected]="item.status_pd === 'RECHAZADO'"
+                  [class.status-registered]="item.status_pd === 'REGISTRADO'">
+              <span class="status-icon" *ngIf="item.status_pd === 'PROCESADO'">✓</span>
+              <span class="status-icon" *ngIf="item.status_pd === 'RECHAZADO'">✗</span>
+              <span class="status-icon" *ngIf="item.status_pd === 'REGISTRADO'">⏱</span>
+              {{item.status_pd}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!stateTableData || stateTableData.length === 0">
+    <div class="empty-icon">📋</div>
+    <h3 class="empty-title">No tienes pagos para mostrar</h3>
+    <p class="empty-message">Aún no has realizado ningún pago registrado.</p>
   </div>
 </section>

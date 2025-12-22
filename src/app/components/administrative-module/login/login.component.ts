@@ -6,6 +6,7 @@ import { ICheckout } from 'src/app/interfaces/checkout.interface';
 import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
+import { CheckoutSessionService } from 'src/app/services/checkout-session.service';
 import Swal from 'sweetalert2';
 
 enum LoginStep {
@@ -53,7 +54,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthAdminPanelService,
     private localStorageService: LocalstorageService,
-    private ubiiposService: UbiiposService
+    private ubiiposService: UbiiposService,
+    private checkoutSessionService: CheckoutSessionService
   ) { }
 
   ngOnInit(): void {
@@ -103,7 +105,17 @@ export class LoginComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             title: 'Sin cajas disponibles',
-            text: 'No hay cajas activas disponibles para esta sede.',
+            html: '<p style="color: #dc3545; font-weight: 500;">No hay cajas activas disponibles para esta sede.</p>',
+            customClass: {
+              popup: 'fibex-swal-popup',
+              title: 'fibex-swal-title',
+              htmlContainer: 'fibex-swal-html',
+              confirmButton: 'fibex-swal-confirm-btn',
+              icon: 'fibex-swal-icon'
+            },
+            buttonsStyling: false,
+            width: '420px',
+            padding: '2rem'
           });
           this.submitted = false;
         }
@@ -113,7 +125,17 @@ export class LoginComponent implements OnInit {
       Swal.fire({
         icon: 'error',
         title: 'Error de autenticación',
-        text: 'Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.',
+        html: '<p style="color: #dc3545; font-weight: 500;">Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.</p>',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          confirmButton: 'fibex-swal-confirm-btn',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        width: '450px',
+        padding: '2rem'
       });
       this.submitted = false;
     }
@@ -135,7 +157,17 @@ export class LoginComponent implements OnInit {
       Swal.fire({
         icon: 'error',
         title: 'Sin dispositivos POS',
-        text: 'No hay dispositivos POS disponibles para asignar.',
+        html: '<p style="color: #dc3545; font-weight: 500;">No hay dispositivos POS disponibles para asignar.</p>',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          confirmButton: 'fibex-swal-confirm-btn',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        width: '420px',
+        padding: '2rem'
       });
     }
   }
@@ -158,37 +190,108 @@ export class LoginComponent implements OnInit {
     const result = await Swal.fire({
       title: '¿Confirmar asignación?',
       html: `
-        <p><strong>Caja:</strong> ${this.selectedCheckout?.checkout_identify}</p>
-        <p><strong>Dispositivo POS:</strong> ${posDevice.terminalVirtual}</p>
+        <div style="text-align: left; margin: 10px 0;">
+          <p style="margin: 10px 0;"><strong>📦 Caja:</strong> ${this.selectedCheckout?.checkout_identify}</p>
+          <p style="margin: 10px 0;"><strong>💳 Dispositivo POS:</strong> ${posDevice.terminalVirtual}</p>
+        </div>
       `,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#357CFF',
+      cancelButtonColor: '#6c757d',
+      customClass: {
+        popup: 'fibex-swal-popup',
+        title: 'fibex-swal-title',
+        htmlContainer: 'fibex-swal-html',
+        confirmButton: 'fibex-swal-confirm-btn',
+        cancelButton: 'fibex-swal-cancel-btn',
+        icon: 'fibex-swal-icon'
+      },
+      buttonsStyling: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      width: '480px',
+      padding: '2rem',
+      didOpen: () => {
+        // Aplicar estilos inline después de que se abra el modal
+        const confirmBtn = document.querySelector('.swal2-confirm.fibex-swal-confirm-btn') as HTMLElement;
+        const cancelBtn = document.querySelector('.swal2-cancel.fibex-swal-cancel-btn') as HTMLElement;
+        
+        if (confirmBtn) {
+          confirmBtn.style.background = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
+          confirmBtn.style.backgroundImage = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
+          confirmBtn.style.color = '#ffffff';
+          confirmBtn.style.border = 'none';
+          confirmBtn.style.borderRadius = '12px';
+          confirmBtn.style.padding = '14px 28px';
+          confirmBtn.style.fontSize = '15px';
+          confirmBtn.style.fontWeight = '600';
+          confirmBtn.style.fontFamily = "'Poppins', sans-serif";
+          confirmBtn.style.boxShadow = '0 4px 14px rgba(53, 124, 255, 0.4)';
+          confirmBtn.style.minWidth = '120px';
+        }
+        
+        if (cancelBtn) {
+          cancelBtn.style.background = '#6c757d';
+          cancelBtn.style.backgroundImage = 'none';
+          cancelBtn.style.color = '#ffffff';
+          cancelBtn.style.border = 'none';
+          cancelBtn.style.borderRadius = '12px';
+          cancelBtn.style.padding = '14px 28px';
+          cancelBtn.style.fontSize = '15px';
+          cancelBtn.style.fontWeight = '600';
+          cancelBtn.style.fontFamily = "'Poppins', sans-serif";
+          cancelBtn.style.boxShadow = '0 4px 14px rgba(108, 117, 125, 0.3)';
+          cancelBtn.style.minWidth = '120px';
+        }
+      }
     });
 
     if (result.isConfirmed) {
-      // Mostrar loading de prueba de conexión
+      // Construir URL del POS
+      const posUrl = `http://${posDevice.ip_address}:${posDevice.port}`;
+
+      // Mostrar loading de prueba de conexión ANTES de ejecutar el test
       Swal.fire({
         title: 'Probando conexión con POS...',
-        text: 'Por favor espere',
+        html: `
+          <div style="text-align: left; margin: 10px 0;">
+            <p style="margin: 10px 0;">Verificando conexión con:</p>
+            <p style="margin: 10px 0;"><strong>🌐 IP:</strong> ${posDevice.ip_address}:${posDevice.port}</p>
+            <p style="margin: 10px 0;"><strong>💳 Terminal:</strong> ${posDevice.terminalVirtual}</p>
+            <p style="margin-top: 15px; color: #357CFF; font-weight: 500;">Por favor espere...</p>
+          </div>
+        `,
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
         allowOutsideClick: false,
+        allowEscapeKey: false,
+        width: '480px',
+        padding: '2rem',
         didOpen: () => {
           Swal.showLoading();
         }
       });
 
-      // Construir URL del POS
-      const posUrl = `http://${posDevice.ip_address}:${posDevice.port}`;
+      // Esperar un momento para que el Swal se muestre
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Probar conexión
-      const connectionTest = await this.ubiiposService.testUbiipos(posUrl);
+      try {
+        // Probar conexión
+        const connectionTest = await this.ubiiposService.testUbiipos(posUrl);
 
-      // Cerrar loading
-      Swal.close();
+        // Cerrar loading
+        await Swal.close();
 
-      // Verificar resultado
-      if (connectionTest.status === 200) {
+        // Verificar resultado
+        if (connectionTest.status === 200) {
         // Conexión exitosa, proceder con asignación
         const success = await this.authService.assignPosToCheckout(
           posDevice.id_pos_device,
@@ -196,18 +299,31 @@ export class LoginComponent implements OnInit {
         );
 
         if (success) {
-          // Guardar datos individuales
-          this.localStorageService.set('id_checkout', this.selectedCheckout!.id_checkout);
-          this.localStorageService.set('checkoutIdentify', this.selectedCheckout!.checkout_identify);
-          this.localStorageService.set('ubiiposHost', `http://${posDevice.ip_address}:${posDevice.port}`);
-          this.localStorageService.set('terminalVirtual', posDevice.terminalVirtual);
+          // Guardar sesión completa usando el servicio de sesión
+          this.checkoutSessionService.saveSession({
+            id_sede: this.userIdSede ?? 0,
+            id_checkout: this.selectedCheckout!.id_checkout,
+            checkoutIdentify: this.selectedCheckout!.checkout_identify,
+            ubiiposHost: `http://${posDevice.ip_address}:${posDevice.port}`,
+            terminalVirtual: posDevice.terminalVirtual,
+            id_pos_device: posDevice.id_pos_device
+          });
 
           Swal.fire({
             icon: 'success',
             title: 'Asignación exitosa',
-            text: 'El dispositivo POS ha sido asignado correctamente.',
+            html: '<p style="color: #28a745; font-weight: 500;">El dispositivo POS ha sido asignado correctamente.</p>',
             timer: 2000,
             showConfirmButton: false,
+            customClass: {
+              popup: 'fibex-swal-popup',
+              title: 'fibex-swal-title',
+              htmlContainer: 'fibex-swal-html',
+              icon: 'fibex-swal-icon'
+            },
+            buttonsStyling: false,
+            width: '420px',
+            padding: '2rem'
           });
 
           this.currentStep = LoginStep.COMPLETED;
@@ -216,21 +332,74 @@ export class LoginComponent implements OnInit {
           Swal.fire({
             icon: 'error',
             title: 'Error en la asignación',
-            text: 'No se pudo asignar el dispositivo POS. Inténtelo de nuevo.',
+            html: '<p style="color: #dc3545; font-weight: 500;">No se pudo asignar el dispositivo POS. Inténtelo de nuevo.</p>',
+            customClass: {
+              popup: 'fibex-swal-popup',
+              title: 'fibex-swal-title',
+              htmlContainer: 'fibex-swal-html',
+              confirmButton: 'fibex-swal-confirm-btn',
+              icon: 'fibex-swal-icon'
+            },
+            buttonsStyling: false,
+            width: '450px',
+            padding: '2rem'
           });
         }
-      } else {
-        // Conexión fallida
+        } else {
+          // Conexión fallida - mostrar error detallado
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión con POS',
+            html: `
+              <div style="text-align: left; margin: 10px 0;">
+                <p style="margin: 10px 0;">No se pudo establecer conexión con el dispositivo POS.</p>
+                <p style="margin: 10px 0;"><strong>🌐 IP:</strong> ${posDevice.ip_address}</p>
+                <p style="margin: 10px 0;"><strong>🔌 Puerto:</strong> ${posDevice.port}</p>
+                <p style="margin: 10px 0;"><strong>💳 Terminal:</strong> ${posDevice.terminalVirtual}</p>
+                <p style="margin: 10px 0;"><strong>📊 Estado:</strong> ${connectionTest.status}</p>
+                <p style="margin: 10px 0; color: #dc3545;"><strong>❌ Error:</strong> ${connectionTest.message || 'Error desconocido'}</p>
+              </div>
+            `,
+            confirmButtonText: 'Intentar con otro dispositivo',
+            customClass: {
+              popup: 'fibex-swal-popup',
+              title: 'fibex-swal-title',
+              htmlContainer: 'fibex-swal-html',
+              confirmButton: 'fibex-swal-confirm-btn',
+              icon: 'fibex-swal-icon'
+            },
+            buttonsStyling: false,
+            width: '500px',
+            padding: '2rem'
+          });
+        }
+      } catch (error: any) {
+        // Error al ejecutar el test
+        await Swal.close();
+        
         Swal.fire({
           icon: 'error',
-          title: 'Error de conexión con POS',
+          title: 'Error al probar conexión con POS',
           html: `
-            <p>No se pudo establecer conexión con el dispositivo POS.</p>
-            <p><strong>IP:</strong> ${posDevice.ip_address}</p>
-            <p><strong>Puerto:</strong> ${posDevice.port}</p>
-            <p><strong>Error:</strong> ${connectionTest.message}</p>
+            <div style="text-align: left; margin: 10px 0;">
+              <p style="margin: 10px 0;">Ocurrió un error al intentar conectar con el dispositivo POS.</p>
+              <p style="margin: 10px 0;"><strong>🌐 IP:</strong> ${posDevice.ip_address}</p>
+              <p style="margin: 10px 0;"><strong>🔌 Puerto:</strong> ${posDevice.port}</p>
+              <p style="margin: 10px 0;"><strong>💳 Terminal:</strong> ${posDevice.terminalVirtual}</p>
+              <p style="margin: 10px 0; color: #dc3545;"><strong>❌ Error:</strong> ${error?.message || 'No se pudo conectar con el dispositivo'}</p>
+            </div>
           `,
-          confirmButtonText: 'Intentar con otro dispositivo'
+          confirmButtonText: 'Intentar con otro dispositivo',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            htmlContainer: 'fibex-swal-html',
+            confirmButton: 'fibex-swal-confirm-btn',
+            icon: 'fibex-swal-icon'
+          },
+          buttonsStyling: false,
+          width: '500px',
+          padding: '2rem'
         });
       }
     }

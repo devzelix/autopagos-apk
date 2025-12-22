@@ -67,6 +67,7 @@ import { HelperModalsService } from 'src/app/services/helper-modals.service';
 import { IPaymentTypes, ITransactionInputs, ITypeDNI } from 'src/app/interfaces/payment-opt';
 import { UniquePaymentComponent } from '../unique-payment/unique-payment.component';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
+import { CheckoutSessionService } from 'src/app/services/checkout-session.service';
 
 enum PAGES_NAVIGATION {
   LOGIN,
@@ -304,7 +305,9 @@ export class FormComponent implements OnInit {
   public showaBtnAdmin: boolean = true;
   public showadmin: boolean = false;
   // Control para mostrar el login del administrador al inicio
-  public isAdminLogged: boolean = false;
+  // false = mostrar login, true = ocultar login (mostrar contenido principal)
+  // Inicializado en null para no mostrar nada hasta validar sesión
+  public isAdminLogged: boolean | null = null;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -332,17 +335,9 @@ export class FormComponent implements OnInit {
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    private _localStorageService: LocalstorageService
+    private _localStorageService: LocalstorageService,
+    private _checkoutSessionService: CheckoutSessionService
   ) {
-
-    // Comentado: Ya no se verifica la IP de UbiiPos al inicio
-    // if (this._localStorageService.get('ubiiposHost')) {
-    //   console.log('IP de Ubiipos cargada desde LocalStorage:', this._localStorageService.get('ubiiposHost'));
-    //   this.isAdminLogged = false;
-    // } else {
-    //   this.isAdminLogged = true;
-    //   console.log('No se encontró IP de Ubiipos en LocalStorage.');
-    // }
 
     this.cacheService.clear();
 
@@ -520,7 +515,14 @@ export class FormComponent implements OnInit {
 
 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // IMPORTANTE: Validar sesión ANTES de inicializar cualquier cosa
+    // Esto asegura que el Swal aparezca antes de que se renderice el login
+    console.log('Iniciando validación de sesión...');
+    await this.validateAndRestoreSession();
+    console.log('Validación de sesión completada. isAdminLogged:', this.isAdminLogged);
+    
+    // Inicializar formularios después de validar sesión
     this.MyInit();
 
     this._ApiMercantil
@@ -571,6 +573,129 @@ export class FormComponent implements OnInit {
     // this.amountInvalid();
     // this.amountInvalidCreditoDebitoPagoMovil();
     // this.getDaysFeriados();
+  }
+
+  /**
+   * Valida y restaura la sesión de caja al iniciar la aplicación
+   * Si hay sesión válida, muestra un Swal PRIMERO para confirmar si continuar o hacer nueva asignación
+   * Si no hay sesión o el usuario elige nueva asignación, muestra el login
+   */
+  private async validateAndRestoreSession(): Promise<void> {
+    // Inicializar como null para no mostrar nada hasta validar
+    this.isAdminLogged = null;
+    
+    // Verificar si hay sesión guardada (sin validar aún)
+    const session = this._checkoutSessionService.getSession();
+    console.log('🔍 Sesión encontrada en localStorage:', session);
+    
+    if (!session) {
+      console.log('❌ No hay sesión guardada, mostrando login');
+      this.isAdminLogged = false;
+      return;
+    }
+    
+    // Validar la sesión
+    const validation = await this._checkoutSessionService.validateSession();
+    console.log('✅ Validación de sesión:', validation);
+    
+    if (validation.isValid && session) {
+      console.log('✅ Sesión válida encontrada, mostrando Swal...');
+      
+      // Obtener información formateada de la sesión (incluye nombre de la sede)
+      const sessionInfoHtml = await this._checkoutSessionService.getFormattedSessionInfo();
+      
+      // Formatear fecha de la sesión para el separador
+      const sessionDate = new Date(session.sessionTimestamp);
+      const formattedDate = sessionDate.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      // Hay sesión válida, mostrar Swal PRIMERO antes de cualquier cosa con información detallada
+      const result = await Swal.fire({
+        title: 'Sesión existente encontrada',
+        html: `
+          <div style="text-align: left; margin: 15px 0;">
+            <p style="margin-bottom: 15px; font-weight: 600; color: #357CFF; font-size: 16px;">Información de la sesión:</p>
+            ${sessionInfoHtml}
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
+            <p style="margin-top: 15px; font-weight: 500; color: #1a202c;">¿Qué deseas hacer?</p>
+          </div>
+        `,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Continuar con esta sesión',
+        cancelButtonText: 'Nueva asignación',
+        confirmButtonColor: '#357CFF',
+        cancelButtonColor: '#dc3545',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          confirmButton: 'fibex-swal-confirm-btn',
+          cancelButton: 'fibex-swal-cancel-btn danger',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        width: '520px',
+        padding: '2rem',
+        didOpen: () => {
+          // Aplicar estilos inline después de que se abra el modal
+          const confirmBtn = document.querySelector('.swal2-confirm.fibex-swal-confirm-btn') as HTMLElement;
+          const cancelBtn = document.querySelector('.swal2-cancel.fibex-swal-cancel-btn') as HTMLElement;
+          
+          if (confirmBtn) {
+            confirmBtn.style.background = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
+            confirmBtn.style.backgroundImage = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
+            confirmBtn.style.color = '#ffffff';
+            confirmBtn.style.border = 'none';
+            confirmBtn.style.borderRadius = '12px';
+            confirmBtn.style.padding = '14px 28px';
+            confirmBtn.style.fontSize = '15px';
+            confirmBtn.style.fontWeight = '600';
+            confirmBtn.style.fontFamily = "'Poppins', sans-serif";
+            confirmBtn.style.boxShadow = '0 4px 14px rgba(53, 124, 255, 0.4)';
+            confirmBtn.style.minWidth = '120px';
+          }
+          
+          if (cancelBtn) {
+            cancelBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+            cancelBtn.style.backgroundImage = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+            cancelBtn.style.color = '#ffffff';
+            cancelBtn.style.border = 'none';
+            cancelBtn.style.borderRadius = '12px';
+            cancelBtn.style.padding = '14px 28px';
+            cancelBtn.style.fontSize = '15px';
+            cancelBtn.style.fontWeight = '600';
+            cancelBtn.style.fontFamily = "'Poppins', sans-serif";
+            cancelBtn.style.boxShadow = '0 4px 14px rgba(220, 53, 69, 0.4)';
+            cancelBtn.style.minWidth = '120px';
+          }
+        }
+      });
+
+      if (result.isConfirmed) {
+        // Usuario acepta continuar con la sesión existente
+        this.isAdminLogged = true; // Ocultar login, mostrar contenido
+        console.log('Sesión de caja restaurada exitosamente');
+        this._checkoutSessionService.renewSession();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // Usuario quiere hacer nueva asignación, limpiar sesión y mostrar login
+        this._checkoutSessionService.clearSession();
+        this.isAdminLogged = false; // Mostrar login
+        console.log('Usuario eligió hacer nueva asignación, mostrando login');
+      }
+    } else {
+      // No hay sesión válida, mostrar login directamente para asignar caja y POS
+      console.log('No hay sesión válida, mostrando login para asignar caja y POS');
+      this.isAdminLogged = false; // Mostrar login
+    }
   }
 
   ngOnDestroy(): void {
@@ -2714,6 +2839,13 @@ export class FormComponent implements OnInit {
    * @param $event boolean value - true if logged in, false otherwise
    */
   public handlerAdminLogin($event: boolean): void {
+    if ($event) {
+      // Login exitoso, renovar sesión
+      this._checkoutSessionService.renewSession();
+    } else {
+      // Logout o cancelación, limpiar sesión
+      this._checkoutSessionService.clearSession();
+    }
     console.log('EVENT ADMIN LOGIN', $event)
     this.isAdminLogged = $event;
   }

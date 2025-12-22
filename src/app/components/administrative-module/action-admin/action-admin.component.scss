@@ -28,13 +28,27 @@
 
 /* --- Contenedor Responsive (Flexbox) --- */
 .div-container {
-    margin: 1.5rem auto;
+    margin: 1rem auto;
     display: flex;
     flex-direction: row;
     gap: 1rem;
     justify-content: center;
     width: 100%;
-    max-width: 900px;
+    max-width: 100%;
+    padding: 0;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-wrap: wrap;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Media Query para Responsividad Móvil */
@@ -48,17 +62,14 @@
 
 /* --- Estilos de Botón de Acción --- */
 .btn-actions {
-    /* **CLAVE: flex: 1;** Hace que los tres botones crezcan y ocupen el mismo espacio disponible */
-    flex: 1;
-
-    /* En vista móvil, asegúrate de que todos tengan el mismo ancho */
-    width: 100%;
-    max-width: 300px; /* Limita el ancho máximo del botón en pantallas grandes */
+    flex: 1 1 calc(50% - 8px);
+    min-width: 200px;
+    max-width: calc(50% - 8px);
 
     /* Fondo y Diseño */
     background: var(--primary-accent-color);
     border-radius: 0.5rem;
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.75rem;
     border: none;
     cursor: pointer;
     text-align: center;
@@ -75,7 +86,8 @@
 /* --- Estilos de Texto --- */
 .option-text {
     color: white;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     margin: 0;
+    line-height: 1.4;
 }

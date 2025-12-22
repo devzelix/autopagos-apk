@@ -17,29 +17,31 @@ import { IResponse } from '../interfaces/api/handlerResReq';
 export const handleApiError = (error: unknown): IResponse => {
   console.error(error);
 
-  alert(`API ERROR: ${JSON.stringify(error)}`);
-
   let statusCode = 500;
-  let errorMessage = 'Unknown error';
+  let errorMessage = 'Error desconocido';
 
   if (axios.isAxiosError(error)) {
     // Error de Axios
     if (error.response) {
       // Error del servidor (4xx o 5xx)
       statusCode = error.response.status;
-      errorMessage = error.response.data?.message || error.message;
-    } else if (error.message === 'Network Error') {
+      errorMessage = error.response.data?.message || error.message || 'Error del servidor';
+    } else if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
       // Error de red
-      statusCode = 404;
-      errorMessage = 'Network Error: The request could not be completed.';
+      statusCode = 0;
+      errorMessage = 'Error de red: No se pudo establecer conexión. Verifique que la IP y el puerto sean correctos y que el servicio esté activo.';
+    } else if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+      // Error de conexión rechazada o timeout
+      statusCode = 0;
+      errorMessage = 'Conexión rechazada o tiempo de espera agotado. Verifique que el dispositivo esté encendido y accesible.';
     } else {
       // Otros errores de Axios (como configuración)
-      errorMessage = error.message;
+      errorMessage = error.message || 'Error de conexión';
     }
   } else if (error instanceof Error) {
     // Error genérico de JavaScript
     statusCode = 400;
-    errorMessage = error.message;
+    errorMessage = error.message || 'Error inesperado';
   }
 
   return {

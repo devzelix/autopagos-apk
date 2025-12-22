@@ -232,6 +232,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           // Obtener checkoutIdentify desde LocalstorageService (valor desencriptado) o usar valor por defecto
           checkoutIdentify:
             this._localStorageService.get<string>('checkoutIdentify') || '',
+          id_sede: this._localStorageService.get<number>('id_sede') ?? '',
           is_anulation: false,
         };
         //Request to create a digital

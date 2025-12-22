@@ -9,6 +9,7 @@ export interface IPrintTicket {
   amount: string;
   methodPayment: string;
   checkoutIdentify: string;
+  id_sede?: number | string;
   is_anulation: boolean;
 }
 

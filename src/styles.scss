@@ -45,6 +45,12 @@
 .StripeElement--webkit-autofill {
   background-color: #fefde5 !important;
 }
+// Asegurar que los Swal del panel de administración aparezcan por encima del modal
+.swal2-container.swal-admin-container,
+.swal2-container:has(.swal2-popup) {
+  z-index: 10000 !important;
+}
+
 swal2-container.swal2-center.img-swal {
   z-index: 9999999999999999999 !important;
   .swal-title {
@@ -64,4 +70,238 @@ swal2-container.swal2-center.img-swal {
 app-info-pay {
   width: 100vw !important;
   min-width: 100%;
+}
+
+/* ============================================
+   ESTILOS PERSONALIZADOS PARA SWAL - FIBEX TELECOM
+   ============================================ */
+
+/* Popup principal - usando selectores de SweetAlert2 con mayor especificidad */
+.swal2-popup.fibex-swal-popup,
+.swal2-popup.swal2-modal.fibex-swal-popup {
+  font-family: 'Poppins', sans-serif !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 2rem !important;
+  background: #ffffff !important;
+  animation: fibexSwalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Título */
+.swal2-title.fibex-swal-title,
+.swal2-popup .swal2-title.fibex-swal-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #1a202c !important;
+  margin-bottom: 1rem !important;
+  letter-spacing: -0.3px !important;
+}
+
+/* Contenedor HTML */
+.swal2-html-container.fibex-swal-html,
+.swal2-popup .swal2-html-container.fibex-swal-html {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 15px !important;
+  color: #4a5568 !important;
+  line-height: 1.6 !important;
+  text-align: left !important;
+  
+  p {
+    margin: 8px 0 !important;
+    color: #4a5568 !important;
+  }
+  
+  strong {
+    color: #1a202c !important;
+    font-weight: 600 !important;
+  }
+  
+  hr {
+    border: none !important;
+    border-top: 1px solid #e2e8f0 !important;
+    margin: 1rem 0 !important;
+  }
+}
+
+/* Botón de confirmar (azul FIBEX) - usando selector nativo de SweetAlert2 */
+.swal2-confirm.fibex-swal-confirm-btn,
+.swal2-popup .swal2-confirm.fibex-swal-confirm-btn,
+button.swal2-confirm.fibex-swal-confirm-btn {
+  font-family: 'Poppins', sans-serif !important;
+  background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 14px rgba(53, 124, 255, 0.4) !important;
+  margin: 0 8px !important;
+  
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(53, 124, 255, 0.5) !important;
+    background: linear-gradient(135deg, #2d9ae2 0%, #357CFF 100%) !important;
+  }
+  
+  &:active {
+    transform: translateY(0) !important;
+  }
+  
+  &:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(53, 124, 255, 0.2) !important;
+  }
+}
+
+/* Botón de cancelar (rojo/gris) - usando selector nativo de SweetAlert2 */
+.swal2-cancel.fibex-swal-cancel-btn,
+.swal2-popup .swal2-cancel.fibex-swal-cancel-btn,
+button.swal2-cancel.fibex-swal-cancel-btn {
+  font-family: 'Poppins', sans-serif !important;
+  background: #6c757d !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 14px rgba(108, 117, 125, 0.3) !important;
+  margin: 0 8px !important;
+  
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(108, 117, 125, 0.4) !important;
+    background: #5a6268 !important;
+  }
+  
+  &:active {
+    transform: translateY(0) !important;
+  }
+  
+  &:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(108, 117, 125, 0.2) !important;
+  }
+}
+
+/* Botón de cancelar rojo (para acciones destructivas) */
+.swal2-cancel.fibex-swal-cancel-btn.danger,
+button.swal2-cancel.fibex-swal-cancel-btn.danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  box-shadow: 0 4px 14px rgba(220, 53, 69, 0.4) !important;
+  
+  &:hover {
+    background: linear-gradient(135deg, #c82333 0%, #dc3545 100%) !important;
+    box-shadow: 0 8px 24px rgba(220, 53, 69, 0.5) !important;
+  }
+}
+
+/* Icono personalizado */
+.swal2-icon.fibex-swal-icon {
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 auto 1.5rem !important;
+}
+
+/* Backdrop */
+.swal2-backdrop-show {
+  background: rgba(0, 24, 78, 0.5) !important; /* Color FIBEX con transparencia */
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Animación de entrada */
+@keyframes fibexSwalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   ESTILOS AGRESIVOS PARA SOBRESCRIBIR SWAL2
+   ============================================ */
+
+/* Botones con máxima especificidad usando body */
+body .swal2-popup .swal2-confirm.fibex-swal-confirm-btn,
+body button.swal2-confirm.fibex-swal-confirm-btn {
+  background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%) !important;
+  background-image: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%) !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  font-family: 'Poppins', sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 14px rgba(53, 124, 255, 0.4) !important;
+  margin: 0 8px !important;
+  min-width: 120px !important;
+}
+
+body .swal2-popup .swal2-confirm.fibex-swal-confirm-btn:hover,
+body button.swal2-confirm.fibex-swal-confirm-btn:hover {
+  background: linear-gradient(135deg, #2d9ae2 0%, #357CFF 100%) !important;
+  background-image: linear-gradient(135deg, #2d9ae2 0%, #357CFF 100%) !important;
+  background-color: transparent !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(53, 124, 255, 0.5) !important;
+}
+
+body .swal2-popup .swal2-cancel.fibex-swal-cancel-btn,
+body button.swal2-cancel.fibex-swal-cancel-btn {
+  background: #6c757d !important;
+  background-image: none !important;
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  font-family: 'Poppins', sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 14px rgba(108, 117, 125, 0.3) !important;
+  margin: 0 8px !important;
+  min-width: 120px !important;
+}
+
+body .swal2-popup .swal2-cancel.fibex-swal-cancel-btn:hover,
+body button.swal2-cancel.fibex-swal-cancel-btn:hover {
+  background: #5a6268 !important;
+  background-image: none !important;
+  background-color: #5a6268 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(108, 117, 125, 0.4) !important;
+}
+
+/* Botón cancelar con clase danger (rojo) */
+body .swal2-popup .swal2-cancel.fibex-swal-cancel-btn.danger,
+body button.swal2-cancel.fibex-swal-cancel-btn.danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  background-image: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  background-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(220, 53, 69, 0.4) !important;
+}
+
+body .swal2-popup .swal2-cancel.fibex-swal-cancel-btn.danger:hover,
+body button.swal2-cancel.fibex-swal-cancel-btn.danger:hover {
+  background: linear-gradient(135deg, #c82333 0%, #dc3545 100%) !important;
+  background-image: linear-gradient(135deg, #c82333 0%, #dc3545 100%) !important;
+  background-color: transparent !important;
+  box-shadow: 0 8px 24px rgba(220, 53, 69, 0.5) !important;
 }

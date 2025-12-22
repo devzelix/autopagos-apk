@@ -1,11 +1,17 @@
-<div [hidden]="isAdminLogged">
+<!-- Panel de administración - Mostrar como modal cuando showadmin es true -->
+<app-administrative-module *ngIf="showadmin" (closeModal)="showadmin = false"></app-administrative-module>
+
+<!-- No mostrar nada mientras se valida la sesión (isAdminLogged === null) -->
+<!-- Mostrar login solo si isAdminLogged es explícitamente false Y showadmin es false -->
+<div *ngIf="isAdminLogged === false && !showadmin">
   <app-login
     [loginMode]="'checkout-init'"
     (loginEvent)="handlerAdminLogin($event)"
   ></app-login>
 </div>
 
-<div [hidden]="!isAdminLogged">
+<!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true Y showadmin es false -->
+<div *ngIf="isAdminLogged === true && !showadmin">
   <app-welcome-view *ngIf="!showFormView"
     (showFormEmitter)="handleShowFormView(true)">
   </app-welcome-view>
@@ -257,7 +263,7 @@
 
 
   <!-- MODAL DE TRANSACCION DEL PAGO -->
-  <app-modal-payment *ngIf="showTransactionModal || showAnulationModal || showadmin"
+  <app-modal-payment *ngIf="showTransactionModal || showAnulationModal"
     [paymentType]="selectedPaymentType"
     [dniValue]="this.dni?.value"
     [nroAbonado]="this.nroContrato?.value"
@@ -268,7 +274,7 @@
     [subscription]="subscription"
     [mountValue]="mountTotalMonthBs"
     [activeInputFocus]="activeTransactionInputFocus"
-    [viewAdmin]="showadmin"
+    [viewAdmin]="false"
 
     (closeEmmit)="handleShowTransactionModal(false)"
     (onSubmitPayForm)="resetAllForms()">

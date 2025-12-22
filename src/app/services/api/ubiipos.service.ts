@@ -97,8 +97,6 @@ export class UbiiposService {
     } catch (error) {
       const errRes: IResponse = handleApiError(error);
 
-      alert(`Catch: Error al conectar con Ubiipos: ${errRes}`);
-
       // LOGS SAVE ERROR
       this._logService.storagelog({
         date_time: new Date(),
@@ -118,6 +116,7 @@ export class UbiiposService {
         numSubscriber: null,
       });
 
+      // Retornar el error sin mostrar alert, el componente se encargará de mostrarlo en Swal
       return errRes;
     }
   }
@@ -228,7 +227,6 @@ export class UbiiposService {
         res_body: errRes.message,
         numSubscriber: null,
       });
-
       return errRes;
     }
   }
@@ -416,7 +414,6 @@ export class UbiiposService {
         http_method: 'POST',
         status: errRes.status,
         route_api: this.getHostUbii() ?? 'Ubiipos host is not configured',
-
         req_body: JSON.stringify(bodyClose),
         res_code: 'ERROR',
         res_body: errRes.message,
