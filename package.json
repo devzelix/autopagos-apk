@@ -7,7 +7,9 @@
     "build": "ng build",
     "build-prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "sync": "npx cap sync android && node scripts/fix-plugins.js",
+    "sync:android": "npx cap sync android && node scripts/fix-plugins.js"
   },
   "private": true,
   "dependencies": {

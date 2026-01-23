@@ -10,7 +10,7 @@ export interface IPaymentRegister {
 }
 
 export interface IPaymentCreate {
-  dateTransaction: Date;
+  dateTransaction: string; // Formato YYYY-MM-DD o ISO string
   numSeq: string;
   numRef: string;
   numSubscriber: string;

@@ -87,7 +87,7 @@
     
     <div class="checkouts-list">
       <div 
-        *ngFor="let checkout of availableCheckouts" 
+        *ngFor="let checkout of availableCheckouts; trackBy: trackByCheckoutId" 
         class="checkout-card"
         (click)="onCheckoutSelected(checkout)">
         <div class="checkout-info">
@@ -125,7 +125,7 @@
 
     <div class="pos-devices-list">
       <div 
-        *ngFor="let device of filteredPosDevices" 
+        *ngFor="let device of filteredPosDevices; trackBy: trackByDeviceId" 
         class="pos-device-card"
         (click)="onPosSelected(device)">
         <div class="device-info">

@@ -30,7 +30,7 @@
       </div>
 
       <div class="transactions-list">
-        <div *ngFor="let item of stateTableData; let i = index" class="transaction-item" [class.even]="i % 2 === 0">
+        <div *ngFor="let item of stateTableData; let i = index; trackBy: trackByIndex" class="transaction-item" [class.even]="i % 2 === 0">
           <div class="transaction-cell date-cell" data-label="Fecha">
             <span class="date-icon">📅</span>
             <span class="date-value">{{item.fecha_reg | date: 'dd/MM/yyyy'}}</span>

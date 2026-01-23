@@ -21,6 +21,8 @@
       border: 1;
       border-color: gray;
       touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent; // Eliminar highlight nativo de Android
+      -webkit-touch-callout: none; // Prevenir menú contextual en iOS/Android
       // background-color: transparent;
       border-radius: 50%;
       flex-direction: column;
@@ -43,14 +45,30 @@
       overflow: hidden;
       color: white;
       backdrop-filter: blur(17px);
-      transition: all .6s ease-in-out;
+      transition: background-color 0.15s ease-out, transform 0.1s ease-out; // Transición más rápida para mejor respuesta
       user-select: none !important;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      will-change: transform, background-color; // Optimización para Android
 
-      &:active, &:hover {
+      &:active, &:hover, &.keyboard-active {
         // background-color: #ffffff64;
         // background: #9fdbfaea;
-      background: #86b3e8d9;
+        background: #86b3e8d9;
+        transform: scale(0.95); // Feedback visual inmediato
+      }
 
+      // Prevenir estados "stuck" en Android
+      &:focus {
+        outline: none;
+      }
+
+      // Optimización para dispositivos táctiles
+      @media (hover: none) and (pointer: coarse) {
+        &:active {
+          transform: scale(0.92);
+        }
       }
 }
 

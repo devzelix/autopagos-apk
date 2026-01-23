@@ -251,6 +251,7 @@ export class FormComponent implements OnInit {
   public PinError: number = 0;
   public ConcatenaTimer: string = '';
   public SetInterval: any = '';
+  private timeoutIds: any[] = [];
   public Minutes: any = '';
   public Second: any = '';
   public BackFormaPago: boolean = false; //Regresar para reportar o pagar
@@ -522,6 +523,9 @@ export class FormComponent implements OnInit {
     await this.validateAndRestoreSession();
     console.log('Validación de sesión completada. isAdminLogged:', this.isAdminLogged);
     
+    // Configurar listener para resetear al welcome-view cuando se oculta el carrusel
+    this.setupResetToWelcomeListener();
+    
     // Inicializar formularios después de validar sesión
     this.MyInit();
 
@@ -707,6 +711,18 @@ export class FormComponent implements OnInit {
     this.activitySubscription?.unsubscribe();
     this.warningSubscription?.unsubscribe();
     this.logoutSubscription?.unsubscribe();
+
+    // Limpiar intervalos y timeouts
+    if (this.SetInterval) {
+      clearInterval(this.SetInterval);
+      this.SetInterval = null;
+    }
+    
+    // Limpiar todos los timeouts pendientes
+    if (this.timeoutIds && this.timeoutIds.length > 0) {
+      this.timeoutIds.forEach(id => clearTimeout(id));
+      this.timeoutIds = [];
+    }
   }
 
   private startInactivityTimer(): void {
@@ -796,7 +812,8 @@ export class FormComponent implements OnInit {
       this.lastDni = '';
       this.name?.setValue('');
       this.alertFindDni('La cédula debe ser mínimo 6 carácteres', '');
-      setTimeout(() => this.closeAlert(), 1000);
+      const timeoutId = setTimeout(() => this.closeAlert(), 1000);
+      this.timeoutIds.push(timeoutId);
     }
   };
 
@@ -1706,7 +1723,8 @@ export class FormComponent implements OnInit {
               this.invalidForm('Debe colocar una cédula válida');
               //this.verifyDNI = false;
               this.lastDni = '';
-              setTimeout(() => this.closeAlert(), 1000);
+              const timeoutId = setTimeout(() => this.closeAlert(), 1000);
+      this.timeoutIds.push(timeoutId);
               this.banksFiltered = [...this.bankList];
               this.listContratos = [];
               this.userSelectList = []
@@ -1806,7 +1824,8 @@ export class FormComponent implements OnInit {
               this.lastDni = '';
               this.name?.setValue('');
               this.alertFindDni('Disculpe intente de nuevo', '');
-              setTimeout(() => this.closeAlert(), 1000);
+              const timeoutId = setTimeout(() => this.closeAlert(), 1000);
+      this.timeoutIds.push(timeoutId);
               reject()
             }
           }
@@ -1824,7 +1843,8 @@ export class FormComponent implements OnInit {
         this.lastDni = '';
         this.name?.setValue('');
         this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
-        setTimeout(() => this.closeAlert(), 1000);
+        const timeoutId = setTimeout(() => this.closeAlert(), 1000);
+      this.timeoutIds.push(timeoutId);
         reject()
       }
     })
@@ -1900,25 +1920,35 @@ export class FormComponent implements OnInit {
     }
   }
 
-  ValidateReferenciaLast(Data: any) {
-    Data.forEach((element: any, index: any) => {
-      this.registerPayService
-        .ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia)
-        .then((ResDeposito: any) => {
-          if (ResDeposito.success === 'true' || ResDeposito.success === true) {
-            element.Status = ResDeposito.data[0].estatus_deposito;
-          } else if (
-            ResDeposito.success === 'false' ||
-            ResDeposito.success === false
-          ) {
+  async ValidateReferenciaLast(Data: any) {
+    try {
+      // Procesar todas las consultas en paralelo para mejor rendimiento
+      const promises = Data.map((element: any) => 
+        this.registerPayService
+          .ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia)
+          .then((ResDeposito: any) => {
+            if (ResDeposito.success === 'true' || ResDeposito.success === true) {
+              element.Status = ResDeposito.data[0].estatus_deposito;
+            } else if (
+              ResDeposito.success === 'false' ||
+              ResDeposito.success === false
+            ) {
+              element.Status = 'SIN PROCESAR';
+            }
+            return element;
+          })
+          .catch(() => {
             element.Status = 'SIN PROCESAR';
-          }
-        });
-      if (index == Data.length - 1) {
-        this.ComprobantesPago = Data;
-        console.log(this.ComprobantesPago);
-      }
-    });
+            return element;
+          })
+      );
+      
+      // Esperar a que todas las promesas se resuelvan
+      this.ComprobantesPago = await Promise.all(promises);
+    } catch (error) {
+      console.error('Error en ValidateReferenciaLast:', error);
+      this.ComprobantesPago = Data;
+    }
   }
 
   SearchServiceClient(Contrato: any) {
@@ -2438,7 +2468,8 @@ export class FormComponent implements OnInit {
         this.lastDni = '';
         this.name?.setValue('');
         this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
-        setTimeout(() => this.closeAlert(), 1000);
+        const timeoutId = setTimeout(() => this.closeAlert(), 1000);
+      this.timeoutIds.push(timeoutId);
         return
       }
 
@@ -2609,6 +2640,16 @@ export class FormComponent implements OnInit {
     }
   }
 
+  /**
+   * Escucha el evento para resetear al welcome-view cuando se oculta el carrusel
+   */
+  private setupResetToWelcomeListener(): void {
+    document.addEventListener('resetToWelcome', (event: Event) => {
+      this.showFormView = false;
+      console.log('Reseteado al welcome-view desde carrusel');
+    });
+  }
+
   public onEditAmountClick = () => {
     console.log('SELECTED PAYMENT TYPE', this.selectedPaymentType)
     this.activeTransactionInputFocus = 'mount';
@@ -2646,7 +2687,7 @@ export class FormComponent implements OnInit {
           showCloseButton: true,
           confirmButtonText: 'Cerrar',
         });
-        return
+        return;
       }
 
       let dni_: string = this.dni?.value ? this.ClearCedula(this.dni?.value) : '';
@@ -2848,6 +2889,15 @@ export class FormComponent implements OnInit {
     }
     console.log('EVENT ADMIN LOGIN', $event)
     this.isAdminLogged = $event;
+  }
+
+  // TrackBy functions para optimizar *ngFor
+  trackByContratoId(index: number, contrato: any): any {
+    return contrato.id_contrato || index;
+  }
+
+  trackByUserId(index: number, user: any): any {
+    return user.id || user.dni || index;
   }
 
 }

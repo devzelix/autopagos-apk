@@ -27,6 +27,10 @@ export class InfoPayComponent { // Ya no es necesario implementar OnInit
   constructor(
   ) { }
 
+  // TrackBy function para optimizar *ngFor
+  trackByIndex(index: number, item: IPayInfoData): any {
+    return index;
+  }
 
   public dismiss = (): void => {
     this.closeEvent.emit();

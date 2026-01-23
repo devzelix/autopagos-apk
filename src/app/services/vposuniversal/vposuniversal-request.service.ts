@@ -58,16 +58,14 @@ export class VposuniversalRequestService {
           console.log('MENSAJE DE RESPONSE', res.data?.datavpos?.mensajeRespuesta);
 
           // Obtener el response_code
-          const responseCode = res.data?.datavpos?.codRespuesta ?? 'undefined';
+          const responseCode = res.data?.datavpos?.codRespuesta || res.status.toString() || 'UNKNOWN';
 
           // Usar el servicio de errores para obtener el mensaje correcto
-          const errorMessage = responseCode !== 'undefined'
+          const errorMessage = responseCode !== 'UNKNOWN'
             ? this.errorService.getErrorMessageCode(responseCode)
             : 'response message undefined';
 
           console.log('RESPONSE CODE', responseCode, errorMessage);
-
-          // TODO : VALIDAR COMO SE ESTAN GUARDANDO LOS LOGS EN LOCAL STORAGE Y VALIDADR SI EL LOCAL STORAGE CONTEMPLA LOS NUEVOS CAMPOS
 
           // Extraer datos comunes para evitar repetición
           const logData: IPromptLog = {
@@ -77,7 +75,7 @@ export class VposuniversalRequestService {
             status: res.status,
             numSubscriber: _subscriber,
             req_body: JSON.stringify(dataReq),
-            res_code: responseCode,
+            res_code: responseCode, // ✅ Ahora siempre tiene un valor válido
             res_body: JSON.stringify(res.data.datavpos) ?? 'response undefined',
             route_api: `${environment.URL_API_MASTER}/metodo/request/cardpay`,
 

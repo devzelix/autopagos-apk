@@ -17,6 +17,7 @@ import { NegativeAmountPipe } from './pipe/negative-amount.pipe';
 import { DialogDetailComprobantesComponent } from './components/dialog-detail-comprobantes/dialog-detail-comprobantes.component';
 // import { NgHcaptchaModule } from 'ng-hcaptcha';
 import { SeguridadDatos } from './services/bcryptjs';
+import { DirectPrinterService } from './services/api/direct-printer.service';
 import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasModule } from 'captcha-thomas';
@@ -49,6 +50,7 @@ import { BtnToOptionComponent } from './components/administrative-module/btn-to-
 import { ConfigIpUbiiposComponent } from "./components/administrative-module/config-ip-ubiipos/config-ip-ubiipos.component";
 import { ActionAdminComponent } from './components/administrative-module/action-admin/action-admin.component';
 import { LoginComponent } from './components/administrative-module/login/login.component';
+import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.component';
 
 
 const routes: Routes = [
@@ -96,7 +98,8 @@ const routes: Routes = [
     AdministrativeModuleComponent,
     BtnToOptionComponent,
     ActionAdminComponent,
-    LoginComponent
+    LoginComponent,
+    AdCarouselComponent
   ],
   imports: [
     BrowserModule,
@@ -120,6 +123,7 @@ const routes: Routes = [
   providers: [
     NegativeAmountPipe,
     SeguridadDatos,
+    DirectPrinterService,
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler

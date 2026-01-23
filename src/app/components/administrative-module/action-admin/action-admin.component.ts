@@ -5,7 +5,14 @@ import { PrinterService } from 'src/app/services/printer-roccia/printer.service'
 import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
 import { AuthAdminPanelService } from 'src/app/services/api/auth-admin-panel.service';
 import { CheckoutSessionService } from 'src/app/services/checkout-session.service';
+import { PdfService } from 'src/app/services/api/pdf.service';
+import { LocalstorageService } from 'src/app/services/localstorage.service';
+import { PaymentsService } from 'src/app/services/api/payments.service';
+import { DirectPrinterService } from 'src/app/services/api/direct-printer.service';
+import { IPrintTicket, IClosingBatch } from 'src/app/interfaces/printer.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
+import axios from 'axios';
+import { environment } from 'src/environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,7 +28,11 @@ export class ActionAdminComponent implements OnInit {
     private _printer: PrinterService,
     private _ubiipos: UbiiposService,
     private _authService: AuthAdminPanelService,
-    private _checkoutSessionService: CheckoutSessionService
+    private _checkoutSessionService: CheckoutSessionService,
+    private _pdfService: PdfService,
+    private _localStorageService: LocalstorageService,
+    private _paymentsService: PaymentsService,
+    private _directPrinter: DirectPrinterService
   ) { }
 
   ngOnInit(): void {}
@@ -126,12 +137,97 @@ export class ActionAdminComponent implements OnInit {
   public async printLastTicket(): Promise<IResponse> {
     console.log('in printLastTicket');
     try {
-      const printTicket: IResponse = await this._ubiipos.printTicket();
-      console.log('printTicket', printTicket);
-      return printTicket;
+      // Obtener el último voucher guardado desde localStorage
+      const lastVoucher: IPrintTicket | null = this._localStorageService.get<IPrintTicket>('lastVoucher') ?? null;
+      
+      if (!lastVoucher) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No hay voucher disponible',
+          text: 'No se encontró ningún voucher guardado para imprimir.',
+          showConfirmButton: true,
+          confirmButtonText: 'Aceptar',
+        });
+        
+        return {
+          status: 404,
+          message: 'No se encontró voucher guardado',
+          data: null,
+        };
+      }
+
+      console.log('Voucher encontrado:', lastVoucher);
+      console.log('✅ Voucher encontrado - procediendo a imprimir...');
+      
+      // Verificar que el status del voucher sea "APROBADO"
+      if (lastVoucher.status !== 'APROBADO') {
+        console.warn('Voucher encontrado pero status no es APROBADO:', lastVoucher.status);
+        
+        Swal.fire({
+          icon: 'warning',
+          title: 'Voucher no válido',
+          text: `El voucher no está aprobado. Status: ${lastVoucher.status}`,
+          showConfirmButton: true,
+          confirmButtonText: 'Aceptar',
+        });
+        
+        return {
+          status: 400,
+          message: `El voucher no está aprobado. Status: ${lastVoucher.status}`,
+          data: null,
+        };
+      }
+      
+      // Imprimir en la impresora térmica local
+      try {
+        console.log('🖨️ [Reimpresión] Imprimiendo último voucher localmente...', lastVoucher);
+        
+        const printResult = await this._directPrinter.printTicket(lastVoucher);
+        
+        if (printResult.success) {
+          console.log('✅ [Reimpresión] Impreso exitosamente');
+          console.log('📍 [Reimpresión] IP usada:', printResult.ip);
+          
+          const response: IResponse = {
+            status: 200,
+            message: 'OK',
+            data: { success: true, message: 'Reimpresión exitosa', ip: printResult.ip },
+          };
+          console.log('printLastTicket - retornando response exitosa:', response);
+          return response;
+        } else {
+          console.warn('⚠️ [Reimpresión] Error al imprimir:', printResult.message);
+          throw new Error(printResult.message || 'Error al imprimir');
+        }
+      } catch (thermalError: any) {
+        console.error('❌ [Reimpresión] Error al imprimir último voucher:', thermalError);
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al imprimir',
+          text: thermalError?.message || 'No se pudo imprimir el voucher. Verifique la conexión con la impresora.',
+          showConfirmButton: true,
+          confirmButtonText: 'Aceptar',
+        });
+        
+        return {
+          status: 500,
+          message: thermalError?.message || 'Error al imprimir voucher',
+          data: null,
+        };
+      }
     } catch (error) {
       const errRes: IResponse = handleApiError(error);
-      console.error('ERROR closeBatch:', errRes);
+      console.error('ERROR printLastTicket:', errRes);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al intentar imprimir el último voucher.',
+        showConfirmButton: true,
+        confirmButtonText: 'Aceptar',
+      });
+      
       return errRes;
     }
   }
@@ -141,10 +237,146 @@ export class ActionAdminComponent implements OnInit {
    * @returns
    */
   public async closeBox(): Promise<IResponse> {
-    console.log('in closeBatch');
+    console.log('🔄 [CloseBox] Iniciando cierre de lotes...');
     try {
+      // 1. Enviar cierre de lotes a Ubiipos
+      console.log('🔄 [CloseBox] Enviando petición SETTLEMENT a Ubiipos...');
       const closeRes: IResponse = await this._ubiipos.closeBatch();
-      console.log('closeRes', closeRes);
+      console.log('✅ [CloseBox] Respuesta de Ubiipos recibida:', closeRes);
+      console.log('📊 [CloseBox] Estructura de closeRes:', {
+        status: closeRes.status,
+        message: closeRes.message,
+        tieneData: !!closeRes.data,
+      });
+      console.log('📊 [CloseBox] Estructura de closeRes.data:', JSON.stringify(closeRes.data, null, 2));
+      
+      // 2. Si el cierre fue exitoso, generar archivo en API Printer y guardarlo en BD
+      if (closeRes.status === 200 || closeRes.status === 201) {
+        console.log('✅ [CloseBox] Status HTTP exitoso (200/201)');
+        
+        // Verificar que la respuesta tenga el código de resultado exitoso
+        if (closeRes.data && closeRes.data.TRANS_CODE_RESULT === '00') {
+          console.log('✅ [CloseBox] TRANS_CODE_RESULT = 00 (éxito)');
+          
+          try {
+            // Obtener checkoutIdentify
+            const checkoutIdentify = this._localStorageService.get<string>('checkoutIdentify') || '';
+            console.log('🔑 [CloseBox] checkoutIdentify:', checkoutIdentify);
+            
+            if (!checkoutIdentify) {
+              console.warn('⚠️ [CloseBox] No se encontró checkoutIdentify, no se puede guardar el cierre en BD');
+            } else {
+              // Preparar datos para el API Printer
+              console.log('📝 [CloseBox] Mapeando datos de respuesta a IClosingBatch...');
+              console.log('📝 [CloseBox] Datos originales de closeRes.data:', closeRes.data);
+              
+              const closingData: IClosingBatch = {
+                responseType: closeRes.data.RESPONSE_TYPE || 'SETTLEMENT',
+                transCodeResult: closeRes.data.TRANS_CODE_RESULT,
+                transMessageResult: closeRes.data.TRANS_MESSAGE_RESULT || '',
+                transConfirmNum: closeRes.data.TRANS_CONFIRM_NUM,
+                fecha: closeRes.data.FECHA,
+                terminal: closeRes.data.TERMINAL,
+                afiliado: closeRes.data.AFILIADO,
+                lote: closeRes.data.LOTE,
+                trace: closeRes.data.TRACE,
+                referencia: closeRes.data.REFERENCIA,
+                metodoEntrada: closeRes.data.METODO_ENTRADA,
+                tipoTarjeta: closeRes.data.TIPO_TARJETA,
+                pan: closeRes.data.PAN,
+                checkoutIdentify: checkoutIdentify,
+                id_sede: this._localStorageService.get<number>('id_sede') || undefined,
+                closingDate: new Date().toISOString(),
+                totalAmount: closeRes.data?.TOTAL_AMOUNT || closeRes.data?.totalAmount || closeRes.data?.AMOUNT || closeRes.data?.amount || undefined,
+              };
+              
+              console.log('💰 [CloseBox] Monto total capturado:', closingData.totalAmount);
+              
+              console.log('✅ [CloseBox] Datos mapeados para API Printer:', JSON.stringify(closingData, null, 2));
+              console.log('🔄 [CloseBox] Enviando a API Printer para generar PDF...');
+              
+              // 3. Generar archivo en API Printer (similar a ticketCreateAndUpload)
+              const printerResult = await this._pdfService.closingCreateAndUpload(closingData);
+              
+              console.log('📦 [CloseBox] Respuesta de API Printer:', printerResult);
+              console.log('📦 [CloseBox] Status de API Printer:', printerResult.status);
+              console.log('📦 [CloseBox] Data de API Printer:', JSON.stringify(printerResult.data, null, 2));
+              
+              if (printerResult.status === 200 || printerResult.status === 201) {
+                console.log('✅ [CloseBox] API Printer respondió exitosamente (200/201)');
+                
+                // Obtener la URL del archivo generado
+                const fileUrl = printerResult.data?.url || printerResult.data?.data?.url || '';
+                const fileName = printerResult.data?.file_name || printerResult.data?.data?.file_name || '';
+                
+                console.log('📄 [CloseBox] URL del archivo:', fileUrl);
+                console.log('📄 [CloseBox] Nombre del archivo:', fileName);
+                
+                if (fileUrl && fileName) {
+                  // Extraer la ruta relativa del archivo
+                  let urlFile = fileUrl;
+                  const filesIndex = fileUrl.indexOf('files/');
+                  if (filesIndex !== -1) {
+                    urlFile = fileUrl.substring(filesIndex);
+                  }
+                  
+                  console.log('📄 [CloseBox] Ruta relativa del archivo:', urlFile);
+                  
+                  // 4. Guardar en API Master usando el endpoint de closing/upload
+                  const closingUploadData = {
+                    register: checkoutIdentify,
+                    closingFiles: [
+                      {
+                        file_name: fileName,
+                        url_file: urlFile,
+                        is_closing: 1 // 1 = cierre, 0 = pre-cierre
+                      }
+                    ]
+                  };
+                  
+                  console.log('💾 [CloseBox] Guardando cierre de lotes en API Master...');
+                  console.log('💾 [CloseBox] Datos a enviar a API Master:', JSON.stringify(closingUploadData, null, 2));
+                  console.log('💾 [CloseBox] URL de API Master:', `${environment.URL_API_MASTER}/administrative/files/closing/upload`);
+                  
+                  const saveResult = await axios.post(
+                    `${environment.URL_API_MASTER}/administrative/files/closing/upload`,
+                    closingUploadData,
+                    {
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'token': environment.TOKEN_API_MASTER,
+                      }
+                    }
+                  );
+                  
+                  console.log('✅ [CloseBox] Cierre de lotes guardado en API Master:', saveResult);
+                  console.log('✅ [CloseBox] Status HTTP de API Master:', saveResult.status);
+                  console.log('✅ [CloseBox] Data de API Master:', JSON.stringify(saveResult.data, null, 2));
+                } else {
+                  console.warn('⚠️ [CloseBox] No se pudo obtener la URL del archivo generado por API Printer');
+                  console.warn('⚠️ [CloseBox] fileUrl:', fileUrl);
+                  console.warn('⚠️ [CloseBox] fileName:', fileName);
+                }
+              } else {
+                console.warn('⚠️ [CloseBox] Error al generar archivo en API Printer:', printerResult);
+                console.warn('⚠️ [CloseBox] Status:', printerResult.status);
+                console.warn('⚠️ [CloseBox] Message:', printerResult.message);
+              }
+            }
+          } catch (dbError: any) {
+            console.error('❌ [CloseBox] Error al guardar cierre de lotes en BD:', dbError);
+            console.error('❌ [CloseBox] Error completo:', JSON.stringify(dbError, null, 2));
+            // No bloquear el flujo si falla el guardado en BD, solo loguear
+          }
+        } else {
+          console.warn('⚠️ [CloseBox] TRANS_CODE_RESULT no es 00. Valor:', closeRes.data?.TRANS_CODE_RESULT);
+        }
+      } else {
+        console.warn('⚠️ [CloseBox] Status HTTP no es 200/201. Status:', closeRes.status);
+      }
+      
+      console.log('🏁 [CloseBox] Retornando respuesta final:', closeRes);
       return closeRes;
     } catch (error) {
       const errRes: IResponse = handleApiError(error);
@@ -154,23 +386,285 @@ export class ActionAdminComponent implements OnInit {
   }
 
   /**
-   * To show modal to anulate transaction
-   * @returns ci, numSeq
+   * Muestra modal para anular una transacción
+   * Solicita la referencia y ejecuta la anulación vía API Ubii
+   * @returns void
    */
-  public async showAnulateTransactionModal(): Promise<void | string> {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Anulación de transacciones',
-      text: 'Esta acción debe realizarse desde el sistema Ubiipos a traves del punto de venta dedes el menu de acciones.',
-      showConfirmButton: true,
-      allowOutsideClick: false,
-      didOpen: () => {
-        const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
-        if (swalContainer) {
-          swalContainer.style.zIndex = '10000';
+  public async showAnulateTransactionModal(): Promise<void> {
+    try {
+      // Solicitar referencia de la transacción a anular
+      const { value: reference } = await Swal.fire({
+        title: 'Anular Transacción',
+        html: `
+          <div style="text-align: left; margin: 10px 0;">
+            <p style="margin-bottom: 15px; color: #718096;">Ingrese el número de referencia de la transacción que desea anular.</p>
+            <p style="font-size: 12px; color: #a0aec0; margin-top: 10px;">Ejemplo: 251216000079</p>
+          </div>
+        `,
+        input: 'text',
+        inputLabel: 'Número de Referencia',
+        inputPlaceholder: 'Ej: 251216000079',
+        showCancelButton: true,
+        confirmButtonText: 'Anular',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        inputValidator: (value) => {
+          if (!value || value.trim() === '') {
+            return 'Debe ingresar un número de referencia';
+          }
+          if (!/^\d+$/.test(value.trim())) {
+            return 'La referencia debe contener solo números';
+          }
+          return null;
+        },
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          input: 'fibex-input',
+          inputLabel: 'fibex-input-label',
+          confirmButton: 'fibex-swal-confirm-btn',
+          cancelButton: 'fibex-swal-cancel-btn',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        width: '480px',
+        padding: '2rem',
+        didOpen: () => {
+          const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+          if (swalContainer) {
+            swalContainer.style.zIndex = '10000';
+          }
+          
+          // Aplicar estilos al input
+          const input = document.querySelector('.swal2-input') as HTMLInputElement;
+          if (input) {
+            input.classList.add('fibex-input');
+            input.style.fontFamily = "'Poppins', sans-serif";
+            input.style.width = "100%";
+            input.style.padding = "12px 16px";
+            input.style.border = "2px solid #e2e8f0";
+            input.style.borderRadius = "10px";
+            input.style.fontSize = "15px";
+            input.style.background = "#f7fafc";
+            input.style.color = "#1a202c";
+            input.style.boxSizing = "border-box";
+            input.style.margin = "8px 0";
+          }
+          
+          // Aplicar estilos al botón de confirmar (Anular)
+          const confirmButton = document.querySelector('.swal2-confirm') as HTMLButtonElement;
+          if (confirmButton) {
+            confirmButton.style.fontFamily = "'Poppins', sans-serif";
+            confirmButton.style.background = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+            confirmButton.style.backgroundImage = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+            confirmButton.style.color = "#ffffff";
+            confirmButton.style.border = "none";
+            confirmButton.style.borderRadius = "12px";
+            confirmButton.style.padding = "14px 28px";
+            confirmButton.style.fontSize = "15px";
+            confirmButton.style.fontWeight = "600";
+            confirmButton.style.cursor = "pointer";
+            confirmButton.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+            confirmButton.style.boxShadow = "0 4px 14px rgba(220, 53, 69, 0.4)";
+            confirmButton.style.margin = "0 8px";
+            confirmButton.style.minWidth = "120px";
+            
+            confirmButton.addEventListener('mouseenter', () => {
+              confirmButton.style.transform = "translateY(-2px)";
+              confirmButton.style.boxShadow = "0 8px 24px rgba(220, 53, 69, 0.5)";
+              confirmButton.style.background = "linear-gradient(135deg, #c82333 0%, #dc3545 100%)";
+              confirmButton.style.backgroundImage = "linear-gradient(135deg, #c82333 0%, #dc3545 100%)";
+            });
+            
+            confirmButton.addEventListener('mouseleave', () => {
+              confirmButton.style.transform = "translateY(0)";
+              confirmButton.style.boxShadow = "0 4px 14px rgba(220, 53, 69, 0.4)";
+              confirmButton.style.background = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+              confirmButton.style.backgroundImage = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+            });
+          }
+          
+          // Aplicar estilos al botón de cancelar
+          const cancelButton = document.querySelector('.swal2-cancel') as HTMLButtonElement;
+          if (cancelButton) {
+            cancelButton.style.fontFamily = "'Poppins', sans-serif";
+            cancelButton.style.background = "#6c757d";
+            cancelButton.style.color = "#ffffff";
+            cancelButton.style.border = "none";
+            cancelButton.style.borderRadius = "12px";
+            cancelButton.style.padding = "14px 28px";
+            cancelButton.style.fontSize = "15px";
+            cancelButton.style.fontWeight = "600";
+            cancelButton.style.cursor = "pointer";
+            cancelButton.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+            cancelButton.style.boxShadow = "0 4px 14px rgba(108, 117, 125, 0.3)";
+            cancelButton.style.margin = "0 8px";
+            cancelButton.style.minWidth = "120px";
+            
+            cancelButton.addEventListener('mouseenter', () => {
+              cancelButton.style.transform = "translateY(-2px)";
+              cancelButton.style.boxShadow = "0 8px 24px rgba(108, 117, 125, 0.4)";
+              cancelButton.style.background = "#5a6268";
+            });
+            
+            cancelButton.addEventListener('mouseleave', () => {
+              cancelButton.style.transform = "translateY(0)";
+              cancelButton.style.boxShadow = "0 4px 14px rgba(108, 117, 125, 0.3)";
+              cancelButton.style.background = "#6c757d";
+            });
+          }
+          
+          // Aplicar estilos al label del input
+          const inputLabel = document.querySelector('.swal2-input-label') as HTMLElement;
+          if (inputLabel) {
+            inputLabel.style.fontFamily = "'Poppins', sans-serif";
+            inputLabel.style.fontSize = "14px";
+            inputLabel.style.fontWeight = "600";
+            inputLabel.style.color = "#1a202c";
+            inputLabel.style.marginBottom = "8px";
+            inputLabel.style.display = "block";
+            inputLabel.style.textAlign = "left";
+          }
         }
+      });
+
+      if (!reference) {
+        return; // Usuario canceló
       }
-    });
+
+      // Mostrar loading
+      Swal.fire({
+        title: 'Anulando transacción...',
+        html: `
+          <div style="text-align: left; margin: 10px 0;">
+            <p style="margin: 10px 0;">Procesando anulación de:</p>
+            <p style="margin: 10px 0;"><strong>Referencia:</strong> ${reference}</p>
+            <p style="margin-top: 15px; color: #357CFF; font-weight: 500;">Por favor espere...</p>
+          </div>
+        `,
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        width: '480px',
+        padding: '2rem',
+        didOpen: () => {
+          Swal.showLoading();
+          const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+          if (swalContainer) {
+            swalContainer.style.zIndex = '10000';
+          }
+        }
+      });
+
+      // Ejecutar anulación
+      const voidResult = await this._ubiipos.voidTransaction(reference.trim());
+
+      // Cerrar loading
+      await Swal.close();
+
+      // Verificar resultado
+      if (voidResult.status === 200 && voidResult.data?.TRANS_CODE_RESULT === '00') {
+        // Anulación exitosa
+        Swal.fire({
+          icon: 'success',
+          title: 'Transacción Anulada',
+          html: `
+            <div style="text-align: left; margin: 10px 0;">
+              <p style="color: #28a745; font-weight: 500; margin-bottom: 10px;">La transacción ha sido anulada exitosamente.</p>
+              <p style="margin: 5px 0;"><strong>Referencia:</strong> ${reference}</p>
+              <p style="margin: 5px 0;"><strong>Confirmación:</strong> ${voidResult.data?.TRANS_CONFIRM_NUM || 'N/A'}</p>
+              <p style="margin-top: 15px; color: #718096; font-size: 13px;">Recuerde realizar la modificación correspondiente en SAE PLUS.</p>
+            </div>
+          `,
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            htmlContainer: 'fibex-swal-html',
+            confirmButton: 'fibex-swal-confirm-btn',
+            icon: 'fibex-swal-icon'
+          },
+          buttonsStyling: false,
+          allowOutsideClick: false,
+          width: '480px',
+          padding: '2rem',
+          didOpen: () => {
+            const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+            if (swalContainer) {
+              swalContainer.style.zIndex = '10000';
+            }
+          }
+        });
+      } else {
+        // Error en anulación
+        const errorMessage = voidResult.data?.TRANS_MESSAGE_RESULT || voidResult.message || 'Error desconocido';
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al Anular',
+          html: `
+            <div style="text-align: left; margin: 10px 0;">
+              <p style="color: #dc3545; font-weight: 500; margin-bottom: 10px;">No se pudo anular la transacción.</p>
+              <p style="margin: 5px 0;"><strong>Referencia:</strong> ${reference}</p>
+              <p style="margin: 5px 0;"><strong>Error:</strong> ${errorMessage}</p>
+              <p style="margin-top: 15px; color: #718096; font-size: 13px;">Verifique que la referencia sea correcta y que la transacción esté en estado válido para anulación.</p>
+            </div>
+          `,
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            htmlContainer: 'fibex-swal-html',
+            confirmButton: 'fibex-swal-confirm-btn',
+            icon: 'fibex-swal-icon'
+          },
+          buttonsStyling: false,
+          allowOutsideClick: false,
+          width: '480px',
+          padding: '2rem',
+          didOpen: () => {
+            const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+            if (swalContainer) {
+              swalContainer.style.zIndex = '10000';
+            }
+          }
+        });
+      }
+    } catch (error: any) {
+      await Swal.close();
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error?.message || 'Ocurrió un error al intentar anular la transacción.',
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          confirmButton: 'fibex-swal-confirm-btn',
+          icon: 'fibex-swal-icon'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        width: '480px',
+        padding: '2rem',
+        didOpen: () => {
+          const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+          if (swalContainer) {
+            swalContainer.style.zIndex = '10000';
+          }
+        }
+      });
+    }
   }
 
   /**
@@ -188,14 +682,36 @@ export class ActionAdminComponent implements OnInit {
    * @param dataRes
    */
   private ShowDiologSuccess(dataRes: IResponse, printer: boolean = false){
-    console.log('dataRes', dataRes);
+    console.log('ShowDiologSuccess - dataRes:', dataRes);
+    console.log('ShowDiologSuccess - printer:', printer);
+    console.log('ShowDiologSuccess - dataRes.message:', dataRes.message);
     let responseCode: string = '';
     let message: string = '';
 
     // 1. Extract response code and message
     if (printer) {
-      message = dataRes.message === 'OK' ? 'Ticket impreso.' : dataRes.message === 'PRINTER_NO_PAPER' ? 'La impresora no tiene papel.' : 'No hay ticket para imprimir. Realice una transacción primero.';
-      responseCode = dataRes.message !== 'OK' ? '' : '00';
+      // Normalizar el mensaje para comparación (trim y mayúsculas)
+      const normalizedMessage = (dataRes.message || '').toString().trim().toUpperCase();
+      console.log('ShowDiologSuccess - normalizedMessage:', normalizedMessage);
+      console.log('ShowDiologSuccess - dataRes.status:', dataRes.status);
+      
+      // Verificar si el mensaje es 'OK' (indica que el voucher se encontró y se envió a imprimir)
+      // La verificación principal es por lastVoucher, no por status HTTP
+      if (normalizedMessage === 'OK') {
+        // Si el mensaje es OK, significa que el voucher se encontró y se imprimió
+        message = 'Ticket impreso.';
+        responseCode = '00';
+      } else if (normalizedMessage === 'PRINTER_NO_PAPER') {
+        message = 'La impresora no tiene papel.';
+        responseCode = '';
+      } else {
+        // Si no es OK ni PRINTER_NO_PAPER, hay un error o no se encontró el voucher
+        message = 'No hay ticket para imprimir. Realice una transacción primero.';
+        responseCode = '';
+      }
+      
+      console.log('ShowDiologSuccess - message final:', message);
+      console.log('ShowDiologSuccess - responseCode final:', responseCode);
     } else {
       responseCode = dataRes.data.TRANS_CODE_RESULT;
       message = dataRes.data.TRANS_MESSAGE_RESULT || '¡Acción exitosa!';

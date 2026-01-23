@@ -7,6 +7,7 @@ export interface ICheckout {
     created_at: string;
     updated_at: string;
     is_available: boolean;
+    ip_address: string | null;
 }
 
 export interface ICheckoutResponse {

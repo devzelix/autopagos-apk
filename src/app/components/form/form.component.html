@@ -169,7 +169,7 @@
                   </div>
                   <div *ngIf="listContratos.length > 1 && !LoadingLengthAbonado"
                     class="grid-cards cards-abonados animated fadeInUp">
-                    <button *ngFor="let contrato of listContratos" class="grid-cards-item"
+                    <button *ngFor="let contrato of listContratos; trackBy: trackByContratoId" class="grid-cards-item"
                       (click)="contractSelected(contrato, true)">
                       <h3>
                         {{ contrato.contrato }}
@@ -203,7 +203,7 @@
 
             <div class="user-list-select-grid">
 
-              <app-user-item-card *ngFor="let user of userSelectList"
+              <app-user-item-card *ngFor="let user of userSelectList; trackBy: trackByUserId"
                 [userItem]="user"
                 (onUserSelected)="onUserSelected($event)"
               >

@@ -6,6 +6,18 @@ const config: CapacitorConfig = {
   webDir: 'dist/form-pay-fibex',
   server: {
     androidScheme: 'http',
+  },
+  plugins: {
+    NetworkInfo: {
+      android: {
+        classpath: 'com.fibextelecom.autopago.NetworkInfoPlugin'
+      }
+    },
+    Printer: {
+      android: {
+        classpath: 'com.fibextelecom.autopago.PrinterPlugin'
+      }
+    }
   }
 };
 

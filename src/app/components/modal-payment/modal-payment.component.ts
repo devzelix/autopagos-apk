@@ -1,9 +1,12 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -27,15 +30,19 @@ import {
   IPaymentRegister,
 } from 'src/app/interfaces/api/payment';
 import { PdfService } from 'src/app/services/api/pdf.service';
+import { DirectPrinterService } from 'src/app/services/api/direct-printer.service';
 import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
+import axios from 'axios';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-modal-payment',
   templateUrl: './modal-payment.component.html',
   styleUrls: ['./modal-payment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModalPaymentComponent implements OnInit, AfterViewInit {
+export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('inputDni') inputDni: ElementRef<HTMLInputElement>;
   @ViewChild('inputMount') inputMount: ElementRef<HTMLInputElement>;
   @ViewChild('inputReference') inputReference: ElementRef<HTMLInputElement>;
@@ -68,15 +75,19 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   private dateNew: Date = new Date();
 
   public formErrorMessage?: { inputName: ITransactionInputs; errorMsg: string };
+  private mountValueChangesSubscription?: any;
+  private timeoutId?: any;
 
   constructor(
     private fb: FormBuilder,
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
     private _pdfService: PdfService, //
+    private _directPrinter: DirectPrinterService, // Impresión directa local -By:MR-
     private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
     private _adminAction: AdministrativeRequestService,
     private _registerTransaction: PaymentsService,
-    private _localStorageService: LocalstorageService
+    private _localStorageService: LocalstorageService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -108,9 +119,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     this.updateDolarBalance();
 
-    this.mount?.valueChanges.subscribe(() => {
-      // Cada vez que el monto cambie, llama a tu nueva función
-      this.updateDolarBalance();
+    // Suscripción optimizada con debounce para mejor rendimiento
+    this.mountValueChangesSubscription = this.mount?.valueChanges.subscribe(() => {
+      // Usar setTimeout para debounce y evitar múltiples cálculos
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = setTimeout(() => {
+        this.updateDolarBalance();
+        this.cdr.markForCheck();
+      }, 100);
     });
 
     /* if (this.activeInputFocus === 'dni') {
@@ -131,6 +149,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {}
+
+  ngOnDestroy(): void {
+    // Limpiar suscripciones y timeouts
+    if (this.mountValueChangesSubscription) {
+      this.mountValueChangesSubscription.unsubscribe();
+    }
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+  }
 
   /**
    * FORM GETTERS
@@ -168,7 +196,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
   }
 
   closeAlert() {
-    setTimeout(() => {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+    this.timeoutId = setTimeout(() => {
       Swal.close();
     }, 2500);
   }
@@ -215,7 +246,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         let titleText: string = 'Transacción Procesada';
         let messageText: string = 'APROBADA';
 
-        // // Body to Create digital ticket
+        // Body to Create and print thermal ticket
         const digitalTicket: IPrintTicket = {
           date: this.dateNew.toLocaleDateString(),
           hours: this.dateNew.toLocaleTimeString(),
@@ -235,14 +266,108 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           id_sede: this._localStorageService.get<number>('id_sede') ?? '',
           is_anulation: false,
         };
-        //Request to create a digital
-        console.log('Cargando Ticket...\n', digitalTicket);
-        const ticketDigital = await this._pdfService.ticketCreateAndUpload(
-          digitalTicket
-        );
-        setTimeout(() => {
-          console.log('Ticket Cargado\n', ticketDigital.data);
-        }, 5000);
+
+        // Guardar el último voucher en localStorage para poder reimprimirlo después
+        this._localStorageService.set<IPrintTicket>('lastVoucher', digitalTicket);
+        
+        // 🖨️ NUEVO: Imprimir LOCALMENTE por HTTP (puerto 9100)
+        try {
+          console.log('🖨️ [Modal Payment] Iniciando impresión local...');
+          const printResult = await this._directPrinter.printTicket(digitalTicket);
+          
+          if (printResult.success) {
+            console.log('✅ [Modal Payment] Impreso exitosamente');
+            console.log('📍 [Modal Payment] IP usada:', printResult.ip);
+          } else {
+            console.warn('⚠️ [Modal Payment] Error al imprimir:', printResult.message);
+            // No bloquear el flujo si falla la impresión local
+          }
+        } catch (printError) {
+          console.error('❌ [Modal Payment] Error de impresión:', printError);
+          // No bloquear el flujo si falla la impresión local
+        }
+        
+        // Request to create and print thermal ticket (ahora con skip_print)
+        try {
+          const ticketDigital = await this._pdfService.ticketCreateAndUpload(
+            {
+              ...digitalTicket,
+              skip_print: true  // No imprimir en API Driver (ya se imprimió localmente)
+            }
+          );
+          
+          if (ticketDigital.status === 200 || ticketDigital.status === 201) {
+            // El ticket se generó correctamente en la API driver
+            // No se guarda en ningún endpoint aquí - eso se hace desde el módulo administrativo
+            console.log('Ticket digital generado exitosamente');
+            
+            // COMENTADO: Este bloque intentaba guardar en API Master, pero no debe ejecutarse
+            // en el flujo de pago. Los endpoints de upload se usan solo desde el módulo administrativo.
+            /*
+            // Obtener la URL del archivo generado
+            const fileUrl = ticketDigital.data?.url || ticketDigital.data?.data?.url || '';
+            // Extraer el nombre del archivo desde la URL o desde el path
+            let fileName = ticketDigital.data?.file_name || ticketDigital.data?.data?.file_name || '';
+            
+            // Si no hay file_name, extraerlo de la URL
+            if (!fileName && fileUrl) {
+              const urlParts = fileUrl.split('/');
+              fileName = urlParts[urlParts.length - 1] || '';
+            }
+            
+            // Si aún no hay nombre, extraerlo del path
+            if (!fileName) {
+              const filePath = ticketDigital.data?.path || ticketDigital.data?.data?.path || '';
+              if (filePath) {
+                // Para Windows: usar backslash, para Unix: usar forward slash
+                const pathParts = filePath.split(/[/\\]/);
+                fileName = pathParts[pathParts.length - 1] || '';
+              }
+            }
+            
+            if (fileUrl && fileName) {
+              // Extraer la ruta relativa del archivo
+              let urlFile = fileUrl;
+              const filesIndex = fileUrl.indexOf('files/');
+              if (filesIndex !== -1) {
+                urlFile = fileUrl.substring(filesIndex);
+              }
+              
+              // Guardar en API Master usando el endpoint de files/upload
+              const invoiceUploadData = {
+                register: this._localStorageService.get<string>('checkoutIdentify') || '',
+                invoices: [
+                  {
+                    reference_pay: resPay.data.REFERENCIA,
+                    file_name: fileName,
+                    url_file: urlFile
+                  }
+                ]
+              };
+              
+              try {
+                await axios.post(
+                  `${environment.URL_API_MASTER}/administrative/files/closing/upload`,
+                  invoiceUploadData,
+                  {
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'token': environment.TOKEN_API_MASTER,
+                    }
+                  }
+                );
+              } catch (invoiceError: any) {
+                console.error('Error al guardar factura en BD:', invoiceError);
+                // No bloquear el flujo si falla el guardado en BD, solo loguear
+              }
+            }
+            */
+          }
+        } catch (ticketError) {
+          console.error('Error al generar ticket térmico:', ticketError);
+          // No bloquear el flujo si falla la generación
+        }
 
         // Body to Register on SAE
         const bodyResgister: IPaymentRegister = {
@@ -253,7 +378,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           id_contrato: this.nroContrato,
           reference: resPay.data.REFERENCIA,
           comment: `PAGO POR CAJA AUTOMATICA - ${resPay.data.FECHA} - ${resPay.data.METODO_ENTRADA} - ${resPay.data.TIPO_TARJETA}`,
-          date: this.dateNew.toDateString(),
+          date: this.dateNew.toISOString().split('T')[0], // Formato YYYY-MM-DD requerido por SAE
         };
 
         //Logica para registrar el pago en SAE y montarlo en la base de dato de thomas cobertura
@@ -264,7 +389,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
         // Body to Create Payment on DB
         const bodyCreate: IPaymentCreate = {
-          dateTransaction: this.dateNew,
+          dateTransaction: this.dateNew.toISOString().split('T')[0], // Formato YYYY-MM-DD requerido por backend
           numSeq: resPay.data.TRANS_CONFIRM_NUM,
           numRef: resPay.data.REFERENCIA,
           numSubscriber: this.nroAbonado,
@@ -273,7 +398,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
           terminalVirtual: resPay.data.TERMINAL,
           status:
             saeRegister.data.data.success &&
-            saeRegister.data.data.message === 'ok'
+            saeRegister.data.message === 'ok'
               ? 'APPROVED'
               : 'PENDING',
         };
@@ -285,58 +410,19 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
         );
         console.log('Registrado en Thomas Cobertura\n', createTransaction.data);
 
-        // Request to Print ticket
-        const printRes: IResponse = await this._ubiipos.printTicket();
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          icon: 'success',
+          title: titleText,
+          text: messageText,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          timer: 4000,
+          didClose: () => this.onSubmitPayForm.emit(),
+        });
 
-        if (
-          printRes.status !== 200 &&
-          printRes.message === 'PRINTER_NO_PAPER'
-        ) {
-          Swal.fire({
-            icon: 'warning',
-            title: `${titleText} \n Impersora sin papel.`,
-            text: 'Para imprimir ticket Contate al personal de fibex para suministrar papel a la impresora y presione aceptar.',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Aceptar',
-            allowOutsideClick: false,
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              const printRes: IResponse = await this._ubiipos.printTicket();
-
-              if (printRes.status !== 200) {
-                messageText = `${messageText} \n Contate al personal de fibex para obtener su ticket de froma manual`;
-              }
-
-              Swal.fire({
-                icon: 'success',
-                title: titleText,
-                text: messageText,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                timer: 6000,
-                didClose: () => this.onSubmitPayForm.emit(),
-              });
-
-              this.closeAlert();
-              this.sendPayment = !this.formPayment.valid; // Always reset payment flag
-              return;
-            }
-          });
-        } else {
-          Swal.fire({
-            icon: 'success',
-            title: titleText,
-            text: messageText,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            timer: 4000,
-            didClose: () => this.onSubmitPayForm.emit(),
-          });
-
-          this.closeAlert();
-          this.sendPayment = !this.formPayment.valid; // Always reset payment flag
-        }
+        this.closeAlert();
+        this.sendPayment = !this.formPayment.valid; // Always reset payment flag
         return;
       } else {
         Swal.fire({
@@ -498,6 +584,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       }
 
       this.validateFormErrors();
+      this.cdr.markForCheck();
     } catch (error) {
       console.error('Error onTecladoInput', error);
     }
@@ -520,6 +607,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     } else this.isDniDisabled = false;
 
     this.validateFormErrors();
+    this.cdr.markForCheck();
   };
 
   /**
@@ -527,11 +615,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @param focusInputName name of the focus input
    */
   public onFocus = (focusInputName: 'dni' | 'mount' | 'accountType') => {
-    console.log('onfocus', focusInputName);
-
     if (this.formPayment.get(focusInputName)?.disabled) return;
 
     this.activeInputFocus = focusInputName;
+    this.cdr.markForCheck();
   };
 
   public onCloseModal = () => this.closeEmmit.emit();
@@ -549,7 +636,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
    * @returns Promise<IResponse>
    */
   public async requestCardUbiiPos(): Promise<IResponse> {
-    console.log('in requestCardUbiiPos');
 
     try {
       // PASOS PARA REALIZAR EL PAGO EN UBIIPOS
@@ -569,8 +655,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       );
 
       const bodyUbiipos: IUbiiposDataSend = {
-        customerId: `${this.typeDNI}${this.dni?.value}`,
-        amount: amountFormat,
+        customerId: this.dni?.value, // Solo el número del DNI, sin prefijo V o J
+        amount: amountFormat.toString(), // Convertir a string
         operation: 'PAYMENT',
       };
 
@@ -728,7 +814,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
     // 4. Calcular montos de comparación (subscriptionBs y mount6Month)
-    console.log('TASA DE CAMBIO', this.tasaCambio);
 
     const subscriptionBs = parseFloat(
       (parseFloat(this.subscription) * parseFloat(this.tasaCambio)).toFixed(2)
@@ -774,6 +859,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
     // 6. Asignar el valor formateado al control del formulario
     this.mount?.setValue(formattedValue);
+    this.cdr.markForCheck();
   };
 
   public setInputFocus = (input: ITransactionInputs) => {
@@ -782,14 +868,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
     this.activeInputFocus = input;
 
     if (input === 'dni' && this.inputDni && !this.dni?.disable) {
-      console.log('SETEA FOCUSSSSS');
       this.inputDni.nativeElement.focus();
       this.inputMount.nativeElement.disabled = false;
     } else if (input === 'mount' && this.inputMount && !this.mount?.disable) {
-      console.log('SETEA FOCUSSS MOUNT');
       this.inputMount.nativeElement.focus();
       this.inputMount.nativeElement.disabled = false;
     }
+    this.cdr.markForCheck();
   };
 
   public onInputValueChange = (event: Event, inputName: ITransactionInputs) => {
@@ -834,7 +919,6 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
 
   public onEditDniValue = () => {
     if (this.inputDni) {
-      console.log('SETEA FOCUSS');
       this.inputDni.nativeElement.disabled = false;
       this.dni?.setValue('');
       this.inputDni.nativeElement.focus();
@@ -842,11 +926,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       if (this.dni) this.dni.enable();
     }
     this.validateFormErrors();
+    this.cdr.markForCheck();
   };
 
   public onEditMountValue = () => {
     if (this.inputMount) {
-      console.log('SETEA FOCUSS');
       this.inputMount.nativeElement.disabled = false;
       this.mount?.setValue('');
       this.inputMount.nativeElement.focus();
@@ -854,6 +938,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       if (this.mount) this.mount.enable();
     }
     this.validateFormErrors();
+    this.cdr.markForCheck();
   };
 
   private validateFormErrors = (): void => {
@@ -885,6 +970,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit {
       }
 
       this.formErrorMessage = { inputName: 'mount', errorMsg: '' };
+      this.cdr.markForCheck();
     } catch (error) {
       console.error(error);
     }

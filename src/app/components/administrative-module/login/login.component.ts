@@ -65,6 +65,15 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  // TrackBy functions para optimizar *ngFor
+  trackByCheckoutId(index: number, checkout: ICheckout): any {
+    return checkout.id_checkout || index;
+  }
+
+  trackByDeviceId(index: number, device: IPosDevice): any {
+    return device.id_pos_device || device.serial_number || index;
+  }
+
   public async onSubmit(): Promise<void> {
     this.submitted = true;
 
@@ -306,7 +315,8 @@ export class LoginComponent implements OnInit {
             checkoutIdentify: this.selectedCheckout!.checkout_identify,
             ubiiposHost: `http://${posDevice.ip_address}:${posDevice.port}`,
             terminalVirtual: posDevice.terminalVirtual,
-            id_pos_device: posDevice.id_pos_device
+            id_pos_device: posDevice.id_pos_device,
+            checkout_ip_address: this.selectedCheckout!.ip_address
           });
 
           Swal.fire({

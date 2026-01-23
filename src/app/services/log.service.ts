@@ -22,8 +22,14 @@ export class LogService {
    */
   public storagelog = async (logData: IPromptLog) => {
     try {
-      const logItem: ILog = {
+      // ✅ Validar y asegurar que res_code siempre tenga un valor válido
+      const validatedLogData: IPromptLog = {
         ...logData,
+        res_code: logData.res_code || logData.status?.toString() || 'UNKNOWN', // Asegurar valor válido
+      };
+
+      const logItem: ILog = {
+        ...validatedLogData,
         date_time: new Date(),
       }
 
@@ -58,22 +64,27 @@ export class LogService {
     return new Promise(async (resolve, reject) => {
       const allLogs: ILog[] = this._localStorageService.get<ILog[]>('logs') || [];
 
-
-      // let mac_address: string = '';
-      // try {
-      //   const macAddresData: string = await this._printer.getMacAddress();
-      //   console.log('macAddresData', macAddresData);
-      //   if (macAddresData) mac_address = macAddresData;
-
-      // } catch (error) {
-      //   console.error('Error en logService > al obtener macAddres', error)
-      // }
+      // ✅ Validar y limpiar logs antes de enviar - asegurar que res_code siempre tenga valor
+      const validatedLogs: ILog[] = allLogs.map((log, index) => {
+        // Validar que res_code tenga un valor válido
+        if (!log.res_code || log.res_code.trim() === '') {
+          console.warn(`⚠️ [LogService] Log ${index} sin res_code válido. Usando valor por defecto.`, log);
+          return {
+            ...log,
+            res_code: log.status?.toString() || 'UNKNOWN', // Valor por defecto
+          };
+        }
+        return log;
+      });
 
       const body = {
-        logs: allLogs,
+        logs: validatedLogs,
         register: this._localStorageService.get('checkoutIdentify')
       }
-      console.log('BODY LOGS', body)
+      console.log('📤 [LogService] Enviando logs validados:', {
+        total: validatedLogs.length,
+        logs: validatedLogs.map(l => ({ log_type: l.log_type, res_code: l.res_code }))
+      });
 
       const headers = {
         token: environment.TOKEN_API_MASTER

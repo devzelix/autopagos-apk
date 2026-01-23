@@ -6,24 +6,40 @@
     border-radius: 10px;
     color: white;
     min-width: 270px;
+    height: 200px; // Altura fija para todas las tarjetas
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
 
     h1 {
       font-weight: bold;
       font-size: 1.9rem;
-      text-align: center;
+      text-align: start;
       margin-bottom: 0.4rem;
       border-bottom: 1px solid;
-      text-align: start;
+      padding-bottom: 0.3rem;
+      min-height: 2.5rem; // Altura mínima fija
+      display: flex;
+      align-items: center;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.2;
     }
 
     .content-user-select-card {
       display: flex;
       gap: 0px;
+      flex: 1; // Ocupar espacio disponible
+      min-height: 60px; // Altura mínima fija
+      align-items: flex-start;
 
       .content-user-select-card-item {
         width: 50%;
         display: flex;
         flex-direction: column;
+        justify-content: flex-start;
+        min-height: 60px; // Altura mínima fija
 
         &.content-user-select-end-position {
           h5 {
@@ -37,11 +53,25 @@
         h5 {
           font-size: 1rem;
           text-align: start;
+          margin-bottom: 0.3rem;
+          min-height: 1.2rem; // Altura mínima fija
+          display: flex;
+          align-items: center;
         }
+        
         p {
           text-align: start;
           font-size: 1.3rem;
           font-weight: bold;
+          min-height: 1.8rem; // Altura mínima fija
+          display: flex;
+          align-items: center;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          
+          &.capitalized {
+            text-transform: capitalize;
+          }
         }
       }
     }
@@ -52,17 +82,32 @@
       justify-content: space-between;
       align-items: center;
       gap: .8rem;
-      margin-top: .5rem;
+      margin-top: auto; // Empujar hacia abajo
+      min-height: 2.5rem; // Altura mínima fija
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2); // Separador visual opcional
 
       h5 {
         font-size: 0.8rem;
         text-wrap: balance;
         line-height: 1.2;
+        flex: 1;
+        min-width: 0; // Permitir que se encoja
+        margin: 0;
+        display: flex;
+        align-items: center;
       }
 
       p {
         font-size: .8rem;
         text-align: start;
+        margin: 0;
+        min-width: 120px; // Ancho mínimo para fecha
+        text-align: end;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        
         &.p-text-right {
           text-align: end !important;
         }

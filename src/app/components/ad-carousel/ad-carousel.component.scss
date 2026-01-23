@@ -1,0 +1,269 @@
+.ad-carousel-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 10000;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 9/16;
+
+  .carousel-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-slides {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: #000; // Fondo negro por defecto
+
+    .ad-media {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+      object-position: center;
+      display: block !important; // Forzar que se muestre
+      opacity: 1 !important; // Forzar que sea visible
+    }
+    
+    // Asegurar que las imágenes se muestren correctamente
+    img.ad-media {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      object-position: center;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    // Videos con tamaño más grande y mejor visualización
+    video {
+      width: 110%; // 10% más grande que el contenedor
+      height: 110%; // 10% más grande que el contenedor
+      object-fit: cover;
+      object-position: center;
+      // Zoom sutil para que se vea más grande
+      transform: scale(1.05);
+      // Asegurar que cubra toda la pantalla incluso con el zoom
+      min-width: 100%;
+      min-height: 100%;
+    }
+  }
+
+  .carousel-indicators {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10001;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+
+    .indicator {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+
+      &.active {
+        background: #fff;
+        transform: scale(1.2);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.8);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 36px;
+    cursor: pointer;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    user-select: none;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    &:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    &.prev {
+      left: 30px;
+    }
+
+    &.next {
+      right: 30px;
+    }
+  }
+
+  .touch-hint {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    z-index: 10001;
+    animation: pulse 2s infinite;
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    white-space: nowrap;
+
+    p {
+      margin: 0;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+      letter-spacing: 1px;
+    }
+  }
+}
+
+// Media queries para pantalla vertical 15.6"
+@media (min-height: 1080px) and (orientation: portrait) {
+  .ad-carousel-container {
+    .carousel-slide {
+      // Videos aún más grandes en pantallas grandes
+      video {
+        width: 115%; // 15% más grande en pantallas grandes
+        height: 115%;
+        transform: scale(1.08); // Zoom más pronunciado
+      }
+    }
+
+    .carousel-indicators {
+      bottom: 50px;
+      
+      .indicator {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .carousel-btn {
+      width: 70px;
+      height: 70px;
+      font-size: 42px;
+      
+      &.prev {
+        left: 40px;
+      }
+      
+      &.next {
+        right: 40px;
+      }
+    }
+
+    .touch-hint {
+      bottom: 120px;
+      font-size: 28px;
+      padding: 16px 32px;
+    }
+  }
+}
+
+// Estilos específicos para videos - tamaño aumentado
+.carousel-slide video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.1); // Centrado y con zoom
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  
+  // Asegurar que el video cubra toda la pantalla vertical con tamaño aumentado
+  @media (orientation: portrait) {
+    width: 110vw; // Más ancho que la pantalla
+    height: 110vh; // Más alto que la pantalla
+    transform: translate(-50%, -50%) scale(1.15); // Zoom más pronunciado
+  }
+
+  // En pantallas grandes, videos aún más grandes
+  @media (min-width: 1080px) and (orientation: portrait) {
+    width: 120vw;
+    height: 120vh;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+// Asegurar que en pantallas muy altas (vertical) se mantenga la proporción
+@media (min-aspect-ratio: 9/16) {
+  .ad-carousel-container {
+    .carousel-slide {
+      .ad-media {
+        object-fit: cover;
+      }
+      
+      // Videos con tamaño aumentado
+      video {
+        width: 115%;
+        height: 115%;
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+

@@ -1,0 +1,68 @@
+<div class="ad-carousel-container" (touchstart)="onTouch($event)" (click)="onTouch($event)">
+  <div class="carousel-wrapper">
+    <div class="carousel-slides" [style.transform]="'translateX(-' + (currentIndex * 100) + '%)'">
+      <div 
+        class="carousel-slide" 
+        *ngFor="let media of adMedia; let i = index"
+        [class.active]="i === currentIndex">
+        
+        <!-- Imagen optimizada para pantalla vertical -->
+        <img 
+          *ngIf="media.type === 'image'" 
+          [src]="media.src" 
+          [alt]="media.alt || 'Publicidad'"
+          class="ad-media"
+          (error)="handleImageError($event)"
+          (load)="onImageLoad($event)"
+          loading="eager"
+          style="display: block;">
+        
+        <!-- Video optimizado para pantalla vertical -->
+        <video 
+          *ngIf="media.type === 'video'" 
+          [src]="media.src"
+          [poster]="media.poster"
+          class="ad-media"
+          autoplay
+          loop
+          muted
+          playsinline
+          preload="auto"
+          (loadeddata)="onVideoLoaded($event)"
+          (error)="handleVideoError($event)">
+          Tu navegador no soporta videos.
+        </video>
+      </div>
+    </div>
+
+    <!-- Indicadores de slide -->
+    <div class="carousel-indicators">
+      <span 
+        *ngFor="let media of adMedia; let i = index"
+        class="indicator"
+        [class.active]="i === currentIndex"
+        (click)="goToSlide(i); $event.stopPropagation()">
+      </span>
+    </div>
+
+    <!-- Botones de navegación - OCULTOS (el carrusel pasa solo) -->
+    <!-- <button 
+      class="carousel-btn prev" 
+      (click)="previousSlide(); $event.stopPropagation()" 
+      aria-label="Anterior">
+      ‹
+    </button>
+    <button 
+      class="carousel-btn next" 
+      (click)="nextSlide(); $event.stopPropagation()" 
+      aria-label="Siguiente">
+      ›
+    </button> -->
+  </div>
+
+  <!-- Mensaje de toque para continuar -->
+  <div class="touch-hint">
+    <p>Toca la pantalla para continuar</p>
+  </div>
+</div>
+

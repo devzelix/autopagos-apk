@@ -7,5 +7,6 @@ export interface ICheckoutSession {
   id_pos_device: number;
   sessionTimestamp: number; // Timestamp de cuando se creó la sesión
   expiresAt: number | null; // Timestamp de expiración (null = sin expiración)
+  checkout_ip_address?: string | null; // IP del checkout desde BD
 }
 

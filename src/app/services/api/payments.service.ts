@@ -34,7 +34,7 @@ export class PaymentsService {
       }
 
       const bodyReq: IRequest = {
-        url: `${environment.URL_API_MASTER}/transactions/register/sae-plus`,
+        url: `${environment.URL_API_MASTER}/api-transactions/register/sae-plus`,
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -78,7 +78,7 @@ export class PaymentsService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${environment.URL_API_MASTER}/transactions/register/sae-plus`,
+        route_api: `${environment.URL_API_MASTER}/api-transactions/register/sae-plus`,
 
         req_body: JSON.stringify(paymenteInfo),
         res_code: 'ERROR',
@@ -110,15 +110,33 @@ export class PaymentsService {
         return resPay;
       }
 
+      // ✅ Asegurar que dateTransaction sea string en formato YYYY-MM-DD
+      // Si viene como string ISO completo, extraer solo la fecha
+      let dateTransactionString = paymenteInfo.dateTransaction;
+      if (dateTransactionString.includes('T')) {
+        // Si es formato ISO (ej: "2026-01-16T14:10:19.988Z"), extraer solo la fecha
+        dateTransactionString = dateTransactionString.split('T')[0];
+      }
+
+      const validatedPaymentInfo = {
+        ...paymenteInfo,
+        dateTransaction: dateTransactionString, // Formato YYYY-MM-DD
+      };
+
+      console.log('📤 [Payment Create] Request completo:', {
+        url: `${environment.URL_API_MASTER}/api-transactions/store`,
+        data: validatedPaymentInfo,
+      });
+
       const bodyReq: IRequest = {
-        url: `${environment.URL_API_MASTER}/transactions`,
+        url: `${environment.URL_API_MASTER}/api-transactions/store`,
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
           token: environment.TOKEN_API_MASTER,
         },
-        data: paymenteInfo,
+        data: validatedPaymentInfo,
       };
 
       const resultReq = await axios.request(bodyReq);
@@ -163,6 +181,48 @@ export class PaymentsService {
         numSubscriber: null,
       });
 
+      return errRes;
+    }
+  }
+
+  /**
+   * Get last transaction by checkoutIdentify
+   * @param checkoutIdentify
+   * @returns IResponse
+   */
+  public async getLastTransaction(checkoutIdentify: string): Promise<IResponse> {
+    let resPay: IResponse;
+
+    try {
+      if (!checkoutIdentify) {
+        resPay = {
+          status: 400,
+          message: 'checkoutIdentify is required',
+        };
+        return resPay;
+      }
+
+      const bodyReq: IRequest = {
+        url: `${environment.URL_API_MASTER}/api-transactions/last?checkoutIdentify=${checkoutIdentify}`,
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          token: environment.TOKEN_API_MASTER,
+        },
+      };
+
+      const resultReq = await axios.request(bodyReq);
+
+      resPay = {
+        status: resultReq.status,
+        message: 'Última transacción obtenida',
+        data: resultReq.data,
+      };
+
+      return resPay;
+    } catch (error) {
+      const errRes: IResponse = handleApiError(error);
       return errRes;
     }
   }

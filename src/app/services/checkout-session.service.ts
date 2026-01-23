@@ -37,6 +37,11 @@ export class CheckoutSessionService {
     this.localStorageService.set('checkoutIdentify', session.checkoutIdentify);
     this.localStorageService.set('ubiiposHost', session.ubiiposHost);
     this.localStorageService.set('terminalVirtual', session.terminalVirtual);
+    
+    // Guardar IP del checkout si está disponible
+    if (session.checkout_ip_address) {
+      this.localStorageService.set('checkout_ip_address', session.checkout_ip_address);
+    }
   }
 
   /**
@@ -173,6 +178,7 @@ export class CheckoutSessionService {
     this.localStorageService.removeItem('checkoutIdentify');
     this.localStorageService.removeItem('ubiiposHost');
     this.localStorageService.removeItem('terminalVirtual');
+    this.localStorageService.removeItem('checkout_ip_address');
   }
 
   /**

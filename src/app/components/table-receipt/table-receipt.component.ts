@@ -21,17 +21,19 @@ export class TableReceiptComponent implements OnInit {
   public dni: string = '';
   public Service:string = '';
 
-  constructor(private _seguridadDatos: SeguridadDatos) {
-    this.subscription = this._seguridadDatos.decrypt(localStorage.getItem('Subscription')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Subscription')!) : "";
-    this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem('Monto')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Monto')!) : ""; 
-    this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem('MontoBs')!) ? this._seguridadDatos.decrypt(localStorage.getItem('MontoBs')!) : "";
-    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem('Name')!) ? this._seguridadDatos.decrypt(localStorage.getItem('Name')!) : "";
-    this.dni = this._seguridadDatos.decrypt(localStorage.getItem('dni')!) ? this._seguridadDatos.decrypt(localStorage.getItem('dni')!) : "";
-    this.Service = this._seguridadDatos.decrypt(localStorage.getItem('Service')!) ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem('Service')!)) : "";
-
-  }
+  constructor(private _seguridadDatos: SeguridadDatos) {}
 
   ngOnInit(): void {
+    // Mover lógica pesada del constructor a ngOnInit para mejor rendimiento
+    this.subscription = this._seguridadDatos.decrypt(localStorage.getItem('Subscription')!) || "";
+    this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem('Monto')!) || ""; 
+    this.saldoBs = this._seguridadDatos.decrypt(localStorage.getItem('MontoBs')!) || "";
+    this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem('Name')!) || "";
+    this.dni = this._seguridadDatos.decrypt(localStorage.getItem('dni')!) || "";
+    
+    const serviceData = this._seguridadDatos.decrypt(localStorage.getItem('Service')!);
+    this.Service = serviceData ? JSON.parse(serviceData) : "";
+
     if(typeof this.cantidad == 'object'){
       this.cantidad = this.cantidad?.value;
     } 
