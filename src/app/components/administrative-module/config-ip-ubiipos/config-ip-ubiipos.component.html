@@ -26,6 +26,7 @@
             name="ipAddress"
             [(ngModel)]="ipAddress"
             required
+            maxlength="15"
             #ipField="ngModel"
             [ngClass]="{'is-invalid': ipField.invalid && isFormSubmitted}"
           >
@@ -47,7 +48,7 @@
 
         <div class="ip-input-container">
           <input
-            type="text"
+            type="number"
             id="portInput"
             placeholder="Ej: 8080"
             class="ip-input"
@@ -56,6 +57,7 @@
             required
             min="1"
             max="65535"
+            maxlength="5"
             #portField="ngModel"
             [ngClass]="{'is-invalid': portField.invalid && isFormSubmitted}"
           >

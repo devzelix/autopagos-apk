@@ -98,8 +98,15 @@ export class FormComponent implements OnInit {
     if (this.showDniForm && !this.AppFibex && this.listContratos.length < 1 && !this.LoadingLengthAbonado) {
 
       if (event.key === 'Backspace') return this.deleteLastCharacter();
-      else if (event.key === 'Enter' && this.dni?.value.length > 5) this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
-      else if (/^[0-9]+$/.test(event.key)) this.onTecladoInput(event.key)
+      else if (event.key === 'Enter' && this.dni?.value && this.hasMinimumDigits(this.dni.value)) this.searchServicesv2(this.firstFormFibex.get('dni'), false, true)
+      else if (/^[0-9]+$/.test(event.key)) {
+        // Verificar límite antes de permitir escribir
+        const currentValue = this.dni?.value || '';
+        const maxLength = this.getMaxLength(this.loginTypeSelectValue);
+        if (currentValue.length < maxLength) {
+          this.onTecladoInput(event.key);
+        }
+      }
 
     }
 
@@ -364,7 +371,7 @@ export class FormComponent implements OnInit {
     this.firstFormFibex = this.fb.group(
       {
         name: ['', [Validators.required]],
-        dni: ['', [Validators.required, Validators.minLength(6)]],
+        dni: ['', [Validators.required, Validators.minLength(7)]], // Mínimo: Letra + guión + 6 dígitos = 7 caracteres
         email: ['', [Validators.required, Validators.pattern(this.regexEmail)]],
         bank: ['', [Validators.required]],
         nroContrato: ['', [Validators.required]],
@@ -525,6 +532,11 @@ export class FormComponent implements OnInit {
     
     // Configurar listener para resetear al welcome-view cuando se oculta el carrusel
     this.setupResetToWelcomeListener();
+    
+    // Escuchar evento personalizado de apertura del panel admin (respaldo)
+    document.addEventListener('openAdminPanel', () => {
+      this.openAdminPanelFromDoubleTap();
+    });
     
     // Inicializar formularios después de validar sesión
     this.MyInit();
@@ -799,9 +811,20 @@ export class FormComponent implements OnInit {
   }
 
 
+  /**
+   * Valida si el DNI/RIF tiene al menos 6 dígitos
+   * @param value - Valor del DNI/RIF formateado
+   * @returns true si tiene al menos 6 dígitos
+   */
+  private hasMinimumDigits(value: string): boolean {
+    if (!value) return false;
+    const digits = this.getDigitsOnly(value);
+    return digits.length >= 6;
+  }
+
   DNIvalidation = (inputDni: any) => {
     const dni_ = inputDni.value;
-    if (dni_.length >= 1 && dni_.length < 6) {
+    if (dni_.length >= 1 && !this.hasMinimumDigits(dni_)) {
       this.dni?.reset();
       this.captchaService.validControl = false;
       this.nameClient = '';
@@ -811,7 +834,7 @@ export class FormComponent implements OnInit {
       this.dniConsulted = true;
       this.lastDni = '';
       this.name?.setValue('');
-      this.alertFindDni('La cédula debe ser mínimo 6 carácteres', '');
+      this.alertFindDni('La cédula debe ser mínimo 6 dígitos', '');
       const timeoutId = setTimeout(() => this.closeAlert(), 1000);
       this.timeoutIds.push(timeoutId);
     }
@@ -1151,8 +1174,14 @@ export class FormComponent implements OnInit {
       this.PagoMetodosHTML2 = FormasDePago;
     }
 
+    // Solo navegar a PAYMENT_CARDS si hay un solo contrato
+    // Si hay múltiples contratos, mantener USER_LIST_SELECT
     if (this.userSelectList.length === 1) {
       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+    } else if (this.userSelectList.length > 1 && this.navActive !== PAGES_NAVIGATION.USER_LIST_SELECT) {
+      // Si hay múltiples contratos y no estamos en USER_LIST_SELECT, ir a selección
+      this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT
+      this.setMainTitle('Seleccione una cuenta para continuar')
     }
     this.loadInitMonthMountValues()
     console.log('FORMA PAGO', this.PagoMetodosHTML2, x)
@@ -1511,7 +1540,7 @@ export class FormComponent implements OnInit {
       } */
 
       this.dniConsulted = false;
-      if (dni_.length >= 6) {
+      if (this.hasMinimumDigits(dni_)) {
         this.alertFindDniMercantil(
           'Buscando información del cliente',
           'Por favor espere...'
@@ -1580,8 +1609,15 @@ export class FormComponent implements OnInit {
                       this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
                     }
                     else {
+                      this.showMainMenuPage2 = true; // Mostrar contenido para selección de usuarios
                       this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
                       this.setMainTitle('Seleccione una cuenta para continuar')
+                      // Asegurar que showStateTable esté en false para no mostrar el modal
+                      this.showStateTable = false;
+                      // Limpiar valores de saldo para evitar que se active el alert
+                      this.saldoUSD = '';
+                      this.saldoBs = '';
+                      this.lastAmount = '';
                     }
 
                     console.warn('HACE RESOLVEE 1')
@@ -1595,6 +1631,23 @@ export class FormComponent implements OnInit {
                   );
                   this.lastDni = '';
                   return reject();
+                }
+
+                // VERIFICACIÓN TEMPRANA: Si hay múltiples contratos, salir completamente
+                // No ejecutar más código que pueda establecer valores o mostrar alerts
+                if (this.listContratos.length > 1) {
+                  // Asegurar que navActive esté establecido (ya se estableció en el forEach)
+                  if (this.navActive !== PAGES_NAVIGATION.USER_LIST_SELECT) {
+                    this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
+                  }
+                  // Limpiar TODOS los valores que puedan activar el alert
+                  this.saldoUSD = '';
+                  this.saldoBs = '';
+                  this.lastAmount = '';
+                  this.showStateTable = false;
+                  // No ejecutar más código - salir del bloque
+                  // El resolve() ya se hizo en el forEach, así que no necesitamos hacer nada más
+                  return;
                 }
 
                 //Esto solo va aplicar cuando solo sea un abonado para que la pantalla pase automática
@@ -1647,6 +1700,11 @@ export class FormComponent implements OnInit {
               }
 
               /* EMITIR TASA DEL DÍA */
+              // Si hay múltiples contratos, ya se manejó arriba - no ejecutar más código
+              if (this.listContratos.length > 1) {
+                return; // Ya se estableció navActive y se limpiaron valores arriba
+              }
+
               if (this.registerPayService.linkedToContractProcess != 'approved') {
                 this.tasaService.tasa.next(this.cambio_act.toString());
                 this.tasaCambio = this.cambio_act.toString();
@@ -1656,61 +1714,71 @@ export class FormComponent implements OnInit {
                   return reject();
                 }
 
-                this.closeAlert2();
-                this.readonlyDNI = true;
-                this.idContrato = this.listContratos[0].id_contrato;
-                this.nroContrato?.setValue(this.listContratos[0].contrato);
-                this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
-                this.nameClient = this.listContratos[0].cliente;
-                console.error('ERROR NO PASA POR AQUI')
-                console.log('EL DNI MENORRR', this.subscription);
+                // Solo establecer valores del contrato si hay un solo contrato
+                if (this.listContratos.length === 1) {
+                  this.closeAlert2();
+                  this.readonlyDNI = true;
+                  this.idContrato = this.listContratos[0].id_contrato;
+                  this.nroContrato?.setValue(this.listContratos[0].contrato);
+                  this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
+                  this.nameClient = this.listContratos[0].cliente;
+                  console.error('ERROR NO PASA POR AQUI')
+                  console.log('EL DNI MENORRR', this.subscription);
 
-                this.setGreeting(this.nameClient)
-                this.name?.setValue(res[0].cliente);
-                this.nroContrato?.setValue(this.listContratos[0].contrato);
-                this.SendOption(0, 3, this.listContratos[0].contrato);
-                this.monto_pend_conciliar =
-                  this.listContratos[0].monto_pend_conciliar;
-                // this.filterBankByFranquicia(this.listContratos[0].franquicia);
-                this.dni?.setValue(dni_);
-                this.searchInfoEquipos(dni_)
-                  .then((result) => { })
-                  .catch((err) => {
-                    console.log('falló el ingreso de datos del usuario');
-                    reject()
-                  });
+                  this.setGreeting(this.nameClient)
+                  this.name?.setValue(res[0].cliente);
+                  this.nroContrato?.setValue(this.listContratos[0].contrato);
+                  this.SendOption(0, 3, this.listContratos[0].contrato);
+                  this.monto_pend_conciliar =
+                    this.listContratos[0].monto_pend_conciliar;
+                  // this.filterBankByFranquicia(this.listContratos[0].franquicia);
+                  this.dni?.setValue(dni_);
+                  this.searchInfoEquipos(dni_)
+                    .then((result) => { })
+                    .catch((err) => {
+                      console.log('falló el ingreso de datos del usuario');
+                      reject()
+                    });
+                }
+                // Si hay múltiples contratos, no establecer estos valores aquí
+                // Se establecerán en onUserSelected() cuando el usuario seleccione un abonado
               }
 
-              if (this.registerPayService.linkedToContractProcess != 'approved') {
-                //Busco su numeros de comprobantes
-                this.registerPayService
-                  .getComprobantClient2(dni_)
-                  .then((comprobante: any) => {
-                    if (comprobante.length > 0) {
-                      //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
-                      this.AllComprobantesPago = comprobante;
-
-                      let temp = comprobante
-                        .slice()
-                        .sort(
-                          (a: any, b: any) =>
-                            b.Fecha.getTime() - a.Fecha.getTime()
-                        );
-                      temp = temp.slice(0, 5);
-                      console.log(' pasa por ValidateReferenciaLast')
-                      this.ValidateReferenciaLast(temp);
-                    }
-                  })
-                  .catch((error: any) => console.error(error));
-              }
-
-              this.setActiveContrato(this.listContratos[0])
-
+              // Solo ejecutar código adicional si hay un solo contrato
+              // Si hay múltiples contratos, ya se estableció navActive y se limpiaron valores arriba
               if (this.listContratos.length === 1) {
+                if (this.registerPayService.linkedToContractProcess != 'approved') {
+                  //Busco su numeros de comprobantes
+                  this.registerPayService
+                    .getComprobantClient2(dni_)
+                    .then((comprobante: any) => {
+                      if (comprobante.length > 0) {
+                        //Voy a mostrar los últimos 5 comprobante voy a ordenarlo por fecha
+                        this.AllComprobantesPago = comprobante;
+
+                        let temp = comprobante
+                          .slice()
+                          .sort(
+                            (a: any, b: any) =>
+                              b.Fecha.getTime() - a.Fecha.getTime()
+                          );
+                        temp = temp.slice(0, 5);
+                        console.log(' pasa por ValidateReferenciaLast')
+                        this.ValidateReferenciaLast(temp);
+                      }
+                    })
+                    .catch((error: any) => console.error(error));
+                }
+
+                // Solo llamar a setActiveContrato si hay un solo contrato
+                // Pasar showAlert: true porque cuando hay un solo contrato, se "selecciona" automáticamente
+                this.setActiveContrato(this.listContratos[0], true)
                 this.listContratos.find((cliente) => {
                   this.verifySaldo(cliente.saldo);
                 });
               }
+              // Si hay múltiples contratos, no ejecutar código adicional
+              // Se ejecutará en onUserSelected() cuando el usuario seleccione un abonado
             } else {
               //this.hcaptcha.reset()
               this.nameClient = '';
@@ -1842,7 +1910,7 @@ export class FormComponent implements OnInit {
         this.dniConsulted = true;
         this.lastDni = '';
         this.name?.setValue('');
-        this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
+        this.invalidForm('La cédula debe ser mínimo 6 dígitos', '');
         const timeoutId = setTimeout(() => this.closeAlert(), 1000);
       this.timeoutIds.push(timeoutId);
         reject()
@@ -2032,6 +2100,10 @@ export class FormComponent implements OnInit {
     },
     ppal?: boolean
   ) {
+    // Si hay múltiples contratos y estamos en selección de usuarios, no mostrar alert todavía
+    // El alert se mostrará cuando el usuario seleccione desde onUserSelected()
+    const shouldShowAlert = this.listContratos.length === 1 || this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS;
+    
     this.BackFormaPago = false;
     this.PagoMetodosHTML2 = FormasDePago;
     //! to validate franchise
@@ -2039,7 +2111,10 @@ export class FormComponent implements OnInit {
       this.paymentMethod = 'aragua';
 
     this.lastAmount = parseFloat(contrato.saldo).toFixed(2);
-    this.verifySaldo(contrato.saldo);
+    // Solo verificar saldo si no estamos en selección de múltiples usuarios
+    if (shouldShowAlert) {
+      this.verifySaldo(contrato.saldo);
+    }
     this.saldoUSD = parseFloat(contrato.saldo).toFixed(2);
     this.saldoBs = (parseFloat(contrato.saldo) * this.cambio_act).toFixed(2);
     //this.DataPagoMovilPublic.length>3 ? this.DataPagoMovilPublic.pop() : this.DataPagoMovilPublic.push(this.saldoBs)
@@ -2172,7 +2247,26 @@ export class FormComponent implements OnInit {
   }
 
   verifySaldo(saldo: string) {
-    if (parseFloat(saldo) <= 0) {
+    // PROTECCIÓN CRÍTICA: Si hay múltiples contratos, NO mostrar alert a menos que:
+    // 1. Ya estamos en PAYMENT_CARDS (usuario ya seleccionó)
+    // 2. O hay un solo contrato
+    const hasMultipleContracts = this.listContratos.length > 1;
+    const isInUserSelection = this.navActive === PAGES_NAVIGATION.USER_LIST_SELECT;
+    const isInPaymentScreen = this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS;
+    const isSingleContract = this.listContratos.length === 1;
+    
+    // Si hay múltiples contratos Y estamos en selección de usuarios, NO mostrar alert
+    if (hasMultipleContracts && isInUserSelection) {
+      return; // Salir completamente sin mostrar nada
+    }
+    
+    // Solo mostrar el alert si:
+    // - Saldo <= 0
+    // - NO estamos en selección de usuarios
+    // - (Hay un solo contrato O ya estamos en pantalla de pago)
+    if (parseFloat(saldo) <= 0 && 
+        !isInUserSelection &&
+        (isSingleContract || isInPaymentScreen)) {
       this.alertDniAmount(
         'Usted no posee deuda pendiente',
         'Tiene un saldo a favor de: ' +
@@ -2304,22 +2398,51 @@ export class FormComponent implements OnInit {
   }
 
   /**
+   * Obtiene la longitud máxima permitida según el tipo de identificación
+   * @param type - Tipo de identificación
+   * @returns Longitud máxima (10 caracteres para todos los tipos)
+   */
+  private getMaxLength(type: string): number {
+    // Todos los formatos tienen 10 caracteres: Letra + guión + dígitos
+    return 10;
+  }
+
+  /**
+   * Obtiene solo los dígitos del DNI/RIF (sin letra ni guión)
+   * @param value - Valor formateado
+   * @returns Solo los dígitos
+   */
+  private getDigitsOnly(value: string): string {
+    if (!value) return '';
+    // Remover letra inicial y guión, dejar solo dígitos
+    return value.replace(/^[A-Z]-?/i, '').replace(/\D/g, '');
+  }
+
+  /**
    * Function to handle input from the virtual keyboard
    * @param value - The value to be added to the input
    */
-
   public onTecladoInput(value: string): void {
-    // this.inputValue += value; // Agregar el valor recibido al input
-    let dniFormValue = this.firstFormFibex.get('dni')?.value
-
-    if (typeof dniFormValue === 'string' && (this.loginTypeSelectValue === 'V' && dniFormValue.length < 8 || (['E', 'J',].includes(this.loginTypeSelectValue)) && dniFormValue.length < 15)) this.firstFormFibex.get('dni')?.setValue(dniFormValue += value);
+    let dniFormValue = this.firstFormFibex.get('dni')?.value || '';
+    const maxLength = this.getMaxLength(this.loginTypeSelectValue);
+    
+    // Bloquear si ya alcanzó el límite máximo de caracteres
+    if (dniFormValue.length >= maxLength) {
+      return; // No permitir escribir más
+    }
+    
+    // Solo agregar el valor si no excede el límite
+    this.firstFormFibex.get('dni')?.setValue(dniFormValue + value);
   }
 
   // Función para eliminar el último carácter
   deleteLastCharacter(): void {
-    let dniFormValue = this.firstFormFibex.get('dni')?.value
+    let dniFormValue = this.firstFormFibex.get('dni')?.value || '';
+    
+    if (!dniFormValue) return;
+    
+    // Remover el último carácter
     this.firstFormFibex.get('dni')?.setValue(dniFormValue.slice(0, -1));
-    // this.inputValue = this.inputValue.slice(0, -1); // Eliminar el último carácter
   }
 
   /**
@@ -2328,9 +2451,13 @@ export class FormComponent implements OnInit {
   */
   public onLoginTypeChange = (value: ITypeDNI): void => {
     this.loginTypeSelectValue = value;
-    if (value === 'V') {
-      const formValue = this.firstFormFibex.get('dni')?.value;
-      this.firstFormFibex.get('dni')?.setValue(formValue.slice(0, 8))
+    // No formatear automáticamente, solo mantener el valor actual si no excede el límite
+    const currentValue = this.firstFormFibex.get('dni')?.value || '';
+    const maxLength = this.getMaxLength(value);
+    
+    // Si el valor actual excede el nuevo límite, truncarlo
+    if (currentValue.length > maxLength) {
+      this.firstFormFibex.get('dni')?.setValue(currentValue.slice(0, maxLength));
     }
   }
 
@@ -2457,7 +2584,7 @@ export class FormComponent implements OnInit {
       // if (dni_ === this.lastDni) return;
 
       this.dniConsulted = false;
-      if (dni_.length <= 6) {
+      if (!this.hasMinimumDigits(dni_)) {
 
         this.dni?.setValue('');
         this.nameClient = '';
@@ -2467,7 +2594,7 @@ export class FormComponent implements OnInit {
         this.dniConsulted = true;
         this.lastDni = '';
         this.name?.setValue('');
-        this.invalidForm('La cédula debe ser mínimo 6 carácteres', '');
+        this.invalidForm('La cédula debe ser mínimo 6 dígitos', '');
         const timeoutId = setTimeout(() => this.closeAlert(), 1000);
       this.timeoutIds.push(timeoutId);
         return
@@ -2511,6 +2638,15 @@ export class FormComponent implements OnInit {
         //Valido los estatus de los contratos
         dniUserResult.forEach((dataContrato: any, index: number) => {
           var isValid = this.ValidStatusContrato(dataContrato.status_contrato);
+
+          // Construir userSelectList similar a searchServicesv2
+          this.userSelectList.push({
+            ...dataContrato,
+            is_user_valid: isValid,
+            saldo: (parseFloat(dataContrato.saldo) > 0) ? parseFloat(dataContrato.saldo) : Math.abs(parseFloat(dataContrato.saldo)),
+            status_contrato: dataContrato.status_contrato.toLowerCase(),
+            isDebtor: (parseFloat(dataContrato.saldo) > 0)
+          });
 
           if (isValid) {
             this.listContratos.push({
@@ -2559,14 +2695,45 @@ export class FormComponent implements OnInit {
             return;
           }
 
-        } else if (this.listContratos.length > 1) return this.SearchSectorAbonado();//* When is more than 1 account
+        } else if (this.listContratos.length > 1) {
+          //* When is more than 1 account - Mostrar primero la selección de usuarios
+          this.AppFibex = true;
+          this.showDniForm = false;
+          this.showMainMenuPage2 = true; // Agregar esto para mostrar el contenido
+          this.SearchSectorAbonado();
+          
+          // Filtrar userSelectList para mostrar solo contratos válidos
+          this.userSelectList = this.userSelectList.filter(user => user.is_user_valid);
+          
+          // Mostrar pantalla de selección de usuarios
+          this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
+          this.setMainTitle('Seleccione una cuenta para continuar');
+          this.closeAlert();
+          
+          // Limpiar nroContrato para evitar que se ejecute el código posterior
+          this.nroContrato?.setValue('');
+          
+          // Asegurar que showStateTable esté en false para no mostrar el modal
+          this.showStateTable = false;
+          
+          // Limpiar valores de saldo para evitar que se active el alert
+          this.saldoUSD = '';
+          this.saldoBs = '';
+          this.lastAmount = '';
+          
+          return; // Salir para no continuar con el flujo de deuda
+        }
 
         this.dni?.setValue('');
 
         /* this.dni?.setValue(dni_); */
       }
 
-      if (this.nroContrato?.value.length) {
+      // Solo ejecutar esto si hay un solo contrato y se estableció nroContrato
+      // Y no estamos en la pantalla de selección de usuarios
+      if (this.nroContrato?.value && this.nroContrato.value.length && 
+          this.listContratos.length === 1 && 
+          this.navActive !== PAGES_NAVIGATION.USER_LIST_SELECT) {
         this.tasaService.getTasaSae().then((tasaSae) => {
           console.log('TASA SAEEEE', tasaSae.precio * parseFloat(this.saldoUser),);
           const saldoUserBs = tasaSae.precio * parseFloat(this.saldoUser);
@@ -2590,8 +2757,15 @@ export class FormComponent implements OnInit {
     try {
       await this.searchServicesv2(this.dni, false, true).then(() => { this.showAdminist(this.dni?.value) }) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
-      this.loadInitMonthMountValues()
-      this.FormaPago(30) //* => go To payment cards
+      
+      // Solo continuar con el flujo de pago si hay un solo contrato o ya se seleccionó uno
+      // Si hay múltiples contratos, searchServicesv2 ya estableció USER_LIST_SELECT
+      if (this.userSelectList.length === 1 || this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS) {
+        this.loadInitMonthMountValues()
+        this.FormaPago(30) //* => go To payment cards
+      }
+      // Si hay múltiples contratos, ya se mostró USER_LIST_SELECT en searchServicesv2
+      // No hacer nada más, esperar a que el usuario seleccione
     } catch (error) {
       console.error(error)
     }
@@ -2708,10 +2882,19 @@ export class FormComponent implements OnInit {
       this.searchInfoEquipos(dni_)
         .then(() => {
 
-          this.setActiveContrato(activeContrato)
-
+          // Establecer navegación primero
           this.showMainMenuPage2 = true
           this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
+          
+          // Pasar showAlert: true para que muestre el alert solo cuando el usuario selecciona
+          // setActiveContrato() mostrará el alert si el saldo es <= 0
+          this.setActiveContrato(activeContrato, true)
+          
+          // verifySaldo() también puede mostrar el alert, pero solo si no estamos en USER_LIST_SELECT
+          // Como ya cambiamos a PAYMENT_CARDS, esto está bien
+          if (parseFloat(activeContrato.saldo) <= 0) {
+            this.verifySaldo(activeContrato.saldo);
+          }
 
         })
         .catch((err) => {
@@ -2723,8 +2906,24 @@ export class FormComponent implements OnInit {
     }
   }
 
-  private setActiveContrato = (activeContrato: Contratos) => {
+  private setActiveContrato = (activeContrato: Contratos, showAlert: boolean = false) => {
     try {
+      // PROTECCIÓN CRÍTICA: Si hay múltiples contratos y estamos en selección de usuarios,
+      // NO establecer valores a menos que showAlert sea explícitamente true
+      const hasMultipleContracts = this.listContratos.length > 1;
+      const isInUserSelection = this.navActive === PAGES_NAVIGATION.USER_LIST_SELECT;
+      
+      if (hasMultipleContracts && isInUserSelection && !showAlert) {
+        // No establecer valores, solo salir completamente
+        // El alert solo se mostrará cuando el usuario seleccione un abonado (showAlert: true)
+        return;
+      }
+      
+      // Si hay múltiples contratos pero NO estamos en selección de usuarios,
+      // tampoco establecer valores a menos que showAlert sea true
+      if (hasMultipleContracts && !showAlert) {
+        return;
+      }
 
       /*Esto se hacer por si el usuario preciomente selecciona un banco */
       if (this.BancoNacional(this.banco)) {
@@ -2827,20 +3026,23 @@ export class FormComponent implements OnInit {
 
       console.log('SALDO', this.saldoUSD)
 
-      if (parseFloat(this.saldoUSD) <= 0) {
-
-        Swal.fire({
-          icon: 'error',
-          // timer: 5000,
-          title: 'Usted no posee deuda pendiente',
-          text: (parseFloat(this.saldoUSD) === 0) ? 'Estás al día' : `Tiene un saldo a favor de: ${Math.abs(parseFloat(this.saldoUSD)).toFixed(2).replace('.', ',')}$`,
-          showCloseButton: true,
-          confirmButtonText: 'Registrar Pago Adelantado',
-          didClose: () => {
-            console.warn('EL SWAQL FUE CERRADOOOOOO')
-          }
-        });
-
+      // Solo mostrar el alert si showAlert es true (cuando el usuario selecciona un abonado)
+      // No mostrar automáticamente cuando se obtienen los datos
+      if (showAlert) {
+        const saldoValue = this.saldoUSD && this.saldoUSD !== '' ? parseFloat(this.saldoUSD) : null;
+        if (saldoValue !== null && saldoValue <= 0) {
+          Swal.fire({
+            icon: 'error',
+            // timer: 5000,
+            title: 'Usted no posee deuda pendiente',
+            text: (saldoValue === 0) ? 'Estás al día' : `Tiene un saldo a favor de: ${Math.abs(saldoValue).toFixed(2).replace('.', ',')}$`,
+            showCloseButton: true,
+            confirmButtonText: 'Registrar Pago Adelantado',
+            didClose: () => {
+              console.warn('EL SWAQL FUE CERRADOOOOOO')
+            }
+          });
+        }
       }
 
     } catch (error) {
@@ -2889,6 +3091,70 @@ export class FormComponent implements OnInit {
     }
     console.log('EVENT ADMIN LOGIN', $event)
     this.isAdminLogged = $event;
+  }
+
+  // Variables para detectar doble tap en el logo del formulario
+  private logoTapCount: number = 0;
+  private logoTapTimer: any = null;
+  private readonly DOUBLE_TAP_DELAY = 300;
+  private lastLogoTapTime: number = 0;
+
+  /**
+   * Maneja el tap/touch en el logo del formulario
+   * Detecta doble tap para abrir panel admin
+   */
+  public onLogoDoubleTap(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const currentTime = Date.now();
+    
+    // Si pasó más de 300ms desde el último tap, resetear contador
+    if (currentTime - this.lastLogoTapTime > this.DOUBLE_TAP_DELAY) {
+      this.logoTapCount = 0;
+    }
+    
+    this.logoTapCount++;
+    this.lastLogoTapTime = currentTime;
+    
+    // Limpiar timer anterior
+    if (this.logoTapTimer) {
+      clearTimeout(this.logoTapTimer);
+    }
+    
+    // Si es el segundo tap, abrir panel admin
+    if (this.logoTapCount === 2) {
+      console.log('🔓 Doble tap detectado en logo del formulario - Abriendo panel administrativo');
+      this.openAdminPanelFromDoubleTap();
+      this.resetLogoTapCount();
+      return;
+    }
+    
+    // Si es un solo tap, no hacer nada (solo esperar)
+    if (this.logoTapCount === 1) {
+      this.logoTapTimer = setTimeout(() => {
+        this.resetLogoTapCount();
+      }, this.DOUBLE_TAP_DELAY);
+    }
+  }
+
+  /**
+   * Resetea el contador de taps del logo del formulario
+   */
+  private resetLogoTapCount(): void {
+    this.logoTapCount = 0;
+    if (this.logoTapTimer) {
+      clearTimeout(this.logoTapTimer);
+      this.logoTapTimer = null;
+    }
+  }
+
+  /**
+   * Abre el panel administrativo desde doble tap en el logo
+   */
+  public openAdminPanelFromDoubleTap(): void {
+    console.log('🔓 Abriendo panel administrativo desde doble tap');
+    this.showadmin = true;
   }
 
   // TrackBy functions para optimizar *ngFor

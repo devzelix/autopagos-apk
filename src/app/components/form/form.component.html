@@ -13,7 +13,8 @@
 <!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true Y showadmin es false -->
 <div *ngIf="isAdminLogged === true && !showadmin">
   <app-welcome-view *ngIf="!showFormView"
-    (showFormEmitter)="handleShowFormView(true)">
+    (showFormEmitter)="handleShowFormView(true)"
+    (openAdminPanel)="openAdminPanelFromDoubleTap()">
   </app-welcome-view>
 
   <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable && showFormView">
@@ -23,7 +24,13 @@
         class="button-link__bold button-link button__secondary btn-width-70 fancy_shadow main-title-login-container flex flex-col gap-2.5">
         <!-- <p>Registre su pago</p>
         <p>Servicio de Internet</p> -->
-        <img class="fibex-main-title-logo" src="assets/images/fibex-logo-positive.png" alt="Fibex Telecom Logo">
+        <img 
+          class="fibex-main-title-logo" 
+          src="assets/images/fibex-logo-positive.png" 
+          alt="Fibex Telecom Logo"
+          (click)="onLogoDoubleTap($event)"
+          (touchstart)="onLogoDoubleTap($event)"
+          style="cursor: pointer;">
         <h1 class="main-title-login text-3xl">Registre su pago de <strong>Internet!</strong></h1>
       </span>
     </div>
@@ -125,11 +132,11 @@
                   <div class="form-control-input form-dni-input">
                     <h4
                       (click)="isActiveLoginInput = true"
-                      [ngClass]="{'form-input-empty': (firstFormFibex.get('dni')?.value.length === 0), 'input-active-color': firstFormFibex.get('dni')?.value.length || isActiveLoginInput, 'input-small-text-size': firstFormFibex.get('dni')?.value.length > 8 }">
+                      [ngClass]="{'form-input-empty': (!dni?.value || dni?.value?.length === 0), 'input-active-color': (dni?.value?.length || isActiveLoginInput), 'input-small-text-size': (dni?.value?.length || 0) > 8 }">
 
-                      {{ firstFormFibex.get('dni')?.value || '_____' }}
+                      {{ dni?.value || '_____' }}
 
-                      <span *ngIf="(loginTypeSelectValue === 'V' ? (firstFormFibex.get('dni')?.value.length < 7) : firstFormFibex.get('dni')?.value.length < 16)" class="custom-cursor"></span>
+                      <span *ngIf="(dni?.value?.length || 0) < 10" class="custom-cursor"></span>
                     </h4>
                   </div>
 

@@ -90,4 +90,12 @@ export class UniquePaymentComponent implements OnInit {
     this.onEditAmountEvent.emit()
   }
 
+  /**
+   * Verifica si el usuario tiene deuda (saldo positivo)
+   * @returns true si hay deuda, false si hay saldo a favor
+   */
+  public hasDebt(): boolean {
+    return parseFloat(this.saldoUSD) > 0;
+  }
+
 }

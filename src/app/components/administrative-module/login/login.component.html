@@ -21,6 +21,7 @@
               formControlName="user"
               placeholder="Usuario"
               class="form-input"
+              maxlength="50"
               [class.input-error]="formLogin.get('user')?.invalid && formLogin.get('user')?.touched"
               autocomplete="username">
             <label for="user" class="input-label">Usuario</label>
@@ -43,6 +44,7 @@
               formControlName="pass"
               placeholder="Contraseña"
               class="form-input"
+              maxlength="100"
               [class.input-error]="formLogin.get('pass')?.invalid && formLogin.get('pass')?.touched"
               autocomplete="current-password">
             <label for="pass" class="input-label">Contraseña</label>
@@ -120,7 +122,8 @@
         [(ngModel)]="searchTerm" 
         (input)="filterPosDevices()"
         placeholder="Buscar por modelo, serial o terminal..."
-        class="search-input">
+        class="search-input"
+        maxlength="50">
     </div>
 
     <div class="pos-devices-list">

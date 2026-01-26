@@ -442,6 +442,7 @@ export class ActionAdminComponent implements OnInit {
           const input = document.querySelector('.swal2-input') as HTMLInputElement;
           if (input) {
             input.classList.add('fibex-input');
+            input.maxLength = 30; // Límite de 30 caracteres para referencia
             input.style.fontFamily = "'Poppins', sans-serif";
             input.style.width = "100%";
             input.style.padding = "12px 16px";
@@ -834,6 +835,7 @@ export class ActionAdminComponent implements OnInit {
                 type="text" 
                 placeholder="Ej: 192.168.1.1" 
                 value="${currentIp}"
+                maxlength="15"
                 style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: 'Poppins', sans-serif; background: #f7fafc; color: #1a202c; transition: all 0.3s ease; outline: none; box-sizing: border-box;"
               >
             </div>
@@ -850,6 +852,7 @@ export class ActionAdminComponent implements OnInit {
                 value="${currentPort || ''}"
                 min="1" 
                 max="65535"
+                maxlength="5"
                 style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: 'Poppins', sans-serif; background: #f7fafc; color: #1a202c; transition: all 0.3s ease; outline: none; box-sizing: border-box;"
               >
             </div>

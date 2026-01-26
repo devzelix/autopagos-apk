@@ -1,6 +1,12 @@
 <div class="welcome-view-container mb-4">
 
-    <img src="assets/images/fibex-logo-positive.png" alt="Fibex Telecom Logo" class="welcome-logo">
+    <img 
+      src="assets/images/fibex-logo-positive.png" 
+      alt="Fibex Telecom Logo" 
+      class="welcome-logo"
+      (click)="onLogoTap($event)"
+      (touchstart)="onLogoTap($event)"
+      style="cursor: pointer;">
 
     <h1 class="welcome-title">
         Realiza tu pago aquí
