@@ -1,12 +1,21 @@
-import { Router } from '@angular/router';
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
+import { ErrorNotifierService } from '../services/error-notifier.service';
+
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
   constructor(private injector: Injector) { }
+
   handleError(error: any) {
-    const router = this.injector.get(Router);
-    // console.log(error.stack.toString());
+    try {
+      const errorNotifier = this.injector.get(ErrorNotifierService);
+      errorNotifier.notify({
+        source: 'client',
+        error: error
+      });
+    } catch {
+      // Failed to notify
+    }
 
+    console.error('GlobalErrorHandler:', error);
   }
-
 }

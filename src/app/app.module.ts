@@ -1,7 +1,7 @@
 import { ErrorHandler, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { FormComponent } from './components/form/form.component';
@@ -22,6 +22,7 @@ import { CoincoinxComponent } from './components/coincoinx/coincoinx.component';
 import { environment } from 'src/environments/environment';
 import { CaptchaThomasModule } from 'captcha-thomas';
 import { GlobalErrorHandler } from './utils/GlobalErrorHandler';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { PaypalComponent } from './components/paypal/paypal.component';
 import { StripeComponent } from './components/stripe/stripe.component';
 import { NgxStripeModule } from 'ngx-stripe';
@@ -119,7 +120,7 @@ const routes: Routes = [
       // languageCode: 'de' // optional, will default to browser language
     }) */ ,
     ConfigIpUbiiposComponent
-],
+  ],
   providers: [
     NegativeAmountPipe,
     SeguridadDatos,
@@ -127,6 +128,11 @@ const routes: Routes = [
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
     }
   ],
   exports: [MaterialModule],
