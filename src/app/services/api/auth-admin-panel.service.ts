@@ -14,10 +14,10 @@ export class AuthAdminPanelService {
 
   public async authAdmin(user: string, pass: string): Promise<{ data: IAuthData | null, isAuthenticated: boolean }> {
     // Mock login shortcut: username 'mock' and password 'mock123'
-    if (user === 'mock' && pass === 'mock123') {
-      const data: IAuthData = { id_user: 9999, id_sede: 9999 };
-      return { data, isAuthenticated: true };
-    }
+    // if (user === 'mock' && pass === 'mock123') {
+    //   const data: IAuthData = { id_user: 9999, id_sede: 9999 };
+    //   return { data, isAuthenticated: true };
+    // }
 
     try {
       const response = await axios.post(environment.URL_API_MASTER + '/auth/admin', {
@@ -66,7 +66,7 @@ export class AuthAdminPanelService {
           'token': environment.TOKEN_API_MASTER
         }
       });
-      
+
       console.log('📦 Respuesta completa del endpoint:', response);
       console.log('📦 response.data:', response.data);
       console.log('📦 response.data.data:', response.data.data);
@@ -74,7 +74,7 @@ export class AuthAdminPanelService {
 
       // Intentar ambas estructuras posibles
       let checkouts: ICheckout[] = [];
-      
+
       if (response.data.response) {
         checkouts = Array.isArray(response.data.response) ? response.data.response : [];
         console.log('✅ Usando response.data.response, encontradas:', checkouts.length);
@@ -87,11 +87,11 @@ export class AuthAdminPanelService {
       }
 
       console.log('📋 Checkouts antes del filtro:', checkouts);
-      
+
       // Retornar array de cajas y filtrar solo las disponibles
       const availableCheckouts = checkouts.filter(checkout => checkout.is_available);
       console.log('✅ Checkouts disponibles después del filtro:', availableCheckouts.length);
-      
+
       return availableCheckouts;
     } catch (error: any) {
       console.error('❌ Error en getUserCheckouts:', error);
