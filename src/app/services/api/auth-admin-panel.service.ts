@@ -60,16 +60,46 @@ export class AuthAdminPanelService {
     }
 
     try {
+      console.log('🔍 Buscando checkouts para sede:', idSede);
       const response = await axios.get(environment.URL_API_MASTER + `/checkouts/sede/${idSede}`, {
         headers: {
           'token': environment.TOKEN_API_MASTER
         }
       });
+      
+      console.log('📦 Respuesta completa del endpoint:', response);
+      console.log('📦 response.data:', response.data);
+      console.log('📦 response.data.data:', response.data.data);
+      console.log('📦 response.data.response:', response.data.response);
+
+      // Intentar ambas estructuras posibles
+      let checkouts: ICheckout[] = [];
+      
+      if (response.data.response) {
+        checkouts = Array.isArray(response.data.response) ? response.data.response : [];
+        console.log('✅ Usando response.data.response, encontradas:', checkouts.length);
+      } else if (response.data.data) {
+        checkouts = Array.isArray(response.data.data) ? response.data.data : [];
+        console.log('✅ Usando response.data.data, encontradas:', checkouts.length);
+      } else if (Array.isArray(response.data)) {
+        checkouts = response.data;
+        console.log('✅ Usando response.data directamente, encontradas:', checkouts.length);
+      }
+
+      console.log('📋 Checkouts antes del filtro:', checkouts);
+      
       // Retornar array de cajas y filtrar solo las disponibles
-      const checkouts: ICheckout[] = response.data.data || [];
-      return checkouts.filter(checkout => checkout.is_available);
-    } catch (error) {
-      console.error('Error en getUserCheckouts:', error);
+      const availableCheckouts = checkouts.filter(checkout => checkout.is_available);
+      console.log('✅ Checkouts disponibles después del filtro:', availableCheckouts.length);
+      
+      return availableCheckouts;
+    } catch (error: any) {
+      console.error('❌ Error en getUserCheckouts:', error);
+      console.error('❌ Detalles del error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
       return [];
     }
   }

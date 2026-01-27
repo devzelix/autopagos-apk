@@ -104,8 +104,13 @@ export class LoginComponent implements OnInit {
 
       // Si es modo checkout-init, continuar con selección de cajas
       if (this.loginMode === 'checkout-init') {
+        console.log('🔍 Modo checkout-init, id_sede obtenido:', data.id_sede);
+        
         // Obtener cajas de la sede
         const checkouts = await this.authService.getUserCheckouts(data.id_sede);
+        
+        console.log('📦 Checkouts recibidos:', checkouts);
+        console.log('📦 Cantidad de checkouts:', checkouts?.length);
 
         if (checkouts && checkouts.length > 0) {
           this.availableCheckouts = checkouts;
