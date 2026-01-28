@@ -1,189 +1,298 @@
+// Variables de entorno visual (Coincidentes con app.component.scss)
+$fibex-blue: #215288;
+$fibex-gradient: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+$fibex-gradient-hover: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+$text-color: #333;
+$input-bg: #f4f7f6;
+$shadow-color: rgba(33, 82, 136, 0.15);
+
+
 section.modal-pay-container {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(33, 50, 80, 0.6); // Azul oscuro con transparencia
   display: flex !important;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px); // Más blur para elegancia
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
 }
 
 .modal-payment {
-  background: ghostwhite;
-  color: #313131;
-  border-radius: 1rem;
+  background: #ffffff;
+  color: $text-color;
+  border-radius: 24px; // Bordes más redondeados
   width: 100%;
+  max-width: 600px; // Ancho máximo controlado
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  max-height: 95vh;
-  max-width: 95vw;
-  overflow-y: auto;
-  padding: 1.5rem 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); // Sombra profunda elegante
+  padding: 2.5rem 3rem;
   box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
 
-  @media (min-width: 1024px) {
-    max-width: 92vw;
-    max-height: 92vh;
-    padding: 2rem 3rem;
+  // Animación de entrada
+  animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    max-width: 95vw;
   }
 }
 
-.btn-close-section {
-  display: flex;
-  justify-content: end;
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
 
-  button {
-    font-size: 1.7rem;
-    padding: 0.3rem;
-    background: lightgray;
-    border-radius: 50%;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Botón de Volver
+.back-button-section {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $fibex-blue;
+  background: transparent;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: rgba(33, 82, 136, 0.05);
+
+    svg {
+      transform: translateX(-4px);
+    }
+  }
+}
+
+// Títulos
+h1 {
+  color: $fibex-blue;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  text-align: center;
+  text-transform: uppercase;
+
+  @media(max-width: 768px) {
+    font-size: 1.5rem;
   }
 }
 
 .modal-pay-content {
   display: flex;
-  gap: 3rem;
-  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  gap: 2rem;
   align-items: center;
 }
 
 .modal-pay-form-section {
+  width: 100%;
+  max-width: 450px; // Ancho óptimo para formularios
   display: flex;
   flex-direction: column;
-  max-width: 500px;
-  margin: 0 auto;
-  width: 100%;
-  min-width: 50%;
+  gap: 1.5rem;
 
-  div {
+  >div {
     display: flex;
     flex-direction: column;
-    margin-bottom: 2rem;
-    gap: 0.7rem;
-
-    label {
-      font-size: 1.3rem;
-    }
-    input {
-      min-height: 3.9rem;
-      border-radius: 11px;
-      font-size: 1.9rem;
-      padding: 0 2rem;
-      transition: all 0.3s ease-in-out;
-      width: calc(100% - 2.5rem);
-    }
+    gap: 0.5rem;
   }
-}
-app-keyboard-on-screen {
-  width: 50%;
-}
-small {
-  color: #ff85b6;
-}
-.important-row {
-  flex-direction: row !important;
+
   label {
-    min-width: 9rem !important;
-  }
-}
-.not-margin-bottom {
-  margin-bottom: 0 !important;
-}
-
-.next-form-pay-btn {
-  color: white;
-  padding: 1rem;
-  width: 100%;
-  border-radius: 1rem;
-  font-size: 1.6rem;
-}
-.activeInputPay {
-  background: lightblue;
-}
-span span.icon-type-dni {
-  width: 2.5rem;
-  font-size: 2rem;
-  margin-right: 1rem;
-  max-width: 2.5rem;
-  min-width: 2.5rem;
-}
-.input-focused-style {
-  background: white !important;
-  outline: 2px solid rgba(52, 132, 222, 0.85) !important;
-}
-.dni-edit-value {
-  color: rgb(30 108 195);
-  font-size: 0.1rem;
-  padding: 0.4rem;
-  height: 4rem;
-  margin-left: 0.5rem;
-  border-radius: 10px;
-  transition: opacity 0.3s ease-in-out;
-
-  &:active {
-    background-color: #eee;
-  }
-
-  &:not(.show-btn-visible) {
-    opacity: 0;
-    user-select: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    margin-left: 0.5rem;
   }
 }
 
-form.modal-pay-form-section {
-  input:disabled {
-    background-color: #eee;
-  }
-  input:not(:disabled) {
-    background-color: white;
-  }
-}
-
-// Estilos para el bot\u00f3n de volver
-.back-button-section {
-  // margin-bottom: 2rem;
-  // padding: 0 2rem;
-  margin: 0 !important;
-}
-
-.back-button {
+// Inputs Estilizados
+.input-dni-container {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 1.2rem 2rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #4a5568;
-  background: #f7fafc;
-  // border: 2px solid #e2e8f0;
-  border-radius: 20px;
-  cursor: pointer;
+  background: $input-bg;
+  border-radius: 16px;
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
   transition: all 0.3s ease;
-  padding: 1rem !important;
-  font-size: 1.8rem !important;
-
-  svg {
-    width: 2.4rem;
-    height: 2.4rem;
-  }
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 
   &:hover {
-    background: #edf2f7;
-    border-color: #cbd5e0;
-    color: #1a202c;
-    transform: translateX(-4px);
+    background: #eef2f5;
   }
 
-  &:active {
-    transform: translateX(-2px);
+  // Estado cuando el input interno está enfocado (manejado vía clase padre o focus-within)
+  &:focus-within {
+    background: #fff;
+    border-color: $fibex-blue;
+    box-shadow: 0 0 0 4px rgba(33, 82, 136, 0.1);
   }
-}
 
-@media (min-width: 1024px) {
-  .back-button {
-    font-size: 2.2rem;
-    padding: 1.5rem 2.5rem;
+  .icon-type-dni {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $fibex-blue;
+    margin-right: 0.8rem;
+    min-width: 2.5rem;
+    text-align: center;
+    border-right: 1px solid #ddd;
+    padding-right: 0.8rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+    padding: 0.8rem 0;
+    outline: none;
+    width: 100%;
+
+    &::placeholder {
+      color: #aaa;
+      font-weight: 400;
+    }
+  }
+
+  // Botón de editar
+  .dni-edit-value {
+    background: none;
+    border: none;
+    color: $fibex-blue;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+    opacity: 0; // Oculto por defecto
+
+    &:hover {
+      background: rgba(33, 82, 136, 0.1);
+    }
+
+    &.show-btn-visible {
+      opacity: 1;
+    }
 
     svg {
-      width: 2.8rem;
-      height: 2.8rem;
+      width: 1.5rem;
+      height: 1.5rem;
     }
   }
 }
 
+// Errores
+small {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+// Teclado en pantalla
+app-keyboard-on-screen {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 1rem;
+}
+
+// Ajustes específicos para el input de monto
+// El input de monto tiene una estructura ligeramente diferente
+#mount-section {
+  section {
+    margin-bottom: 0.5rem;
+
+    label {
+      font-size: 1.1rem;
+    }
+
+    p {
+      color: $fibex-blue;
+      font-weight: 700;
+    }
+  }
+}
+
+// Botón de transacción (estilos envolventes si son necesarios, pero el componente btn controla lo suyo)
+app-btn-transaction {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+// Estilos para el selector de tipo de documento
+.dni-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  border-right: 1px solid #e0e0e0;
+  padding-right: 0.5rem;
+  min-width: 60px;
+
+  .dni-type-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $fibex-blue;
+    padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+    z-index: 2;
+
+    &:disabled {
+      color: #999;
+      cursor: default;
+    }
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; // Evitar que el icono bloquee el click
+    color: $fibex-blue;
+    opacity: 0.8;
+    z-index: 1;
+  }
+}
+
+// Ocultar el icono anterior que ya no se usa
+.icon-type-dni {
+  display: none !important;
+}

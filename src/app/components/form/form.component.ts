@@ -317,6 +317,31 @@ export class FormComponent implements OnInit {
   // Inicializado en null para no mostrar nada hasta validar sesión
   public isAdminLogged: boolean | null = true; // Forzar true para el flujo automático
 
+  // Custom Dropdown State
+  public showDniDropdown: boolean = false;
+  public dniOptions: string[] = ['V', 'J', 'E'];
+
+  toggleDniDropdown() {
+    this.showDniDropdown = !this.showDniDropdown;
+  }
+
+  selectDniType(type: string) {
+    this.onLoginTypeChange(type as ITypeDNI);
+    this.showDniDropdown = false;
+  }
+
+  // Close dropdown when clicking outside (optional, but good for UX)
+  @HostListener('document:click', ['$event'])
+  clickout(event: any) {
+    if (!event.target.closest('.dni-select-wrapper')) {
+      this.showDniDropdown = false;
+    }
+  }
+
+  goHome() {
+    this.showFormView = false;
+  }
+
   constructor(
     public registerPayService: RegisterPayService,
     private fb: UntypedFormBuilder,
@@ -529,15 +554,15 @@ export class FormComponent implements OnInit {
     // console.log('Iniciando validación de sesión...');
     // await this.validateAndRestoreSession();
     // console.log('Validación de sesión completada. isAdminLogged:', this.isAdminLogged);
-    
+
     // Configurar listener para resetear al welcome-view cuando se oculta el carrusel
     this.setupResetToWelcomeListener();
-    
+
     // Escuchar evento personalizado de apertura del panel admin (respaldo)
     document.addEventListener('openAdminPanel', () => {
       this.openAdminPanelFromDoubleTap();
     });
-    
+
     // Inicializar formularios después de validar sesión
     this.MyInit();
 
@@ -599,11 +624,11 @@ export class FormComponent implements OnInit {
   private async validateAndRestoreSession(): Promise<void> {
     // Inicializar como null para no mostrar nada hasta validar
     this.isAdminLogged = null;
-    
+
     // Verificar si hay sesión guardada (sin validar aún)
     const session = this._checkoutSessionService.getSession();
     console.log('🔍 Sesión encontrada en localStorage:', session);
-    
+
     if (environment.production && !session) {
       console.log('❌ No hay sesión guardada, mostrando login');
       this.isAdminLogged = false;
@@ -612,17 +637,17 @@ export class FormComponent implements OnInit {
     else {
       this.isAdminLogged = true;
     }
-    
+
     // Validar la sesión
     const validation = await this._checkoutSessionService.validateSession();
     console.log('✅ Validación de sesión:', validation);
-    
+
     if (validation.isValid && session) {
       console.log('✅ Sesión válida encontrada, mostrando Swal...');
-      
+
       // Obtener información formateada de la sesión (incluye nombre de la sede)
       const sessionInfoHtml = await this._checkoutSessionService.getFormattedSessionInfo();
-      
+
       // Formatear fecha de la sesión para el separador
       const sessionDate = new Date(session.sessionTimestamp);
       const formattedDate = sessionDate.toLocaleString('es-ES', {
@@ -668,7 +693,7 @@ export class FormComponent implements OnInit {
           // Aplicar estilos inline después de que se abra el modal
           const confirmBtn = document.querySelector('.swal2-confirm.fibex-swal-confirm-btn') as HTMLElement;
           const cancelBtn = document.querySelector('.swal2-cancel.fibex-swal-cancel-btn') as HTMLElement;
-          
+
           if (confirmBtn) {
             confirmBtn.style.background = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
             confirmBtn.style.backgroundImage = 'linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%)';
@@ -682,7 +707,7 @@ export class FormComponent implements OnInit {
             confirmBtn.style.boxShadow = '0 4px 14px rgba(53, 124, 255, 0.4)';
             confirmBtn.style.minWidth = '120px';
           }
-          
+
           if (cancelBtn) {
             cancelBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
             cancelBtn.style.backgroundImage = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
@@ -732,7 +757,7 @@ export class FormComponent implements OnInit {
       clearInterval(this.SetInterval);
       this.SetInterval = null;
     }
-    
+
     // Limpiar todos los timeouts pendientes
     if (this.timeoutIds && this.timeoutIds.length > 0) {
       this.timeoutIds.forEach(id => clearTimeout(id));
@@ -1795,7 +1820,7 @@ export class FormComponent implements OnInit {
               //this.verifyDNI = false;
               this.lastDni = '';
               const timeoutId = setTimeout(() => this.closeAlert(), 1000);
-      this.timeoutIds.push(timeoutId);
+              this.timeoutIds.push(timeoutId);
               this.banksFiltered = [...this.bankList];
               this.listContratos = [];
               this.userSelectList = []
@@ -1896,7 +1921,7 @@ export class FormComponent implements OnInit {
               this.name?.setValue('');
               this.alertFindDni('Disculpe intente de nuevo', '');
               const timeoutId = setTimeout(() => this.closeAlert(), 1000);
-      this.timeoutIds.push(timeoutId);
+              this.timeoutIds.push(timeoutId);
               reject()
             }
           }
@@ -1915,7 +1940,7 @@ export class FormComponent implements OnInit {
         this.name?.setValue('');
         this.invalidForm('La cédula debe ser mínimo 6 dígitos', '');
         const timeoutId = setTimeout(() => this.closeAlert(), 1000);
-      this.timeoutIds.push(timeoutId);
+        this.timeoutIds.push(timeoutId);
         reject()
       }
     })
@@ -1994,7 +2019,7 @@ export class FormComponent implements OnInit {
   async ValidateReferenciaLast(Data: any) {
     try {
       // Procesar todas las consultas en paralelo para mejor rendimiento
-      const promises = Data.map((element: any) => 
+      const promises = Data.map((element: any) =>
         this.registerPayService
           .ConsultarEstadoDeposito(this.nroContrato?.value, element.Referencia)
           .then((ResDeposito: any) => {
@@ -2013,7 +2038,7 @@ export class FormComponent implements OnInit {
             return element;
           })
       );
-      
+
       // Esperar a que todas las promesas se resuelvan
       this.ComprobantesPago = await Promise.all(promises);
     } catch (error) {
@@ -2106,7 +2131,7 @@ export class FormComponent implements OnInit {
     // Si hay múltiples contratos y estamos en selección de usuarios, no mostrar alert todavía
     // El alert se mostrará cuando el usuario seleccione desde onUserSelected()
     const shouldShowAlert = this.listContratos.length === 1 || this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS;
-    
+
     this.BackFormaPago = false;
     this.PagoMetodosHTML2 = FormasDePago;
     //! to validate franchise
@@ -2257,19 +2282,19 @@ export class FormComponent implements OnInit {
     const isInUserSelection = this.navActive === PAGES_NAVIGATION.USER_LIST_SELECT;
     const isInPaymentScreen = this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS;
     const isSingleContract = this.listContratos.length === 1;
-    
+
     // Si hay múltiples contratos Y estamos en selección de usuarios, NO mostrar alert
     if (hasMultipleContracts && isInUserSelection) {
       return; // Salir completamente sin mostrar nada
     }
-    
+
     // Solo mostrar el alert si:
     // - Saldo <= 0
     // - NO estamos en selección de usuarios
     // - (Hay un solo contrato O ya estamos en pantalla de pago)
-    if (parseFloat(saldo) <= 0 && 
-        !isInUserSelection &&
-        (isSingleContract || isInPaymentScreen)) {
+    if (parseFloat(saldo) <= 0 &&
+      !isInUserSelection &&
+      (isSingleContract || isInPaymentScreen)) {
       this.alertDniAmount(
         'Usted no posee deuda pendiente',
         'Tiene un saldo a favor de: ' +
@@ -2428,12 +2453,12 @@ export class FormComponent implements OnInit {
   public onTecladoInput(value: string): void {
     let dniFormValue = this.firstFormFibex.get('dni')?.value || '';
     const maxLength = this.getMaxLength(this.loginTypeSelectValue);
-    
+
     // Bloquear si ya alcanzó el límite máximo de caracteres
     if (dniFormValue.length >= maxLength) {
       return; // No permitir escribir más
     }
-    
+
     // Solo agregar el valor si no excede el límite
     this.firstFormFibex.get('dni')?.setValue(dniFormValue + value);
   }
@@ -2441,9 +2466,9 @@ export class FormComponent implements OnInit {
   // Función para eliminar el último carácter
   deleteLastCharacter(): void {
     let dniFormValue = this.firstFormFibex.get('dni')?.value || '';
-    
+
     if (!dniFormValue) return;
-    
+
     // Remover el último carácter
     this.firstFormFibex.get('dni')?.setValue(dniFormValue.slice(0, -1));
   }
@@ -2457,7 +2482,7 @@ export class FormComponent implements OnInit {
     // No formatear automáticamente, solo mantener el valor actual si no excede el límite
     const currentValue = this.firstFormFibex.get('dni')?.value || '';
     const maxLength = this.getMaxLength(value);
-    
+
     // Si el valor actual excede el nuevo límite, truncarlo
     if (currentValue.length > maxLength) {
       this.firstFormFibex.get('dni')?.setValue(currentValue.slice(0, maxLength));
@@ -2599,7 +2624,7 @@ export class FormComponent implements OnInit {
         this.name?.setValue('');
         this.invalidForm('La cédula debe ser mínimo 6 dígitos', '');
         const timeoutId = setTimeout(() => this.closeAlert(), 1000);
-      this.timeoutIds.push(timeoutId);
+        this.timeoutIds.push(timeoutId);
         return
       }
 
@@ -2704,26 +2729,26 @@ export class FormComponent implements OnInit {
           this.showDniForm = false;
           this.showMainMenuPage2 = true; // Agregar esto para mostrar el contenido
           this.SearchSectorAbonado();
-          
+
           // Filtrar userSelectList para mostrar solo contratos válidos
           this.userSelectList = this.userSelectList.filter(user => user.is_user_valid);
-          
+
           // Mostrar pantalla de selección de usuarios
           this.navActive = PAGES_NAVIGATION.USER_LIST_SELECT;
           this.setMainTitle('Seleccione una cuenta para continuar');
           this.closeAlert();
-          
+
           // Limpiar nroContrato para evitar que se ejecute el código posterior
           this.nroContrato?.setValue('');
-          
+
           // Asegurar que showStateTable esté en false para no mostrar el modal
           this.showStateTable = false;
-          
+
           // Limpiar valores de saldo para evitar que se active el alert
           this.saldoUSD = '';
           this.saldoBs = '';
           this.lastAmount = '';
-          
+
           return; // Salir para no continuar con el flujo de deuda
         }
 
@@ -2734,9 +2759,9 @@ export class FormComponent implements OnInit {
 
       // Solo ejecutar esto si hay un solo contrato y se estableció nroContrato
       // Y no estamos en la pantalla de selección de usuarios
-      if (this.nroContrato?.value && this.nroContrato.value.length && 
-          this.listContratos.length === 1 && 
-          this.navActive !== PAGES_NAVIGATION.USER_LIST_SELECT) {
+      if (this.nroContrato?.value && this.nroContrato.value.length &&
+        this.listContratos.length === 1 &&
+        this.navActive !== PAGES_NAVIGATION.USER_LIST_SELECT) {
         this.tasaService.getTasaSae().then((tasaSae) => {
           console.log('TASA SAEEEE', tasaSae.precio * parseFloat(this.saldoUser),);
           const saldoUserBs = tasaSae.precio * parseFloat(this.saldoUser);
@@ -2760,7 +2785,7 @@ export class FormComponent implements OnInit {
     try {
       await this.searchServicesv2(this.dni, false, true).then(() => { this.showAdminist(this.dni?.value) }) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
-      
+
       // Solo continuar con el flujo de pago si hay un solo contrato o ya se seleccionó uno
       // Si hay múltiples contratos, searchServicesv2 ya estableció USER_LIST_SELECT
       if (this.userSelectList.length === 1 || this.navActive === PAGES_NAVIGATION.PAYMENT_CARDS) {
@@ -2888,11 +2913,11 @@ export class FormComponent implements OnInit {
           // Establecer navegación primero
           this.showMainMenuPage2 = true
           this.navActive = PAGES_NAVIGATION.PAYMENT_CARDS
-          
+
           // Pasar showAlert: true para que muestre el alert solo cuando el usuario selecciona
           // setActiveContrato() mostrará el alert si el saldo es <= 0
           this.setActiveContrato(activeContrato, true)
-          
+
           // verifySaldo() también puede mostrar el alert, pero solo si no estamos en USER_LIST_SELECT
           // Como ya cambiamos a PAYMENT_CARDS, esto está bien
           if (parseFloat(activeContrato.saldo) <= 0) {
@@ -2915,13 +2940,13 @@ export class FormComponent implements OnInit {
       // NO establecer valores a menos que showAlert sea explícitamente true
       const hasMultipleContracts = this.listContratos.length > 1;
       const isInUserSelection = this.navActive === PAGES_NAVIGATION.USER_LIST_SELECT;
-      
+
       if (hasMultipleContracts && isInUserSelection && !showAlert) {
         // No establecer valores, solo salir completamente
         // El alert solo se mostrará cuando el usuario seleccione un abonado (showAlert: true)
         return;
       }
-      
+
       // Si hay múltiples contratos pero NO estamos en selección de usuarios,
       // tampoco establecer valores a menos que showAlert sea true
       if (hasMultipleContracts && !showAlert) {
@@ -3114,22 +3139,22 @@ export class FormComponent implements OnInit {
   public onLogoDoubleTap(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    
+
     const currentTime = Date.now();
-    
+
     // Si pasó más de 300ms desde el último tap, resetear contador
     if (currentTime - this.lastLogoTapTime > this.DOUBLE_TAP_DELAY) {
       this.logoTapCount = 0;
     }
-    
+
     this.logoTapCount++;
     this.lastLogoTapTime = currentTime;
-    
+
     // Limpiar timer anterior
     if (this.logoTapTimer) {
       clearTimeout(this.logoTapTimer);
     }
-    
+
     // Si es el segundo tap, abrir panel admin
     if (this.logoTapCount === 2) {
       console.log('🔓 Doble tap detectado en logo del formulario - Abriendo panel administrativo');
@@ -3137,7 +3162,7 @@ export class FormComponent implements OnInit {
       this.resetLogoTapCount();
       return;
     }
-    
+
     // Si es un solo tap, no hacer nada (solo esperar)
     if (this.logoTapCount === 1) {
       this.logoTapTimer = setTimeout(() => {

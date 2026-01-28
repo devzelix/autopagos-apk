@@ -130,7 +130,7 @@ export const environment = {
     // API Telegram Support
     url_api_telegram: 'https://telegramfront.fibex.info/',
     api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
-    kioskApiUrl: 'http://localhost:3000/api/kiosks',
+    kioskApiUrl: 'https://hgctx1nx.use2.devtunnels.ms:3000/api/kiosks',
 
     url_api_webhook_caja: 'https://pf269175-9194.use2.devtunnels.ms/api',
     api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',

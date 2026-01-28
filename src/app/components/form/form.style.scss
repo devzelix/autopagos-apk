@@ -2,6 +2,12 @@ $app-dark-blue: rgba(69, 127, 192, 1);
 $app-light-blue: rgba(7, 195, 176, 1);
 $app-light-blue2: rgb(74 159 255);
 
+// New Fibex Variables
+$fibex-blue: #215288;
+$fibex-gradient: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+$fibex-gradient-hover: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+$shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
+
 .basic-container .mat-step-header .mat-step-icon-selected {
   background-color: #6cb73a;
   color: rgba(22, 20, 20, 0.418);
@@ -92,14 +98,17 @@ $app-light-blue2: rgb(74 159 255);
   // grid-auto-rows: minmax(100px, auto);
   width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(min(87px, 100%), 1fr));
+
   &.cards-abonados {
     @media only screen and (max-width: 597px) {
       grid-template-columns: repeat(2, 1fr);
     }
+
     @media only screen and (max-width: 360px) {
       grid-template-columns: 1fr;
     }
   }
+
   display: grid;
   gap: 20px;
   justify-items: center;
@@ -125,6 +134,7 @@ $app-light-blue2: rgb(74 159 255);
   width: auto !important;
   min-width: 100% !important;
   max-width: 200px !important;
+  border-radius: 20px;
 
   &.opt-cards-btns {
     border-radius: 22px;
@@ -152,6 +162,7 @@ $app-light-blue2: rgb(74 159 255);
   h3 {
     margin: 7px;
     font-size: 18px;
+
     &.text-size-lg {
       font-size: 1.5rem !important;
     }
@@ -170,7 +181,7 @@ $app-light-blue2: rgb(74 159 255);
 }
 
 .m-0 {
-  margin:0 !important;
+  margin: 0 !important;
 }
 
 // .grid-cards-item:hover, .grid-cards-item:focus {
@@ -304,12 +315,15 @@ $app-light-blue2: rgb(74 159 255);
 .btn-flotante {
   position: absolute;
   top: 10px;
+
   &.right {
     right: 13px;
   }
+
   &.left {
     left: 13px;
   }
+
   transition: all 300ms ease 0ms;
   z-index: 99;
   background: $app-light-blue2;
@@ -353,14 +367,18 @@ $app-light-blue2: rgb(74 159 255);
 .pay-icon-checked {
   color: #2dbd05;
 }
+
 .pay-icon-registered {
   color: #f3d070;
 }
+
 .pay-icon-rejected {
   color: #e76e6e;
 }
+
 swal2-container.swal2-center.img-swal {
   z-index: 9999999999999999999 !important;
+
   .swal-title {
     position: relative !important;
     z-index: 9999999999 !important;
@@ -368,8 +386,10 @@ swal2-container.swal2-center.img-swal {
     border-radius: 18px !important;
     overflow: hidden;
   }
+
   .swal2-html-container {
     margin: 0 !important;
+
     img {
       width: 100% !important;
     }
@@ -395,6 +415,7 @@ swal2-container.swal2-center.img-swal {
         /* min-width: 25rem; */
         min-width: fit-content;
       }
+
       app-keyboard-on-screen {
         width: 100%;
       }
@@ -411,9 +432,11 @@ swal2-container.swal2-center.img-swal {
   background: none;
   backdrop-filter: initial;
 }
+
 .main-title-login {
   color: ghostwhite;
   font-weight: 400;
+
   strong {
     font-weight: bold;
   }
@@ -430,94 +453,117 @@ label.form-control-label {
   font-size: 2rem;
 }
 
+// ============== ESTILOS REFACTORIZADOS FIBEX =================
+
 .form-control-input {
-  display: flex;
-  gap: 0.8rem;
-  padding: 1.5rem 0;
   width: 100%;
-  min-width: fit-content;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
 
   select {
     background: transparent;
     border: 0;
-    // color: ghostwhite;
-    color: #212121;
+    color: #333;
     outline: none !important;
     font-weight: 700;
   }
 
   h4 {
+    // Input simulado estilo "Pill" moderno
     min-width: 19.4rem;
-    padding: 1rem 0.7rem;
-    // -webkit-backdrop-filter: blur(26px);
-    // backdrop-filter: blur(26px);
-    border-radius: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 50px; // Pill shape
     overflow: hidden;
     text-align: center;
-    letter-spacing: 3.2px;
-    font-size: 2.5rem;
-    color: #ffffff;
-    // width: fit-content;
+    letter-spacing: 3px;
+    font-size: 2.2rem;
+    color: #333; // Texto oscuro
     min-width: fit-content;
     width: 100%;
-    letter-spacing: 0.7rem;
-    max-width: 420px;
-    background: lightblue;
+    max-width: 100%;
+    background: #f4f7f6; // Fondo gris claro elegante
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
 
     &.input-active-color {
-      // background: linear-gradient(36deg, rgb(59 143 239 / 75%) 18%, rgb(48 201 228 / 74%) 100%);
-      background: var(--primary-accent-color);
+      background: #ffffff;
+      border-color: #215288; // Fibex Blue
+      box-shadow: 0 0 0 4px rgba(33, 82, 136, 0.15); // Glow azul sutil
+      transform: translateY(-2px);
     }
 
 
     &.form-input-empty {
-      letter-spacing: 1.5rem;
-      color: #ffffff8c;
+      color: #ccc;
+      letter-spacing: normal;
     }
+
     &.dni-juridico-type {
-      max-width: 580px !important;
+      max-width: 100% !important;
     }
   }
 }
 
 .form-control-btn {
-  background: transparent;
-    padding: 1rem 0;
-    color: ghostwhite;
-    border-radius: 3rem;
-    font-size: 1.2rem;
-    border: 0;
-    transition: all 0.4s ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    width: 19rem;
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%); // Fibex Gradient
+  padding: 1.2rem 2rem;
+  color: white;
+  border-radius: 50px; // Pill button
+  font-size: 1.2rem;
+  border: 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  box-shadow: 0 10px 20px -5px rgba(33, 82, 136, 0.4);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
 
   &:disabled {
-    // background: #f8f8ff63;
-    // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
-    background: var(--primary-accent-color);
-    opacity: 0.6;
+    background: #e0e0e0;
+    color: #a0a0a0;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
   }
-  &:not(:disabled) {
-    // background: linear-gradient(36deg, rgba(69, 127, 192, 1) 18%, rgba(7, 195, 176, 1) 100%);
-    // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
-    background: var(--primary-accent-color);
+
+  &:not(:disabled):hover {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px -5px rgba(33, 82, 136, 0.5);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 5px 10px -3px rgba(33, 82, 136, 0.3);
   }
 
   svg {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 }
+
+// ============================================================
+
 .text-sm {
   font-size: 0.8rem;
 }
+
 .fibex-main-title-logo {
   width: 15rem;
   aspect-ratio: 48 / 19;
   margin: auto;
 }
+
 .step-payment-type-btns {
   transition: all 300ms ease 0ms;
   border: 0;
@@ -537,10 +583,12 @@ label.form-control-label {
   svg {
     font-size: 1.8rem;
   }
+
   p {
     font-size: 1rem;
   }
 }
+
 .step-payment-type-btn-container {
   display: flex;
   flex-direction: column;
@@ -549,6 +597,7 @@ label.form-control-label {
   justify-content: space-around;
   align-items: center;
 }
+
 .slider-service-item {
   padding: 0.6rem;
   min-height: 4.3rem;
@@ -573,18 +622,18 @@ label.form-control-label {
   justify-content: space-between;
 
   .links-btn-navigation {
-      width: fit-content;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.7rem 1rem;
-      margin-bottom: 1rem;
-      // backdrop-filter: blur(12px);
-      background: var(--primary-accent-color);
-      border-radius: 2rem;
-      overflow: hidden;
-      font-size: 1rem;
-      color: white;
+    width: fit-content;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+    // backdrop-filter: blur(12px);
+    background: var(--primary-accent-color);
+    border-radius: 2rem;
+    overflow: hidden;
+    font-size: 1rem;
+    color: white;
   }
 }
 
@@ -598,18 +647,20 @@ label.form-control-label {
     height: 1.6rem;
   }
 }
+
 .tabs-login-type-container h6 {
   margin-bottom: 0.5rem;
   letter-spacing: 1px;
-  color: #ffffffed;
+  color: #666; // Refined color
 }
+
 .tabs-login-type {
   button {
     padding: 1rem 2rem;
     border-radius: 9rem;
-    // background: rgb(223 228 240 / 40%);
-    background: lightblue;
-    color: white;
+    background: #f4f7f6; // Refined
+    color: #666; // Refined
+    border: 2px solid transparent; // Refined
     overflow: hidden;
     font-size: 1.3rem;
     // transition: all .3s ease-in-out;
@@ -618,108 +669,29 @@ label.form-control-label {
     gap: 0.4rem;
 
     &.activeTab {
-      background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
+      background: #e3effa; // Azul muy claro
+      color: $fibex-blue;
+      border-color: rgba(33, 82, 136, 0.2);
+      box-shadow: 0 4px 12px rgba(33, 82, 136, 0.1);
     }
-    svg {
-      font-size: 1.9rem;
-    }
+
+    // Icon color override if needed
+    // svg {
+    //   font-size: 1.9rem;
+    // }
   }
 }
+
 .payment-type-title {
   font-weight: bold;
   font-size: 1rem !important;
 }
 
-// .btn-card-customized-1 {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   width: initial !important;
-//   height: initial !important;
-//   padding: 2rem 4rem !important;
-//   gap: 0.8rem;
-//   font-size: 1.8rem;
-
-//   svg {
-//     width: 2rem;
-//     height: 2rem;
-//   }
-// }
-// .payment-menu-count-container {
-
-//   .payment-menu-btn {
-//     padding: 1rem 2rem;
-//     border-radius: 9rem;
-//     background: var(--primary-accent-color);
-//     color: white;
-//   }
-
-//   .payment-month {
-//       /* padding: 0 2rem; */
-//       font-size: 3rem;
-//       width: 6rem;
-//       text-align: center;
-//   }
-
-// }
-
-// .payment-menu-mount-section {
-//   display: flex;
-//   align-items: center;
-//   place-content: center;
-//   gap: 1rem;
-//   color: #2c2c2c;
-//   h1 {
-//     font-weight: bold;
-//     font-size: 2.5rem;
-
-//     span {
-//       color: #848484;
-//     }
-//   }
-//   svg {
-//     font-size: 2rem;
-//   }
-// }
-
-// .payment-menu-success-btn {
-//   max-width: 800px;
-//   margin: 0 auto;
-// }
-
-// .payment-menu-months-grid {
-//   width: 100%;
-//   grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-//   display: grid;
-//   gap: 20px;
-//   justify-items: center;
-
-//   .payment-grid-item {
-//     display: flex !important;
-//     flex-direction: column !important;
-//     border-radius: 16px;
-//     padding: 23px;
-//     max-width: 300px !important;
-//     width: 100%;
-//     font-size: 1.9rem;
-//     border-radius: 99px;
-//     text-align: center;
-
-//     background: linear-gradient(36deg, rgb(222 237 255) 18%, rgb(203 220 255) 100%);
-//     border: 0.3rem solid rgb(89, 152, 224);
-//     color: rgb(89, 152, 224);
-
-//     &.payment-grid-item-active {
-//       background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
-//       color: white;
-//       border: initial;
-//     }
-//   }
-// }
 .input-small-text-size {
   font-size: 1.7rem !important;
   letter-spacing: 3px !important;
 }
+
 .title-info-container {
   padding: 0.7rem;
   width: 100%;
@@ -727,11 +699,15 @@ label.form-control-label {
   justify-content: center;
 
   h4 {
-    @apply text-2xl font-bold mb-4 text-center;
-    // margin: 0;
+    // @apply text-2xl font-bold mb-4 text-center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
     color: #313131;
   }
 }
+
 .user-list-select-content {
   .user-list-select-grid {
     // display: grid;
@@ -746,6 +722,217 @@ label.form-control-label {
 
   }
 }
+
 .text-center {
   text-align: center !important;
+}
+
+// Estilos específicos para el selector en el formulario principal
+.dni-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  // border-right: 1px solid #e0e0e0;
+  // padding-right: 0.5rem;
+  min-width: 90px;
+  background: transparent;
+  padding-left: 0; // Reset
+  height: 100%;
+
+  // Trigger button
+  .dni-custom-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 1rem 0 1.5rem;
+    height: 100%;
+    cursor: pointer;
+    border-right: 2px solid #e0e0e0;
+
+    .curr-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: $fibex-blue;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .select-arrow {
+      color: $fibex-blue;
+      opacity: 0.8;
+      width: 1.2rem;
+      height: 1.2rem;
+      transition: transform 0.3s ease;
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // Dropdown list
+  .dni-custom-dropdown {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    min-width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 9999; // Aumentar Z-Index para asegurar visibilidad
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    animation: fadeInUp 0.2s ease-out forwards;
+    transform-origin: top center;
+
+    .dni-option-item {
+      background: transparent;
+      border: none;
+      padding: 0.8rem 1rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #555;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Poppins', sans-serif;
+
+      &:hover {
+        background: #f0f7ff;
+        color: $fibex-blue;
+      }
+
+      &.selected {
+        background: #e3effa;
+        color: $fibex-blue;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+// Ajustar el h4 para que se integre bien
+.form-control-input {
+  align-items: center; // Alinear verticalmente
+  background: #f4f7f6;
+  border-radius: 50px;
+  padding: 0; // Padding controlado por hijos
+  border: 2px solid transparent;
+  transition: all 0.3s;
+  overflow: visible; // Permitir que el dropdown salga del contenedor
+  position: relative; // Contexto de posicionamiento
+  z-index: 20; // Nivel base alto
+
+  &:focus-within {
+    background: #ffffff;
+    border-color: $fibex-blue;
+    box-shadow: 0 0 0 4px rgba(33, 82, 136, 0.15);
+  }
+
+  h4 {
+    background: transparent !important; // Quitar fondo individual
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important; // Evitar movimientos raros
+    text-align: left; // Alinear texto a la izquierda cerca del select
+    padding-left: 0.5rem !important;
+    margin: 0 !important;
+    flex-grow: 1;
+    min-width: auto;
+
+    // Sobreescribir estilos activos que tenía antes
+    &.input-active-color {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+}
+
+// ==========================================
+// RESPONSIVE ADJUSTMENTS
+// ==========================================
+
+@media only screen and (max-width: 850px) {
+  .section-step-item.keypad-form-step .form-dni-section {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+  }
+
+  .form-dni-keyboard-container {
+    flex-direction: column;
+    gap: 2rem !important; // Reducido levemente para evitar scroll vertical excesivo
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+
+  .login-form-btns-section {
+    margin-bottom: 0 !important;
+    margin-top: 1rem !important;
+    width: 100%;
+  }
+
+  .form-control-input {
+    h4 {
+      font-size: 1.6rem !important;
+      padding: 0.8rem 1rem !important;
+      letter-spacing: 1px !important;
+    }
+
+    .dni-custom-trigger .curr-value {
+      font-size: 1.4rem;
+    }
+  }
+
+  .form-login__group {
+    padding: 1.5rem 1rem; // Padding reducido
+    width: 100% !important;
+    max-width: 98% !important; // Casi todo el ancho
+    margin: 0.5rem 0;
+    overflow-y: hidden !important; // Forzar no scroll
+  }
+
+  .form-dni-keyboard-container {
+    flex-direction: column;
+    gap: 1rem !important; // Gap mínimo
+    align-items: center;
+    padding-bottom: 0.5rem;
+  }
+
+  // Centrar titulos/labels
+  label.form-control-label {
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .form-login__group {
+    padding: 3rem 2rem !important; // Más padding blanco
+    width: 95% !important;
+    max-width: 95% !important;
+    // Limitar altura para que nunca se salga
+    max-height: calc(100vh - 2rem) !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; // Centrar contenido si sobra espacio
+  }
+
+  .form-dni-keyboard-container {
+    gap: 1.5rem !important;
+    // Asegurar que el teclado no empuje demasiado
+    flex-shrink: 1;
+  }
 }
