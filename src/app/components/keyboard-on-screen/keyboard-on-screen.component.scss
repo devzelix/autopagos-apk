@@ -126,7 +126,6 @@
       width: 6rem;
       height: 6rem;
 
-      // Override responsive si es necesario, pero generalmente queremos que escale hacia abajo
       @media (max-width: 850px) {
         max-width: 5rem;
         max-height: 5rem;
@@ -149,14 +148,25 @@
   grid-column: span 2;
   width: 100% !important;
   max-width: 100% !important;
-  height: 4.2rem; // Mantener altura estándar
-  border-radius: 99px; // Pill shape para el botón ancho
+  height: 4.2rem;
+  border-radius: 99px;
   display: flex !important;
   flex-direction: row;
   gap: 0.5rem;
   font-size: 1.2rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+
+  // Red Gradient Style for Delete Button
+  background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
+  box-shadow: 0 8px 15px -4px rgba(211, 47, 47, 0.4);
+
+  &:active,
+  &:hover,
+  &.keyboard-active {
+    background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
+    box-shadow: 0 12px 20px -4px rgba(211, 47, 47, 0.5);
+  }
 
   svg {
     font-size: 2rem;
@@ -166,9 +176,50 @@
 .pinpad-container.pinpad-big-size .pinpad button.btn-wide {
   width: 100% !important;
   max-width: 100% !important;
-  height: 6rem !important; // Altura consistente con la versión grande
+  height: 6rem !important;
 
   @media (max-height: 700px) {
     height: 3.5rem !important;
+  }
+}
+
+// ==========================================
+// MOBILE OPTIMIZATION (COMPACT KEYPAD)
+// ==========================================
+
+@media (max-width: 480px) {
+  .pinpad-container.pinpad-big-size {
+    margin-top: 0 !important;
+
+    .pinpad {
+      gap: 0.5rem !important;
+
+      button {
+        width: 4rem !important;
+        height: 4rem !important;
+        max-width: 17vw !important;
+        max-height: 17vw !important;
+        font-size: 1.3rem !important;
+        box-shadow: 0 4px 10px -2px rgba(33, 82, 136, 0.3);
+      }
+
+      button.btn-wide {
+        height: 3.2rem !important;
+        border-radius: 50px;
+        font-size: 0.9rem !important;
+
+        svg {
+          font-size: 1.4rem !important;
+        }
+      }
+    }
+  }
+
+  @media (max-height: 650px) {
+    .pinpad-container.pinpad-big-size .pinpad button {
+      width: 3.2rem !important;
+      height: 3.2rem !important;
+      font-size: 1.1rem !important;
+    }
   }
 }

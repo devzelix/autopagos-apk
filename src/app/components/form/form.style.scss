@@ -1213,3 +1213,119 @@ label.form-control-label {
   }
 }
 
+
+// New styles for user subtitle
+.user-details-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem; // Tight gap
+}
+
+.user-subtitle {
+  font-size: 0.8rem;
+  color: #718096; // Slate gray
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+@media only screen and (max-width: 480px) {
+  .user-details-col {
+    align-items: center; // Center text on mobile
+    text-align: center;
+  }
+}
+
+
+.form-control-description {
+  color: #718096;
+  font-size: 1.1rem;
+  margin-top: -0.5rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+  text-align: left;
+  line-height: 1.4;
+  max-width: 90%;
+}
+
+@media only screen and (max-width: 850px) {
+  .form-control-description {
+    text-align: center;
+    margin: -0.5rem auto 2rem auto; // Center margin for mobile
+  }
+}
+
+
+// ==========================================
+// MOBILE RESPONSIVE FIXES (THIN & COMPACT)
+// ==========================================
+
+@media only screen and (max-width: 480px) {
+  // 1. Slender Input Container
+  .form-control-input {
+    margin-bottom: 1rem !important;
+    border-radius: 99px; // More pill-like
+    min-height: auto; // Allow shrinking
+    
+    // Dropdown trigger (V, J, etc)
+    .dni-custom-trigger {
+       padding: 0 0.8rem 0 1rem !important; // Tighter padding
+       gap: 0.3rem !important;
+       
+       .curr-value {
+         font-size: 1.2rem !important; // Smaller text
+       }
+       
+       .select-arrow {
+         width: 0.9rem !important;
+         height: 0.9rem !important;
+       }
+    }
+
+    // Input Text (simulate)
+    h4 {
+      font-size: 1.4rem !important; // Smaller input text
+      padding: 0.7rem 0.5rem !important; // Less padding vertical
+      letter-spacing: 1px !important;
+    }
+  }
+
+  // 2. Compact Labels & Descriptions
+  label.form-control-label {
+    font-size: 1.5rem !important; // Significantly smaller
+    margin-bottom: 0.2rem !important;
+  }
+  
+  .form-control-description {
+     font-size: 0.9rem !important;
+     margin-bottom: 1.2rem !important;
+     line-height: 1.2;
+  }
+
+  // 3. Slender Button
+  .form-control-btn {
+    padding: 0.8rem 1.5rem !important;
+    font-size: 1rem !important; // Smaller text
+    margin-bottom: 1rem !important; // Less space below
+    
+    svg {
+      font-size: 1.2rem !important;
+    }
+  }
+
+  // 4. Reduce container padding
+  .form-login__group {
+    padding: 1.5rem 1rem !important; 
+    width: 92% !important;
+    border-radius: 20px !important; // Slightly less rounded corners if needed
+  }
+  
+  // 5. Fibex Logo
+  .fibex-main-title-logo {
+    width: 10rem !important; // Smaller logo
+    margin-bottom: 0.5rem;
+  }
+}
+
