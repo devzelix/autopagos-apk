@@ -310,3 +310,83 @@ app-btn-transaction {
     z-index: 1;
   }
 }
+
+/* C2P step indicator */
+.c2p-steps-indicator {
+  margin: 0 0 1rem 0;
+}
+.c2p-steps-list {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.c2p-step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fff;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(16,24,40,0.04);
+  min-width: 140px;
+}
+.c2p-step-item.active {
+  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  border-color: rgba(53,124,255,0.18);
+}
+.step-index {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(180deg,#357CFF,#2d9ae2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.step-meta .step-title { font-weight: 700; font-size: 0.95rem; }
+.step-meta .step-sub { font-size: 0.78rem; color: #6b7280 }
+.c2p-progress { margin-top: 0.5rem }
+.c2p-progress-bar { height: 6px; width: 100%; background: #e6eefc; border-radius: 99px; overflow: hidden }
+.c2p-progress-fill { height: 100%; background: linear-gradient(90deg,#357CFF,#2d9ae2); width: 0 }
+
+/* Layout for stepper + keyboard inside C2P modal */
+.c2p-steps-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.c2p-stepper-wrap {
+  min-width: 0;
+}
+
+.c2p-keyboard-area {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.6rem;
+  border: 1px solid rgba(16,24,40,0.04);
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile: stack vertically with keyboard docked below form inside modal */
+@media (max-width: 768px) {
+  .c2p-steps-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .c2p-keyboard-area {
+    margin-top: 0.6rem;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+  }
+}

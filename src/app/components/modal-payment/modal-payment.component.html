@@ -32,8 +32,39 @@
 
     <!-- Formulario C2P con stepper -->
     <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm || showDebitoInmediatoForm">
-      <app-stepper-form [steps]="c2pStepConfig" [useVirtualKeyboard]="useVirtualKeyboard" [initialData]="c2pFormData"
-        (formComplete)="onC2PFormComplete($event)"></app-stepper-form>
+
+      <!-- Steps indicator -->
+      <div class="c2p-steps-indicator">
+        <div class="c2p-steps-list">
+          <ng-container *ngFor="let step of c2pStepConfig; let i = index">
+            <div class="c2p-step-item" [class.active]="i === c2pCurrentStep">
+              <div class="step-index">{{ i + 1 }}</div>
+              <div class="step-meta">
+                <div class="step-title">{{ step.title }}</div>
+                <div class="step-sub">{{ step.fields.length }} campos</div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="c2p-progress">
+          <div class="c2p-progress-bar"><div class="c2p-progress-fill" [style.width.%]="((c2pCurrentStep+1)/c2pStepConfig.length)*100"></div></div>
+        </div>
+      </div>
+
+      <div class="c2p-steps-form-grid">
+        <div class="c2p-stepper-wrap">
+          <app-stepper-form [steps]="c2pStepConfig" [useVirtualKeyboard]="false" [initialData]="c2pFormData"
+            (formComplete)="onC2PFormComplete($event)" (stepChange)="onC2PStepChange($event)"></app-stepper-form>
+        </div>
+
+        <div class="c2p-keyboard-area">
+          <app-keyboard-on-screen
+            classes="pinpad-big-size virtual-keyboard-fixed"
+            (valorTeclado)="onC2PKeyboardInput($event)"
+            (deleteKeyEmitter)="onC2PKeyboardDelete()"
+          ></app-keyboard-on-screen>
+        </div>
+      </div>
     </div>
 
     <!-- Flujo original (Punto de Venta y Admin) -->

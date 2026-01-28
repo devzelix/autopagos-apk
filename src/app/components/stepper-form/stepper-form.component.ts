@@ -198,6 +198,13 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Public API: recibe input desde un teclado externo embebido
+   */
+  public receiveKeyboardInput(value: string): void {
+    this.onVirtualKeyboardInput(value);
+  }
+
+  /**
    * Maneja el delete del teclado virtual
    */
   onVirtualKeyboardDelete(): void {
@@ -215,6 +222,13 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentValue = control.value || '';
     control.setValue(currentValue.slice(0, -1));
     this.cdr.markForCheck();
+  }
+
+  /**
+   * Public API: recibe evento delete desde teclado externo
+   */
+  public receiveKeyboardDelete(): void {
+    this.onVirtualKeyboardDelete();
   }
 
   /**
