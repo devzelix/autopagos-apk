@@ -52,6 +52,8 @@ import { ConfigIpUbiiposComponent } from "./components/administrative-module/con
 import { ActionAdminComponent } from './components/administrative-module/action-admin/action-admin.component';
 import { LoginComponent } from './components/administrative-module/login/login.component';
 import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.component';
+import { PaymentMethodSelectorComponent } from './components/payment-method-selector/payment-method-selector.component';
+import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 
 
 const routes: Routes = [
@@ -100,7 +102,9 @@ const routes: Routes = [
     BtnToOptionComponent,
     ActionAdminComponent,
     LoginComponent,
-    AdCarouselComponent
+    AdCarouselComponent,
+    PaymentMethodSelectorComponent,
+    StepperFormComponent
   ],
   imports: [
     BrowserModule,
@@ -114,12 +118,12 @@ const routes: Routes = [
     NgxPayPalModule,
     RouterModule.forRoot(routes),
     QRCodeModule,
-    CurrencyPipe
+    CurrencyPipe,
+    ConfigIpUbiiposComponent
     /* NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language
-    }) */ ,
-    ConfigIpUbiiposComponent
+    }) */
   ],
   providers: [
     NegativeAmountPipe,

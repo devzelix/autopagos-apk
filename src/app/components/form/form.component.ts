@@ -371,7 +371,7 @@ export class FormComponent implements OnInit {
     this.firstFormFibex = this.fb.group(
       {
         name: ['', [Validators.required]],
-        dni: ['', [Validators.required, Validators.minLength(7)]], // Mínimo: Letra + guión + 6 dígitos = 7 caracteres
+        dni: ['31881540', [Validators.required, Validators.minLength(7)]], // Mínimo: Letra + guión + 6 dígitos = 7 caracteres
         email: ['', [Validators.required, Validators.pattern(this.regexEmail)]],
         bank: ['', [Validators.required]],
         nroContrato: ['', [Validators.required]],

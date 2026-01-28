@@ -35,6 +35,15 @@ import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
+// Nuevos imports para flujo de pago multi-método
+import { C2pPaymentService } from 'src/app/services/c2p-payment.service';
+import { 
+  PaymentMethodType, 
+  IC2PPayload, 
+  IC2PResponse,
+  IStepConfig 
+} from 'src/app/interfaces/payment-methods.interface';
+import { C2P_STEP_CONFIG } from 'src/app/config/payment-methods.config';
 
 @Component({
   selector: 'app-modal-payment',
@@ -78,6 +87,17 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private mountValueChangesSubscription?: any;
   private timeoutId?: any;
 
+  // Propiedades para flujo de pago multi-método
+  public showPaymentMethodSelector: boolean = true;
+  public selectedPaymentMethod: PaymentMethodType | null = null;
+  public showC2PForm: boolean = false;
+  public c2pStepConfig: IStepConfig[] = C2P_STEP_CONFIG;
+  public useVirtualKeyboard: boolean = true;
+  public c2pFormData: any = {};
+  public processingC2P: boolean = false;
+
+  public showPuntoVentaForm: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
@@ -87,6 +107,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private _adminAction: AdministrativeRequestService,
     private _registerTransaction: PaymentsService,
     private _localStorageService: LocalstorageService,
+    private _c2pPayment: C2pPaymentService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -979,5 +1000,196 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   public formatAmount(amount: number | string): string {
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
     return (num / 100).toFixed(2);
+  }
+
+  /**
+   * Maneja la selecci\u00f3n de m\u00e9todo de pago
+   */
+  public onPaymentMethodSelected(method: PaymentMethodType): void {
+    this.selectedPaymentMethod = method;
+    this.showPaymentMethodSelector = false;
+    this.showPuntoVentaForm = false;
+    this.showC2PForm = false;
+
+    if (method === 'c2p') {
+      this.showC2PForm = true;
+      // Inicializar datos del formulario C2P con valores del modal
+      this.c2pFormData = {
+        nacionalidad: this.typeDNI,
+        cedula: this.dni?.value || '',
+        monto: this.mount?.value || this.mountValue
+      };
+    } else if (method === 'punto_venta') {
+      // Mantener el flujo actual de punto de venta
+      this.showPuntoVentaForm = true;
+    } else if (method === 'debito_inmediato') {
+      // TODO: Implementar flujo de d\u00e9bito inmediato
+      this.showC2PForm = false;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Maneja la finalizaci\u00f3n del formulario C2P
+   */
+  public async onC2PFormComplete(formData: any): Promise<void> {
+    try {
+      this.processingC2P = true;
+      this.cdr.markForCheck();
+
+      // Validar datos antes de enviar
+      const validation = this._c2pPayment.validateC2PData(formData);
+      if (!validation.valid) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Datos inv\u00e1lidos',
+          text: validation.error,
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+        this.processingC2P = false;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      // Mostrar loading
+      Swal.fire({
+        title: 'Procesando pago C2P',
+        html: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Construir payload para API C2P
+      const payload: IC2PPayload = {
+        TelefonoDebito: formData.telefono,
+        Cedula: `${formData.nacionalidad}${formData.cedula}`,
+        Banco: formData.banco,
+        Monto: formData.monto.toString().replace(/,/g, ''),
+        Otp: formData.otp,
+        SaeData: {
+          id_contrato: this.nroContrato,
+          abonado: this.nroAbonado,
+          saldoActual: this.saldoBs
+        }
+      };
+
+      // Realizar petici\u00f3n C2P
+      this._c2pPayment.processC2PPayment(payload).subscribe({
+        next: async (response: IC2PResponse) => {
+          console.log('\u2705 Respuesta C2P:', response);
+
+          if (response.status === 200 && response.data.status) {
+            // Pago exitoso
+            await this.handleSuccessfulC2PPayment(response, formData);
+          } else {
+            // Pago fallido
+            Swal.fire({
+              icon: 'error',
+              title: 'Pago no procesado',
+              text: response.data.message || 'No se pudo procesar el pago',
+              confirmButtonText: 'Aceptar',
+              customClass: {
+                popup: 'fibex-swal-popup',
+                title: 'fibex-swal-title',
+                confirmButton: 'fibex-swal-confirm-btn'
+              },
+              buttonsStyling: false
+            });
+          }
+
+          this.processingC2P = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('\u274c Error en pago C2P:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error en el pago',
+            text: 'Ocurri\u00f3 un error al procesar el pago. Por favor intente nuevamente.',
+            confirmButtonText: 'Aceptar',
+            customClass: {
+              popup: 'fibex-swal-popup',
+              title: 'fibex-swal-title',
+              confirmButton: 'fibex-swal-confirm-btn'
+            },
+            buttonsStyling: false
+          });
+          this.processingC2P = false;
+          this.cdr.markForCheck();
+        }
+      });
+    } catch (error) {
+      console.error('\u274c Error procesando C2P:', error);
+      this.processingC2P = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Maneja un pago C2P exitoso
+   */
+  private async handleSuccessfulC2PPayment(response: IC2PResponse, formData: any): Promise<void> {
+    const { c2pResponse, saeResponse } = response.data;
+
+    // Mostrar modal de \u00e9xito
+    await Swal.fire({
+      icon: 'success',
+      title: '\u00a1Pago Exitoso!',
+      html: `
+        <div style="text-align: left; padding: 1rem;">
+          <p style="margin-bottom: 1rem;"><strong>Su pago ha sido procesado y conciliado autom\u00e1ticamente.</strong></p>
+          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e2e8f0;">
+          <p style="margin: 0.5rem 0;"><strong>Referencia:</strong> ${c2pResponse.reference}</p>
+          <p style="margin: 0.5rem 0;"><strong>Monto:</strong> Bs. ${formData.monto}</p>
+          <p style="margin: 0.5rem 0;"><strong>Mensaje:</strong> ${c2pResponse.message}</p>
+        </div>
+      `,
+      confirmButtonText: 'Aceptar',
+      allowOutsideClick: false,
+      customClass: {
+        popup: 'fibex-swal-popup',
+        title: 'fibex-swal-title',
+        htmlContainer: 'fibex-swal-html',
+        confirmButton: 'fibex-swal-confirm-btn'
+      },
+      buttonsStyling: false,
+      didClose: () => {
+        this.onSubmitPayForm.emit();
+      }
+    });
+  }
+
+  /**
+   * Regresa a la selección de métodos de pago o cierra el modal
+   */
+  public backToMethodSelector(): void {
+    if (this.showC2PForm) {
+      // Si está en el formulario C2P, regresa al selector
+      this.showC2PForm = false;
+      this.showPaymentMethodSelector = true;
+      this.selectedPaymentMethod = null;
+      this.c2pFormData = {};
+      this.cdr.markForCheck();
+    } 
+    else if (this.showPuntoVentaForm) {
+      this.showPuntoVentaForm = false;
+      this.showPaymentMethodSelector = true;
+      this.selectedPaymentMethod = null;
+      this.c2pFormData = {};
+      this.cdr.markForCheck();
+    }
+    else if (this.showPaymentMethodSelector) {
+      // Si está en el selector, cierra el modal
+      this.onCloseModal();
+    }
   }
 }

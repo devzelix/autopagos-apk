@@ -1,25 +1,75 @@
 <section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated faster fadeIn">
   <div class="modal-payment animated fadeInUp">
-    <div class="btn-close-section">
+    <!-- <div class="btn-close-section">
       <button type="button" (click)="onCloseModal()">
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m7 7l10 10M7 17L17 7"/></svg>
       </button>
-    </div>
-    <h1 class="text-4xl text-center mb-2 font-bold">{{ viewAdmin ? 'PANEL DE ADMINISTRACIÓN' : inputType === 'reference' ? 'INGRESAR DATOS' : 'CONFIRMAR DATOS'}}</h1>
+    </div> -->
 
-    <!-- <h4 class="text-xl text-center mb-4" > Ingrese los datos</h4> -->
-    <div [hidden]="viewAdmin">
+     <div class="back-button-section">
+        <button type="button" class="back-button" (click)="backToMethodSelector()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+          </svg>
+          Volver
+        </button>
+      </div>
+
+    <!-- T\u00edtulo din\u00e1mico -->
+    <h1 class="text-4xl text-center mb-2 font-bold">
+      {{ viewAdmin ? 'PANEL DE ADMINISTRACI\u00d3N' : 
+         showPaymentMethodSelector ? 'Seleccione el m\u00e9todo de pago' :
+         showC2PForm ? 'PAGO C2P' :
+         inputType === 'reference' ? 'INGRESAR DATOS' : 'CONFIRMAR DATOS'}}
+    </h1>
+
+    <!-- Secci\u00f3n de selecci\u00f3n de m\u00e9todo de pago -->
+    <div *ngIf="!viewAdmin && inputType === 'mount' && showPaymentMethodSelector">
+     <!--  <div class="back-button-section">
+        <button type="button" class="back-button" (click)="backToMethodSelector()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+          </svg>
+          Volver
+        </button>
+      </div> -->
+      
+      <app-payment-method-selector
+        (methodSelected)="onPaymentMethodSelected($event)"
+      ></app-payment-method-selector>
+    </div>
+
+    <!-- Formulario C2P con stepper -->
+    <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm">
+      <!-- <div class="back-button-section">
+        <button type="button" class="back-button" (click)="backToMethodSelector()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+          </svg>
+          Volver
+        </button>
+      </div> -->
+      
+      <app-stepper-form
+        [steps]="c2pStepConfig"
+        [useVirtualKeyboard]="useVirtualKeyboard"
+        [initialData]="c2pFormData"
+        (formComplete)="onC2PFormComplete($event)"
+      ></app-stepper-form>
+    </div>
+
+    <!-- Flujo original (Punto de Venta y Admin) -->
+    <div [hidden]="viewAdmin || (inputType === 'mount' && !showPuntoVentaForm)">
       <app-tab-dni
-      (typeDNIEmitter)="onLoginTypeChange($event)"
+        (typeDNIEmitter)="onLoginTypeChange($event)"
       >
       </app-tab-dni>
 
       <div class="modal-pay-content">
-
         <form [formGroup]="formPayment" class="modal-pay-form-section">
 
           <div (click)="setInputFocus('dni')">
-            <label for="dni">{{inputType === 'reference' ? 'Cédula del titular de tarjeta' : 'Cédula del cliente'}}</label>
+            <label for="dni">{{inputType === 'reference' ? 'C\u00e9dula del titular de tarjeta' : 'C\u00e9dula del cliente'}}</label>
             <span class="input-dni-container flex items-center w-full">
               <span class="icon-type-dni">
                 {{typeDNI}}
@@ -47,15 +97,15 @@
               </button>
             </span>
             <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched) : true">
-              <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La cédula es requerida.</small>
-              <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten números.</small>
+              <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La c\u00e9dula es requerida.</small>
+              <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten n\u00fameros.</small>
               <small *ngIf="formErrorMessage?.inputName === 'dni' && formErrorMessage?.errorMsg">
                 {{formErrorMessage?.errorMsg}}
               </small>
             </div>
           </div>
 
-          <!-- Campo dinámico: mount o reference -->
+          <!-- Campo din\u00e1mico: mount o reference -->
           <div [ngSwitch]="inputType">
             <!-- Caso: Monto -->
             <div *ngSwitchCase="'mount'" (click)="setInputFocus('mount')">
@@ -161,6 +211,7 @@
         </form>
 
         <app-keyboard-on-screen
+          *ngIf="!showPaymentMethodSelector && !showC2PForm"
           classes="pinpad-big-size" (valorTeclado)="onTecladoInput($event)"
           (deleteKeyEmitter)="deleteLastCharacter()"
         >
