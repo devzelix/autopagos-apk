@@ -75,22 +75,37 @@
         </div>
 
 
-        <div *ngIf="AppFibex && userGreeting" class="subtitle-info flex justify-between">
-          <h1 class="name-client text-2xl txt-dark">
-            {{ userGreeting }}
-          </h1>
+        <!-- New Contract Info Design -->
+        <!-- New Contract Info Design (Compact) -->
+        <div *ngIf="AppFibex && userGreeting" class="contract-info-panel fancy_shadow_sm compact-panel">
 
-          <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="flex flex-col gap-2">
-            <h2 class="name-client text-2xl txt-dark">
-              Nro. Contrato: {{nroContrato?.value}}
-            </h2>
-            <h2 class="name-client text-2xl txt-dark">
-              Suscripción: {{this.subscription}} USD
-            </h2>
+          <div class="user-info-group">
+            <div class="user-avatar-circle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
+              </svg>
+            </div>
+            <h1 class="user-name-title">
+              {{ userGreeting | titlecase }}
+            </h1>
           </div>
-        </div>
 
-        <span *ngIf="mainTitle" class="title-info-container">
+          <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="contract-tags-group">
+            <div class="mini-tag">
+              <span class="lbl">Contrato:</span>
+              <span class="val">{{nroContrato?.value}}</span>
+            </div>
+            <div class="mini-tag highlight">
+              <span class="lbl">Suscripción:</span>
+              <span class="val">{{this.subscription}} USD</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- End New Contract Info Design -->
+
+        <span *ngIf="mainTitle && !AppFibex" class="title-info-container">
           <h4>
             {{ mainTitle }}
           </h4>

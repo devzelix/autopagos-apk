@@ -1,5 +1,5 @@
 export const environment = {
-  version: 'V8.4.0',
+  version: 'V1.0.0',
 
   production: true,
   urlGraphql: 'https://pha.thomas-talk.me/',
@@ -111,14 +111,13 @@ export const environment = {
     folder: 'Pagos',
   },
 
-    // API Telegram Support
+  // API Telegram Support
 
-    url_api_telegram: 'https://telegramfront.fibex.info/',
+  url_api_telegram: 'https://telegramfront.fibex.info/',
 
-    api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
+  api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
 
-    kioskApiUrl: 'http://localhost:3000/api/kiosks',
+  kioskApiUrl: 'http://localhost:3000/api/kiosks',
 
-  };
+};
 
-  

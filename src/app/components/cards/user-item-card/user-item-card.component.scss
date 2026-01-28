@@ -1,118 +1,123 @@
+// Variables (match app styles)
+$fibex-blue: #215288;
+$text-dark: #333;
+$text-grey: #666;
+
 .user-select-item-card {
-    max-width: 470px !important;
-    background: var(--primary-accent-color);
-    // background: #1172dfd9;
-    padding: 1rem;
-    border-radius: 10px;
-    color: white;
-    min-width: 270px;
-    height: 200px; // Altura fija para todas las tarjetas
+  width: 100%;
+  max-width: 470px !important;
+  min-width: 270px;
+  height: auto; // Auto height for flexibility
+  min-height: 200px;
+  margin: 0.5rem auto; // Center in grid/list
+
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px -5px rgba(33, 82, 136, 0.1); // Soft blue shadow
+
+  color: $text-dark;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-family: 'Poppins', sans-serif !important;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px -5px rgba(33, 82, 136, 0.25);
+    border-color: rgba(33, 82, 136, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: start;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.8rem;
+    color: $fibex-blue; // Contact number in Blue
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-sizing: border-box;
+    align-items: center;
+    line-height: 1.2;
+  }
 
-    h1 {
-      font-weight: bold;
-      font-size: 1.9rem;
-      text-align: start;
-      margin-bottom: 0.4rem;
-      border-bottom: 1px solid;
-      padding-bottom: 0.3rem;
-      min-height: 2.5rem; // Altura mínima fija
+  .content-user-select-card {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    width: 100%;
+    margin-bottom: 1rem;
+
+    .content-user-select-card-item {
+      flex: 1;
       display: flex;
-      align-items: center;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      line-height: 1.2;
-    }
+      flex-direction: column;
+      justify-content: flex-start;
 
-    .content-user-select-card {
-      display: flex;
-      gap: 0px;
-      flex: 1; // Ocupar espacio disponible
-      min-height: 60px; // Altura mínima fija
-      align-items: flex-start;
+      &.content-user-select-end-position {
+        align-items: flex-end;
 
-      .content-user-select-card-item {
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        min-height: 60px; // Altura mínima fija
-
-        &.content-user-select-end-position {
-          h5 {
-            text-align: end !important;
-          }
-          p {
-            text-align: end !important;
-          }
-        }
-
-        h5 {
-          font-size: 1rem;
-          text-align: start;
-          margin-bottom: 0.3rem;
-          min-height: 1.2rem; // Altura mínima fija
-          display: flex;
-          align-items: center;
-        }
-        
+        h5,
         p {
-          text-align: start;
-          font-size: 1.3rem;
-          font-weight: bold;
-          min-height: 1.8rem; // Altura mínima fija
-          display: flex;
-          align-items: center;
-          word-break: break-word;
-          overflow-wrap: break-word;
-          
-          &.capitalized {
-            text-transform: capitalize;
-          }
+          text-align: end;
         }
       }
-    }
-
-    .user-select-item-content {
-      display: flex;
-      width: 100%;
-      justify-content: space-between;
-      align-items: center;
-      gap: .8rem;
-      margin-top: auto; // Empujar hacia abajo
-      min-height: 2.5rem; // Altura mínima fija
-      padding-top: 0.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.2); // Separador visual opcional
 
       h5 {
-        font-size: 0.8rem;
-        text-wrap: balance;
-        line-height: 1.2;
-        flex: 1;
-        min-width: 0; // Permitir que se encoja
-        margin: 0;
-        display: flex;
-        align-items: center;
+        font-size: 0.85rem;
+        color: $text-grey;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.2rem;
+        font-weight: 600;
       }
 
       p {
-        font-size: .8rem;
-        text-align: start;
-        margin: 0;
-        min-width: 120px; // Ancho mínimo para fecha
-        text-align: end;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        
-        &.p-text-right {
-          text-align: end !important;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: $text-dark;
+        word-break: break-word;
+
+        &.capitalized {
+          text-transform: capitalize;
+          color: #2dbd05; // Green for status if active, styling generally handled by logic but generic green here
         }
       }
+    }
+  }
 
+  .user-select-item-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px dashed #e0e0e0;
+    gap: 0.5rem;
+
+    h5 {
+      font-size: 0.8rem;
+      color: $text-grey;
+      margin: 0;
+      font-weight: 500;
     }
 
+    p {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+      text-align: end;
+    }
   }
+
+}

@@ -11,7 +11,7 @@
       <mat-step [stepControl]="firstFormFibex">
         <form [formGroup]="firstFormFibex">
           <ng-template matStepLabel>Datos del equipo</ng-template>
-          
+
           <div class="form-login__item">
             <mat-form-field appearance="outline">
               <mat-label>Cédula del Cliente</mat-label>
@@ -46,7 +46,8 @@
             <mat-form-field appearance="outline">
               <mat-label>Abonado</mat-label>
               <mat-select formControlName="nroContrato">
-                <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato" (click)="contractSelected(contrato)">
+                <mat-option *ngFor="let contrato of listContratos" [value]="contrato.contrato"
+                  (click)="contractSelected(contrato)">
                   {{contrato.contrato}}
                 </mat-option>
               </mat-select>

@@ -1,95 +1,142 @@
+// Variables
+$fibex-gradient: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+$fibex-blue: #215288;
+$text-dark: #333;
 
 .div-more-payments {
   position: relative;
   text-align: end;
-  align-items: end;
+  align-items: center;
   margin: 0.4rem;
+  justify-content: space-between;
 
-  .btn-one-payment {
-    width: 15rem;
-    background: var(--primary-accent-color);
+  button {
+    background: $fibex-gradient;
     border-radius: 3rem;
     color: white;
-    font-size: 1.2rem;
+    font-size: 1rem;
     position: relative;
-    display: inline-block;
-    margin: 1.2rem;
-    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.5rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    box-shadow: 0 4px 10px rgba(33, 82, 136, 0.3);
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(33, 82, 136, 0.2);
+    }
   }
 
   .animation-class {
-    animation: moveUpDown 0.9s infinite ease-in-out;
-  }
-
-  .btn-more-payments {
-    width: 15rem;
-    background: var(--primary-accent-color);
-    border-radius: 3rem;
-    color: white;
-    font-size: 1.2rem;
-    position: relative;
-    display: inline-block;
-    margin: 1.2rem;
-    padding: 0.8rem;
-    transition: all 0.3s ease;
-    animation: moveUpDown 0.9s infinite ease-in-out;
-
-    // &:hover {
-    //   background: #32759c; /* Cambia el color de fondo */
-    // }
-
-    &:active {
-      transform: translateY(-2px); /* Efecto al hacer click */
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Sombra más suave */
-    }
+    animation: moveUpDown 1.5s infinite ease-in-out;
   }
 
   @keyframes moveUpDown {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0);
     }
+
     50% {
-      transform: translateY(-10px);
+      transform: translateY(-5px);
     }
   }
 }
 
-.h4-amount{
-  // font-weight: bold;
-  font-size: 1.6rem;
-  width: 21rem;
-}
-
-.div-btn-more-payments{
-  width: 30rem;
+.h4-amount {
+  font-size: 1.4rem;
+  color: #555;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  text-align: left;
 }
 
 .payment-menu-mount-section {
   display: flex;
   align-items: center;
   place-content: center;
+  flex-direction: column; // Stack amounts on mobile? No, let's keep row but gap
   gap: 1rem;
-  color: #2c2c2c;
+  color: $text-dark;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 20px;
+  margin-top: 1rem;
+  width: 100%;
+  position: relative; // Changed for absolute positioning of pencil
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+  }
 
   h1 {
-    font-weight: bold;
-    font-size: 2.5rem;
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: $fibex-blue; // Amounts in blue
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
 
-    span {
-      color: #848484;
+    small {
+      font-size: 1rem;
+      color: #888;
+      font-weight: 500;
+    }
+
+    &.payment-mount-small {
+      color: #555;
+      font-size: 1.8rem;
     }
   }
+
+  // Swap icon
   svg {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    color: #ccc;
   }
 }
-.pencil-edit-amount {
-  position: relative;
-  // margin-left: calc(-48px + -1.4rem);
-  padding: .4rem;
-  border-radius: 10px;
 
-  &:active {
-    background-color: #eee;
+.pencil-edit-amount {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.8rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    color: $fibex-blue !important;
+  }
+
+  &:hover {
+    background-color: $fibex-blue;
+    border-color: $fibex-blue;
+    transform: scale(1.1);
+
+    svg {
+      color: white !important;
+      stroke: white !important;
+
+      g {
+        stroke: white !important;
+      }
+    }
   }
 }
