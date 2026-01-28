@@ -4,19 +4,24 @@ import {
   Output, 
   EventEmitter, 
   OnInit,
+  AfterViewInit,
   ChangeDetectorRef,
   ViewChild,
-  ElementRef
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  OnDestroy
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IStepConfig, IFieldConfig } from '../../interfaces/payment-methods.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-stepper-form',
   templateUrl: './stepper-form.component.html',
   styleUrls: ['./stepper-form.component.scss']
 })
-export class StepperFormComponent implements OnInit {
+export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() steps: IStepConfig[] = [];
   @Input() useVirtualKeyboard: boolean = true;
   @Input() initialData: any = {};
@@ -27,12 +32,15 @@ export class StepperFormComponent implements OnInit {
   @Output() keyboardDelete = new EventEmitter<void>();
 
   @ViewChild('activeInput') activeInput: ElementRef<HTMLInputElement>;
+  @ViewChildren('activeInput') inputElements: QueryList<ElementRef<HTMLInputElement>>;
 
   public currentStep: number = 0;
   public stepForm: FormGroup;
   public formData: any = {};
   public activeFieldName: string = '';
   public showInfoPopover: string | null = null;
+
+  private fieldSubscription: Subscription | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -41,7 +49,47 @@ export class StepperFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formData = { ...this.initialData };
+    
+    // Inicializar campo monto con 0.00 si existe
+    if (this.steps.length > 0) {
+      const hasMontoField = this.steps[0].fields.some(f => f.name === 'monto');
+      if (hasMontoField && !this.formData['monto']) {
+        this.formData['monto'] = '0.00';
+      }
+    }
+    
     this.buildForm();
+  }
+
+  ngAfterViewInit(): void {
+    // Hacer focus en el primer input cuando la vista se inicializa
+    this.focusFirstInput();
+
+    // Suscribirse a los cambios de los inputs para hacer focus cuando cambian
+    this.fieldSubscription = this.inputElements.changes.subscribe(() => {
+      this.focusFirstInput();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.fieldSubscription) {
+      this.fieldSubscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Hace focus en el primer input disponible
+   */
+  private focusFirstInput(): void {
+    setTimeout(() => {
+      if (this.inputElements && this.inputElements.length > 0) {
+        const firstInput = this.inputElements.first;
+        if (firstInput && firstInput.nativeElement) {
+          console.warn('SI SE ENFOCOOO', firstInput)
+          firstInput.nativeElement.focus();
+        }
+      }
+    }, 100);
   }
 
   /**
@@ -79,6 +127,9 @@ export class StepperFormComponent implements OnInit {
     }
 
     this.cdr.markForCheck();
+    
+    // Hacer focus en el primer input después de construir el formulario
+    this.focusFirstInput();
   }
 
   /**
@@ -121,8 +172,15 @@ export class StepperFormComponent implements OnInit {
     const control = this.stepForm.get(this.activeFieldName);
     if (!control) return;
 
-    const currentValue = control.value || '';
     const field = this.getCurrentField(this.activeFieldName);
+    
+    // Si es el campo de monto, aplicar formato especial
+    if (field && field.name === 'monto') {
+      this.handleMontoInput(value, control);
+      return;
+    }
+
+    const currentValue = control.value || '';
     
     if (field && field.maxLength && currentValue.length >= field.maxLength) {
       return;
@@ -139,8 +197,61 @@ export class StepperFormComponent implements OnInit {
     const control = this.stepForm.get(this.activeFieldName);
     if (!control) return;
 
+    const field = this.getCurrentField(this.activeFieldName);
+    
+    // Si es el campo de monto, aplicar formato especial
+    if (field && field.name === 'monto') {
+      this.handleMontoDelete(control);
+      return;
+    }
+
     const currentValue = control.value || '';
     control.setValue(currentValue.slice(0, -1));
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Maneja el input del campo monto (formato con decimales)
+   */
+  private handleMontoInput(value: string, control: any): void {
+    let currentValue = control.value || '0.00';
+    
+    // Remover el punto decimal y convertir a número
+    let numericValue = currentValue.replace(/\./g, '');
+    
+    // Agregar el nuevo dígito
+    numericValue += value;
+    
+    // Convertir a número y dividir por 100 para obtener decimales
+    const amount = parseInt(numericValue) / 100;
+    
+    // Formatear con 2 decimales
+    control.setValue(amount.toFixed(2));
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Maneja el delete del campo monto (formato con decimales)
+   */
+  private handleMontoDelete(control: any): void {
+    let currentValue = control.value || '0.00';
+    
+    // Remover el punto decimal
+    let numericValue = currentValue.replace(/\./g, '');
+    
+    // Remover el último dígito
+    numericValue = numericValue.slice(0, -1);
+    
+    // Si está vacío, poner 0
+    if (numericValue.length === 0) {
+      numericValue = '0';
+    }
+    
+    // Convertir a número y dividir por 100
+    const amount = parseInt(numericValue) / 100;
+    
+    // Formatear con 2 decimales
+    control.setValue(amount.toFixed(2));
     this.cdr.markForCheck();
   }
 

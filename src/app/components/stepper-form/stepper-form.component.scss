@@ -230,15 +230,74 @@
   }
 }
 
+// Select sin prefijo - ajustar padding
+.input-container:not(:has(.input-prefix)) {
+  select.form-input {
+    padding-left: 2rem;
+  }
+}
+
 select.form-input {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%234a5568' d='M7 10l5 5l5-5z'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23357CFF' d='M7 10l5 5l5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 1rem center;
+  background-position: right 1.5rem center;
   background-size: 2.4rem;
   background-color: white;
-  padding-right: 4rem;
+  padding-right: 5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #f7fafc;
+  }
+  
+  &:focus {
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.1);
+  }
+  
+  // Estilos para las opciones (limitado por el navegador)
+  option {
+    padding: 1.2rem 1.5rem;
+    font-size: 1.7rem;
+    background: white;
+    color: #313131;
+    font-weight: 500;
+    border-radius: 8px;
+    margin: 0.2rem 0;
+    
+    &:hover {
+      background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+      color: #357CFF;
+    }
+    
+    &:checked,
+    &:active,
+    &[selected] {
+      background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%) !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    &:disabled {
+      color: #a0aec0;
+      background: #f7fafc;
+    }
+  }
+  
+  // Estilos específicos para Firefox
+  @-moz-document url-prefix() {
+    option {
+      &:checked {
+        background: #357CFF !important;
+        color: white !important;
+      }
+    }
+  }
 }
 
 // Field errors

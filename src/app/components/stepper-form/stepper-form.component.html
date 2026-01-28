@@ -71,7 +71,7 @@
 
           <!-- Input text/tel/number -->
           <input 
-            *ngIf="field.type !== 'select' || field.name === 'nacionalidad'"
+            *ngIf="field.type !== 'select'"
             [id]="field.name"
             [type]="field.type"
             [formControlName]="field.name"

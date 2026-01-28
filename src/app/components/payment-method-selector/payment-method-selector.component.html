@@ -9,7 +9,19 @@
       (click)="selectMethod(method.id)"
     >
       <div class="card-header">
-        <div class="icon-container" [innerHTML]="getMethodIcon(method.icon)"></div>
+        <div class="icon-container">
+          <ng-container [ngSwitch]="method.icon">
+            <!-- C2P - Token/Llave de seguridad -->
+            <span *ngSwitchCase="'c2p'" class="icon-emoji">🔐</span>
+            
+            <!-- Débito Inmediato - SMS/Mensaje -->
+            <span *ngSwitchCase="'debito_inmediato'" class="icon-emoji">💬</span>
+            
+            <!-- Punto de Venta - Terminal POS -->
+            <span *ngSwitchCase="'punto_venta'" class="icon-emoji">💳</span>
+          </ng-container>
+        </div>
+        
         <button 
           type="button"
           class="info-button" 

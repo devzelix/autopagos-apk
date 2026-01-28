@@ -36,7 +36,7 @@ import { LocalstorageService } from 'src/app/services/localstorage.service';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
 // Nuevos imports para flujo de pago multi-método
-import { C2pPaymentService } from 'src/app/services/c2p-payment.service';
+import { WebhookAutopagoService } from 'src/app/services/webhook-autopago.service';
 import { 
   PaymentMethodType, 
   IC2PPayload, 
@@ -103,11 +103,11 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
     private _pdfService: PdfService, //
     private _directPrinter: DirectPrinterService, // Impresión directa local -By:MR-
-    private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
-    private _adminAction: AdministrativeRequestService,
+    // private _errorsvpos: VposerrorsService, // PrinterService instance used to print on Printer -By:MR-
+    // private _adminAction: AdministrativeRequestService,
     private _registerTransaction: PaymentsService,
     private _localStorageService: LocalstorageService,
-    private _c2pPayment: C2pPaymentService,
+    private _webhookAutopagoS: WebhookAutopagoService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -1039,7 +1039,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.markForCheck();
 
       // Validar datos antes de enviar
-      const validation = this._c2pPayment.validateC2PData(formData);
+      const validation = this._webhookAutopagoS.validateC2PData(formData);
       if (!validation.valid) {
         Swal.fire({
           icon: 'error',
@@ -1073,7 +1073,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         TelefonoDebito: formData.telefono,
         Cedula: `${formData.nacionalidad}${formData.cedula}`,
         Banco: formData.banco,
-        Monto: formData.monto.toString().replace(/,/g, ''),
+        Monto: formData.monto, // Ya viene en formato correcto (123.40)
         Otp: formData.otp,
         SaeData: {
           id_contrato: this.nroContrato,
@@ -1082,53 +1082,49 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       };
 
-      // Realizar petici\u00f3n C2P
-      this._c2pPayment.processC2PPayment(payload).subscribe({
-        next: async (response: IC2PResponse) => {
-          console.log('\u2705 Respuesta C2P:', response);
+      // Realizar petici\u00f3n C2P con axios
+      const response = await this._webhookAutopagoS.processC2PPayment(payload);
+      
+      console.log('\u2705 Respuesta C2P:', response);
 
-          if (response.status === 200 && response.data.status) {
-            // Pago exitoso
-            await this.handleSuccessfulC2PPayment(response, formData);
-          } else {
-            // Pago fallido
-            Swal.fire({
-              icon: 'error',
-              title: 'Pago no procesado',
-              text: response.data.message || 'No se pudo procesar el pago',
-              confirmButtonText: 'Aceptar',
-              customClass: {
-                popup: 'fibex-swal-popup',
-                title: 'fibex-swal-title',
-                confirmButton: 'fibex-swal-confirm-btn'
-              },
-              buttonsStyling: false
-            });
-          }
+      if (response.status === 200 && response.data.status) {
+        // Pago exitoso
+        await this.handleSuccessfulC2PPayment(response, formData);
+      } else {
+        // Pago fallido
+        Swal.fire({
+          icon: 'error',
+          title: 'Pago no procesado',
+          text: response.data.message || 'No se pudo procesar el pago',
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+      }
 
-          this.processingC2P = false;
-          this.cdr.markForCheck();
-        },
-        error: (error) => {
-          console.error('\u274c Error en pago C2P:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error en el pago',
-            text: 'Ocurri\u00f3 un error al procesar el pago. Por favor intente nuevamente.',
-            confirmButtonText: 'Aceptar',
-            customClass: {
-              popup: 'fibex-swal-popup',
-              title: 'fibex-swal-title',
-              confirmButton: 'fibex-swal-confirm-btn'
-            },
-            buttonsStyling: false
-          });
-          this.processingC2P = false;
-          this.cdr.markForCheck();
-        }
-      });
-    } catch (error) {
+      this.processingC2P = false;
+      this.cdr.markForCheck();
+      
+    } catch (error: any) {
       console.error('\u274c Error procesando C2P:', error);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en el pago',
+        text: error.message || 'Ocurri\u00f3 un error al procesar el pago. Por favor intente nuevamente.',
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          confirmButton: 'fibex-swal-confirm-btn'
+        },
+        buttonsStyling: false
+      });
+      
       this.processingC2P = false;
       this.cdr.markForCheck();
     }

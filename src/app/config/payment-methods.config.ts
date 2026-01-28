@@ -4,23 +4,23 @@ export const PAYMENT_METHODS: IPaymentMethod[] = [
   {
     id: 'c2p',
     name: 'C2P',
-    description: 'Pago Cliente a Persona',
-    icon: 'phone_iphone',
-    infoText: 'Realiza pagos directamente desde tu cuenta bancaria usando tu teléfono móvil. Es rápido, seguro y no requiere tarjeta física.'
+    description: 'Pago con Token Bancario',
+    icon: 'c2p',
+    infoText: 'Pago directo desde tu cuenta bancaria. Utiliza el token de seguridad que te proporciona tu banco para autorizar la transacción de forma segura y rápida.'
   },
   {
     id: 'debito_inmediato',
     name: 'Débito Inmediato',
-    description: 'Pago con Débito',
-    icon: 'credit_card',
-    infoText: 'Paga directamente desde tu cuenta de débito. El monto se descuenta inmediatamente de tu cuenta bancaria.'
+    description: 'Pago con Código SMS',
+    icon: 'debito_inmediato',
+    infoText: 'Pago instantáneo desde tu cuenta de débito. Recibirás un código de confirmación por SMS que deberás ingresar para completar la transacción.'
   },
   {
     id: 'punto_venta',
     name: 'Punto de Venta',
     description: 'Pago con Tarjeta',
-    icon: 'point_of_sale',
-    infoText: 'Paga con tu tarjeta de débito o crédito usando el punto de venta. Acepta todas las tarjetas bancarias.'
+    icon: 'punto_venta',
+    infoText: 'Paga con tu tarjeta de débito o crédito. Acepta todas las tarjetas bancarias de forma segura mediante nuestro punto de venta.'
   }
 ];
 

@@ -44,9 +44,31 @@ export class PaymentMethodSelectorComponent {
    */
   getMethodIcon(icon: string): string {
     const icons: { [key: string]: string } = {
-      'phone_iphone': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 1h-8A2.5 2.5 0 0 0 5 3.5v17A2.5 2.5 0 0 0 7.5 23h8a2.5 2.5 0 0 0 2.5-2.5v-17A2.5 2.5 0 0 0 15.5 1m-4 21c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m4.5-4H7V4h9z"/></svg>`,
-      'credit_card': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 8H4V6h16m0 12H4v-6h16m0-8H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"/></svg>`,
-      'point_of_sale': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 2H7c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2M7 6V4h10v2zm13.5 6.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5M6 18c0-2.21 1.79-4 4-4h4c2.21 0 4 1.79 4 4v2H6zM4 9h16v2H4zm0 11h16v2H4z"/></svg>`
+      // C2P - Token/Llave de seguridad bancaria
+      'c2p': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M12.5 8H17a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4.5"/>
+          <path d="M7 14a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h4.5M7 12h.01M17 12h.01M12 3v5m0 8v5"/>
+          <circle cx="12" cy="8" r="1"/>
+          <circle cx="12" cy="16" r="1"/>
+        </g>
+      </svg>`,
+      
+      // Débito Inmediato - SMS/Mensaje
+      'debito_inmediato': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2"/>
+          <path d="M3 12V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M7 16h.01M11 16h6"/>
+        </g>
+      </svg>`,
+      
+      // Punto de Venta - Terminal POS
+      'punto_venta': `<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <rect width="14" height="18" x="5" y="3" rx="2"/>
+          <path d="M9 7h6M9 11h6M9 15h4m-4 4h6"/>
+        </g>
+      </svg>`
     };
     return icons[icon] || '';
   }
