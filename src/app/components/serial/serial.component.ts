@@ -33,7 +33,7 @@ export class SerialComponent implements OnInit {
   public imageUploaded: boolean = false;
   public idContrato: string = '';
   public paquete: string = '';
-  public regexEmail: RegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  public regexEmail: RegExp = /^(([^<>()[\\]\\.,;:\s@\"]+(\\.[^<>()[\\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\\. [0-9]{1,3}\\. [0-9]{1,3}\\. [0-9]{1,3}\])|(([a-zA-Z\-0-9]+\\.)+[a-zA-Z]{2,}))$/;
   public regexUrl: RegExp = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/gm;
   public payReported: boolean = false;
   public playDuplicated: boolean  = false;
@@ -68,14 +68,14 @@ export class SerialComponent implements OnInit {
 
   init() {
     this.firstFormFibex = this.fb.group({
-      name:['',[Validators.required]],
+      name:['',[ Validators.required]],
       dni: ['', [Validators.required, Validators.minLength(6)]],
       email: ['',[ Validators.required, Validators.pattern(this.regexEmail)]],
       bank: [''],
       nroContrato: ['',[Validators.required]],
       date: ['',[Validators.required]],
       amount: [''],
-      img:['',[Validators.required]],
+      img:['',[ Validators.required]],
       serial: ['',[Validators.required]],
     });
 
@@ -96,15 +96,15 @@ export class SerialComponent implements OnInit {
       });
   }
 
-  get name() { return this.firstFormFibex.get('name'); }
-  get dni() { return this.firstFormFibex.get('dni'); }
-  get email() { return this.firstFormFibex.get('email'); }
-  get nroContrato()  { return this.firstFormFibex.get('nroContrato'); }
-  get bank()  { return this.firstFormFibex.get('bank'); }
-  get amount() { return this.firstFormFibex.get('amount'); }
-  get date() { return this.firstFormFibex.get('date'); }
-  get img()  { return this.firstFormFibex.get('img'); }
-  get serial() { return this.firstFormFibex.get('serial'); }
+  get name() { return this.firstFormFibex.get('name'); } 
+  get dni() { return this.firstFormFibex.get('dni'); } 
+  get email() { return this.firstFormFibex.get('email'); } 
+  get nroContrato()  { return this.firstFormFibex.get('nroContrato'); } 
+  get bank()  { return this.firstFormFibex.get('bank'); } 
+  get amount() { return this.firstFormFibex.get('amount'); } 
+  get date() { return this.firstFormFibex.get('date'); } 
+  get img()  { return this.firstFormFibex.get('img'); } 
+  get serial() { return this.firstFormFibex.get('serial'); } 
 
   uploadImagePayment($event: any) {
     let reader = new FileReader();
@@ -222,7 +222,7 @@ export class SerialComponent implements OnInit {
       dni_ = dni;
     }
 
-    if( dni_ === this.lastDni ) {
+    if(dni_ === this.lastDni ) {
       return;
     }
 
@@ -231,7 +231,7 @@ export class SerialComponent implements OnInit {
     this.nroContrato?.setValue('');
     this.amount?.setValue('');
     this.dniConsulted = false;
-    if( dni_.length >= 6 ) {
+    if(dni_.length >= 6 ) {
       this.alertFindDni('Buscando información del cliente', 'Por favor espere...' );
       this.registerPayService.getSaldoByDni(dni_)
         .then((res:any) => {
@@ -479,7 +479,7 @@ export class SerialComponent implements OnInit {
       this.saldoText = 'SALDO A FAVOR';
     } else if (  parseInt(amount) > 0 ) {
       this.saldoText = 'SALDO';
-      this.amount?.setValue(parseFloat(amount).toFixed(2));1
+      this.amount?.setValue(parseFloat(amount).toFixed(2));
     }
 
   }

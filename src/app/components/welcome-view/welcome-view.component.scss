@@ -33,6 +33,9 @@
   place-content: center;
   align-items: center;
   gap: 1rem;
+  
+  // Animación suave de entrada
+  animation: fadeIn 0.8s ease-in forwards;
 
   .welcome-logo {
       width: 50rem;
@@ -103,6 +106,11 @@
 
 .welcome-arrow-icon {
   animation: fade 1.7s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fade {

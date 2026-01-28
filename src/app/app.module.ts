@@ -59,7 +59,7 @@ import { StepperFormComponent } from './components/stepper-form/stepper-form.com
 const routes: Routes = [
   { path: '', component: FormComponent },
   { path: 'pay', component: FormComponent },
-  { path: 'serial', component: SerialComponent },
+  // { path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
   { path: 'stripe', component: StripeComponent },

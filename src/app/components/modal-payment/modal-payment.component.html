@@ -32,7 +32,7 @@
     </div>
 
     <!-- Formulario C2P con stepper -->
-    <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm">
+    <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm || showDebitoInmediatoForm">
       <app-stepper-form
         [steps]="c2pStepConfig"
         [useVirtualKeyboard]="useVirtualKeyboard"

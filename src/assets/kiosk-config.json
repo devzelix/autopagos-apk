@@ -1,0 +1,14 @@
+{
+  "registered_kiosks": [
+    {
+      "uuid": "8edea123-8fb6-4821-af04-5afa89fbc52a",
+      "name": "Kiosco Principal Sambil",
+      "location": "Nivel Feria",
+      "status": "INACTIVE",
+      "settings": {
+        "printer_enabled": true,
+        "pos_type": "ubii"
+      }
+    }
+  ]
+}

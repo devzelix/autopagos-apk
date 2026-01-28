@@ -1,12 +1,9 @@
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HelperService } from './services/helper.service';
+import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-// import function to register Swiper custom elements
-//import { register } from 'swiper/element/bundle';
-// register Swiper custom elements
-//register();
 
 @Component({
   selector: 'app-root',
@@ -25,17 +22,51 @@ export class AppComponent implements OnInit, OnDestroy {
   public showAdCarousel = false;
   private readonly INACTIVITY_TIME = 30000; // 30 segundos
 
+  public kioskStatus$ = this.kioskAuth.kioskStatus$;
+
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: MouseEvent) {
     event.preventDefault();
   }
 
   public showScrollArrow: boolean = false;
+  public showUuid: boolean = false;
 
-  constructor(public helper: HelperService) { }
+  constructor(
+    public helper: HelperService,
+    private kioskAuth: KioskAuthService
+  ) { }
 
   ngOnInit(): void {
     this.startInactivityTimer();
+    
+    // Forzamos visualización de carga al inicio
+    this.kioskAuth.setLoadingState();
+    setTimeout(() => {
+      this.kioskAuth.initAuth();
+    }, 1000); // Reducido a 1s
+  }
+
+  get kioskUuid() {
+    return this.kioskAuth.getUuid();
+  }
+
+  retryAuth() {
+    // 1. Mostrar estado de carga visualmente
+    this.kioskAuth.setLoadingState(); 
+    
+    setTimeout(() => {
+      this.kioskAuth.initAuth();
+    }, 1000); // Reducido a 1s
+  }
+
+  copyUuid() {
+    if (this.kioskUuid) {
+      navigator.clipboard.writeText(this.kioskUuid).then(() => {
+        // Podrías mostrar un toast aquí si tuvieras uno configurado
+        console.log('UUID copiado al portapapeles');
+      });
+    }
   }
 
   ngOnDestroy(): void {

@@ -3,12 +3,12 @@
 
 <!-- No mostrar nada mientras se valida la sesión (isAdminLogged === null) -->
 <!-- Mostrar login solo si isAdminLogged es explícitamente false Y showadmin es false -->
-<div *ngIf="isAdminLogged === false && !showadmin">
+<!-- <div *ngIf="isAdminLogged === false && !showadmin">
   <app-login
     [loginMode]="'checkout-init'"
     (loginEvent)="handlerAdminLogin($event)"
   ></app-login>
-</div>
+</div> -->
 
 <!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true Y showadmin es false -->
 <div *ngIf="isAdminLogged === true && !showadmin">
