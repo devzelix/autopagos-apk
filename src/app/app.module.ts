@@ -54,6 +54,8 @@ import { LoginComponent } from './components/administrative-module/login/login.c
 import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.component';
 import { PaymentMethodSelectorComponent } from './components/payment-method-selector/payment-method-selector.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
+import { AdvancePaymentModalComponent } from './components/modals/advance-payment-modal/advance-payment-modal.component';
+import { EditAmountModalComponent } from './components/modals/edit-amount-modal/edit-amount-modal.component';
 
 
 const routes: Routes = [
@@ -104,7 +106,9 @@ const routes: Routes = [
     LoginComponent,
     AdCarouselComponent,
     PaymentMethodSelectorComponent,
-    StepperFormComponent
+    StepperFormComponent,
+    AdvancePaymentModalComponent,
+    EditAmountModalComponent
   ],
   imports: [
     BrowserModule,

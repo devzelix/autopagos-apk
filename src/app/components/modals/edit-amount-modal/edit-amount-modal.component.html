@@ -1,0 +1,45 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+
+        <button class="close-btn" (click)="closeModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z" />
+            </svg>
+        </button>
+
+        <h2 class="modal-title">Editar Monto</h2>
+        <p class="modal-subtitle">Ingresa el monto personalizado que deseas pagar</p>
+
+        <div class="amount-display-section">
+            <div class="currency-label">USD</div>
+            <div class="amount-input-display">
+                <span class="dollar-sign">$</span>
+                <span class="amount-value">{{ customAmountInput || '0.00' }}</span>
+                <span class="cursor-blink" *ngIf="customAmountInput.length < 10"></span>
+            </div>
+            <div class="converted-amount">
+                <span>≈ {{ getConvertedAmountBs() | number:'1.2-2' }} Bs</span>
+            </div>
+        </div>
+
+        <div class="custom-keypad">
+            <button class="key-btn" *ngFor="let num of [1,2,3,4,5,6,7,8,9]" (click)="onAmountKeyPress(num.toString())">
+                {{ num }}
+            </button>
+            <button class="key-btn key-decimal" (click)="onAmountKeyPress('.')">.</button>
+            <button class="key-btn" (click)="onAmountKeyPress('0')">0</button>
+            <button class="key-btn key-delete" (click)="onAmountKeyPress('delete')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H7.07L2.4 12l4.66-7H22zm-11.59-2L14 13.41L17.59 17L19 15.59L15.41 12L19 8.41L17.59 7L14 10.59L10.41 7L9 8.41L12.59 12L9 15.59z" />
+                </svg>
+            </button>
+        </div>
+
+        <button class="confirm-btn" [disabled]="!isCustomAmountValid()" (click)="confirmCustomAmount()">
+            Confirmar Monto
+        </button>
+
+    </div>
+</div>

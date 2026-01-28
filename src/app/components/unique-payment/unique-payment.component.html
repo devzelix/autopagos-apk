@@ -63,52 +63,21 @@
 
 </div>
 
-<!-- Modal for Advance Payment Selection (Counter Style) -->
-<div *ngIf="showAdvancePaymentModal" class="advance-payment-modal-overlay" (click)="closeAdvancePaymentModal()">
-  <div class="advance-payment-modal-compact" (click)="$event.stopPropagation()">
 
-    <button class="close-btn-compact" (click)="closeAdvancePaymentModal()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-        <path fill="currentColor"
-          d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z" />
-      </svg>
-    </button>
+<!-- Modals (Independent Components) -->
+<app-advance-payment-modal
+  [isOpen]="showAdvancePaymentModal"
+  [lastMountBsValue]="lastMountBsValue"
+  [lastMountUSDValue]="lastMountUSDValue"
+  (close)="closeAdvancePaymentModal()"
+  (confirm)="onAdvancePaymentConfirm($event)">
+</app-advance-payment-modal>
 
-    <p class="modal-title-compact">Selecciona cuántos meses deseas adelantar adicionalmente</p>
+<app-edit-amount-modal
+  [isOpen]="showEditAmountModal"
+  [currentAmountUSD]="mountTotalMonthUSD"
+  [tasaCambio]="tasaCambio"
+  (close)="closeEditAmountModal()"
+  (confirm)="onEditAmountConfirm($event)">
+</app-edit-amount-modal>
 
-    <div class="counter-section">
-      <button class="counter-btn" (click)="decrementMonth()" [disabled]="selectedAdvanceMonth <= 1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M19 13H5v-2h14z" />
-        </svg>
-      </button>
-
-      <div class="counter-display">
-        <div class="counter-number">{{ selectedAdvanceMonth || 1 }}</div>
-        <div class="counter-label">{{ (selectedAdvanceMonth || 1) > 1 ? 'MESES' : 'MES' }}</div>
-      </div>
-
-      <button class="counter-btn" (click)="incrementMonth()" [disabled]="selectedAdvanceMonth >= 3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
-        </svg>
-      </button>
-    </div>
-
-    <div class="price-display">
-      <div class="price-row">
-        <span class="price-label">Monto Bs:</span>
-        <span class="price-value">{{ calculateAdvanceAmountBs(selectedAdvanceMonth || 1) | number:'1.2-2' }}</span>
-      </div>
-      <div class="price-row">
-        <span class="price-label">Monto USD:</span>
-        <span class="price-value">{{ calculateAdvanceAmountUSD(selectedAdvanceMonth || 1) | currency }}</span>
-      </div>
-    </div>
-
-    <button class="confirm-btn-compact" (click)="confirmAdvancePayment()">
-      Continuar
-    </button>
-
-  </div>
-</div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MultiplePaymentComponent } from '../multiple-payment/multiple-payment.component';
 
 @Component({
@@ -6,43 +6,42 @@ import { MultiplePaymentComponent } from '../multiple-payment/multiple-payment.c
   templateUrl: './unique-payment.component.html',
   styleUrls: ['./unique-payment.component.scss']
 })
-export class UniquePaymentComponent implements OnInit {
-  @ViewChild('multiplePaymentComponent') multiplePaymentComponent: MultiplePaymentComponent;
+export class UniquePaymentComponent {
+  @ViewChild(MultiplePaymentComponent) multiplePaymentComponent!: MultiplePaymentComponent;
 
-  @Input() tasaCambio: string = '0.00';
   @Input() saldoUSD: string = '0.00';
   @Input() saldoBs: string = '0.00';
-  @Input() subscription: string = '0.00';
-  @Input() monthPayCount: number = 1;
+  @Input() tasaCambio: string = '1.00';
+  @Input() setTitleFn!: (title: string) => void;
+
   @Input() mountTotalMonthBs: string = '0.00';
   @Input() mountTotalMonthUSD: string = '0.00';
-  @Input() setTitleFn: (newTitle: string) => void;
+  @Input() subscription: any;
+  @Input() monthPayCount: number = 1;
 
   @Output() totalBs = new EventEmitter<string>();
   @Output() totalUSD = new EventEmitter<string>();
-  @Output() onEditAmountEvent = new EventEmitter<void>()
-
-  public activePaymentMonth: number = 1;
-  public viewMultiplePayments: boolean = true;
-  public viewUniquePayments: boolean = false;
+  @Output() onEditAmountEvent = new EventEmitter();
+  
+  public viewMultiplePayments: boolean = false;
+  public viewUniquePayments: boolean = true;
   public morePayment: string = 'Adelanta tus pagos';
   public classBtn: string = 'btn-more-payments';
 
   // Modal properties
   public showAdvancePaymentModal: boolean = false;
   public selectedAdvanceMonth: number = 1;
-  public isAdvancePaymentActive: boolean = false; // Track if user has selected advance payment
+  public isAdvancePaymentActive: boolean = false;
 
-  private lastMountBsValue: string = '0.00';
-  private lastMountUSDValue: string = '0.00';
+  // Edit amount modal properties
+  public showEditAmountModal: boolean = false;
+  public customAmountInput: string = '';
+  public isEditingAmount: boolean = false;
+
+  public lastMountBsValue: string = '0.00';
+  public lastMountUSDValue: string = '0.00';
 
   constructor() { }
-
-  ngOnInit(): void {
-    this.setTitleFn('Pago de mensualidad')
-    this.lastMountBsValue = this.mountTotalMonthBs
-    this.lastMountUSDValue = this.mountTotalMonthUSD;
-  }
 
   /**
    * Opens the advance payment modal or resets to default
@@ -52,9 +51,19 @@ export class UniquePaymentComponent implements OnInit {
       // If advance is active, reset to default
       this.resetToDefaultPayment();
     } else {
+      // Ensure we have the current single-month values as the base for advance calculations
+      this.lastMountBsValue = this.mountTotalMonthBs || this.lastMountBsValue;
+      this.lastMountUSDValue = this.mountTotalMonthUSD || this.lastMountUSDValue;
+      // If mountTotalMonth values are empty, fallback to saldo values converted
+      if (!this.lastMountBsValue || this.lastMountBsValue === '0.00') {
+        const usd = parseFloat(this.saldoUSD || '0') || 0;
+        const tasa = parseFloat(this.tasaCambio || '1') || 1;
+        this.lastMountUSDValue = usd.toFixed(2);
+        this.lastMountBsValue = (usd * tasa).toFixed(2);
+      }
+
       // If not active, open modal
       this.showAdvancePaymentModal = true;
-      this.selectedAdvanceMonth = 1; // Start at 1 month
     }
   }
 
@@ -63,70 +72,49 @@ export class UniquePaymentComponent implements OnInit {
    */
   public closeAdvancePaymentModal(): void {
     this.showAdvancePaymentModal = false;
-    this.selectedAdvanceMonth = 1;
   }
 
   /**
-   * Increments the selected month count
+   * Handles confirmation from advance payment modal
    */
-  public incrementMonth(): void {
-    if (this.selectedAdvanceMonth < 3) {
-      this.selectedAdvanceMonth++;
-    }
+  public onAdvancePaymentConfirm(event: { months: number; amountBs: string; amountUSD: string }): void {
+    this.mountTotalMonthBs = event.amountBs;
+    this.mountTotalMonthUSD = event.amountUSD;
+
+    this.totalBs.emit(this.mountTotalMonthBs);
+    this.totalUSD.emit(this.mountTotalMonthUSD);
+
+    this.setTitleFn(`Pago de ${event.months + 1} ${event.months + 1 > 1 ? 'meses' : 'mes'}`);
+    this.isAdvancePaymentActive = true;
   }
 
   /**
-   * Decrements the selected month count
+   * Opens the edit amount modal
    */
-  public decrementMonth(): void {
-    if (this.selectedAdvanceMonth > 1) {
-      this.selectedAdvanceMonth--;
-    }
+  public openEditAmountModal(): void {
+    this.showEditAmountModal = true;
   }
 
   /**
-   * Selects a month option in the modal
+   * Closes the edit amount modal
    */
-  public selectAdvanceMonth(months: number): void {
-    this.selectedAdvanceMonth = months;
+  public closeEditAmountModal(): void {
+    this.showEditAmountModal = false;
   }
 
   /**
-   * Calculates the advance amount in Bs for the selected months
+   * Handles confirmation from edit amount modal
    */
-  public calculateAdvanceAmountBs(months: number): number {
-    const monthlyBs = parseFloat(this.lastMountBsValue);
-    return monthlyBs * (months + 1); // +1 because it includes the current month
-  }
+  public onEditAmountConfirm(event: { amountUSD: string; amountBs: string }): void {
+    this.mountTotalMonthUSD = event.amountUSD;
+    this.mountTotalMonthBs = event.amountBs;
 
-  /**
-   * Calculates the advance amount in USD for the selected months
-   */
-  public calculateAdvanceAmountUSD(months: number): number {
-    const monthlyUSD = parseFloat(this.lastMountUSDValue);
-    return monthlyUSD * (months + 1); // +1 because it includes the current month
-  }
+    this.totalBs.emit(this.mountTotalMonthBs);
+    this.totalUSD.emit(this.mountTotalMonthUSD);
 
-  /**
-   * Confirms the advance payment selection and updates the amounts
-   */
-  public confirmAdvancePayment(): void {
-    if (this.selectedAdvanceMonth) {
-      const newAmountBs = this.calculateAdvanceAmountBs(this.selectedAdvanceMonth);
-      const newAmountUSD = this.calculateAdvanceAmountUSD(this.selectedAdvanceMonth);
-
-      this.mountTotalMonthBs = newAmountBs.toFixed(2);
-      this.mountTotalMonthUSD = newAmountUSD.toFixed(2);
-
-      this.totalBs.emit(this.mountTotalMonthBs);
-      this.totalUSD.emit(this.mountTotalMonthUSD);
-
-      this.setTitleFn(`Pago de ${this.selectedAdvanceMonth + 1} ${this.selectedAdvanceMonth + 1 > 1 ? 'meses' : 'mes'}`);
-
-      this.isAdvancePaymentActive = true; // Mark advance as active
-
-      this.closeAdvancePaymentModal();
-    }
+    this.setTitleFn('Pago personalizado');
+    this.isAdvancePaymentActive = false;
+    this.isEditingAmount = true;
   }
 
   /**
@@ -146,16 +134,13 @@ export class UniquePaymentComponent implements OnInit {
 
   public morePayments() {
     if (this.viewMultiplePayments) {
-
       this.viewMultiplePayments = false;
       this.viewUniquePayments = true;
       this.morePayment = 'Pagar un mes';
       this.classBtn = 'btn-one-payment';
       this.setTitleFn('Seleccione  cuantos meses desea adelantar adicionalmente');
-      this.multiplePaymentComponent.setMonthPayment(1)
-
+      this.multiplePaymentComponent.setMonthPayment(1);
     } else {
-
       this.viewMultiplePayments = true;
       this.viewUniquePayments = false;
       this.mountTotalMonthBs = this.lastMountBsValue;
@@ -165,7 +150,6 @@ export class UniquePaymentComponent implements OnInit {
       this.setTitleFn('Paga tu mensualidad');
       this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2));
       this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2));
-
     }
   }
 
@@ -180,7 +164,8 @@ export class UniquePaymentComponent implements OnInit {
   }
 
   public onEditAmount = () => {
-    this.onEditAmountEvent.emit()
+    // Open edit amount modal
+    this.openEditAmountModal();
   }
 
   /**
@@ -190,5 +175,4 @@ export class UniquePaymentComponent implements OnInit {
   public hasDebt(): boolean {
     return parseFloat(this.saldoUSD) > 0;
   }
-
 }
