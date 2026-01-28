@@ -928,11 +928,21 @@ label.form-control-label {
     display: flex;
     flex-direction: column;
     justify-content: center; // Centrar contenido si sobra espacio
+
+    // Adaptación a pantallas cortas (height)
+    @media (max-height: 700px) {
+      padding: 1.5rem 1rem !important; // Reducir padding si es bajita
+    }
   }
 
   .form-dni-keyboard-container {
     gap: 1.5rem !important;
     // Asegurar que el teclado no empuje demasiado
     flex-shrink: 1;
+
+    // Adaptación a pantallas cortas (height)
+    @media (max-height: 700px) {
+      gap: 0.5rem !important; // Reducir gap si es bajita
+    }
   }
 }
