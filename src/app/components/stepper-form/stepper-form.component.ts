@@ -38,6 +38,7 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
   public stepForm: FormGroup;
   public formData: any = {};
   public activeFieldName: string = '';
+  public keyboardVisible: boolean = false;
   public showInfoPopover: string | null = null;
 
   private fieldSubscription: Subscription | null = null;
@@ -139,7 +140,7 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.stepForm.valid) {
       // Guardar datos del step actual
       Object.assign(this.formData, this.stepForm.value);
-      
+
       if (this.currentStep < this.steps.length - 1) {
         this.currentStep++;
         this.buildForm();
@@ -148,10 +149,14 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Último step completado
         this.formComplete.emit(this.formData);
       }
+
+      // Hide keyboard when navigating forward
+      this.keyboardVisible = false;
     } else {
       this.markFormGroupTouched(this.stepForm);
     }
   }
+
 
   /**
    * Retrocede al step anterior
@@ -162,6 +167,8 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentStep--;
       this.buildForm();
       this.stepChange.emit({ step: this.currentStep, data: this.formData });
+      // Hide keyboard when navigating back
+      this.keyboardVisible = false;
     }
   }
 
@@ -261,6 +268,37 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
   setActiveField(fieldName: string): void {
     this.activeFieldName = fieldName;
     this.cdr.markForCheck();
+
+    if (this.useVirtualKeyboard) {
+      const field = this.getCurrentField(fieldName);
+      if (field) {
+        // Show keyboard for numeric/tel/monto inputs, hide for others
+        if (field.type === 'tel' || field.type === 'number' || field.name === 'monto') {
+          this.keyboardVisible = true;
+        } else {
+          this.keyboardVisible = false;
+        }
+      }
+
+      // Scroll focused input into view so it appears above the fixed keyboard
+      setTimeout(() => this.scrollFieldIntoView(fieldName), 120);
+    }
+  }
+
+  private scrollFieldIntoView(fieldName: string): void {
+    if (!fieldName) return;
+    if (!this.inputElements) return;
+    const elRef = this.inputElements.toArray().find(e => e.nativeElement && e.nativeElement.id === fieldName);
+    if (elRef && elRef.nativeElement) {
+      try {
+        elRef.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // small upward adjustment to leave space for keyboard
+        setTimeout(() => window.scrollBy({ top: -110, left: 0, behavior: 'smooth' }), 200);
+      } catch (err) {
+        // fallback: focus element
+        elRef.nativeElement.focus();
+      }
+    }
   }
 
   /**

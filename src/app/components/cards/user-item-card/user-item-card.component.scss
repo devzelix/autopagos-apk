@@ -1,123 +1,84 @@
 // Variables (match app styles)
+// Compact, mobile-first user card
 $fibex-blue: #215288;
-$text-dark: #333;
-$text-grey: #666;
+$text-dark: #222;
+$muted: #667085;
 
 .user-select-item-card {
   width: 100%;
-  max-width: 470px !important;
-  min-width: 270px;
-  height: auto; // Auto height for flexibility
-  min-height: 200px;
-  margin: 0.5rem auto; // Center in grid/list
-
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px -5px rgba(33, 82, 136, 0.1); // Soft blue shadow
-
-  color: $text-dark;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
   box-sizing: border-box;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-family: 'Poppins', sans-serif !important;
-  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease;
+  font-family: 'Poppins', sans-serif;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px -5px rgba(33, 82, 136, 0.25);
-    border-color: rgba(33, 82, 136, 0.2);
+  &:hover { transform: translateY(-4px); box-shadow: 0 10px 26px rgba(16,24,40,0.06); }
+  &:active { transform: translateY(-1px) scale(.998); }
+
+  .card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
 
-  &:active {
-    transform: scale(0.98);
+  .contract-number {
+    font-weight: 700;
+    color: $fibex-blue;
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  h1 {
-    font-weight: 800;
-    font-size: 2rem;
-    text-align: start;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 0.8rem;
-    color: $fibex-blue; // Contact number in Blue
+  .last-payment {
+    font-size: 0.78rem;
+    color: $muted;
+  }
+
+  .card-right {
     display: flex;
     align-items: center;
-    line-height: 1.2;
+    gap: 0.75rem;
+    min-width: 120px;
+    justify-content: flex-end;
   }
 
-  .content-user-select-card {
+  .status-badge {
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .status-active { background: linear-gradient(90deg,#2dbd05,#1fa61a); }
+  .status-pending { background: linear-gradient(90deg,#ffb020,#ff8a00); }
+  .status-cancelled { background: linear-gradient(90deg,#9aa0a6,#708090); }
+
+  .balance {
+    text-align: right;
     display: flex;
-    gap: 1rem;
-    flex: 1;
-    width: 100%;
-    margin-bottom: 1rem;
-
-    .content-user-select-card-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-
-      &.content-user-select-end-position {
-        align-items: flex-end;
-
-        h5,
-        p {
-          text-align: end;
-        }
-      }
-
-      h5 {
-        font-size: 0.85rem;
-        color: $text-grey;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.2rem;
-        font-weight: 600;
-      }
-
-      p {
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: $text-dark;
-        word-break: break-word;
-
-        &.capitalized {
-          text-transform: capitalize;
-          color: #2dbd05; // Green for status if active, styling generally handled by logic but generic green here
-        }
-      }
-    }
+    flex-direction: column;
+    gap: 2px;
+    min-width: 90px;
   }
 
-  .user-select-item-content {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px dashed #e0e0e0;
-    gap: 0.5rem;
+  .balance-label { font-size: 0.72rem; color: $muted; }
+  .balance-value { font-weight: 800; color: $text-dark; font-size: 0.95rem; }
+}
 
-    h5 {
-      font-size: 0.8rem;
-      color: $text-grey;
-      margin: 0;
-      font-weight: 500;
-    }
-
-    p {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: $text-dark;
-      margin: 0;
-      text-align: end;
-    }
-  }
-
+/* Larger screens: show compact cards in a grid row */
+@media (min-width: 640px) {
+  .user-select-item-card { padding: 0.9rem 1rem; border-radius: 14px; }
 }
