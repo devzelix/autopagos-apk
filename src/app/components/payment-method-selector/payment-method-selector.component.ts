@@ -72,4 +72,22 @@ export class PaymentMethodSelectorComponent {
     };
     return icons[icon] || '';
   }
+
+  /**
+   * Obtiene el nombre del método de pago por su ID
+   */
+  getMethodName(methodId: string | null): string {
+    if (!methodId) return '';
+    const method = this.paymentMethods.find(m => m.id === methodId);
+    return method?.name || '';
+  }
+
+  /**
+   * Obtiene la información del método de pago por su ID
+   */
+  getMethodInfo(methodId: string | null): string {
+    if (!methodId) return '';
+    const method = this.paymentMethods.find(m => m.id === methodId);
+    return method?.infoText || '';
+  }
 }

@@ -98,6 +98,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public showPuntoVentaForm: boolean = false;
 
+  public showDebitoInmediatoForm: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
@@ -1009,6 +1011,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedPaymentMethod = method;
     this.showPaymentMethodSelector = false;
     this.showPuntoVentaForm = false;
+    this.showDebitoInmediatoForm = false;
     this.showC2PForm = false;
 
     if (method === 'c2p') {
@@ -1016,7 +1019,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       // Inicializar datos del formulario C2P con valores del modal
       this.c2pFormData = {
         nacionalidad: this.typeDNI,
-        cedula: this.dni?.value || '',
+        // cedula: this.dni?.value || '',
         monto: this.mount?.value || this.mountValue
       };
     } else if (method === 'punto_venta') {
@@ -1024,7 +1027,12 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showPuntoVentaForm = true;
     } else if (method === 'debito_inmediato') {
       // TODO: Implementar flujo de d\u00e9bito inmediato
-      this.showC2PForm = false;
+      this.showDebitoInmediatoForm = true;
+      this.c2pFormData = {
+        nacionalidad: this.typeDNI,
+        // cedula: this.dni?.value || '',
+        monto: this.mount?.value || this.mountValue
+      };
     }
 
     this.cdr.markForCheck();
@@ -1178,6 +1186,13 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     } 
     else if (this.showPuntoVentaForm) {
       this.showPuntoVentaForm = false;
+      this.showPaymentMethodSelector = true;
+      this.selectedPaymentMethod = null;
+      this.c2pFormData = {};
+      this.cdr.markForCheck();
+    }
+    else if (this.showDebitoInmediatoForm) {
+      this.showDebitoInmediatoForm = false;
       this.showPaymentMethodSelector = true;
       this.selectedPaymentMethod = null;
       this.c2pFormData = {};
