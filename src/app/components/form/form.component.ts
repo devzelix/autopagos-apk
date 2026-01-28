@@ -91,7 +91,7 @@ export class FormComponent implements OnInit {
   handleKeyboard(event: KeyboardEvent) {
 
     // NO ejecutar si el login del admin está visible (evita interceptar eventos del formulario de login)
-    if (!this.isAdminLogged) {
+    if (environment.production && !this.isAdminLogged) {
       return; // Salir si el admin no ha iniciado sesión
     }
 
@@ -315,7 +315,7 @@ export class FormComponent implements OnInit {
   // Control para mostrar el login del administrador al inicio
   // false = mostrar login, true = ocultar login (mostrar contenido principal)
   // Inicializado en null para no mostrar nada hasta validar sesión
-  public isAdminLogged: boolean | null = null;
+  public isAdminLogged: boolean | null = true; // null;
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -604,10 +604,13 @@ export class FormComponent implements OnInit {
     const session = this._checkoutSessionService.getSession();
     console.log('🔍 Sesión encontrada en localStorage:', session);
     
-    if (!session) {
+    if (environment.production && !session) {
       console.log('❌ No hay sesión guardada, mostrando login');
       this.isAdminLogged = false;
       return;
+    }
+    else {
+      this.isAdminLogged = true;
     }
     
     // Validar la sesión
@@ -701,13 +704,13 @@ export class FormComponent implements OnInit {
         this.isAdminLogged = true; // Ocultar login, mostrar contenido
         console.log('Sesión de caja restaurada exitosamente');
         this._checkoutSessionService.renewSession();
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
+      } else if (environment.production && result.dismiss === Swal.DismissReason.cancel) {
         // Usuario quiere hacer nueva asignación, limpiar sesión y mostrar login
         this._checkoutSessionService.clearSession();
         this.isAdminLogged = false; // Mostrar login
         console.log('Usuario eligió hacer nueva asignación, mostrando login');
       }
-    } else {
+    } else if (environment.production) {
       // No hay sesión válida, mostrar login directamente para asignar caja y POS
       console.log('No hay sesión válida, mostrando login para asignar caja y POS');
       this.isAdminLogged = false; // Mostrar login
@@ -3090,7 +3093,12 @@ export class FormComponent implements OnInit {
       this._checkoutSessionService.clearSession();
     }
     console.log('EVENT ADMIN LOGIN', $event)
-    this.isAdminLogged = $event;
+    if (environment.production) {
+      this.isAdminLogged = $event;
+    }
+    else {
+      this.isAdminLogged = true;
+    }
   }
 
   // Variables para detectar doble tap en el logo del formulario

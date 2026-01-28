@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { IAuthData } from 'src/app/interfaces/auth-response.interface';
 import { ICheckout } from 'src/app/interfaces/checkout.interface';
 import { IPosDevice } from 'src/app/interfaces/pos-device.interface';
+import { sedeData } from 'src/app/mock/data';
 
 @Injectable({
   providedIn: 'root'
@@ -61,11 +62,14 @@ export class AuthAdminPanelService {
 
     try {
       console.log('🔍 Buscando checkouts para sede:', idSede);
-      const response = await axios.get(environment.URL_API_MASTER + `/checkouts/sede/${idSede}`, {
+      const response = { data: sedeData};
+
+      //TODO: apuntar credenciales real y no el mock
+      /*  await axios.get(environment.URL_API_MASTER + `/checkouts/sede/${idSede}`, {
         headers: {
           'token': environment.TOKEN_API_MASTER
         }
-      });
+      }); */
 
       console.log('📦 Respuesta completa del endpoint:', response);
       console.log('📦 response.data:', response.data);
