@@ -111,7 +111,14 @@ export const environment = {
     folder: 'Pagos',
   },
 
-  // API Telegram Support
-  url_api_telegram: 'https://telegramfront.fibex.info/',
-  api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
-};
+    // API Telegram Support
+
+    url_api_telegram: 'https://telegramfront.fibex.info/',
+
+    api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
+
+    kioskApiUrl: 'http://localhost:3000/api/kiosks',
+
+  };
+
+  

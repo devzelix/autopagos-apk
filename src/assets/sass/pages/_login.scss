@@ -5,26 +5,20 @@
   overflow-y: auto;
   overflow-x: hidden;
 
-  background-image: url('../../../assets/images/payment-img-1.jpg') !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
+  // Background removido para usar el global
+  background: transparent !important;
 }
 
 .bg-app {
-  background: linear-gradient(-135deg, rgb(181,193,215), rgb(255, 255, 255));
+  // background: linear-gradient(-135deg, rgb(181,193,215), rgb(255, 255, 255));
   width: 100%;
-  background-repeat: no-repeat;
+  background: transparent;
   min-height: 100vh;
 }
 
 .default-bg {
-  // background-image: linear-gradient($back-ground-fibex 30%, whitesmoke 30%);
-  // background-image: linear-gradient(rgba(69, 127, 192, 1) 11%, rgba(7, 195, 176, 1) 36%, whitesmoke 30%);
-  
-  // background: linear-gradient(0deg, rgba(69, 127, 192, 0.5), rgba(7, 195, 176, 0.5));
-  background: #215288b0;
+  // background: #215288b0;
   width: 100%;
-  background-repeat: no-repeat;
-  // min-height: 100vh;
+  background: transparent;
   min-height: calc(100vh - 2px);
 }

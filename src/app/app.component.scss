@@ -20,8 +20,295 @@
 .flex-container-column {
   display: flex;
   flex-direction: column;
-
+  position: relative;
+  z-index: 1; // Contenido por encima del fondo
+  min-height: 100vh;
 }
+
+#content-scrollable {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  
+  // 1. FONDO BASE SÓLIDO
+  background-color: #215288; 
+
+  // 2. CAPA IMAGEN
+  &::before {
+    content: '';
+    position: fixed; // Fixed para que sea estático al hacer scroll
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background-image: url('../assets/images/payment-img-1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -2;
+  }
+
+  // 3. CAPA EFECTOS: AZUL + BLUR
+  &::after {
+    content: '';
+    position: fixed; // Fixed para que sea estático
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(33, 82, 136, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+    will-change: backdrop-filter;
+  }
+}
+
+.kiosk-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 9999;
+  
+  // Eliminamos fondos de aquí porque ya los tiene el padre #content-scrollable
+  background: transparent; 
+
+  // CONFIGURACIÓN DE CONTENIDO (Header, Cards, Footer)
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: white;
+  padding: 1rem;
+  gap: 3rem;
+
+  // Asegurar que el texto quede encima de las capas de fondo
+  > * {
+    position: relative;
+    z-index: 10;
+  }
+
+  .brand-header {
+    text-align: center;
+    // Quitamos márgenes manuales para usar gap
+    margin: 0;
+    animation: fadeIn 0.8s ease-in; // Entrada suave para el logo
+    
+    .logo-overlay {
+      height: 90px; // Logo un poco más grande
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      margin: 0;
+    }
+  }
+
+  .status-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  // Estilo minimalista para LOADING
+  .loading-minimal {
+    text-align: center;
+    color: white;
+    // Animación de entrada suave
+    animation: fadeIn 0.5s ease-in forwards;
+
+    h2 {
+      font-size: 1.8rem; // AJUSTADO: Punto medio profesional
+      font-weight: 300;
+      letter-spacing: 1.5px;
+      margin-top: 1.5rem;
+    }
+
+    .loader-ring {
+      width: 80px; // AJUSTADO: Punto medio profesional
+      height: 80px;
+
+      &:after {
+        width: 60px; // Ajuste interno del spinner
+        height: 60px;
+        border-width: 5px; // Grosor estándar
+      }
+    }
+
+    .loader-ring.white:after {
+      border-color: white transparent white transparent; // Spinner blanco
+    }
+  }
+
+  .status-card {
+    background: rgba(255, 255, 255, 0.95); // Casi sólido para legibilidad
+    width: 100%;
+    max-width: 520px; // AJUSTADO: Punto medio ideal
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    text-align: center;
+    color: #333; // Texto oscuro dentro de la tarjeta
+    margin: 0; // Resetear margen
+    
+    // Animación de entrada suave
+    animation: fadeIn 0.5s ease-in forwards;
+
+    .icon-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+
+      // Colores corporativos y sobrios
+      &.warning { color: #215288; background: #e3effa; } // Azul Fibex
+      &.error { color: #b71c1c; background: #ffebee; } // Rojo sobrio
+      &.network { color: #215288; background: #cfd8dc; } // Azul sobre gris claro
+      &.locked { color: #215288; background: #e3effa; } // Azul Fibex (Consistencia Total)
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      color: #215288; // Azul Fibex
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .tech-details {
+      border-top: 1px solid #eee;
+      padding-top: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      .uuid-container {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+
+        small {
+          display: block;
+          color: #999;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          margin-bottom: 0.5rem;
+          letter-spacing: 1px;
+        }
+
+        code {
+          color: #333;
+          font-family: 'Consolas', 'Monaco', monospace;
+          font-size: 1.3rem;
+          font-weight: bold;
+          word-break: break-all;
+          display: block;
+        }
+      }
+    }
+
+    .btn-primary-action {
+      background: linear-gradient(to right, #215288, #2d7bc2); // Azul Fibex Gradient
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(33, 82, 136, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex; // Para alinear ícono y texto
+      justify-content: center;
+      align-items: center;
+      gap: 12px; // Espacio entre ícono y texto
+
+      i {
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background: linear-gradient(to right, #1a426d, #2566a3);
+      }
+    }
+
+    .btn-text {
+        margin-top: 1rem;
+        background: none;
+        border: none;
+        color: #7f8c8d;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+  }
+
+  .footer-info {
+    // El margen superior ya lo maneja el gap del padre flex
+    margin: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5); // Más sutil
+    font-size: 0.75rem; // Un poco más pequeño
+    font-weight: 500;
+    letter-spacing: 1px; // Espaciado elegante
+    text-transform: uppercase; // Estilo corporativo
+    animation: fadeIn 1s ease-in; // Entrada aún más lenta para elegancia
+  }
+
+  // Loader animation
+  .loader-ring {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+
+    &:after {
+      content: " ";
+      display: block;
+      width: 46px;
+      height: 46px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 5px solid #215288;
+      border-color: #215288 transparent #215288 transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lds-dual-ring {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Ya no necesitamos fadeInUp, lo reemplazamos por fadeIn en el código
+
 .img-swal {
   z-index: 9999999999999999999 !important;
   .swal-title {

@@ -57,7 +57,7 @@ import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.compon
 const routes: Routes = [
   { path: '', component: FormComponent },
   { path: 'pay', component: FormComponent },
-  { path: 'serial', component: SerialComponent },
+  // { path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
   { path: 'stripe', component: StripeComponent },

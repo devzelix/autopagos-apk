@@ -315,7 +315,7 @@ export class FormComponent implements OnInit {
   // Control para mostrar el login del administrador al inicio
   // false = mostrar login, true = ocultar login (mostrar contenido principal)
   // Inicializado en null para no mostrar nada hasta validar sesión
-  public isAdminLogged: boolean | null = null;
+  public isAdminLogged: boolean | null = true; // Forzar true para el flujo automático
 
   constructor(
     public registerPayService: RegisterPayService,
@@ -526,9 +526,9 @@ export class FormComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     // IMPORTANTE: Validar sesión ANTES de inicializar cualquier cosa
     // Esto asegura que el Swal aparezca antes de que se renderice el login
-    console.log('Iniciando validación de sesión...');
-    await this.validateAndRestoreSession();
-    console.log('Validación de sesión completada. isAdminLogged:', this.isAdminLogged);
+    // console.log('Iniciando validación de sesión...');
+    // await this.validateAndRestoreSession();
+    // console.log('Validación de sesión completada. isAdminLogged:', this.isAdminLogged);
     
     // Configurar listener para resetear al welcome-view cuando se oculta el carrusel
     this.setupResetToWelcomeListener();
