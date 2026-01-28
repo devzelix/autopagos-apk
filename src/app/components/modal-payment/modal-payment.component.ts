@@ -41,9 +41,13 @@ import {
   PaymentMethodType, 
   IC2PPayload, 
   IC2PResponse,
-  IStepConfig 
+  IStepConfig,
+  IGenerateOTPPayload,
+  IGenerateOTPResponse,
+  IProcessDebitoPayload,
+  IProcessDebitoResponse
 } from 'src/app/interfaces/payment-methods.interface';
-import { C2P_STEP_CONFIG } from 'src/app/config/payment-methods.config';
+import { C2P_STEP_CONFIG, DEBITO_INMEDIATO_STEP_CONFIG } from 'src/app/config/payment-methods.config';
 
 @Component({
   selector: 'app-modal-payment',
@@ -99,6 +103,10 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   public showPuntoVentaForm: boolean = false;
 
   public showDebitoInmediatoForm: boolean = false;
+  public debitoStepConfig: IStepConfig[] = DEBITO_INMEDIATO_STEP_CONFIG;
+  public debitoFormDataTemp: any = {};
+  public otpGenerated: boolean = false;
+  public processingDebito: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -1173,6 +1181,322 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Maneja el cambio de step en el formulario de Débito Inmediato
+   */
+  public async onDebitoFormStepChange(event: { step: number; data: any }): Promise<void> {
+    console.log('📋 Step change débito inmediato:', event);
+    
+    // Si avanza del step 1 al step 2, generar OTP
+    if (event.step === 1 && !this.otpGenerated) {
+      this.debitoFormDataTemp = { ...event.data };
+      await this.generateOTPForDebito(event.data);
+    }
+  }
+
+  /**
+   * Genera el OTP para débito inmediato
+   */
+  private async generateOTPForDebito(formData: any): Promise<void> {
+    try {
+      // Validar datos del step 1
+      const validation = this._webhookAutopagoS.validateDebitoData(formData, 1);
+      if (!validation.valid) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Datos inválidos',
+          text: validation.error,
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+        return;
+      }
+
+      // Mostrar loading
+      Swal.fire({
+        title: 'Generando código OTP',
+        html: 'Por favor espere...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Construir payload para generar OTP
+      const payload: IGenerateOTPPayload = {
+        Banco: formData.banco,
+        Monto: formData.monto,
+        Telefono: formData.telefono,
+        Cedula: `${formData.nacionalidad}${formData.cedula}`
+      };
+
+      // Llamar al servicio para generar OTP
+      const response = await this._webhookAutopagoS.generateDebitoOTP(payload);
+      
+      console.log('✅ OTP generado:', response);
+
+      if (response.status === 200 && response.data.success) {
+        this.otpGenerated = true;
+        
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          icon: 'success',
+          title: '¡Código enviado!',
+          html: `
+            <div style="text-align: left; padding: 1rem;">
+              <p style="margin-bottom: 1rem;"><strong>${response.data.message}</strong></p>
+              <p style="margin: 0.5rem 0;">Revisa tu teléfono y ingresa el código PIN que recibiste por SMS.</p>
+            </div>
+          `,
+          confirmButtonText: 'Continuar',
+          allowOutsideClick: false,
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            htmlContainer: 'fibex-swal-html',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+      } else {
+        throw new Error(response.data.message || 'No se pudo generar el OTP');
+      }
+
+      this.cdr.markForCheck();
+      
+    } catch (error: any) {
+      console.error('❌ Error generando OTP:', error);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al generar OTP',
+        text: error.message || 'Ocurrió un error al generar el código. Por favor intente nuevamente.',
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          confirmButton: 'fibex-swal-confirm-btn'
+        },
+        buttonsStyling: false
+      });
+      
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Maneja la finalización del formulario de Débito Inmediato
+   */
+  public async onDebitoFormComplete(formData: any): Promise<void> {
+    try {
+      this.processingDebito = true;
+      this.cdr.markForCheck();
+
+      // Validar datos completos
+      const validation = this._webhookAutopagoS.validateDebitoData(formData, 2);
+      if (!validation.valid) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Datos inválidos',
+          text: validation.error,
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+        this.processingDebito = false;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      // Mostrar loading con contador circular regresivo
+    let timerInterval: any;
+    let timeLeft = 50; // 50 segundos
+    const totalTime = 50;
+    
+    Swal.fire({
+      title: 'Procesando pago',
+      html: `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+          <div style="position: relative; width: 150px; height: 150px;">
+            <!-- Círculo de fondo -->
+            <svg width="150" height="150" style="transform: rotate(-90deg);">
+              <circle cx="75" cy="75" r="65" fill="none" stroke="#e2e8f0" stroke-width="8"/>
+              <circle id="progress-circle" cx="75" cy="75" r="65" fill="none" 
+                      stroke="#3b82f6" stroke-width="8" 
+                      stroke-dasharray="408.4" 
+                      stroke-dashoffset="0"
+                      style="transition: stroke-dashoffset 1s linear;"/>
+            </svg>
+            <!-- Contador en el centro -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        font-size: 2rem; font-weight: bold; color: #3b82f6;">
+              <span id="countdown-timer">${timeLeft}</span>s
+            </div>
+          </div>
+          <div style="width: 100%; text-align: center;">
+            <p style="margin: 0; color: #64748b; font-size: 0.95rem;">
+              Estamos procesando tu pago de forma segura
+            </p>
+            <div style="margin-top: 1rem; width: 100%; background: #e2e8f0; height: 4px; border-radius: 2px; overflow: hidden;">
+              <div id="progress-bar" style="height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); width: 100%; transition: width 1s linear;"></div>
+            </div>
+          </div>
+        </div>
+      `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        const progressCircle = document.getElementById('progress-circle');
+        const countdownTimer = document.getElementById('countdown-timer');
+        const progressBar = document.getElementById('progress-bar');
+        const circumference = 2 * Math.PI * 65; // 2πr
+        
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          
+          if (timeLeft >= 0 && countdownTimer && progressCircle && progressBar) {
+            // Actualizar contador
+            countdownTimer.textContent = timeLeft.toString();
+            
+            // Actualizar círculo de progreso
+            const progress = timeLeft / totalTime;
+            const offset = circumference * (1 - progress);
+            progressCircle.style.strokeDashoffset = offset.toString();
+            
+            // Actualizar barra de progreso
+            progressBar.style.width = `${progress * 100}%`;
+            
+            // Cambiar color cuando queda poco tiempo
+            if (timeLeft <= 10) {
+              progressCircle.style.stroke = '#ef4444';
+              countdownTimer.style.color = '#ef4444';
+            } else if (timeLeft <= 20) {
+              progressCircle.style.stroke = '#f59e0b';
+              countdownTimer.style.color = '#f59e0b';
+            }
+          }
+          
+          if (timeLeft < 0) {
+            clearInterval(timerInterval);
+          }
+        }, 1000);
+      },
+      willClose: () => {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+      }
+    });
+
+      // Construir payload para procesar pago
+      const payload: IProcessDebitoPayload = {
+        Banco: formData.banco,
+        Monto: formData.monto,
+        Telefono: formData.telefono,
+        Cedula: `${formData.nacionalidad}${formData.cedula}`,
+        Nombre: formData?.nombre ?? 'Usuario',
+        OTP: formData.otp,
+        Concepto: 'Pago Debito inmediato',
+        SaeData: {
+          id_contrato: this.nroContrato,
+          abonado: this.nroAbonado,
+          saldoActual: this.saldoBs
+        }
+      };
+
+      // Realizar petición de pago
+      const response = await this._webhookAutopagoS.processDebitoPayment(payload);
+      
+      console.log('✅ Respuesta débito inmediato:', response);
+
+      if (response.status === 200 && response.data.status) {
+        // Pago exitoso
+        await this.handleSuccessfulDebitoPayment(response, formData);
+      } else {
+        // Pago fallido
+        Swal.fire({
+          icon: 'error',
+          title: 'Pago no procesado',
+          text: response.data.message || 'No se pudo procesar el pago',
+          confirmButtonText: 'Aceptar',
+          customClass: {
+            popup: 'fibex-swal-popup',
+            title: 'fibex-swal-title',
+            confirmButton: 'fibex-swal-confirm-btn'
+          },
+          buttonsStyling: false
+        });
+      }
+
+      this.processingDebito = false;
+      this.otpGenerated = false;
+      this.cdr.markForCheck();
+      
+    } catch (error: any) {
+      console.error('❌ Error procesando débito inmediato:', error);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en el pago',
+        text: error.message || 'Ocurrió un error al procesar el pago. Por favor intente nuevamente.',
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'fibex-swal-popup',
+          title: 'fibex-swal-title',
+          confirmButton: 'fibex-swal-confirm-btn'
+        },
+        buttonsStyling: false
+      });
+      
+      this.processingDebito = false;
+      this.otpGenerated = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Maneja un pago de débito inmediato exitoso
+   */
+  private async handleSuccessfulDebitoPayment(response: IProcessDebitoResponse, formData: any): Promise<void> {
+    const { paymentDetails, saeResponse } = response.data;
+
+    // Mostrar modal de éxito
+    await Swal.fire({
+      icon: 'success',
+      title: '¡Pago Exitoso!',
+      html: `
+        <div style="text-align: left; padding: 1rem;">
+          <p style="margin-bottom: 1rem;"><strong>Su pago ha sido procesado y conciliado automáticamente.</strong></p>
+          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e2e8f0;">
+          <p style="margin: 0.5rem 0;"><strong>Referencia:</strong> ${paymentDetails.reference}</p>
+          <p style="margin: 0.5rem 0;"><strong>Monto:</strong> Bs. ${formData.monto}</p>
+          <p style="margin: 0.5rem 0;"><strong>Mensaje:</strong> ${response.data.message}</p>
+        </div>
+      `,
+      confirmButtonText: 'Aceptar',
+      allowOutsideClick: false,
+      customClass: {
+        popup: 'fibex-swal-popup',
+        title: 'fibex-swal-title',
+        htmlContainer: 'fibex-swal-html',
+        confirmButton: 'fibex-swal-confirm-btn'
+      },
+      buttonsStyling: false,
+      didClose: () => {
+        this.onSubmitPayForm.emit();
+      }
+    });
+  }
+
+  /**
    * Regresa a la selección de métodos de pago o cierra el modal
    */
   public backToMethodSelector(): void {
@@ -1196,6 +1520,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showPaymentMethodSelector = true;
       this.selectedPaymentMethod = null;
       this.c2pFormData = {};
+      this.debitoFormDataTemp = {};
+      this.otpGenerated = false;
       this.cdr.markForCheck();
     }
     else if (this.showPaymentMethodSelector) {

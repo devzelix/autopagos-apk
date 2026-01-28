@@ -131,3 +131,101 @@ export const C2P_STEP_CONFIG: IStepConfig[] = [
     ]
   }
 ];
+
+export const DEBITO_INMEDIATO_STEP_CONFIG: IStepConfig[] = [
+  {
+    stepNumber: 1,
+    title: 'Datos del Pagador',
+    fields: [
+      {
+        name: 'nacionalidad',
+        label: 'Nacionalidad',
+        type: 'select',
+        required: true,
+        options: [
+          { value: 'V', label: 'V - Venezolano' },
+          { value: 'E', label: 'E - Extranjero' },
+          { value: 'J', label: 'J - Jurídico' },
+          { value: 'G', label: 'G - Gubernamental' }
+        ],
+        infoText: 'Selecciona el tipo de documento de identidad'
+      },
+      {
+        name: 'cedula',
+        label: 'Cédula del Pagador',
+        type: 'tel',
+        placeholder: 'Ej: 12345678',
+        required: true,
+        minLength: 6,
+        maxLength: 10,
+        pattern: '^[0-9]*$',
+        infoText: 'Ingresa tu número de cédula sin puntos ni guiones'
+      },
+      {
+        name: 'telefono',
+        label: 'Teléfono del Pagador',
+        type: 'tel',
+        placeholder: 'Ej: 04121234567',
+        required: true,
+        minLength: 11,
+        maxLength: 11,
+        pattern: '^(0412|0414|0424|0416|0426)[0-9]{7}$',
+        infoText: 'Ingresa tu número de teléfono móvil (11 dígitos)'
+      },
+      {
+        name: 'banco',
+        label: 'Banco',
+        type: 'select',
+        required: true,
+        options: BANKS_C2P.map(bank => ({ value: bank.code, label: bank.name })),
+        infoText: 'Selecciona tu banco emisor'
+      },
+      {
+        name: 'monto',
+        label: 'Monto a Pagar (Bs.)',
+        type: 'tel',
+        placeholder: '0.00',
+        required: true,
+        maxLength: 12,
+        pattern: '^[0-9]+(\\.[0-9]{1,2})?$',
+        infoText: 'Ingresa el monto que deseas pagar en bolívares'
+      },
+     /*  {
+        name: 'nombre',
+        label: 'Nombre del Pagador',
+        type: 'text',
+        placeholder: 'Ej: Juan Pérez',
+        required: true,
+        maxLength: 50,
+        infoText: 'Ingresa tu nombre completo'
+      }, */
+      /* {
+        name: 'concepto',
+        label: 'Concepto del Pago',
+        type: 'text',
+        placeholder: 'Ej: Pago de servicio',
+        required: true,
+        maxLength: 100,
+        infoText: 'Describe el concepto del pago'
+      } */
+    ]
+  },
+  {
+    stepNumber: 2,
+    title: 'Confirmación de Pago',
+    infoMessage: 'Ingresa el código PIN que recibiste por SMS para completar tu pago. Este código es temporal y único para esta transacción.',
+    fields: [
+      {
+        name: 'otp',
+        label: 'PIN/OTP recibido por SMS',
+        type: 'tel',
+        placeholder: 'Ej: 123456',
+        required: true,
+        minLength: 4,
+        maxLength: 8,
+        pattern: '^[0-9]*$',
+        infoText: 'Código PIN enviado a tu teléfono para confirmar la transacción'
+      }
+    ]
+  }
+];

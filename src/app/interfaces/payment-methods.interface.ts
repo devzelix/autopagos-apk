@@ -75,3 +75,66 @@ export interface IBankOption {
   code: string;
   name: string;
 }
+
+// Interfaces para Débito Inmediato
+export interface IDebitoInmediatoFormData {
+  nacionalidad: string;
+  cedula: string;
+  telefono: string;
+  banco: string;
+  monto: string;
+  nombre: string;
+  concepto: string;
+  otp?: string;
+}
+
+export interface IGenerateOTPPayload {
+  Banco: string;
+  Monto: string;
+  Telefono: string;
+  Cedula: string;
+}
+
+export interface IGenerateOTPResponse {
+  status: number;
+  data: {
+    code: string;
+    message: string;
+    success: boolean;
+  };
+}
+
+export interface IProcessDebitoPayload {
+  Banco: string;
+  Monto: string;
+  Telefono: string;
+  Cedula: string;
+  Nombre: string;
+  OTP: string;
+  Concepto: string;
+  SaeData: {
+    id_contrato: string;
+    abonado: string;
+    saldoActual: string;
+  };
+}
+
+export interface IProcessDebitoResponse {
+  status: number;
+  data: {
+    status: boolean;
+    message: string;
+    paymentDetails: {
+      code: string;
+      reference: string;
+      success: boolean;
+    };
+    saeResponse: {
+      success: boolean;
+      data: {
+        resultado: string;
+        info: any;
+      };
+    };
+  };
+}

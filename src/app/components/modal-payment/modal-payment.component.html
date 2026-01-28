@@ -32,12 +32,23 @@
     </div>
 
     <!-- Formulario C2P con stepper -->
-    <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm || showDebitoInmediatoForm">
+    <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm">
       <app-stepper-form
         [steps]="c2pStepConfig"
         [useVirtualKeyboard]="useVirtualKeyboard"
         [initialData]="c2pFormData"
         (formComplete)="onC2PFormComplete($event)"
+      ></app-stepper-form>
+    </div>
+
+    <!-- Formulario Débito Inmediato con stepper -->
+    <div *ngIf="!viewAdmin && inputType === 'mount' && showDebitoInmediatoForm">
+      <app-stepper-form
+        [steps]="debitoStepConfig"
+        [useVirtualKeyboard]="useVirtualKeyboard"
+        [initialData]="c2pFormData"
+        (stepChange)="onDebitoFormStepChange($event)"
+        (formComplete)="onDebitoFormComplete($event)"
       ></app-stepper-form>
     </div>
 
