@@ -78,7 +78,7 @@ export const environment = {
   //API-MASTER
   // URL_API_MASTER: 'https://caja_automatica_backend.test/api',
   URL_API_MASTER:
-    'https://5tphddn3.use2.devtunnels.ms:8080/api',
+    'https://backend-caja.fibextelecom.net/api',
   // 'http://192.168.16.254:8000/api',
   // 'https://busy-stephanie-rural-fits.trycloudflare.com/api',
   TOKEN_API_MASTER: 'X7tYtOyzJyu2TTZIelWRhbl42ZQuTD8xQxKmuCH1pBF0QfkSibXDQY',
