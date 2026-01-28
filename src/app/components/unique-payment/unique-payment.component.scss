@@ -7,19 +7,19 @@ $text-dark: #333;
   position: relative;
   text-align: end;
   align-items: center;
-  margin: 0.4rem;
+  margin: 0.2rem 0.4rem 0.6rem 0.4rem; // Reduced top and bottom margin
   justify-content: space-between;
 
   button {
     background: $fibex-gradient;
     border-radius: 3rem;
     color: white;
-    font-size: 1rem;
+    font-size: 0.85rem; // Smaller font
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.8rem 1.5rem;
+    padding: 0.5rem 1rem; // Reduced padding
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
     border: none;
@@ -28,6 +28,21 @@ $text-dark: #333;
     &:active {
       transform: translateY(1px);
       box-shadow: 0 2px 5px rgba(33, 82, 136, 0.2);
+    }
+
+    // Make the inner icon circle smaller
+    div {
+      padding: 0.4rem !important; // Smaller icon container
+    }
+
+    svg {
+      width: 18px; // Smaller icon
+      height: 18px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
     }
   }
 
@@ -138,5 +153,488 @@ $text-dark: #333;
         stroke: white !important;
       }
     }
+  }
+}
+
+// ==========================================
+// ADVANCE PAYMENT MODAL STYLES
+// ==========================================
+
+.advance-payment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.advance-payment-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 1.2rem 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  position: relative;
+  overflow: visible;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e6ed;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: \-blue;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .close-btn {
+    background: #f1f4f8;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #e0e6ed;
+      transform: scale(1.1);
+    }
+
+    svg {
+      color: #555;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.modal-description {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.month-card {
+  background: #f8f9fa;
+  border: 2px solid #e0e6ed;
+  border-radius: 12px;
+  padding: 0.8rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  &:hover {
+    border-color: \-blue;
+    background: #f0f7ff;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(33, 82, 136, 0.15);
+  }
+
+  &.selected {
+    border-color: \-blue;
+    background: linear-gradient(135deg, #e3effa 0%, #f0f7ff 100%);
+    box-shadow: 0 8px 20px rgba(33, 82, 136, 0.2);
+    transform: translateY(-4px);
+
+    .month-number {
+      background: \-gradient;
+      color: white;
+    }
+  }
+
+  .month-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: \-blue;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1;
+    background: #e0e6ed;
+    border-radius: 12px;
+    padding: 0.5rem;
+    transition: all 0.3s;
+  }
+
+  .month-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .month-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.3rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e0e6ed;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+
+    .label {
+      color: #8898aa;
+      font-weight: 500;
+    }
+
+    .value {
+      color: #2d3748;
+      font-weight: 700;
+    }
+  }
+}
+
+.confirm-btn {
+  width: 100%;
+  background: \-gradient;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(33, 82, 136, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(33, 82, 136, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Mobile responsive
+@media only screen and (max-width: 480px) {
+  .advance-payment-modal {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .months-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .month-card {
+    padding: 1.2rem 1rem;
+
+    .month-number {
+      font-size: 2rem;
+    }
+  }
+
+  .confirm-btn {
+    font-size: 1rem;
+    padding: 0.9rem 1.5rem;
+  }
+}
+
+// ==========================================
+// COMPACT COUNTER MODAL STYLES
+// ==========================================
+
+.advance-payment-modal-compact {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+.close-btn-compact {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(33, 82, 136, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(33, 82, 136, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    color: white;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.modal-title-compact {
+  font-size: 0.95rem;
+  color: #718096;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  line-height: 1.3;
+  padding-right: 1.5rem;
+}
+
+.counter-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.counter-btn {
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(33, 82, 136, 0.3);
+
+  svg {
+    color: white;
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(33, 82, 136, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #cbd5e0;
+  }
+}
+
+.counter-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.counter-number {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: \-blue;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.counter-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #8898aa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.price-display {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-label {
+  font-size: 0.9rem;
+  color: #8898aa;
+  font-weight: 500;
+}
+
+.price-value {
+  font-size: 1.1rem;
+  color: \-blue;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}
+
+.confirm-btn-compact {
+  width: 100%;
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.9rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(33, 82, 136, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(33, 82, 136, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Mobile responsive
+@media only screen and (max-width: 480px) {
+  .advance-payment-modal-compact {
+    padding: 1.2rem;
+    max-width: 95%;
+  }
+
+  .modal-title-compact {
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .counter-section {
+    gap: 1rem;
+  }
+
+  .counter-btn {
+    width: 42px;
+    height: 42px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .counter-number {
+    font-size: 3rem;
+  }
+
+  .counter-label {
+    font-size: 0.8rem;
+  }
+
+  .price-display {
+    padding: 0.8rem;
+  }
+
+  .price-label {
+    font-size: 0.85rem;
+  }
+
+  .price-value {
+    font-size: 1rem;
+  }
+
+  .confirm-btn-compact {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
   }
 }

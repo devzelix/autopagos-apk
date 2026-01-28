@@ -16,7 +16,7 @@ export class UniquePaymentComponent implements OnInit {
   @Input() monthPayCount: number = 1;
   @Input() mountTotalMonthBs: string = '0.00';
   @Input() mountTotalMonthUSD: string = '0.00';
-  @Input() setTitleFn: (newTitle:string) => void;
+  @Input() setTitleFn: (newTitle: string) => void;
 
   @Output() totalBs = new EventEmitter<string>();
   @Output() totalUSD = new EventEmitter<string>();
@@ -28,60 +28,153 @@ export class UniquePaymentComponent implements OnInit {
   public morePayment: string = 'Adelanta tus pagos';
   public classBtn: string = 'btn-more-payments';
 
+  // Modal properties
+  public showAdvancePaymentModal: boolean = false;
+  public selectedAdvanceMonth: number = 1;
+  public isAdvancePaymentActive: boolean = false; // Track if user has selected advance payment
+
   private lastMountBsValue: string = '0.00';
   private lastMountUSDValue: string = '0.00';
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
-    // Aquí puedes inicializar cualquier lógica que necesites al cargar el componente
     this.setTitleFn('Pago de mensualidad')
     this.lastMountBsValue = this.mountTotalMonthBs
     this.lastMountUSDValue = this.mountTotalMonthUSD;
-    // console.log('this.lastmount Valueee', this.lastMountBsValue, this.lastMountUSDValue)
   }
 
-  // onDestroy() {
-  //   // Aquí puedes limpiar cualquier recurso o suscripción si es necesario
-  //   console.log('UniquePaymentComponent destroyed');
-  //   this.setTitleFn('');
-  //   // this.onEditAmountEvent.emit();
-  //   this.multiplePaymentComponent.onDestroy();
-  // }
+  /**
+   * Opens the advance payment modal or resets to default
+   */
+  public openAdvancePaymentModal(): void {
+    if (this.isAdvancePaymentActive) {
+      // If advance is active, reset to default
+      this.resetToDefaultPayment();
+    } else {
+      // If not active, open modal
+      this.showAdvancePaymentModal = true;
+      this.selectedAdvanceMonth = 1; // Start at 1 month
+    }
+  }
 
-  public morePayments(){
-    if (this.viewMultiplePayments){
+  /**
+   * Closes the advance payment modal
+   */
+  public closeAdvancePaymentModal(): void {
+    this.showAdvancePaymentModal = false;
+    this.selectedAdvanceMonth = 1;
+  }
 
-      this.viewMultiplePayments = false; // To show multiple payments
-      this.viewUniquePayments = true; // To hidden view unique payments
-      this.morePayment = 'Pagar un mes'; // To change text from button click
-      this.classBtn = 'btn-one-payment'; // To change Class from button click
-      this.setTitleFn('Seleccione  cuantos meses desea adelantar adicionalmente'); // To change title on view
+  /**
+   * Increments the selected month count
+   */
+  public incrementMonth(): void {
+    if (this.selectedAdvanceMonth < 3) {
+      this.selectedAdvanceMonth++;
+    }
+  }
+
+  /**
+   * Decrements the selected month count
+   */
+  public decrementMonth(): void {
+    if (this.selectedAdvanceMonth > 1) {
+      this.selectedAdvanceMonth--;
+    }
+  }
+
+  /**
+   * Selects a month option in the modal
+   */
+  public selectAdvanceMonth(months: number): void {
+    this.selectedAdvanceMonth = months;
+  }
+
+  /**
+   * Calculates the advance amount in Bs for the selected months
+   */
+  public calculateAdvanceAmountBs(months: number): number {
+    const monthlyBs = parseFloat(this.lastMountBsValue);
+    return monthlyBs * (months + 1); // +1 because it includes the current month
+  }
+
+  /**
+   * Calculates the advance amount in USD for the selected months
+   */
+  public calculateAdvanceAmountUSD(months: number): number {
+    const monthlyUSD = parseFloat(this.lastMountUSDValue);
+    return monthlyUSD * (months + 1); // +1 because it includes the current month
+  }
+
+  /**
+   * Confirms the advance payment selection and updates the amounts
+   */
+  public confirmAdvancePayment(): void {
+    if (this.selectedAdvanceMonth) {
+      const newAmountBs = this.calculateAdvanceAmountBs(this.selectedAdvanceMonth);
+      const newAmountUSD = this.calculateAdvanceAmountUSD(this.selectedAdvanceMonth);
+
+      this.mountTotalMonthBs = newAmountBs.toFixed(2);
+      this.mountTotalMonthUSD = newAmountUSD.toFixed(2);
+
+      this.totalBs.emit(this.mountTotalMonthBs);
+      this.totalUSD.emit(this.mountTotalMonthUSD);
+
+      this.setTitleFn(`Pago de ${this.selectedAdvanceMonth + 1} ${this.selectedAdvanceMonth + 1 > 1 ? 'meses' : 'mes'}`);
+
+      this.isAdvancePaymentActive = true; // Mark advance as active
+
+      this.closeAdvancePaymentModal();
+    }
+  }
+
+  /**
+   * Resets payment to default (1 month)
+   */
+  public resetToDefaultPayment(): void {
+    this.mountTotalMonthBs = this.lastMountBsValue;
+    this.mountTotalMonthUSD = this.lastMountUSDValue;
+
+    this.totalBs.emit(this.mountTotalMonthBs);
+    this.totalUSD.emit(this.mountTotalMonthUSD);
+
+    this.setTitleFn('Pago de mensualidad');
+    this.isAdvancePaymentActive = false;
+    this.selectedAdvanceMonth = 1;
+  }
+
+  public morePayments() {
+    if (this.viewMultiplePayments) {
+
+      this.viewMultiplePayments = false;
+      this.viewUniquePayments = true;
+      this.morePayment = 'Pagar un mes';
+      this.classBtn = 'btn-one-payment';
+      this.setTitleFn('Seleccione  cuantos meses desea adelantar adicionalmente');
       this.multiplePaymentComponent.setMonthPayment(1)
 
-    } else  {
+    } else {
 
-      this.viewMultiplePayments = true; // To hiden view multiple payments
-      this.viewUniquePayments = false; // To show view unique payments
-      // this.mountTotalMonthBs = parseFloat(parseFloat(this.saldoBs).toFixed(2)) // To show total month in Bs
-      // this.mountTotalMonthUSD = parseFloat(parseFloat(this.saldoUSD).toFixed(2)) // To show total month in USD
+      this.viewMultiplePayments = true;
+      this.viewUniquePayments = false;
       this.mountTotalMonthBs = this.lastMountBsValue;
       this.mountTotalMonthUSD = this.lastMountUSDValue;
-      this.morePayment = 'Adelanta tus pagos'; // To change text from button click
-      this.classBtn = 'btn-more-payments'; // To change Class from button click
-      this.setTitleFn('Paga tu mensualidad'); // To change title on view
-      this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2)); // To emit Total in BS
-      this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2)); // To emit Total in USD
+      this.morePayment = 'Adelanta tus pagos';
+      this.classBtn = 'btn-more-payments';
+      this.setTitleFn('Paga tu mensualidad');
+      this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2));
+      this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2));
 
     }
   }
 
-  public mountsToPaymentBs(moutnBs: string){
+  public mountsToPaymentBs(moutnBs: string) {
     this.mountTotalMonthBs = parseFloat(moutnBs).toFixed(2);
     this.totalBs.emit(parseFloat(this.mountTotalMonthBs).toFixed(2));
   }
 
-  public mountsToPaymentUSD(mountUSD: string){
+  public mountsToPaymentUSD(mountUSD: string) {
     this.mountTotalMonthUSD = parseFloat(mountUSD).toFixed(2);
     this.totalUSD.emit(parseFloat(this.mountTotalMonthUSD).toFixed(2));
   }
