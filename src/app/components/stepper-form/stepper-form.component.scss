@@ -76,21 +76,27 @@
 .form-content {
   display: flex;
   gap: 2rem;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   min-height: 0;
+  flex-direction: column;
 
   &.with-keyboard {
     .step-form {
-      flex: 1;
-      max-width: 48%;
-      min-width: 350px;
+      // flex: 1;
+      // max-width: 48%;
+      // min-width: 350px;
+      width: 100%;
     }
 
     .virtual-keyboard-section {
-      flex: 1;
-      max-width: 48%;
-      min-width: 350px;
+      // flex: 1;
+      // max-width: 48%;
+      // min-width: 350px;
+      width: 100%;
+      app-keyboard-on-screen: {
+        width: 100%;
+      }
     }
   }
 
