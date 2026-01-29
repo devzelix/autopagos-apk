@@ -41,6 +41,9 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  z-index: 1;
+  /* Toda la zona no recibe eventos; solo la zona del botón (z-index 2) los captura */
+  pointer-events: none;
 }
 
 .idle-page-iframe {
@@ -48,11 +51,14 @@
   height: 100%;
   border: none;
   display: block;
+  /* Los clics atraviesan el iframe para que la zona del botón los reciba */
+  pointer-events: none;
 }
 
 .idle-page-button-zone {
   position: absolute;
   bottom: 0;
+  z-index: 2;
   left: 0;
   right: 0;
   display: flex;
@@ -64,6 +70,8 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
   cursor: pointer;
   min-height: 120px;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .idle-page-chevron {
@@ -92,6 +100,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
+  touch-action: manipulation;
   min-width: 280px;
   max-width: 420px;
   width: 100%;

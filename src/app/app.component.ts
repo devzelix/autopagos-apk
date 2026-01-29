@@ -6,6 +6,7 @@ import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil, startWith, filter, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { AdminPanelStateService } from './services/admin-panel-state.service';
 
 @Component({
   selector: 'app-root',
@@ -22,8 +23,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly ENABLE_AD_CAROUSEL = false;
   
   public showAdCarousel = false;
-  // Para pruebas locales usar 10000 (10 s); en producción usar 30000 (30 s)
-  private readonly INACTIVITY_TIME = 10000; // 10 segundos (pruebas) / 30000 producción
+  // Tiempo sin actividad para mostrar la pantalla de inactividad (iframe + botón Empezar)
+  private readonly INACTIVITY_TIME = 120000; // 2 minutos
   public showIdlePage = false;
   /** URL a cargar en el iframe de inactividad. Cambiar por la URL deseada (ej. página de publicidad). */
   public idlePageUrl = environment.URL_IDLE_PAGE;
@@ -31,6 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
   public idlePageUrlSafe: SafeResourceUrl;
 
   public kioskStatus$ = this.kioskAuth.kioskStatus$;
+  /** No mostrar carrusel cuando el panel de administración está abierto. */
+  public adminPanelOpen$ = this.adminPanelStateService.isOpen;
 
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: MouseEvent) {
@@ -45,7 +48,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private kioskAuth: KioskAuthService,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private adminPanelStateService: AdminPanelStateService
   ) { }
 
   ngOnInit(): void {
@@ -64,6 +68,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showIdlePage = true;
         this.cdr.detectChanges();
       });
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:ngOnInit:kioskStatus', message: 'showIdlePage set true', data: { source: 'kioskRegistered' }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'D' }) }).catch(() => {});
+      // #endregion
     });
 
     // Tap en logos (welcome-view o form): mostrar iframe del carrusel de publicidad
@@ -165,6 +172,9 @@ export class AppComponent implements OnInit, OnDestroy {
           this.showIdlePage = true;
           this.cdr.detectChanges();
         });
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:inactivity', message: 'showIdlePage set true', data: { source: 'inactivity' }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'D' }) }).catch(() => {});
+        // #endregion
         console.log('Mostrando pantalla de inactividad');
       }
       // Solo mostrar carrusel si está habilitado y estamos en la vista de inicio
@@ -227,14 +237,35 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  // #region agent log
+  /** Wrapper para registrar evento (click/touch) y llamar hideIdlePage — hipótesis A/B/E */
+  public onIdleButtonInteraction(ev: Event): void {
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+    ev.stopPropagation();
+    const t = ev.target as HTMLElement;
+    fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:onIdleButtonInteraction', message: 'Idle button event', data: { eventType: ev.type, targetTag: t?.tagName, targetClass: t?.className }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'A' }) }).catch(() => {});
+    this.hideIdlePage();
+  }
+  // #endregion
+
   /**
    * Oculta la pantalla de inactividad (iframe/carrusel) y muestra la pantalla de pago (tarjeta con usuario, monto, PAGAR)
    */
   public hideIdlePage(): void {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:hideIdlePage', message: 'hideIdlePage called', data: { showIdlePageBefore: this.showIdlePage }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'B' }) }).catch(() => {});
+    // #endregion
     this.showIdlePage = false;
     this.startInactivityTimer();
     // Disparar en el siguiente ciclo para que Angular oculte el overlay antes; así el form recibe el evento y muestra la pantalla de pago
-    setTimeout(() => this.goToPaymentForm(), 0);
+    setTimeout(() => {
+      this.goToPaymentForm();
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:hideIdlePage:afterGoToPaymentForm', message: 'goToPaymentForm dispatched', data: {}, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'C' }) }).catch(() => {});
+      // #endregion
+    }, 0);
     console.log('Pantalla de inactividad cerrada, mostrando pantalla de pago');
   }
 

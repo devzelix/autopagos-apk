@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 
 
 @Component({
@@ -10,7 +10,11 @@ export class AdministrativeModuleComponent implements OnInit {
 
   @Output() closeModal = new EventEmitter<void>();
 
-  public isLogged: boolean = false;
+  /** Título del panel. Por defecto "PANEL DE ADMINISTRACIÓN"; el padre puede pasarlo con [panelTitle]. */
+  @Input() panelTitle = 'PANEL DE ADMINISTRACIÓN';
+
+  /** true = mostrar directo las funcionalidades (sin usuario/contraseña). */
+  public isLogged: boolean = true;
 
   constructor() {}
 

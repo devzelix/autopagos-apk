@@ -41,10 +41,11 @@ import {
 import { MiscelaneosService } from '../../utils/miscelaneos.service';
 import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
-import { MatStepper, StepState } from '@angular/material/stepper';
+import { CdkStepper, StepState } from '@angular/cdk/stepper';
 import Swal from 'sweetalert2';
 import { debounceTime, filter, fromEvent, merge, Subject, Subscription, switchMap, takeUntil, tap, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AdminPanelStateService } from 'src/app/services/admin-panel-state.service';
 
 //Servicios
 import { SeguridadDatos } from 'src/app/services/bscript.service';
@@ -112,7 +113,7 @@ export class FormComponent implements OnInit {
     }
 
   }
-  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('stepper') stepper: CdkStepper;
   @ViewChild('picker') date_: MatDatepickerInput<Date>;
 
   @ViewChild('viewUnique') viewUniquePayments: UniquePaymentComponent;
@@ -372,7 +373,8 @@ export class FormComponent implements OnInit {
     public _ApiBNC: ApiBNCService,
     private _localStorageService: LocalstorageService,
     private _checkoutSessionService: CheckoutSessionService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private adminPanelStateService: AdminPanelStateService
   ) {
 
     this.cacheService.clear();
@@ -2791,6 +2793,14 @@ export class FormComponent implements OnInit {
    */
   public goToPayment = async () => {
     try {
+      // Si el documento ingresado es el RIF de admin, abrir panel de administración y no continuar al pago
+      const normalized = (this.loginTypeSelectValue || '') + (this.getDigitsOnly(this.dni?.value || '') || '');
+      if (environment.adminRif && normalized === environment.adminRif) {
+        this.showadmin = true;
+        this.adminPanelStateService.setOpen(true);
+        this.cdr.detectChanges();
+        return;
+      }
       await this.searchServicesv2(this.dni, false, true).then(() => { this.showAdminist(this.dni?.value) }) //* => to login
       console.log('CONTRATO => ', this.nroContrato, this.userGreeting)
 
@@ -2805,6 +2815,15 @@ export class FormComponent implements OnInit {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  /**
+   * Cierra el panel de administración y vuelve al panel de verificación (RIF/Ingresar).
+   */
+  public onCloseAdminPanel(): void {
+    this.showadmin = false;
+    this.adminPanelStateService.setOpen(false);
+    this.cdr.detectChanges();
   }
 
   /**

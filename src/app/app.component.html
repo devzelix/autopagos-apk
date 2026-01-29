@@ -83,7 +83,7 @@
   <!-- Carrusel de publicidad - Solo en vista de inicio -->
   <!-- 🚩 DESHABILITADO: Para habilitar cambiar ENABLE_AD_CAROUSEL a true en app.component.ts -->
   <app-ad-carousel 
-    *ngIf="showAdCarousel && !helper.view" 
+    *ngIf="showAdCarousel && !helper.view && !(adminPanelOpen$ | async)" 
     (touch)="hideAdCarousel()"
     (click)="hideAdCarousel()">
   </app-ad-carousel>
@@ -100,11 +100,11 @@
     <div class="idle-page-iframe-zone">
       <iframe [src]="idlePageUrlSafe" class="idle-page-iframe" title="Página de inactividad"></iframe>
     </div>
-    <div class="idle-page-button-zone" (click)="hideIdlePage()" (touchstart)="hideIdlePage()">
+    <div class="idle-page-button-zone" (click)="onIdleButtonInteraction($event)" (touchstart)="onIdleButtonInteraction($event)">
       <div class="idle-page-chevron" aria-hidden="true">
         <i class="fa fa-chevron-down"></i>
       </div>
-      <button type="button" class="idle-page-btn">Empezar</button>
+      <button type="button" class="idle-page-btn" (click)="onIdleButtonInteraction($event)" (touchstart)="onIdleButtonInteraction($event)">Empezar</button>
     </div>
   </div>
 </div>

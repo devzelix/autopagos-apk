@@ -121,7 +121,10 @@ export const environment = {
 
   kioskApiUrl: 'http://localhost:3000/api/kiosks',
 
-  URL_IDLE_PAGE: 'https://vegas-enquiry-blank-agency.trycloudflare.com',
+  URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
+
+  /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
+  adminRif: 'J308182516',
 };
 
   

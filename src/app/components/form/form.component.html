@@ -1,6 +1,5 @@
-<!-- Panel de administración - Mostrar como modal cuando showadmin es true -->
-<!-- Panel de administración - Mostrar como modal cuando showadmin es true -->
-<!-- <app-administrative-module *ngIf="showadmin" (closeModal)="showadmin = false"></app-administrative-module> -->
+<!-- Panel de administración - Mostrar cuando showadmin es true (p. ej. al ingresar RIF admin e Ingresar) -->
+<app-administrative-module *ngIf="showadmin" (closeModal)="onCloseAdminPanel()"></app-administrative-module>
 
 <!-- No mostrar nada mientras se valida la sesión (isAdminLogged === null) -->
 <!-- Mostrar login solo si isAdminLogged es explícitamente false Y showadmin es false -->

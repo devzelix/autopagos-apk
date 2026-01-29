@@ -82,19 +82,6 @@ export class ActionAdminComponent implements OnInit {
             case 3:
               this.showAnulateTransactionModal();
               break;
-            case 4:
-              await this.refreshPosIpAndPort()
-                .then((res) => {
-                  if (res.success) {
-                    this.ShowDiologSuccess({ status: 200, message: res.message, data: { TRANS_CODE_RESULT: '00', TRANS_MESSAGE_RESULT: res.message } });
-                  } else {
-                    this.ShowDiologError({ status: 400, message: res.message });
-                  }
-                })
-                .catch((err) => {
-                  this.ShowDiologError(err);
-                });
-              break;
             default:
               // Opcional: Manejar valores inesperados
               console.warn(`Opción ${option} no reconocida`);
