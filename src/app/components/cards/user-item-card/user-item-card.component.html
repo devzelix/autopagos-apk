@@ -1,37 +1,23 @@
-<button (click)="onUserClick()" class="user-select-item-card">
-    <h1> {{userItem.nro_contrato}} </h1>
+<button (click)="onUserClick()" class="user-select-item-card" [attr.aria-label]="'Contrato ' + (userItem?.nro_contrato || '')">
+  <div class="card-left">
+    <div class="contract-number">{{ userItem.nro_contrato }}</div>
+    <div class="last-payment" *ngIf="userItem.ultimo_fecha_pago">Últ. pago {{ userItem.ultimo_fecha_pago | date:'MMM d, yyyy' }}</div>
+    <div class="last-payment" *ngIf="!userItem.ultimo_fecha_pago">Sin fecha</div>
+  </div>
 
-    <span class="content-user-select-card">
+  <div class="card-right">
+    <div class="status-badge" [ngClass]="{
+        'status-active': userItem.status_contrato === 'activo',
+        'status-cancelled': userItem.status_contrato === 'anulado',
+        'status-pending': userItem.status_contrato === 'pendiente'
+      }">
+      {{ userItem.status_contrato | titlecase }}
+    </div>
 
-      <div class="content-user-select-card-item">
-        <h5> Estatus: </h5>
-        <p class="capitalized"> {{userItem.status_contrato}} </p>
-      </div>
+    <div class="balance">
+      <div class="balance-label">{{ (userItem.isDebtor) ? 'Saldo a pagar' : 'Saldo a favor' }}</div>
+      <div class="balance-value">{{ userItem.saldo | currency }}</div>
+    </div>
+  </div>
 
-      <div class="content-user-select-card-item content-user-select-end-position">
-        <h5> Saldo a {{ ((userItem.isDebtor) ? 'pagar ' : 'favor ') }} </h5>
-        <p> {{userItem.saldo | currency}} </p>
-      </div>
-      
-    </span>
-
-    <span class="user-select-item-content">
-      <ng-container *ngIf="userItem.ultimo_fecha_pago; else elseLastDate">
-        <h5>
-          Última fecha de pago:
-        </h5>
-        
-        <p class="p-text-right">
-          {{userItem.ultimo_fecha_pago | date: 'MMMM dd, yyyy' }}
-        </p>
-      </ng-container>
-
-      <ng-template #elseLastDate>
-        <h5>
-          No hay fecha de pago registrada
-        </h5>
-      </ng-template>
-      
-    </span>
-
-  </button>
+</button>

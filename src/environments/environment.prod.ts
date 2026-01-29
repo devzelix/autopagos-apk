@@ -1,5 +1,5 @@
 export const environment = {
-  version: 'V8.4.0',
+  version: 'V1.0.0',
 
   production: true,
   urlGraphql: 'https://pha.thomas-talk.me/',

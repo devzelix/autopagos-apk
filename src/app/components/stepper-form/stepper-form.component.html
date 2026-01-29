@@ -26,7 +26,7 @@
   </div>
 
   <!-- Form content -->
-  <div class="form-content" [class.with-keyboard]="useVirtualKeyboard">
+  <div class="form-content" [class.with-keyboard]="useVirtualKeyboard" [class.keyboard-open]="keyboardVisible">
     <form [formGroup]="stepForm" class="step-form">
       <div 
         *ngFor="let field of currentStepConfig.fields" 
@@ -123,10 +123,10 @@
       </div>
     </form>
 
-    <!-- Virtual keyboard (si está habilitado) - STICKY -->
-    <div class="virtual-keyboard-section" *ngIf="useVirtualKeyboard">
+    <!-- Virtual keyboard (si está habilitado y visible) - FIXED on mobile -->
+    <div class="virtual-keyboard-section fixed-keyboard" *ngIf="useVirtualKeyboard && keyboardVisible">
       <app-keyboard-on-screen
-        classes="pinpad-big-size"
+        [classes]="keyboardVisible ? 'pinpad-big-size virtual-keyboard-fixed' : 'pinpad-big-size'"
         (valorTeclado)="onVirtualKeyboardInput($event)"
         (deleteKeyEmitter)="onVirtualKeyboardDelete()"
       ></app-keyboard-on-screen>

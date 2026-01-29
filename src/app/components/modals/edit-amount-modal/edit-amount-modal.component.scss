@@ -1,0 +1,338 @@
+// Variables
+$fibex-gradient: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+$fibex-blue: #215288;
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.2rem;
+    max-width: 360px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(33, 82, 136, 0.3);
+
+    &:hover {
+        background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(33, 82, 136, 0.4);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    svg {
+        color: white;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $fibex-blue;
+    margin: 0 0 0.3rem 0;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-subtitle {
+    font-size: 0.8rem;
+    color: #718096;
+    margin: 0 0 1rem 0;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.amount-display-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.currency-label {
+    font-size: 0.75rem;
+    color: #8898aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+}
+
+.amount-input-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.dollar-sign {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $fibex-blue;
+    font-family: 'Poppins', sans-serif;
+}
+
+.amount-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: $fibex-blue;
+    font-family: 'Poppins', sans-serif;
+    min-width: 80px;
+    text-align: left;
+}
+
+.cursor-blink {
+    width: 2px;
+    height: 2rem;
+    background: $fibex-blue;
+    animation: blink 1s infinite;
+    margin-left: 0.2rem;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+.converted-amount {
+    font-size: 0.85rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.custom-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.key-btn {
+    background: white;
+    border: 2px solid #e0e6ed;
+    border-radius: 10px;
+    padding: 0.9rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3748;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+
+    &:hover {
+        background: #f8f9fa;
+        border-color: $fibex-blue;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+        background: #e3effa;
+    }
+
+    &.key-delete {
+        background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
+        border-color: #d32f2f;
+        color: white;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        &:hover {
+            background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
+            border-color: #b71c1c;
+        }
+    }
+
+    &.key-decimal {
+        font-size: 1.8rem;
+    }
+}
+
+.confirm-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 0.85rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(33, 82, 136, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(33, 82, 136, 0.4);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// Responsive adjustments
+@media only screen and (max-width: 480px) {
+    .modal-container {
+        padding: 1rem;
+        max-width: 95%;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+    }
+
+    .modal-subtitle {
+        font-size: 0.75rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .amount-display-section {
+        padding: 0.8rem;
+    }
+
+    .amount-value {
+        font-size: 1.8rem;
+        min-width: 70px;
+    }
+
+    .dollar-sign {
+        font-size: 1.3rem;
+    }
+
+    .cursor-blink {
+        height: 1.8rem;
+    }
+
+    .converted-amount {
+        font-size: 0.8rem;
+    }
+
+    .custom-keypad {
+        gap: 0.5rem;
+    }
+
+    .key-btn {
+        padding: 0.8rem;
+        font-size: 1.2rem;
+        min-height: 45px;
+
+        &.key-delete svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        &.key-decimal {
+            font-size: 1.6rem;
+        }
+    }
+
+    .confirm-btn {
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
+    }
+}
+
+// Extra small screens
+@media only screen and (max-width: 360px) {
+    .modal-container {
+        padding: 0.9rem;
+    }
+
+    .amount-value {
+        font-size: 1.6rem;
+    }
+
+    .key-btn {
+        padding: 0.7rem;
+        font-size: 1.1rem;
+        min-height: 42px;
+    }
+}

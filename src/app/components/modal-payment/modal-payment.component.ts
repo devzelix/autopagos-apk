@@ -17,8 +17,6 @@ import {
   ITransactionInputs,
   ITypeDNI,
 } from 'src/app/interfaces/payment-opt';
-import { AdministrativeRequestService } from 'src/app/services/vposuniversal/administrative-request.service';
-import { VposerrorsService } from 'src/app/services/vposuniversal/vposerrors.service';
 import Swal from 'sweetalert2';
 import { IPrintTicket } from 'src/app/interfaces/printer.interface';
 import { UbiiposService } from 'src/app/services/api/ubiipos.service';
@@ -33,8 +31,6 @@ import { PdfService } from 'src/app/services/api/pdf.service';
 import { DirectPrinterService } from 'src/app/services/api/direct-printer.service';
 import { getPaymentDescription, handleApiError } from 'src/app/utils/api-tools';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
-import axios from 'axios';
-import { environment } from 'src/environments/environment';
 // Nuevos imports para flujo de pago multi-método
 import { WebhookAutopagoService } from 'src/app/services/webhook-autopago.service';
 import { 
@@ -43,11 +39,11 @@ import {
   IC2PResponse,
   IStepConfig,
   IGenerateOTPPayload,
-  IGenerateOTPResponse,
   IProcessDebitoPayload,
   IProcessDebitoResponse
 } from 'src/app/interfaces/payment-methods.interface';
 import { C2P_STEP_CONFIG, DEBITO_INMEDIATO_STEP_CONFIG } from 'src/app/config/payment-methods.config';
+import { StepperFormComponent } from '../stepper-form/stepper-form.component';
 
 @Component({
   selector: 'app-modal-payment',
@@ -59,6 +55,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('inputDni') inputDni: ElementRef<HTMLInputElement>;
   @ViewChild('inputMount') inputMount: ElementRef<HTMLInputElement>;
   @ViewChild('inputReference') inputReference: ElementRef<HTMLInputElement>;
+  @ViewChild(StepperFormComponent) private stepperFormComponent: StepperFormComponent;
   @Output() closeEmmit: EventEmitter<void> = new EventEmitter(); // => close event emmitter
   @Output() onSubmitPayForm: EventEmitter<void> = new EventEmitter(); // => on submit event emitter, resets all
   @Input() paymentType: IPaymentTypes;
@@ -99,6 +96,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   public useVirtualKeyboard: boolean = true;
   public c2pFormData: any = {};
   public processingC2P: boolean = false;
+  public c2pCurrentStep: number = 0;
 
   public showPuntoVentaForm: boolean = false;
 
@@ -1144,6 +1142,31 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.processingC2P = false;
       this.cdr.markForCheck();
     }
+  }
+
+  // Forward keyboard events from modal-embedded keyboard to the embedded stepper
+  public onC2PKeyboardInput(value: string): void {
+    if (this.stepperFormComponent && typeof this.stepperFormComponent.receiveKeyboardInput === 'function') {
+      this.stepperFormComponent.receiveKeyboardInput(value);
+    }
+  }
+
+  public onC2PKeyboardDelete(): void {
+    if (this.stepperFormComponent && typeof this.stepperFormComponent.receiveKeyboardDelete === 'function') {
+      this.stepperFormComponent.receiveKeyboardDelete();
+    }
+  }
+
+  /**
+   * Handler for step changes emitted by the stepper
+   */
+  public onC2PStepChange(event: { step: number; data: any }): void {
+    this.c2pCurrentStep = event.step;
+    // capture intermediate data
+    if (event.data) {
+      this.c2pFormData = { ...this.c2pFormData, ...event.data };
+    }
+    this.cdr.markForCheck();
   }
 
   /**

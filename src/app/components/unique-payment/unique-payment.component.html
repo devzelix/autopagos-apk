@@ -1,85 +1,83 @@
-<!-- <div class="payment-menu-months">
-  <h4 class="text-4xl font-bold mb-4 text-center">Seleccione los meses a pagar</h4>
-  <div class="payment-menu-months-grid">
-
-      <div *ngFor="let item of [1,2,3,4,5,6];let i = index" (click)="setMonthPayment(item)" class="payment-grid-item bg-primary-gradient" [ngClass]="{'payment-grid-item-active': activePaymentMonth === item}">
-        {{ item }} {{ ( item > 1 ? 'Meses' : 'Mes' ) }}
-      </div>
-
-  </div>
-</div> -->
-
 <div class="payment-menu-months">
 
-  <!-- <div [hidden]="viewUniquePayments">
+  <div class="payment-menu-item">
 
-    <h1>Plan, etc</h1>
+    <div class="mount-pay-container flex flex-col justify-center items-center">
 
-  </div> -->
+      <div class="div-more-payments flex flex-row justify-between w-full items-center">
+        <h4 class="h4-amount">Monto:</h4>
 
-  <div class="payment-menu-months-flex">
-    <app-multiple-payment
-      [viewMultiple]="viewMultiplePayments"
-      [activePaymentMonth]="activePaymentMonth"
-      [tasaCambio]="tasaCambio"
-      [saldoBs]="saldoBs"
-      [saldoUSD]="saldoUSD"
-      [mountTotalMonthUSD]="mountTotalMonthUSD"
-      [mountTotalMonthBs]="mountTotalMonthBs"
-      [subscription]="subscription"
-      [monthPayCount]="monthPayCount"
-
-      (totalBs)="mountsToPaymentBs($event)"
-      (totalUSD)="mountsToPaymentUSD($event)"
-
-      #multiplePaymentComponent
-    ></app-multiple-payment>
-  </div>
-
-
-</div>
-
-<div class="payment-menu-item">
-
-
-  <div class="mount-pay-container flex flex-col justify-center items-center">
-
-    <div class="div-more-payments flex flex-row justify-between w-full items-center">
-      <h4 class="h4-amount">Monto:</h4>
-
-      <button *ngIf="hasDebt()" (click)="morePayments()" class="bg-[var(--primary-accent-color)] flex items-center gap-2 p-2 pr-4 rounded-full text-white font-semibold animation-class mt-5">
-        <div class="flex items-center p-2 rounded-full bg-blue-600">
-
-          <svg *ngIf="morePayment === 'Adelanta tus pagos'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#FFFFFF" d="M12 21q-.425 0-.712-.288T11 20v-7H4q-.425 0-.712-.288T3 12t.288-.712T4 11h7V4q0-.425.288-.712T12 3t.713.288T13 4v7h7q.425 0 .713.288T21 12t-.288.713T20 13h-7v7q0 .425-.288.713T12 21"/></svg>
-
-          <svg *ngIf="morePayment === 'Pagar un mes'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
-
-        </div>
-        <p>{{ morePayment }}</p>
-      </button>
-
-      <!-- <div class="div-btn-more-payments">
-
-        <button [class]="classBtn" (click)="morePayments()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21q-.425 0-.712-.288T11 20v-7H4q-.425 0-.712-.288T3 12t.288-.712T4 11h7V4q0-.425.288-.712T12 3t.713.288T13 4v7h7q.425 0 .713.288T21 12t-.288.713T20 13h-7v7q0 .425-.288.713T12 21"/></svg>
-          {{ morePayment }}
+        <button *ngIf="hasDebt()" (click)="openAdvancePaymentModal()"
+          class="bg-[var(--primary-accent-color)] flex items-center gap-2 p-2 pr-4 rounded-full text-white font-semibold animation-class mt-5"
+          [class.reset-mode]="isAdvancePaymentActive">
+          <div class="flex items-center p-2 rounded-full bg-blue-600">
+            <!-- Plus icon when not active -->
+            <svg *ngIf="!isAdvancePaymentActive" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24">
+              <path fill="#FFFFFF"
+                d="M12 21q-.425 0-.712-.288T11 20v-7H4q-.425 0-.712-.288T3 12t.288-.712T4 11h7V4q0-.425.288-.712T12 3t.713.288T13 4v7h7q.425 0 .713.288T21 12t-.288.713T20 13h-7v7q0 .425-.288.713T12 21" />
+            </svg>
+            <!-- Minus/Reset icon when active -->
+            <svg *ngIf="isAdvancePaymentActive" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24">
+              <path fill="#FFFFFF" d="M19 13H5v-2h14z" />
+            </svg>
+          </div>
+          <p>{{ isAdvancePaymentActive ? 'Pagar un mes' : 'Adelanta tus pagos' }}</p>
         </button>
-      </div> -->
-    </div>
+      </div>
 
-    <div class="payment-menu-mount-section">
+      <div class="payment-menu-mount-section">
 
-      <button class="pencil-edit-amount" (click)="onEditAmount()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none" stroke="#0154e9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="20" stroke-dashoffset="20" d="M3 21h18"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="20;0"/></path><path fill="#0154e9" fill-opacity="0" stroke-dasharray="48" stroke-dashoffset="48" d="M7 17v-4l10 -10l4 4l-10 10h-4"><animate fill="freeze" attributeName="fill-opacity" begin="1.1s" dur="0.15s" values="0;0.3"/><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.2s" dur="0.6s" values="48;0"/></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M14 6l4 4"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" values="8;0"/></path></g></svg>
-      </button>
+        <button class="pencil-edit-amount" (click)="onEditAmount()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+            <g fill="none" stroke="#0154e9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path stroke-dasharray="20" stroke-dashoffset="20" d="M3 21h18">
+                <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="20;0" />
+              </path>
+              <path fill="#0154e9" fill-opacity="0" stroke-dasharray="48" stroke-dashoffset="48"
+                d="M7 17v-4l10 -10l4 4l-10 10h-4">
+                <animate fill="freeze" attributeName="fill-opacity" begin="1.1s" dur="0.15s" values="0;0.3" />
+                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.2s" dur="0.6s" values="48;0" />
+              </path>
+              <path stroke-dasharray="8" stroke-dashoffset="8" d="M14 6l4 4">
+                <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.8s" dur="0.2s" values="8;0" />
+              </path>
+            </g>
+          </svg>
+        </button>
 
-      <h1 class="payment-mount-small"> {{ mountTotalMonthBs | number:'1.2-2' }} &nbsp; <small>Bs</small></h1>
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M10.47 2.22a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H5.75a.75.75 0 0 1 0-1.5h5.69l-.97-.97a.75.75 0 0 1 0-1.06m-4.94 6a.75.75 0 0 1 0 1.06l-.97.97h5.69a.75.75 0 0 1 0 1.5H4.56l.97.97a.75.75 0 1 1-1.06 1.06l-2.25-2.25a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0" clip-rule="evenodd"/></svg>
-      <h1> {{ mountTotalMonthUSD | currency }} &nbsp; <small>USD</small></h1>
+        <h1 class="payment-mount-small">{{ mountTotalMonthBs | number:'1.2-2' }} &nbsp; <small>Bs</small></h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M10.47 2.22a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H5.75a.75.75 0 0 1 0-1.5h5.69l-.97-.97a.75.75 0 0 1 0-1.06m-4.94 6a.75.75 0 0 1 0 1.06l-.97.97h5.69a.75.75 0 0 1 0 1.5H4.56l.97.97a.75.75 0 1 1-1.06 1.06l-2.25-2.25a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0"
+            clip-rule="evenodd" />
+        </svg>
+        <h1>{{ mountTotalMonthUSD | currency }} &nbsp; <small>USD</small></h1>
+
+      </div>
 
     </div>
 
   </div>
 
 </div>
+
+
+<!-- Modals (Independent Components) -->
+<app-advance-payment-modal
+  [isOpen]="showAdvancePaymentModal"
+  [lastMountBsValue]="lastMountBsValue"
+  [lastMountUSDValue]="lastMountUSDValue"
+  (close)="closeAdvancePaymentModal()"
+  (confirm)="onAdvancePaymentConfirm($event)">
+</app-advance-payment-modal>
+
+<app-edit-amount-modal
+  [isOpen]="showEditAmountModal"
+  [currentAmountUSD]="mountTotalMonthUSD"
+  [tasaCambio]="tasaCambio"
+  (close)="closeEditAmountModal()"
+  (confirm)="onEditAmountConfirm($event)">
+</app-edit-amount-modal>
 
