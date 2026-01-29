@@ -1102,10 +1102,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('\u2705 Respuesta C2P:', response);
 
       if (response.status === 200 && response.data.status) {
-        // Pago exitoso
+        // Pago exitoso: ticket, guardar lastVoucher, imprimir, upload digital
+        const ticketExito = this.buildC2PTicket(true, response, formData);
+        await this.printDebitoTicket(ticketExito, { saveLastVoucher: true, uploadDigital: true });
         await this.handleSuccessfulC2PPayment(response, formData);
       } else {
-        // Pago fallido
+        // Pago fallido (respuesta del back): ticket fallido, imprimir
+        const ticketFallido = this.buildC2PTicket(false, response, formData);
+        await this.printDebitoTicket(ticketFallido);
         Swal.fire({
           icon: 'error',
           title: 'Pago no procesado',
@@ -1125,7 +1129,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       
     } catch (error: any) {
       console.error('\u274c Error procesando C2P:', error);
-      
+      // Ticket fallido (excepción): imprimir
+      const ticketFallidoCatch = this.buildC2PTicket(
+        false,
+        null,
+        formData ?? this.c2pFormData ?? {},
+        error?.message || 'Error al procesar el pago'
+      );
+      await this.printDebitoTicket(ticketFallidoCatch);
+
       Swal.fire({
         icon: 'error',
         title: 'Error en el pago',
@@ -1441,10 +1453,14 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('✅ Respuesta débito inmediato:', response);
 
       if (response.status === 200 && response.data.status) {
-        // Pago exitoso
+        // Pago exitoso: ticket, guardar lastVoucher, imprimir, opcional upload
+        const ticketExito = this.buildDebitoTicket(true, response, formData);
+        await this.printDebitoTicket(ticketExito, { saveLastVoucher: true, uploadDigital: true });
         await this.handleSuccessfulDebitoPayment(response, formData);
       } else {
-        // Pago fallido
+        // Pago fallido (respuesta del back): ticket fallido, imprimir, no guardar lastVoucher
+        const ticketFallido = this.buildDebitoTicket(false, response, formData);
+        await this.printDebitoTicket(ticketFallido);
         Swal.fire({
           icon: 'error',
           title: 'Pago no procesado',
@@ -1465,7 +1481,15 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
       
     } catch (error: any) {
       console.error('❌ Error procesando débito inmediato:', error);
-      
+      // Ticket fallido genérico (excepción): imprimir, no guardar lastVoucher
+      const ticketFallidoCatch = this.buildDebitoTicket(
+        false,
+        null,
+        formData ?? this.debitoFormDataTemp ?? {},
+        error?.message || 'Error al procesar el pago'
+      );
+      await this.printDebitoTicket(ticketFallidoCatch);
+
       Swal.fire({
         icon: 'error',
         title: 'Error en el pago',
@@ -1478,10 +1502,148 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         buttonsStyling: false
       });
-      
+
       this.processingDebito = false;
       this.otpGenerated = false;
       this.cdr.markForCheck();
+    }
+  }
+
+  /**
+   * Construye IPrintTicket para Débito Inmediato (OTP): éxito o fallido.
+   * Reutiliza la misma estructura que Ubi; DirectPrinterService.buildTicketText ya soporta cualquier status.
+   */
+  private buildDebitoTicket(
+    success: boolean,
+    response: IProcessDebitoResponse | null,
+    formData: any,
+    errorMessage?: string
+  ): IPrintTicket {
+    const checkoutIdentify = this._localStorageService.get<string>('checkoutIdentify') || '';
+    const idSede = this._localStorageService.get<number>('id_sede') ?? '';
+    const date = this.dateNew.toLocaleDateString();
+    const hours = this.dateNew.toLocaleTimeString();
+    const amount = formData?.monto ?? '0.00';
+    const methodPayment = 'Débito Inmediato';
+
+    if (success && response?.data?.paymentDetails) {
+      const { paymentDetails } = response.data;
+      return {
+        date,
+        hours,
+        refNumber: paymentDetails.reference ?? '',
+        numSeq: paymentDetails.code ?? '-',
+        abononumber: this.nroAbonado,
+        status: 'APROBADO',
+        describe: 'Pago Débito Inmediato',
+        amount,
+        methodPayment,
+        checkoutIdentify,
+        id_sede: idSede,
+        is_anulation: false,
+      };
+    }
+
+    // Fallido: respuesta del back o excepción
+    const refNumber = response?.data?.paymentDetails?.reference ?? 'N/A';
+    const describe = response?.data?.message ?? errorMessage ?? 'Pago no procesado';
+    return {
+      date,
+      hours,
+      refNumber,
+      numSeq: '-',
+      abononumber: this.nroAbonado,
+      status: 'RECHAZADO',
+      describe,
+      amount,
+      methodPayment,
+      checkoutIdentify,
+      id_sede: idSede,
+      is_anulation: false,
+    };
+  }
+
+  /**
+   * Construye IPrintTicket para C2P: éxito o fallido.
+   */
+  private buildC2PTicket(
+    success: boolean,
+    response: IC2PResponse | null,
+    formData: any,
+    errorMessage?: string
+  ): IPrintTicket {
+    const checkoutIdentify = this._localStorageService.get<string>('checkoutIdentify') || '';
+    const idSede = this._localStorageService.get<number>('id_sede') ?? '';
+    const date = this.dateNew.toLocaleDateString();
+    const hours = this.dateNew.toLocaleTimeString();
+    const amount = formData?.monto ?? '0.00';
+    const methodPayment = 'C2P';
+
+    if (success && response?.data?.c2pResponse) {
+      const { c2pResponse } = response.data;
+      return {
+        date,
+        hours,
+        refNumber: c2pResponse.reference ?? '',
+        numSeq: c2pResponse.code ?? '-',
+        abononumber: this.nroAbonado,
+        status: 'APROBADO',
+        describe: 'Pago C2P',
+        amount,
+        methodPayment,
+        checkoutIdentify,
+        id_sede: idSede,
+        is_anulation: false,
+      };
+    }
+
+    // Fallido: respuesta del back o excepción
+    const refNumber = response?.data?.c2pResponse?.reference ?? 'N/A';
+    const describe = response?.data?.message ?? errorMessage ?? 'Pago no procesado';
+    return {
+      date,
+      hours,
+      refNumber,
+      numSeq: '-',
+      abononumber: this.nroAbonado,
+      status: 'RECHAZADO',
+      describe,
+      amount,
+      methodPayment,
+      checkoutIdentify,
+      id_sede: idSede,
+      is_anulation: false,
+    };
+  }
+
+  /**
+   * Imprime ticket de débito (éxito o fallido) y opcionalmente guarda/upload.
+   * No bloquea el flujo si falla la impresora.
+   */
+  private async printDebitoTicket(
+    ticket: IPrintTicket,
+    options: { saveLastVoucher?: boolean; uploadDigital?: boolean } = {}
+  ): Promise<void> {
+    try {
+      if (options.saveLastVoucher) {
+        this._localStorageService.set<IPrintTicket>('lastVoucher', ticket);
+      }
+      const printResult = await this._directPrinter.printTicket(ticket);
+      if (printResult.success) {
+        console.log('✅ [Modal Payment Débito] Ticket impreso');
+      } else {
+        console.warn('⚠️ [Modal Payment Débito] Error al imprimir:', printResult.message);
+      }
+    } catch (e) {
+      console.error('❌ [Modal Payment Débito] Error de impresión:', e);
+    }
+    if (options.uploadDigital) {
+      try {
+        await this._pdfService.ticketCreateAndUpload({ ...ticket, skip_print: true });
+        console.log('✅ [Modal Payment Débito] Ticket digital enviado');
+      } catch (e) {
+        console.error('❌ [Modal Payment Débito] Error al subir ticket digital:', e);
+      }
     }
   }
 
