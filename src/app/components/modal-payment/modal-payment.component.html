@@ -54,14 +54,10 @@
 
     <!-- Flujo original (Punto de Venta y Admin) -->
     <div [hidden]="viewAdmin || (inputType === 'mount' && !showPuntoVentaForm)">
-      <app-tab-dni
-        (typeDNIEmitter)="onLoginTypeChange($event)"
-      >
-      </app-tab-dni>
+      <app-tab-dni (typeDNIEmitter)="onLoginTypeChange($event)"> </app-tab-dni>
 
       <div class="modal-pay-content">
         <form [formGroup]="formPayment" class="modal-pay-form-section">
-
           <div (click)="setInputFocus('dni')">
             <label for="dni">{{inputType === 'reference' ? 'C\u00e9dula del titular de tarjeta' : 'C\u00e9dula del cliente'}}</label>
             <span class="input-dni-container flex items-center w-full">
@@ -205,13 +201,17 @@
         </form>
 
         <app-keyboard-on-screen
-          *ngIf="!showPaymentMethodSelector && !showC2PForm && !showDebitoInmediatoForm"
-          classes="pinpad-big-size" (valorTeclado)="onTecladoInput($event)"
+          *ngIf="
+            !showPaymentMethodSelector &&
+            !showC2PForm &&
+            !showDebitoInmediatoForm
+          "
+          classes="kiosk-mode"
+          (valorTeclado)="onTecladoInput($event)"
           (deleteKeyEmitter)="deleteLastCharacter()"
         >
         </app-keyboard-on-screen>
       </div>
     </div>
-
   </div>
 </section>

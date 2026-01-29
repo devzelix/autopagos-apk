@@ -1,36 +1,112 @@
-<div class="pinpad-container {{classes}}">
+<div class="pinpad-container {{ classes }}">
   <div class="pinpad">
-
-    <button (click)="pressKey('1')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">1</button>
-    <button (click)="pressKey('2')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">2</button>
-    <button (click)="pressKey('3')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">3</button>
-    <button (click)="pressKey('4')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">4</button>
-    <button (click)="pressKey('5')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">5</button>
-    <button (click)="pressKey('6')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">6</button>
-    <button (click)="pressKey('7')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">7</button>
-    <button (click)="pressKey('8')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">8</button>
-    <button (click)="pressKey('9')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">9</button>
-
-    <button (click)="pressKey('0')" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">0</button>
-
-    <button class="btn-wide" (click)="deleteLast()" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"
-      type="button">
-      Borrar
-      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
-        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"
-          d="M14 11L4 24l10 13h30V11zm7 8l10 10m0-10L21 29" />
-      </svg>
+    <button
+      (click)="pressKey('1')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      1
+    </button>
+    <button
+      (click)="pressKey('2')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      2
+    </button>
+    <button
+      (click)="pressKey('3')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      3
+    </button>
+    <button
+      (click)="pressKey('4')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      4
+    </button>
+    <button
+      (click)="pressKey('5')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      5
+    </button>
+    <button
+      (click)="pressKey('6')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      6
+    </button>
+    <button
+      (click)="pressKey('7')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      7
+    </button>
+    <button
+      (click)="pressKey('8')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      8
+    </button>
+    <button
+      (click)="pressKey('9')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      9
     </button>
 
+    <button
+      (click)="pressKey('0')"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      0
+    </button>
+
+    <button
+      class="btn-wide"
+      (click)="deleteLast()"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)"
+      type="button"
+    >
+      <div class="btn-content">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          viewBox="0 0 48 48"
+        >
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="4"
+            d="M14 11L4 24l10 13h30V11zm7 8l10 10m0-10L21 29"
+          />
+        </svg>
+        <span>BORRAR</span>
+      </div>
+    </button>
   </div>
 </div>
