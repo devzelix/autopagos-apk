@@ -144,9 +144,13 @@
               </div>
 
               <app-btn-transaction
-              [disabled]="formPayment.invalid || sendPayment || !!formErrorMessage?.errorMsg"
-              [btnType]="'submit'"
-              (onBtnClick)="onSubmit()"
+                [disabled]="
+                  formPayment.invalid ||
+                  sendPayment ||
+                  !!formErrorMessage?.errorMsg
+                "
+                [btnType]="'submit'"
+                (onBtnClick)="onSubmit()"
               >
               </app-btn-transaction>
             </div>
