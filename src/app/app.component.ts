@@ -43,6 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
   public showScrollArrow: boolean = false;
   public showUuid: boolean = false;
 
+  public isLoginKiosk: boolean = environment.is_login_kiosk;
+
   constructor(
     public helper: HelperService,
     private kioskAuth: KioskAuthService,

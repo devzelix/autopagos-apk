@@ -26,7 +26,7 @@
   </div>
 
   <!-- Form content -->
-  <div class="form-content" [class.with-keyboard]="useVirtualKeyboard" [class.keyboard-open]="keyboardVisible">
+  <div class="form-content" [class.with-keyboard]="useVirtualKeyboard">
     <form [formGroup]="stepForm" class="step-form">
       <div 
         *ngFor="let field of currentStepConfig.fields" 
@@ -55,19 +55,15 @@
             {{ field.prefix || (stepForm.get('nacionalidad')?.value || 'V') }}
           </span>
           
-          <!-- Select -->
-          <select 
+          <!-- Custom Select -->
+          <app-custom-select
             *ngIf="field.type === 'select' && field.name !== 'nacionalidad'"
             [id]="field.name"
             [formControlName]="field.name"
-            class="form-input"
+            [options]="field.options || []"
+            [placeholder]="'Seleccione...'"
             (focus)="setActiveField(field.name)"
-          >
-            <option value="">Seleccione...</option>
-            <option *ngFor="let option of field.options" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+          ></app-custom-select>
 
           <!-- Input text/tel/number -->
           <input 
@@ -123,10 +119,10 @@
       </div>
     </form>
 
-    <!-- Virtual keyboard (si está habilitado y visible) - FIXED on mobile -->
-    <div class="virtual-keyboard-section fixed-keyboard" *ngIf="useVirtualKeyboard && keyboardVisible">
+    <!-- Virtual keyboard (si está habilitado) - STICKY -->
+    <div class="virtual-keyboard-section" *ngIf="useVirtualKeyboard">
       <app-keyboard-on-screen
-        [classes]="keyboardVisible ? 'pinpad-big-size virtual-keyboard-fixed' : 'pinpad-big-size'"
+        classes="pinpad-big-size"
         (valorTeclado)="onVirtualKeyboardInput($event)"
         (deleteKeyEmitter)="onVirtualKeyboardDelete()"
       ></app-keyboard-on-screen>

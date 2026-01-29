@@ -21,7 +21,8 @@ section.modal-pay-container {
   color: $text-color;
   border-radius: 24px; // Bordes más redondeados
   width: 100%;
-  max-width: 550px; // Un poco más estrecho para foco
+  // max-width: 550px; // Un poco más estrecho para foco
+  max-width: 980px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -65,21 +66,19 @@ section.modal-pay-container {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: white;
-  background: $fibex-gradient;
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
   border: none;
   border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(33, 82, 136, 0.3);
 
   svg {
-    width: 1rem;
-    height: 1rem;
-    transition: transform 0.2s ease;
+    width: 2rem;
+    height: 2rem;
+    // transition: transform 0.2s ease;
   }
 
   &:hover {
@@ -371,7 +370,7 @@ app-btn-transaction {
   border-radius: 12px;
   padding: 0.6rem;
   border: 1px solid rgba(16,24,40,0.04);
-  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  // box-shadow: 0 10px 30px rgba(16,24,40,0.06);
   display: flex;
   align-items: center;
   justify-content: center;

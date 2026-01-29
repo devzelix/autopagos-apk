@@ -2,7 +2,7 @@
 <div class="app-root">
 <div id="content-scrollable" class="container">
   
-  <div *ngIf="(kioskStatus$ | async) === 'REGISTERED'; else kioskStatusBlock" class="flex-container-column">
+  <div *ngIf="!isLoginKiosk || (kioskStatus$ | async) === 'REGISTERED'; else kioskStatusBlock" class="flex-container-column">
     <router-outlet></router-outlet>
     <app-footer *ngIf="!helper.view"></app-footer>
   </div>

@@ -125,6 +125,7 @@ export const environment = {
 
   /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
   adminRif: 'J308182516',
+  is_login_kiosk: true
 };
 
   
