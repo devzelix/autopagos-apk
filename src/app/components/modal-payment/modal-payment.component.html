@@ -1,5 +1,4 @@
-<section
-  class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated faster fadeIn">
+<section class="modal-pay-container fixed inset-0 w-full h-full flex justify-center items-center animated faster fadeIn">
   <div class="modal-payment animated fadeInUp">
     <!-- <div class="btn-close-section">
       <button type="button" (click)="onCloseModal()">
@@ -7,64 +6,39 @@
       </button>
     </div> -->
 
-    <div class="back-button-section">
-      <button type="button" class="back-button" (click)="backToMethodSelector()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z" />
-        </svg>
-        Volver
-      </button>
-    </div>
+     <div class="back-button-section">
+        <button type="button" class="back-button" (click)="backToMethodSelector()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+          </svg>
+          Volver
+        </button>
+      </div>
 
     <!-- T\u00edtulo din\u00e1mico -->
     <h1 class="text-4xl text-center mb-2 font-bold">
-      {{ viewAdmin ? 'PANEL DE ADMINISTRACI\u00d3N' :
-      showPaymentMethodSelector ? 'Seleccione el m\u00e9todo de pago' :
-      showC2PForm ? 'M\u00e9todo de pago C2P' :
-      showDebitoInmediatoForm ? 'M\u00e9todo de pago D\u00e9bito Inmediato' :
-      inputType === 'reference' ? 'INGRESAR DATOS' : 'MONTO A PAGAR'}}
+      {{ viewAdmin ? 'PANEL DE ADMINISTRACI\u00d3N' : 
+         showPaymentMethodSelector ? 'Seleccione el m\u00e9todo de pago' :
+         showC2PForm ? 'M\u00e9todo de pago C2P' :
+         showDebitoInmediatoForm ? 'M\u00e9todo de pago D\u00e9bito Inmediato' :
+         inputType === 'reference' ? 'INGRESAR DATOS' : 'CONFIRMAR DATOS'}}
     </h1>
 
     <!-- Secci\u00f3n de selecci\u00f3n de m\u00e9todo de pago -->
     <div *ngIf="!viewAdmin && inputType === 'mount' && showPaymentMethodSelector">
-      <app-payment-method-selector (methodSelected)="onPaymentMethodSelected($event)"></app-payment-method-selector>
+      <app-payment-method-selector
+        (methodSelected)="onPaymentMethodSelected($event)"
+      ></app-payment-method-selector>
     </div>
 
     <!-- Formulario C2P con stepper -->
     <div *ngIf="!viewAdmin && inputType === 'mount' && showC2PForm">
-
-      <!-- Steps indicator -->
-      <div class="c2p-steps-indicator">
-        <div class="c2p-steps-list">
-          <ng-container *ngFor="let step of c2pStepConfig; let i = index">
-            <div class="c2p-step-item" [class.active]="i === c2pCurrentStep">
-              <div class="step-index">{{ i + 1 }}</div>
-              <div class="step-meta">
-                <div class="step-title">{{ step.title }}</div>
-                <div class="step-sub">{{ step.fields.length }} campos</div>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-        <div class="c2p-progress">
-          <div class="c2p-progress-bar"><div class="c2p-progress-fill" [style.width.%]="((c2pCurrentStep+1)/c2pStepConfig.length)*100"></div></div>
-        </div>
-      </div>
-
-      <div class="c2p-steps-form-grid">
-        <div class="c2p-stepper-wrap">
-          <app-stepper-form [steps]="c2pStepConfig" [useVirtualKeyboard]="false" [initialData]="c2pFormData"
-            (formComplete)="onC2PFormComplete($event)" (stepChange)="onC2PStepChange($event)"></app-stepper-form>
-        </div>
-
-        <div class="c2p-keyboard-area">
-          <app-keyboard-on-screen
-            classes="pinpad-big-size virtual-keyboard-fixed"
-            (valorTeclado)="onC2PKeyboardInput($event)"
-            (deleteKeyEmitter)="onC2PKeyboardDelete()"
-          ></app-keyboard-on-screen>
-        </div>
-      </div>
+      <app-stepper-form
+        [steps]="c2pStepConfig"
+        [useVirtualKeyboard]="useVirtualKeyboard"
+        [initialData]="c2pFormData"
+        (formComplete)="onC2PFormComplete($event)"
+      ></app-stepper-form>
     </div>
 
     <!-- Formulario Débito Inmediato con stepper -->
@@ -80,115 +54,92 @@
 
     <!-- Flujo original (Punto de Venta y Admin) -->
     <div [hidden]="viewAdmin || (inputType === 'mount' && !showPuntoVentaForm)">
-      <app-tab-dni (typeDNIEmitter)="onLoginTypeChange($event)">
+      <app-tab-dni
+        (typeDNIEmitter)="onLoginTypeChange($event)"
+      >
       </app-tab-dni>
 
       <div class="modal-pay-content">
         <form [formGroup]="formPayment" class="modal-pay-form-section">
 
           <div (click)="setInputFocus('dni')">
-            <label for="dni">{{inputType === 'reference' ? 'Cédula del titular de tarjeta' : 'Cédula del cliente'}}</label>
+            <label for="dni">{{inputType === 'reference' ? 'C\u00e9dula del titular de tarjeta' : 'C\u00e9dula del cliente'}}</label>
             <span class="input-dni-container flex items-center w-full">
-              <!-- Selector de tipo de documento -->
-              <div class="dni-select-wrapper">
-                <select class="dni-type-select" [ngModel]="typeDNI" (ngModelChange)="onLoginTypeChange($event)"
-                  [ngModelOptions]="{standalone: true}" [disabled]="isDniDisabled">
-                  <option value="V">V</option>
-                  <option value="J">J</option>
-                  <option value="E">E</option>
-                </select>
-                <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z" />
-                </svg>
-              </div>
+              <span class="icon-type-dni">
+                {{typeDNI}}
+              </span>
 
-              <input id="dni" formControlName="dni" type="tel" required #inputDni
-                (input)="onInputValueChange($event, 'dni')"
-                [ngClass]="{'input-focused-style': activeInputFocus === 'dni' && !isDniInputDisabled}" maxlength="16"
-                placeholder="Documento" />
+              <input id="dni" formControlName="dni" type="tel" required #inputDni (input)="onInputValueChange($event, 'dni')"
+              [ngClass]="{'input-focused-style': activeInputFocus === 'dni' && !isDniInputDisabled}" maxlength="16"/>
 
               <button (click)="onEditDniValue()" class="dni-edit-value" [ngClass]="{'show-btn-visible': isDniDisabled}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24">
                   <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-                    <path stroke-dasharray="56" stroke-dashoffset="56"
-                      d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
-                      <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0" />
+                    <path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/>
                     </path>
                     <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
-                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0" />
-                    </path>
-                    <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
-                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0" />
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/>
+                    </path><path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                      <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/>
                     </path>
                   </g>
                   <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
-                    <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3" />
+                    <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/>
                   </path>
                 </svg>
               </button>
             </span>
-            <div
-              *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched) : true">
-              <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La cédula es requerida.</small>
-              <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten números.</small>
+            <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('dni')?.invalid && formPayment.get('dni')?.touched) : true">
+              <small *ngIf="formPayment?.get('dni')?.errors?.['required']">La c\u00e9dula es requerida.</small>
+              <small *ngIf="formPayment.get('dni')?.errors?.['pattern']">Solo se permiten n\u00fameros.</small>
               <small *ngIf="formErrorMessage?.inputName === 'dni' && formErrorMessage?.errorMsg">
                 {{formErrorMessage?.errorMsg}}
               </small>
             </div>
           </div>
 
-          <!-- Campo dinámico: mount o reference -->
+          <!-- Campo din\u00e1mico: mount o reference -->
           <div [ngSwitch]="inputType">
             <!-- Caso: Monto -->
             <div *ngSwitchCase="'mount'" (click)="setInputFocus('mount')">
               <section class="flex justify-between items-center">
                 <label for="mount">Monto</label>
                 <span class="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                      d="M12 23q-2.8 0-5.15-1.275T3 18.325V21H1v-6h6v2H4.525q1.2 1.8 3.163 2.9T12 21q1.875 0 3.513-.712t2.85-1.925t1.925-2.85T21 12h2q0 2.275-.862 4.275t-2.363 3.5t-3.5 2.363T12 23m-.9-4v-1.3q-1.175-.275-1.912-1.012T8.1 14.75l1.65-.65q.3 1.025.938 1.538t1.462.512t1.413-.387t.587-1.213q0-.725-.612-1.175T11.35 12.35q-1.475-.525-2.162-1.25T8.5 9.2q0-1.025.713-1.862T11.15 6.25V5h1.75v1.25q.9.075 1.638.725T15.55 8.5l-1.6.65q-.2-.575-.65-.962T12.05 7.8q-.875 0-1.338.375T10.25 9.2t.575 1.025t2.075.875q1.8.65 2.4 1.525t.6 1.925q0 .725-.25 1.275t-.663.938t-.962.625t-1.175.362V19zM1 12q0-2.275.863-4.275t2.362-3.5t3.5-2.362T12 1q2.8 0 5.15 1.275t3.85 3.4V3h2v6h-6V7h2.475q-1.2-1.8-3.162-2.9T12 3q-1.875 0-3.512.713t-2.85 1.924t-1.925 2.85T3 12z" />
-                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 23q-2.8 0-5.15-1.275T3 18.325V21H1v-6h6v2H4.525q1.2 1.8 3.163 2.9T12 21q1.875 0 3.513-.712t2.85-1.925t1.925-2.85T21 12h2q0 2.275-.862 4.275t-2.363 3.5t-3.5 2.363T12 23m-.9-4v-1.3q-1.175-.275-1.912-1.012T8.1 14.75l1.65-.65q.3 1.025.938 1.538t1.462.512t1.413-.387t.587-1.213q0-.725-.612-1.175T11.35 12.35q-1.475-.525-2.162-1.25T8.5 9.2q0-1.025.713-1.862T11.15 6.25V5h1.75v1.25q.9.075 1.638.725T15.55 8.5l-1.6.65q-.2-.575-.65-.962T12.05 7.8q-.875 0-1.338.375T10.25 9.2t.575 1.025t2.075.875q1.8.65 2.4 1.525t.6 1.925q0 .725-.25 1.275t-.663.938t-.962.625t-1.175.362V19zM1 12q0-2.275.863-4.275t2.362-3.5t3.5-2.362T12 1q2.8 0 5.15 1.275t3.85 3.4V3h2v6h-6V7h2.475q-1.2-1.8-3.162-2.9T12 3q-1.875 0-3.512.713t-2.85 1.924t-1.925 2.85T3 12z"/></svg>
                   <p class="font-medium text-lg text-right mr-[3.75rem]"> ${{dolarBalance}}</p>
                 </span>
-
 
               </section>
 
               <span class="input-dni-container flex items-center w-full">
                 <span class="icon-type-dni"> Bs. </span>
 
-                <input id="mount" formControlName="mount" type="tel" required #inputMount
-                  (input)="onInputValueChange($event, 'mount')"
-                  [ngClass]="{'input-focused-style': activeInputFocus === 'mount' && !isMountInputDisabled}"
-                  maxlength="12" />
+                <input id="mount" formControlName="mount" type="tel" required #inputMount (input)="onInputValueChange($event, 'mount')"
+                [ngClass]="{'input-focused-style': activeInputFocus === 'mount' && !isMountInputDisabled}" maxlength="12"/>
 
-                <button (click)="onEditMountValue()" class="dni-edit-value"
-                  [ngClass]="{'show-btn-visible': isMountDisabled}">
+                <button (click)="onEditMountValue()" class="dni-edit-value" [ngClass]="{'show-btn-visible': isMountDisabled}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24">
-                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="2">
-                      <path stroke-dasharray="56" stroke-dashoffset="56"
-                        d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
-                        <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0" />
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                        <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path>
+                        <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                          <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/>
+                        </path>
+                        <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                          <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/>
+                        </path>
+                      </g>
+                      <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
+                        <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/>
                       </path>
-                      <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
-                        <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0" />
-                      </path>
-                      <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
-                        <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0" />
-                      </path>
-                    </g>
-                    <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
-                      <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3" />
-                    </path>
-                  </svg>
+                    </svg>
                 </button>
               </span>
 
 
 
-              <div
-                *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('mount')?.invalid && formPayment.get('mount')?.touched) : true">
+              <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('mount')?.invalid && formPayment.get('mount')?.touched) : true">
                 <small *ngIf="formPayment.get('mount')?.errors?.['required']">El monto es requerido.</small>
                 <small *ngIf="formPayment.get('mount')?.errors?.['min']">El monto debe ser mayor que 0.</small>
                 <small *ngIf="formErrorMessage?.inputName === 'mount' && formErrorMessage?.errorMsg">
@@ -196,8 +147,11 @@
                 </small>
               </div>
 
-              <app-btn-transaction [disabled]="formPayment.invalid || sendPayment || !!formErrorMessage?.errorMsg"
-                [btnType]="'submit'" (onBtnClick)="onSubmit()">
+              <app-btn-transaction
+              [disabled]="formPayment.invalid || sendPayment || !!formErrorMessage?.errorMsg"
+              [btnType]="'submit'"
+              (onBtnClick)="onSubmit()"
+              >
               </app-btn-transaction>
             </div>
 
@@ -209,56 +163,52 @@
                 <span class="input-dni-container flex items-center w-full">
                   <span class="icon-type-dni"> Nro. </span>
 
-                  <input id="reference" formControlName="reference" type="tel" required #inputReference
-                    (input)="onInputValueChange($event, 'reference')"
-                    [ngClass]="{'input-focused-style': activeInputFocus === 'reference' && !isMountDisabled}"
-                    maxlength="12" />
+                  <input id="reference" formControlName="reference" type="tel" required #inputReference (input)="onInputValueChange($event, 'reference')"
+                  [ngClass]="{'input-focused-style': activeInputFocus === 'reference' && !isMountDisabled}" maxlength="12"/>
 
-                  <button (click)="onEditMountValue()" class="dni-edit-value"
-                    [ngClass]="{'show-btn-visible': isMountDisabled}">
+                  <button (click)="onEditMountValue()" class="dni-edit-value" [ngClass]="{'show-btn-visible': isMountDisabled}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="2.4rem" height="2.4rem" viewBox="0 0 24 24">
-                      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2">
-                        <path stroke-dasharray="56" stroke-dashoffset="56"
-                          d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
-                          <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0" />
+                      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path stroke-dasharray="56" stroke-dashoffset="56" d="M3 21l2 -6l11 -11c1 -1 3 -1 4 0c1 1 1 3 0 4l-11 11l-6 2">
+                          <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="56;0"/></path>
+                          <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
+                            <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="8;0"/>
+                          </path>
+                          <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
+                            <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/>
+                          </path>
+                        </g>
+                        <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
+                          <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3"/>
                         </path>
-                        <path stroke-dasharray="8" stroke-dashoffset="8" d="M15 5l4 4">
-                          <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s"
-                            values="8;0" />
-                        </path>
-                        <path stroke-dasharray="6" stroke-dashoffset="6" stroke-width="1" d="M6 15l3 3">
-                          <animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s"
-                            values="6;0" />
-                        </path>
-                      </g>
-                      <path fill="currentColor" fill-opacity="0" d="M17 4H20V7L9 18L6 15L17 4Z">
-                        <animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.15s" values="0;0.3" />
-                      </path>
-                    </svg>
+                      </svg>
                   </button>
                 </span>
 
-                <div
-                  *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('reference')?.invalid && formPayment.get('reference')?.touched) : true">
+                <div *ngIf="!formErrorMessage?.errorMsg ? (formPayment.get('reference')?.invalid && formPayment.get('reference')?.touched) : true">
                   <small *ngIf="formPayment.get('reference')?.errors?.['required']">La referencia es requerida.</small>
-                  <small *ngIf="formPayment.get('reference')?.errors?.['min']">La referencia debe ser mayor que
-                    0.</small>
+                  <small *ngIf="formPayment.get('reference')?.errors?.['min']">La referencia debe ser mayor que 0.</small>
                   <small *ngIf="formErrorMessage?.inputName === 'reference' && formErrorMessage?.errorMsg">
-                    {{formErrorMessage?.errorMsg}}
+                      {{formErrorMessage?.errorMsg}}
                   </small>
                 </div>
                 <app-btn-transaction
-                  [disabled]="formPayment.invalid || sendPayment || inProcess || !!formErrorMessage?.errorMsg"
-                  [btnType]="'submit'" [title]="'Anular'" (onBtnClick)="anulateTransaction()">
+                [disabled]="formPayment.invalid || sendPayment || inProcess || !!formErrorMessage?.errorMsg"
+                [btnType]="'submit'"
+                [title]="'Anular'"
+                (onBtnClick)="anulateTransaction()"
+                >
                 </app-btn-transaction>
               </div>
             </div>
           </div>
         </form>
 
-        <app-keyboard-on-screen *ngIf="!showPaymentMethodSelector && !showC2PForm && !showDebitoInmediatoForm"
-          classes="pinpad-big-size" (valorTeclado)="onTecladoInput($event)" (deleteKeyEmitter)="deleteLastCharacter()">
+        <app-keyboard-on-screen
+          *ngIf="!showPaymentMethodSelector && !showC2PForm && !showDebitoInmediatoForm"
+          classes="pinpad-big-size" (valorTeclado)="onTecladoInput($event)"
+          (deleteKeyEmitter)="deleteLastCharacter()"
+        >
         </app-keyboard-on-screen>
       </div>
     </div>
