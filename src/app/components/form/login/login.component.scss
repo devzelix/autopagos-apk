@@ -145,56 +145,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.keypad-grid-new {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px; /* Reducido de 25px */
   width: 100%;
-  max-width: 100%;
-  justify-content: center;
-  padding: 0;
-}
-
-.keypad-val-btn {
-  height: 140px; /* Reducido de 160px */
-  border-radius: 40px;
-  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%); /* Ajustado al azul de la imagen */
-  color: white;
-  border: none;
-  font-size: 3rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 0px rgba(33, 82, 136, 0.4);
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  &:active {
-    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
-    transform: translateY(6px);
-    box-shadow: 0 4px 0px rgba(33, 82, 136, 0.4);
-  }
-}
-
-.delete-key-red {
-  grid-column: span 2;
-  background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
-  box-shadow: 0 10px 0px rgba(211, 47, 47, 0.4);
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  &:active {
-    background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
-    box-shadow: 0 4px 0px rgba(211, 47, 47, 0.4);
-    transform: translateY(6px);
-  }
-
-  svg {
-    width: 60px; /* Reducido de 70px */
-    height: 60px;
-  }
 }
 
 .login-footer-new {
