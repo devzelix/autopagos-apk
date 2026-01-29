@@ -56,6 +56,7 @@ import { PaymentMethodSelectorComponent } from './components/payment-method-sele
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 import { AdvancePaymentModalComponent } from './components/modals/advance-payment-modal/advance-payment-modal.component';
 import { EditAmountModalComponent } from './components/modals/edit-amount-modal/edit-amount-modal.component';
+import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 
 
 const routes: Routes = [
@@ -108,7 +109,8 @@ const routes: Routes = [
     PaymentMethodSelectorComponent,
     StepperFormComponent,
     AdvancePaymentModalComponent,
-    EditAmountModalComponent
+    EditAmountModalComponent,
+    CustomSelectComponent
   ],
   imports: [
     BrowserModule,

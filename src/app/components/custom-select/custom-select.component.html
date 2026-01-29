@@ -1,0 +1,42 @@
+<div class="custom-select" [class.disabled]="disabled" [class.open]="isOpen">
+  <!-- Select trigger -->
+  <div class="select-trigger" (click)="toggleDropdown()">
+    <span class="select-value" [class.placeholder]="isPlaceholder">
+      {{ displayText }}
+    </span>
+    <svg 
+      class="select-arrow" 
+      [class.rotated]="isOpen"
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24"
+    >
+      <path fill="currentColor" d="M7 10l5 5l5-5z"/>
+    </svg>
+  </div>
+
+  <!-- Dropdown options -->
+  <div class="select-dropdown" *ngIf="isOpen">
+    <div class="dropdown-scroll">
+      <div 
+        *ngFor="let option of options" 
+        class="select-option"
+        [class.selected]="option.value === selectedValue"
+        (click)="selectOption(option)"
+      >
+        <span class="option-label">{{ option.label }}</span>
+        <svg 
+          *ngIf="option.value === selectedValue"
+          class="option-check"
+          xmlns="http://www.w3.org/2000/svg" 
+          width="20" 
+          height="20" 
+          viewBox="0 0 24 24"
+        >
+          <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>

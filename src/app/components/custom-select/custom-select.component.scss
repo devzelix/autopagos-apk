@@ -1,0 +1,239 @@
+:host {
+  width: 100%;
+}
+
+.custom-select {
+  position: relative;
+  width: 100%;
+  user-select: none;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+// Select trigger (el botón que abre el dropdown)
+.select-trigger {
+  width: 100%;
+  min-height: 3.9rem;
+  background: white;
+  border: none;
+  border-radius: 11px;
+  padding: 0 2rem;
+  padding-right: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  // transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  &:hover {
+    background: #f7fafc;
+  }
+
+  .custom-select.open & {
+    background: white;
+    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.1);
+  }
+}
+
+.select-value {
+  font-size: 1.9rem;
+  font-weight: 500;
+  color: #313131;
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &.placeholder {
+    color: #a0aec0;
+    font-weight: 400;
+  }
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1.5rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: #357CFF;
+  // transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+// Dropdown container
+.select-dropdown {
+    position: fixed;
+    /* top: calc(100% + 0.5rem); */
+    /* left: 0; */
+    /* right: 0; */
+    background: white;
+    border-radius: 38px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(53, 124, 255, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownSlideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 650px;
+    /* z-index: 99999999999999999999999999999999999999999999999999; */
+    max-width: 50%;
+}
+
+.dropdown-scroll {
+  max-height: 650px;
+  overflow-y: auto;
+  padding: 0.5rem;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #357CFF;
+    border-radius: 10px;
+    
+    &:hover {
+      background: #2d9ae2;
+    }
+  }
+}
+
+// Individual option
+.select-option {
+  padding: 1.2rem 1.5rem;
+  font-size: 1.7rem;
+  color: #313131;
+  cursor: pointer;
+  border-radius: 8px;
+  // transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.3rem;
+  position: relative;
+  overflow: hidden;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  // Hover effect
+  &:hover {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+    color: #357CFF;
+    transform: translateX(4px);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #357CFF 0%, #2d9ae2 100%);
+      border-radius: 0 3px 3px 0;
+    }
+  }
+
+  // Selected state
+  &.selected {
+    background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%);
+    color: white;
+    font-weight: 600;
+    transform: translateX(0);
+    box-shadow: 0 2px 8px rgba(53, 124, 255, 0.3);
+
+    &::before {
+      display: none;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #2d6fd8 0%, #2589cc 100%);
+      transform: translateX(0);
+    }
+  }
+}
+
+.option-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.option-check {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+// Animations
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Responsive para pantallas grandes (kioscos)
+@media (min-width: 1200px) {
+  .select-trigger {
+    min-height: 6.5rem;
+    padding: 1.5rem 2rem;
+    padding-right: 6rem;
+  }
+
+  .select-value {
+    font-size: 2.4rem;
+  }
+
+  .select-arrow {
+    width: 3rem;
+    height: 3rem;
+    right: 2rem;
+  }
+
+  .select-option {
+    padding: 1.5rem 2rem;
+    font-size: 2.2rem;
+  }
+
+  .select-dropdown {
+    max-height: 400px;
+  }
+
+  .dropdown-scroll {
+    max-height: 400px;
+  }
+}

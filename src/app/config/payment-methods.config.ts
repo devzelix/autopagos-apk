@@ -94,7 +94,7 @@ export const C2P_STEP_CONFIG: IStepConfig[] = [
       },
       {
         name: 'banco',
-        label: 'Banco',
+        label: 'Banco origen',
         type: 'select',
         required: true,
         options: BANKS_C2P.map(bank => ({ value: bank.code, label: bank.name })),
@@ -174,7 +174,7 @@ export const DEBITO_INMEDIATO_STEP_CONFIG: IStepConfig[] = [
       },
       {
         name: 'banco',
-        label: 'Banco',
+        label: 'Banco origen',
         type: 'select',
         required: true,
         options: BANKS_C2P.map(bank => ({ value: bank.code, label: bank.name })),

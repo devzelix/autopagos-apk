@@ -55,19 +55,15 @@
             {{ field.prefix || (stepForm.get('nacionalidad')?.value || 'V') }}
           </span>
           
-          <!-- Select -->
-          <select 
+          <!-- Custom Select -->
+          <app-custom-select
             *ngIf="field.type === 'select' && field.name !== 'nacionalidad'"
             [id]="field.name"
             [formControlName]="field.name"
-            class="form-input"
+            [options]="field.options || []"
+            [placeholder]="'Seleccione...'"
             (focus)="setActiveField(field.name)"
-          >
-            <option value="">Seleccione...</option>
-            <option *ngFor="let option of field.options" [value]="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+          ></app-custom-select>
 
           <!-- Input text/tel/number -->
           <input 
