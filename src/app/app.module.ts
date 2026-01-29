@@ -52,6 +52,7 @@ import { ConfigIpUbiiposComponent } from './components/administrative-module/con
 import { ActionAdminComponent } from './components/administrative-module/action-admin/action-admin.component';
 import { LoginComponent } from './components/administrative-module/login/login.component';
 import { LoginFormComponent } from './components/form/login/login.component';
+import { HeaderFormComponent } from './components/form/header-form/header-form.component';
 import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.component';
 import { PaymentMethodSelectorComponent } from './components/payment-method-selector/payment-method-selector.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
@@ -98,6 +99,7 @@ const routes: Routes = [
     BtnTransactionComponent,
     UniquePaymentComponent,
     LoginFormComponent,
+    HeaderFormComponent,
     MultiplePaymentComponent,
     UserItemCardComponent,
     AdministrativeModuleComponent,

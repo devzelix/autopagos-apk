@@ -25,24 +25,15 @@
     id="form-offer"
     *ngIf="!showStateTable && showFormView"
   >
-    <div class="form-login__offer">
-      <span class="main-title-login-container flex flex-col gap-2.5">
-        <img
-          class="fibex-main-title-logo"
-          src="assets/images/fibex-logo-positive.png"
-          alt="Fibex Telecom Logo"
-          (click)="goHome()"
-          (touchstart)="goHome()"
-          style="cursor: pointer"
-        />
-        <!-- <h1 class="main-title-login text-3xl">Registre su pago de <strong>Internet!</strong></h1> -->
-      </span>
-    </div>
+    <app-header-form (goHomeEmitter)="goHome()"></app-header-form>
 
     <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
     <div
       class="form-login__group fancy_shadow"
-      [ngClass]="nameClient ? 'form-login__group2' : ''"
+      [ngClass]="{
+        'form-login__group2': nameClient,
+        'login-mode-container': navActive === ENUM_NAV.LOGIN
+      }"
     >
       <!-- Mensajes de alerta -->
       <div>
@@ -86,6 +77,7 @@
       >
         <div *ngIf="AppFibex" class="links-nav-btns-container">
           <button
+            type="button"
             *ngIf="AppFibex && navActive !== ENUM_NAV.LOGIN"
             (click)="goStepBack()"
             class="links-btn-navigation nav-back"

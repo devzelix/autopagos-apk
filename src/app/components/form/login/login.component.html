@@ -1,7 +1,7 @@
 <div class="login-mobile-container">
   <div class="login-card-vertical">
     <div class="login-header">
-      <h1 class="login-title">Acceso Clientes</h1>
+      <h1 class="login-title">Cédula del Cliente</h1>
       <p class="login-description">
         Seleccione su tipo de documento e ingrese el número.
       </p>
@@ -9,55 +9,137 @@
 
     <!-- Selección de Tipo (Botones Horizontales) -->
     <div class="dni-type-selector-new">
-      <button 
-        type="button" 
-        class="dni-type-btn" 
+      <button
+        type="button"
+        class="dni-type-btn"
         [class.active]="loginTypeSelectValue === 'V'"
-        (click)="selectDniType('V', $event)">
-        VENEZOLANO
+        (click)="selectDniType('V', $event)"
+      >
+        <div class="btn-content">
+          <svg
+            class="animated fadeInLeft"
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.2em"
+            height="1.2em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4s-4 1.79-4 4s1.79 4 4 4m0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4"
+            />
+          </svg>
+          <span>NATURAL</span>
+        </div>
       </button>
-      <button 
-        type="button" 
-        class="dni-type-btn" 
+
+      <button
+        type="button"
+        class="dni-type-btn"
         [class.active]="loginTypeSelectValue === 'E'"
-        (click)="selectDniType('E', $event)">
-        EXTRANJERO
+        (click)="selectDniType('E', $event)"
+      >
+        <div class="btn-content">
+          <svg
+            class="animated fadeInLeft"
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.2em"
+            height="1.2em"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill="currentColor"
+              d="M5 1a.5.5 0 0 1 .5.5V2h2v-.5a.5.5 0 0 1 1 0V2h2v-.5a.5.5 0 0 1 1 0V2A1.5 1.5 0 0 1 13 3.5v1.901A3 3 0 0 0 11.5 5c-.386 0-.756.073-1.095.206A.5.5 0 0 0 10 5H6a.5.5 0 0 0 0 1h3.264A3 3 0 0 0 8.5 8H6a.5.5 0 0 0 0 1h2.67c.135.38.343.724.609 1.016q-.206.031-.388.113C7.833 10.329 7 11.236 7 12.376c0 .938.378 1.796 1 2.428V15H4.5A1.5 1.5 0 0 1 3 13.5v-10A1.5 1.5 0 0 1 4.5 2v-.5A.5.5 0 0 1 5 1m.5 10.5a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 0-1H6a.5.5 0 0 0-.5.5m3.828-.412q-.06 0-.119.005c-.678.059-1.209.61-1.209 1.283a2.48 2.48 0 0 0 1.21 2.121q.341.209.748.309l.083.02c.958.232 1.96.232 2.918 0l.083-.02c1.15-.279 1.958-1.281 1.958-2.43c0-.711-.595-1.288-1.328-1.288zM11.5 6a1.997 1.997 0 0 1 2 2c0 .507-.189.97-.5 1.323A2 2 0 0 1 9.5 8a2 2 0 0 1 2-2"
+            />
+          </svg>
+          <span>EXTRANJERO</span>
+        </div>
       </button>
-      <button 
-        type="button" 
-        class="dni-type-btn" 
+
+      <button
+        type="button"
+        class="dni-type-btn"
         [class.active]="loginTypeSelectValue === 'J'"
-        (click)="selectDniType('J', $event)">
-        JURÍDICO
+        (click)="selectDniType('J', $event)"
+      >
+        <div class="btn-content">
+          <svg
+            class="animated fadeInLeft"
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.2em"
+            height="1.2em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8V9h8v10zm-2-8h-4v2h4v-2zm0 4h-4v2h4v-2z"
+            />
+          </svg>
+          <span>JURÍDICO</span>
+        </div>
       </button>
     </div>
 
     <!-- Display del Número -->
     <div class="dni-display-box">
       <h2 class="display-value">
-        {{ dniValue || '00000000' }}
+        <span class="type-prefix">{{ loginTypeSelectValue }}</span>
+        <span class="type-separator">|</span>
+        {{ dniValue || "00000000" }}
       </h2>
     </div>
 
     <!-- Teclado Numérico -->
     <div class="login-keypad-vertical">
       <div class="keypad-grid-new">
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(1)">1</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(2)">2</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(3)">3</button>
-        
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(4)">4</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(5)">5</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(6)">6</button>
-        
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(7)">7</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(8)">8</button>
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(9)">9</button>
-        
-        <button type="button" class="keypad-val-btn" (click)="onKeyClick(0)">0</button>
-        <button type="button" class="keypad-val-btn delete-key-red" (click)="onDeleteClick()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-            <path fill="currentColor" d="m11.5 13.5l1.5-1.5l1.5 1.5l1-1l-1.5-1.5l1.5-1.5l-1-1l-1.5 1.5l-1.5-1.5l-1 1l1.5 1.5l-1.5 1.5l1 1M19 6H9L3 12l6 6h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2Z"/>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(1)">
+          1
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(2)">
+          2
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(3)">
+          3
+        </button>
+
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(4)">
+          4
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(5)">
+          5
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(6)">
+          6
+        </button>
+
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(7)">
+          7
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(8)">
+          8
+        </button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(9)">
+          9
+        </button>
+
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(0)">
+          0
+        </button>
+        <button
+          title="close"
+          type="button"
+          class="keypad-val-btn delete-key-red"
+          (click)="onDeleteClick()"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="m11.5 13.5l1.5-1.5l1.5 1.5l1-1l-1.5-1.5l1.5-1.5l-1-1l-1.5 1.5l-1.5-1.5l-1 1l1.5 1.5l-1.5 1.5l1 1M19 6H9L3 12l6 6h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2Z"
+            />
           </svg>
         </button>
       </div>
@@ -65,8 +147,23 @@
 
     <!-- Botón Inferior -->
     <div class="login-footer-new">
-      <button class="btn-primary-ingresar" (click)="onIngresar()" [disabled]="!dniValue">
-        INGRESAR
+      <button
+        class="btn-primary-ingresar"
+        (click)="onIngresar()"
+        [disabled]="!dniValue"
+      >
+        <div class="btn-content-ingresar">
+          <span>INGRESAR</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            fill="currentColor"
+          >
+            <path
+              d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z"
+            />
+          </svg>
+        </div>
       </button>
     </div>
   </div>

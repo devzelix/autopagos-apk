@@ -1,0 +1,27 @@
+.form-login__offer {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 50px;
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  height: fit-content;
+
+  .main-title-login-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem; // 2.5 * 0.25rem (tailwind gap-2.5)
+  }
+
+  .fibex-main-title-logo {
+    width: 60rem; // Aumentado aún más para máxima visibilidad
+    aspect-ratio: 48 / 19;
+    margin: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
