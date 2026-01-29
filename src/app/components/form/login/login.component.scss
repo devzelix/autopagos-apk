@@ -17,18 +17,22 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Mantiene el botón siempre abajo */
-  padding: 40px;
-  border-radius: 60px;
+  padding: 80px;
+  border-radius: 25px;
   flex-shrink: 0; /* IMPIDE que la tarjeta se encoja */
   box-sizing: border-box;
   margin: 0 auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  /*   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); */
 }
 
 .login-header {
-  text-align: left;
+  text-align: center;
   flex-shrink: 0;
   height: 150px; /* Altura más compacta */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-title {
@@ -41,8 +45,9 @@
 .login-description {
   color: #6b7280;
   font-size: 1.3rem; /* Ajustado */
-  line-height: 1.3;
-  margin: 0;
+  line-height: 1.6;
+  margin-left: 10px;
+  white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
 }
 
 .dni-type-selector-new {
@@ -88,7 +93,6 @@
   &.active {
     background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
     color: white;
-    box-shadow: 0 10px 30px rgba(33, 82, 136, 0.3);
   }
 }
 
@@ -96,14 +100,13 @@
   background: #f9fafb;
   border: 4px solid #f3f4f6; /* Más grueso como en la imagen */
   border-radius: 40px;
-  padding: 15px;
-  text-align: center;
+  padding: 0 40px; /* Aumentado padding horizontal */
   margin: 30px 0;
   width: 100%;
-  height: 200px; /* Reducido de 250px */
+  height: 6.9rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Alineado a la izquierda */
   flex-shrink: 0;
   box-sizing: border-box;
   overflow: hidden;
@@ -117,33 +120,41 @@
   letter-spacing: 2px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Cambio de space-evenly a flex-start */
   width: 100%;
   font-family: "Courier New", monospace;
   white-space: nowrap;
 
   .type-prefix {
     color: #1a426d;
-    margin-right: 20px;
     font-family: "Poppins", sans-serif;
-    min-width: 40px;
+    min-width: 50px; /* Ancho fijo para evitar movimiento */
     display: inline-block;
+    text-align: center;
   }
 
   .type-separator {
-    color: #e5e7eb;
-    margin: 0 20px;
+    color: #e5e7eb60;
+    margin: 0 30px; /* Espaciado fijo */
     font-weight: 200;
     font-size: 3.5rem;
     flex-shrink: 0;
   }
+
+  .dni-number {
+    flex-grow: 1;
+    &.is-placeholder {
+      color: #9ca3af;
+      opacity: 0.5;
+    }
+  }
 }
 
 .login-keypad-vertical {
-  margin-top: 10px; /* Reducido de 20px */
+  margin-top: 50px;
   flex-grow: 1;
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   width: 100%;
 }
@@ -157,12 +168,11 @@
   background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
   color: white;
   border: none;
-  border-radius: 60px;
+  border-radius: 25px;
   padding: 30px; /* Reducido de 35px */
   font-size: 2.5rem; /* Reducido de 3rem */
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 10px 0px rgba(26, 66, 109, 0.4);
   text-transform: uppercase;
   transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
@@ -173,7 +183,6 @@
   &:active:not(:disabled) {
     background: linear-gradient(135deg, #14375c 0%, #1e5284 100%);
     transform: translateY(6px);
-    box-shadow: 0 4px 0px rgba(26, 66, 109, 0.4);
   }
 
   .btn-content-ingresar {
