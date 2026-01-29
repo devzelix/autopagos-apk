@@ -1,4 +1,5 @@
 <!-- (scroll)="handleShowScrollArrow($event)" -->
+<div class="app-root">
 <div id="content-scrollable" class="container">
   
   <div *ngIf="(kioskStatus$ | async) === 'REGISTERED'; else kioskStatusBlock" class="flex-container-column">
@@ -92,4 +93,15 @@
     [class.fadeOutDown]="!showScrollArrow">
     <img src="../assets/images/arrow_up.png" alt="Ir hacia arriba">
   </button> -->
+</div>
+
+  <!-- Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (vídeo/imágenes se ven detrás) -->
+  <div *ngIf="showIdlePage" class="idle-page-overlay">
+    <div class="idle-page-iframe-zone">
+      <iframe [src]="idlePageUrlSafe" class="idle-page-iframe" title="Página de inactividad"></iframe>
+    </div>
+    <div class="idle-page-button-zone" (click)="hideIdlePage()" (touchstart)="hideIdlePage()">
+      <button type="button" class="idle-page-btn">Empezar</button>
+    </div>
+  </div>
 </div>

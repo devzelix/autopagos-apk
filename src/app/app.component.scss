@@ -1,3 +1,94 @@
+.app-root {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (contenido visible detrás)
+.idle-page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  background: #000;
+}
+
+.idle-page-iframe-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.idle-page-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.idle-page-button-zone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem 3.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+  cursor: pointer;
+  min-height: 120px;
+}
+
+.idle-page-btn {
+  background: linear-gradient(to right, #215288, #2d7bc2);
+  color: white;
+  border: none;
+  padding: 1.25rem 3rem;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 280px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 6px 20px rgba(33, 82, 136, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  animation: idle-btn-pulse 2.5s ease-in-out infinite, idle-btn-glow 2.5s ease-in-out infinite;
+
+  &:hover {
+    background: linear-gradient(to right, #1a426d, #2566a3);
+    transform: scale(1.03);
+    box-shadow: 0 8px 28px rgba(33, 82, 136, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    animation: none;
+  }
+
+  &:active {
+    transform: scale(0.98);
+    animation: none;
+  }
+}
+
+@keyframes idle-btn-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes idle-btn-glow {
+  0%, 100% { box-shadow: 0 6px 20px rgba(33, 82, 136, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; }
+  50% { box-shadow: 0 8px 28px rgba(33, 82, 136, 0.55), 0 0 20px rgba(33, 82, 136, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15) inset; }
+}
+
 .arrow_up {
   position: fixed;
   bottom: calc(3% + 60px);

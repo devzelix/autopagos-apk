@@ -1,9 +1,10 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,13 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly ENABLE_AD_CAROUSEL = false;
   
   public showAdCarousel = false;
-  private readonly INACTIVITY_TIME = 30000; // 30 segundos
+  // Para pruebas locales usar 10000 (10 s); en producción usar 30000 (30 s)
+  private readonly INACTIVITY_TIME = 10000; // 10 segundos (pruebas) / 30000 producción
+  public showIdlePage = false;
+  /** URL a cargar en el iframe de inactividad. Cambiar por la URL deseada (ej. página de publicidad). */
+  public idlePageUrl = 'http://localhost:4200/';
+  /** URL saneada para el iframe (asignada una vez para evitar parpadeo por recarga). */
+  public idlePageUrlSafe: SafeResourceUrl;
 
   public kioskStatus$ = this.kioskAuth.kioskStatus$;
 
@@ -34,10 +41,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     public helper: HelperService,
-    private kioskAuth: KioskAuthService
+    private kioskAuth: KioskAuthService,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
+    this.idlePageUrlSafe = this.idlePageUrl
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(this.idlePageUrl)
+      : this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
     this.startInactivityTimer();
     
     // Forzamos visualización de carga al inicio
@@ -108,21 +121,29 @@ export class AppComponent implements OnInit, OnDestroy {
     // Iniciar verificación periódica de la vista
     this.startViewCheck();
     
-    // Detectar actividad del usuario
+    // Detectar actividad del usuario (sin mousemove para que no reinicie con cada movimiento)
     const activity$ = merge(
       fromEvent(document, 'click'),
       fromEvent(document, 'keypress'),
       fromEvent(document, 'touchstart'),
-      fromEvent(document, 'mousemove'),
       fromEvent(document, 'scroll')
     ).pipe(takeUntil(this.destroy$));
 
-    // Suscripción única para detectar inactividad
-    // debounceTime reinicia automáticamente el contador en cada evento
+    // Suscripción única: 10 s sin clic/toque/tecla/scroll. startWith(null) hace que el primer
+    // período de 10 s cuente desde la carga (sin él, debounceTime nunca emite si no hubo ningún evento).
     this.activitySubscription = activity$.pipe(
+      startWith(null),
       debounceTime(this.INACTIVITY_TIME),
       takeUntil(this.destroy$)
     ).subscribe(() => {
+      // Pantalla de inactividad: iframe + botón "Empezar pago"
+      if (this.idlePageUrl && !this.showIdlePage) {
+        this.ngZone.run(() => {
+          this.showIdlePage = true;
+          this.cdr.detectChanges();
+        });
+        console.log('Mostrando pantalla de inactividad');
+      }
       // Solo mostrar carrusel si está habilitado y estamos en la vista de inicio
       if (this.ENABLE_AD_CAROUSEL && !this.showAdCarousel && this.isInWelcomeView()) {
         this.showAdCarousel = true;
@@ -181,6 +202,16 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.inactivityTimer) {
       clearTimeout(this.inactivityTimer);
     }
+  }
+
+  /**
+   * Oculta la pantalla de inactividad y muestra la vista de empezar (welcome / registro de pago)
+   */
+  public hideIdlePage(): void {
+    this.showIdlePage = false;
+    this.startInactivityTimer();
+    this.resetToWelcomeView();
+    console.log('Pantalla de inactividad cerrada, mostrando vista de empezar');
   }
 
   /**
