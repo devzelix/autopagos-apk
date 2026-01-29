@@ -55,9 +55,10 @@ export class WelcomeViewComponent implements OnInit {
       return;
     }
     
-    // Si es un solo tap, no hacer nada (solo esperar)
+    // Si es un solo tap: mostrar iframe del carrusel de publicidad
     if (this.tapCount === 1) {
       this.tapTimer = setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
         this.resetTapCount();
       }, this.DOUBLE_TAP_DELAY);
     }

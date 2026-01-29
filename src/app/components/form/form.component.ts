@@ -4,7 +4,8 @@ import {
   ViewChild,
   Input,
   HostListener,
-  OnDestroy
+  OnDestroy,
+  ChangeDetectorRef
 } from '@angular/core';
 import {
   UntypedFormGroup,
@@ -340,6 +341,7 @@ export class FormComponent implements OnInit {
 
   goHome() {
     this.showFormView = false;
+    document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
   }
 
   constructor(
@@ -369,7 +371,8 @@ export class FormComponent implements OnInit {
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
     private _localStorageService: LocalstorageService,
-    private _checkoutSessionService: CheckoutSessionService
+    private _checkoutSessionService: CheckoutSessionService,
+    private cdr: ChangeDetectorRef
   ) {
 
     this.cacheService.clear();
@@ -784,25 +787,30 @@ export class FormComponent implements OnInit {
     this.warningSubscription = activity$.pipe(
       debounceTime(TIME_FOR_WARNING)
     ).subscribe(() => {
-      // Muestra el aviso
+      // Muestra el aviso (diseño alineado con modales FIBEX + botón Continuar)
       Swal.fire({
         title: '¿Sigues ahí?',
-        text: `Tu sesión se cerrará en ${TIME_FOR_LOGOUT / 1000} segundos.`,
+        text: `Tu sesión se cerrará en ${TIME_FOR_LOGOUT / 1000} segundos. Toca "Continuar" para seguir.`,
         icon: 'warning',
         timer: TIME_FOR_LOGOUT,
         timerProgressBar: true,
-        showConfirmButton: false,
+        showConfirmButton: true,
+        confirmButtonText: 'Continuar',
         allowOutsideClick: false,
         allowEscapeKey: false,
         customClass: {
-          popup: 'inactivity-warning-swal' // Clase única para identificarlo
+          popup: 'inactivity-warning-swal fibex-swal-popup',
+          title: 'fibex-swal-title',
+          htmlContainer: 'fibex-swal-html',
+          confirmButton: 'fibex-swal-confirm-btn'
         }
       });
 
-      // Inicia el contador final para el reseteo
+      // Inicia el contador final: si no toca "Continuar", enviar al iframe del carrusel
       this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
-        console.log("Timeout final alcanzado. Reiniciando.");
-        this.resetAllForms();
+        console.log("Timeout final alcanzado. Enviando al iframe del carrusel.");
+        this.closeInactivitySwal();
+        document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
       });
     });
 
@@ -2843,12 +2851,17 @@ export class FormComponent implements OnInit {
   }
 
   /**
-   * Escucha el evento para resetear al welcome-view cuando se oculta el carrusel
+   * Escucha eventos del app component: reset al welcome-view y ir a la pantalla de pago (desde iframe/carrusel)
    */
   private setupResetToWelcomeListener(): void {
     document.addEventListener('resetToWelcome', (event: Event) => {
       this.showFormView = false;
       console.log('Reseteado al welcome-view desde carrusel');
+    });
+    document.addEventListener('goToPaymentForm', (event: Event) => {
+      this.handleShowFormView(true);
+      this.cdr.detectChanges();
+      console.log('Mostrando pantalla de pago desde iframe/carrusel');
     });
   }
 

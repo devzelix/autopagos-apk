@@ -13,10 +13,13 @@
 
 <!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true Y showadmin es false -->
 <div *ngIf="isAdminLogged === true && !showadmin">
+  <!-- Vista de bienvenida: logo, "Realiza tu pago aquí", chevrón, botón Empezar (visible cuando no se muestra el formulario de pago) -->
   <app-welcome-view *ngIf="!showFormView" (showFormEmitter)="handleShowFormView(true)"
     (openAdminPanel)="openAdminPanelFromDoubleTap()">
   </app-welcome-view>
 
+  <!-- Vista de pago: tarjeta con usuario, monto, botón PAGAR (se muestra al pulsar Empezar en el iframe/carrusel) -->
+  <ng-container *ngIf="showFormView">
   <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable && showFormView">
 
     <div class="form-login__offer">
@@ -303,4 +306,5 @@
     [activeInputFocus]="activeTransactionInputFocus" [viewAdmin]="false"
     (closeEmmit)="handleShowTransactionModal(false)" (onSubmitPayForm)="resetAllForms()">
   </app-modal-payment>
+  </ng-container>
 </div>

@@ -95,12 +95,15 @@
   </button> -->
 </div>
 
-  <!-- Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (vídeo/imágenes se ven detrás) -->
-  <div *ngIf="showIdlePage" class="idle-page-overlay">
+  <!-- Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (entrada/salida suave) -->
+  <div class="idle-page-overlay" [class.idle-page-overlay--visible]="showIdlePage" [attr.aria-hidden]="!showIdlePage">
     <div class="idle-page-iframe-zone">
       <iframe [src]="idlePageUrlSafe" class="idle-page-iframe" title="Página de inactividad"></iframe>
     </div>
     <div class="idle-page-button-zone" (click)="hideIdlePage()" (touchstart)="hideIdlePage()">
+      <div class="idle-page-chevron" aria-hidden="true">
+        <i class="fa fa-chevron-down"></i>
+      </div>
       <button type="button" class="idle-page-btn">Empezar</button>
     </div>
   </div>

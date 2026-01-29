@@ -4,7 +4,7 @@
   width: 100%;
 }
 
-// Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (contenido visible detrás)
+// Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (entrada/salida suave)
 .idle-page-overlay {
   position: fixed;
   top: 0;
@@ -13,6 +13,25 @@
   height: 100vh;
   z-index: 10000;
   background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+
+  &.idle-page-overlay--visible {
+    opacity: 1;
+    pointer-events: auto;
+
+    .idle-page-button-zone {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .idle-page-button-zone {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.35s ease 0.15s, transform 0.35s ease 0.15s;
+  }
 }
 
 .idle-page-iframe-zone {
@@ -37,17 +56,36 @@
   left: 0;
   right: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   padding: 2rem 1rem 3.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
   cursor: pointer;
   min-height: 120px;
 }
 
+.idle-page-chevron {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 2rem;
+  line-height: 1;
+  animation: idle-chevron-bounce 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.idle-page-chevron i {
+  display: block;
+}
+
+@keyframes idle-chevron-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.85; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
 .idle-page-btn {
-  background: linear-gradient(to right, #215288, #2d7bc2);
-  color: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 50%, rgba(232, 232, 232, 0.9) 100%);
+  color: #215288;
   border: none;
   padding: 1.25rem 3rem;
   border-radius: 12px;
@@ -57,7 +95,12 @@
   min-width: 280px;
   max-width: 420px;
   width: 100%;
-  box-shadow: 0 6px 20px rgba(33, 82, 136, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 16px 48px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.06);
   text-transform: uppercase;
   letter-spacing: 2px;
   display: flex;
@@ -67,9 +110,14 @@
   animation: idle-btn-pulse 2.5s ease-in-out infinite, idle-btn-glow 2.5s ease-in-out infinite;
 
   &:hover {
-    background: linear-gradient(to right, #1a426d, #2566a3);
+    background: linear-gradient(135deg, rgba(248, 248, 248, 0.98) 0%, rgba(238, 238, 238, 0.95) 50%, rgba(224, 224, 224, 0.95) 100%);
     transform: scale(1.03);
-    box-shadow: 0 8px 28px rgba(33, 82, 136, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 12px 32px rgba(0, 0, 0, 0.15),
+      0 20px 56px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.08);
     animation: none;
   }
 
@@ -85,8 +133,23 @@
 }
 
 @keyframes idle-btn-glow {
-  0%, 100% { box-shadow: 0 6px 20px rgba(33, 82, 136, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; }
-  50% { box-shadow: 0 8px 28px rgba(33, 82, 136, 0.55), 0 0 20px rgba(33, 82, 136, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15) inset; }
+  0%, 100% {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.08),
+      0 8px 24px rgba(0, 0, 0, 0.12),
+      0 16px 48px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 12px 32px rgba(0, 0, 0, 0.14),
+      0 20px 56px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.08),
+      0 0 24px rgba(33, 82, 136, 0.08);
+  }
 }
 
 .arrow_up {

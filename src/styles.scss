@@ -409,6 +409,26 @@ body .swal2-popup .swal2-confirm.fibex-swal-confirm-btn[style*="background-color
   }
 }
 
+/* Modal de inactividad (30s): mismo lenguaje visual que modales de pago */
+.swal2-popup.inactivity-warning-swal {
+  border-radius: 24px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  padding: 2.5rem 2rem !important;
+
+  .swal2-icon.swal2-warning {
+    border-color: #215288 !important;
+    color: #215288 !important;
+  }
+
+  .swal2-timer-progress-bar {
+    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%) !important;
+  }
+
+  .swal2-actions {
+    margin-top: 1.25rem !important;
+  }
+}
+
 /* Estilos adicionales con máxima especificidad para inputs y botones */
 body .swal2-popup.fibex-swal-popup .swal2-input,
 body .swal2-popup.fibex-swal-popup input.swal2-input {

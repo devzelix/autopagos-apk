@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
-import { debounceTime, takeUntil, startWith } from 'rxjs/operators';
+import { debounceTime, takeUntil, startWith, filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -52,7 +52,29 @@ export class AppComponent implements OnInit, OnDestroy {
       ? this.sanitizer.bypassSecurityTrustResourceUrl(this.idlePageUrl)
       : this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
     this.startInactivityTimer();
-    
+
+    // Vista principal: iframe (imágenes) + botón Empezar. Al estar el kiosko registrado, se muestra primero esta pantalla.
+    this.kioskStatus$.pipe(
+      filter(status => status === 'REGISTERED'),
+      take(1),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.ngZone.run(() => {
+        this.showIdlePage = true;
+        this.cdr.detectChanges();
+      });
+    });
+
+    // Tap en logos (welcome-view o form): mostrar iframe del carrusel de publicidad
+    fromEvent(document, 'showIdlePage')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.ngZone.run(() => {
+          this.showIdlePage = true;
+          this.cdr.detectChanges();
+        });
+      });
+
     // Forzamos visualización de carga al inicio
     this.kioskAuth.setLoadingState();
     setTimeout(() => {
@@ -205,13 +227,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Oculta la pantalla de inactividad y muestra la vista de empezar (welcome / registro de pago)
+   * Oculta la pantalla de inactividad (iframe/carrusel) y muestra la pantalla de pago (tarjeta con usuario, monto, PAGAR)
    */
   public hideIdlePage(): void {
     this.showIdlePage = false;
     this.startInactivityTimer();
-    this.resetToWelcomeView();
-    console.log('Pantalla de inactividad cerrada, mostrando vista de empezar');
+    // Disparar en el siguiente ciclo para que Angular oculte el overlay antes; así el form recibe el evento y muestra la pantalla de pago
+    setTimeout(() => this.goToPaymentForm(), 0);
+    console.log('Pantalla de inactividad cerrada, mostrando pantalla de pago');
   }
 
   /**
@@ -230,13 +253,19 @@ export class AppComponent implements OnInit, OnDestroy {
    * Resetea el form component para mostrar el welcome-view
    */
   private resetToWelcomeView(): void {
-    // Buscar el componente form y resetear showFormView
     const formComponent = document.querySelector('app-form');
     if (formComponent) {
-      // Disparar un evento personalizado que el form component puede escuchar
       const event = new CustomEvent('resetToWelcome', { detail: {} });
       formComponent.dispatchEvent(event);
     }
+  }
+
+  /**
+   * Indica al form component que muestre la pantalla de pago (usuario, monto, botón PAGAR)
+   */
+  private goToPaymentForm(): void {
+    // Disparar en document para que el form component lo reciba aunque aún no esté visible
+    document.dispatchEvent(new CustomEvent('goToPaymentForm', { detail: {} }));
   }
 
   /**
