@@ -2,9 +2,9 @@
   <div class="login-card-vertical">
     <div class="login-header">
       <h1 class="login-title">Cédula del Cliente</h1>
-      <p class="login-description">
-        Seleccione su tipo de documento e ingrese el número.
-      </p>
+      <span class="login-description"
+        >Seleccione su tipo de documento e ingrese el número.</span
+      >
     </div>
 
     <!-- Selección de Tipo (Botones Horizontales) -->
@@ -84,19 +84,10 @@
       <h2 class="display-value">
         <span class="type-prefix">{{ loginTypeSelectValue }}</span>
         <span class="type-separator">|</span>
-        {{ dniValue || "00000000" }}
+        <span class="dni-number" [class.is-placeholder]="!dniValue">
+          {{ dniValue || "00000000" }}
+        </span>
       </h2>
-    </div>
-
-    <!-- Teclado Numérico -->
-    <div class="login-keypad-vertical">
-      <app-keyboard-on-screen
-        class="w-full"
-        [classes]="'kiosk-mode'"
-        (valorTeclado)="onKeyClick($event)"
-        (deleteKeyEmitter)="onDeleteClick()"
-      >
-      </app-keyboard-on-screen>
     </div>
 
     <!-- Botón Inferior -->
@@ -119,6 +110,17 @@
           </svg>
         </div>
       </button>
+    </div>
+
+    <!-- Teclado Numérico -->
+    <div class="login-keypad-vertical">
+      <app-keyboard-on-screen
+        class="w-full"
+        [classes]="'kiosk-mode'"
+        (valorTeclado)="onKeyClick($event)"
+        (deleteKeyEmitter)="onDeleteClick()"
+      >
+      </app-keyboard-on-screen>
     </div>
   </div>
 </div>

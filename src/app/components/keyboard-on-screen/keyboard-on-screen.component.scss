@@ -163,13 +163,10 @@
 
   // Red Gradient Style for Delete Button
   background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
-  box-shadow: 0 8px 15px -4px rgba(211, 47, 47, 0.4);
-
   &:active,
   &:hover,
   &.keyboard-active {
     background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
-    box-shadow: 0 12px 20px -4px rgba(211, 47, 47, 0.5);
   }
 
   svg {
@@ -259,7 +256,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 0px rgba(33, 82, 136, 0.4);
       transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       width: 100%;
       max-width: 100%;
@@ -275,12 +271,11 @@
       &.btn-wide {
         grid-column: span 2;
         background: linear-gradient(135deg, #d32f2f 0%, #ef5350 100%);
-        box-shadow: 0 10px 0px rgba(211, 47, 47, 0.4);
+       
 
         &:active,
         &.keyboard-active {
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
-          box-shadow: 0 4px 0px rgba(211, 47, 47, 0.4);
         }
 
         .btn-content {
