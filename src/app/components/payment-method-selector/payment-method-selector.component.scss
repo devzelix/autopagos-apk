@@ -33,7 +33,7 @@
   border-radius: 20px;
   padding: 2rem 1.5rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease-in-out; //cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
@@ -43,14 +43,17 @@
   min-height: 200px;
   // aspect-ratio: 1 / 1; // Hace las tarjetas cuadradas
 
-  &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 28px rgba(53, 124, 255, 0.25);
-    border-color: #357CFF;
-  }
+  // &:hover {
+  //   transform: translateY(-6px);
+  //   box-shadow: 0 12px 28px rgba(53, 124, 255, 0.25);
+  //   border-color: #357CFF;
+  // }
 
   &:active {
     transform: translateY(-3px);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(53, 124, 255, 0.25);
+    border-color: #357CFF;
   }
 
   &.selected {

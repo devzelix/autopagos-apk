@@ -4,6 +4,7 @@ import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public showScrollArrow: boolean = false;
   public showUuid: boolean = false;
+
+  public isLoginKiosk: boolean = environment.is_login_kiosk;
 
   constructor(
     public helper: HelperService,

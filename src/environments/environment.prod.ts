@@ -120,6 +120,8 @@ export const environment = {
   api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
 
   kioskApiUrl: 'http://localhost:3000/api/kiosks',
+
+  is_login_kiosk: true
 };
 
   
