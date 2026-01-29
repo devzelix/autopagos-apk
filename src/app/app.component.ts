@@ -5,6 +5,7 @@ import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil, startWith, filter, take } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly INACTIVITY_TIME = 10000; // 10 segundos (pruebas) / 30000 producción
   public showIdlePage = false;
   /** URL a cargar en el iframe de inactividad. Cambiar por la URL deseada (ej. página de publicidad). */
-  public idlePageUrl = 'http://localhost:4200/';
+  public idlePageUrl = environment.URL_IDLE_PAGE;
   /** URL saneada para el iframe (asignada una vez para evitar parpadeo por recarga). */
   public idlePageUrlSafe: SafeResourceUrl;
 
