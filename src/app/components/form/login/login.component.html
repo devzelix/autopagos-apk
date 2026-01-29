@@ -1,0 +1,73 @@
+<div class="login-mobile-container">
+  <div class="login-card-vertical">
+    <div class="login-header">
+      <h1 class="login-title">Acceso Clientes</h1>
+      <p class="login-description">
+        Seleccione su tipo de documento e ingrese el número.
+      </p>
+    </div>
+
+    <!-- Selección de Tipo (Botones Horizontales) -->
+    <div class="dni-type-selector-new">
+      <button 
+        type="button" 
+        class="dni-type-btn" 
+        [class.active]="loginTypeSelectValue === 'V'"
+        (click)="selectDniType('V', $event)">
+        VENEZOLANO
+      </button>
+      <button 
+        type="button" 
+        class="dni-type-btn" 
+        [class.active]="loginTypeSelectValue === 'E'"
+        (click)="selectDniType('E', $event)">
+        EXTRANJERO
+      </button>
+      <button 
+        type="button" 
+        class="dni-type-btn" 
+        [class.active]="loginTypeSelectValue === 'J'"
+        (click)="selectDniType('J', $event)">
+        JURÍDICO
+      </button>
+    </div>
+
+    <!-- Display del Número -->
+    <div class="dni-display-box">
+      <h2 class="display-value">
+        {{ dniValue || '00000000' }}
+      </h2>
+    </div>
+
+    <!-- Teclado Numérico -->
+    <div class="login-keypad-vertical">
+      <div class="keypad-grid-new">
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(1)">1</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(2)">2</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(3)">3</button>
+        
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(4)">4</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(5)">5</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(6)">6</button>
+        
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(7)">7</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(8)">8</button>
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(9)">9</button>
+        
+        <button type="button" class="keypad-val-btn" (click)="onKeyClick(0)">0</button>
+        <button type="button" class="keypad-val-btn delete-key-red" (click)="onDeleteClick()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+            <path fill="currentColor" d="m11.5 13.5l1.5-1.5l1.5 1.5l1-1l-1.5-1.5l1.5-1.5l-1-1l-1.5 1.5l-1.5-1.5l-1 1l1.5 1.5l-1.5 1.5l1 1M19 6H9L3 12l6 6h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Botón Inferior -->
+    <div class="login-footer-new">
+      <button class="btn-primary-ingresar" (click)="onIngresar()" [disabled]="!dniValue">
+        INGRESAR
+      </button>
+    </div>
+  </div>
+</div>

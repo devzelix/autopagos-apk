@@ -31,7 +31,7 @@ import { PaymentDialogComponent } from './components/payment-dialog/payment-dial
 import { PaymentDialogOptionsComponent } from './components/payment-dialog-options/payment-dialog-options.component';
 import { PaymenDialogZelleComponent } from './components/paymen-dialog-zelle/paymen-dialog-zelle.component';
 import { ReplacePipe } from './pipe/replace.pipe';
-import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component'
+import { DetallePayComponent } from './components/detalle-pay/detalle-pay.component';
 import { InfoPayComponent } from './components/info-pay/info-pay.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { ListBankComponent } from './components/list-bank/list-bank.component';
@@ -48,15 +48,15 @@ import { CurrencyPipe } from '@angular/common';
 import { UserItemCardComponent } from './components/cards/user-item-card/user-item-card.component';
 import { AdministrativeModuleComponent } from './components/administrative-module/administrative-module.component';
 import { BtnToOptionComponent } from './components/administrative-module/btn-to-option/btn-to-option.component';
-import { ConfigIpUbiiposComponent } from "./components/administrative-module/config-ip-ubiipos/config-ip-ubiipos.component";
+import { ConfigIpUbiiposComponent } from './components/administrative-module/config-ip-ubiipos/config-ip-ubiipos.component';
 import { ActionAdminComponent } from './components/administrative-module/action-admin/action-admin.component';
 import { LoginComponent } from './components/administrative-module/login/login.component';
+import { LoginFormComponent } from './components/form/login/login.component';
 import { AdCarouselComponent } from './components/ad-carousel/ad-carousel.component';
 import { PaymentMethodSelectorComponent } from './components/payment-method-selector/payment-method-selector.component';
 import { StepperFormComponent } from './components/stepper-form/stepper-form.component';
 import { AdvancePaymentModalComponent } from './components/modals/advance-payment-modal/advance-payment-modal.component';
 import { EditAmountModalComponent } from './components/modals/edit-amount-modal/edit-amount-modal.component';
-
 
 const routes: Routes = [
   { path: '', component: FormComponent },
@@ -65,9 +65,8 @@ const routes: Routes = [
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
   { path: 'stripe', component: StripeComponent },
-  { path: '**', redirectTo: '', pathMatch: 'full' }
-]
-
+  { path: '**', redirectTo: '', pathMatch: 'full' },
+];
 
 @NgModule({
   declarations: [
@@ -98,6 +97,7 @@ const routes: Routes = [
     WelcomeViewComponent,
     BtnTransactionComponent,
     UniquePaymentComponent,
+    LoginFormComponent,
     MultiplePaymentComponent,
     UserItemCardComponent,
     AdministrativeModuleComponent,
@@ -108,7 +108,7 @@ const routes: Routes = [
     PaymentMethodSelectorComponent,
     StepperFormComponent,
     AdvancePaymentModalComponent,
-    EditAmountModalComponent
+    EditAmountModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -123,7 +123,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     QRCodeModule,
     CurrencyPipe,
-    ConfigIpUbiiposComponent
+    ConfigIpUbiiposComponent,
     /* NgHcaptchaModule.forRoot({
       siteKey: environment.CaptchaSiteKey,
       // languageCode: 'de' // optional, will default to browser language
@@ -135,16 +135,16 @@ const routes: Routes = [
     DirectPrinterService,
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
   exports: [MaterialModule],
   // schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

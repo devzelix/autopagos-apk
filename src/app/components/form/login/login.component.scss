@@ -1,0 +1,142 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-card-vertical {
+  background: white;
+  border-radius: 40px;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.login-header {
+  margin-top: 10px;
+}
+
+.login-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.login-description {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Selector de tipo (Botones) */
+.dni-type-selector-new {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.dni-type-btn {
+  flex: 1;
+  border: none;
+  background: #f3f4f6;
+  color: #9ca3af;
+  padding: 14px 5px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: #2b6aff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(43, 106, 255, 0.3);
+  }
+}
+
+/* Display */
+.dni-display-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 25px;
+  padding: 25px;
+  text-align: center;
+}
+
+.display-value {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+/* Keypad */
+.keypad-grid-new {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.keypad-val-btn {
+  height: 85px;
+  border-radius: 15px;
+  background: #7ca8ff;
+  color: white;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+  box-shadow: 0 4px 0px rgba(60, 130, 250, 0.4);
+
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0px rgba(60, 130, 250, 0.4);
+  }
+}
+
+.delete-key-red {
+  grid-column: span 2;
+  background: #ff5c6a;
+  box-shadow: 0 4px 0px rgba(220, 50, 70, 0.4);
+
+  &:active {
+    box-shadow: 0 2px 0px rgba(220, 50, 70, 0.4);
+  }
+}
+
+/* Botón Ingresar */
+.btn-primary-ingresar {
+  width: 100%;
+  background: #2b6aff;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 22px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 8px 20px rgba(43, 106, 255, 0.2);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background: #1e55e3;
+  }
+}
