@@ -131,10 +131,10 @@ export const environment = {
     url_api_telegram: 'https://telegramfront.fibex.info/',
     api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
     
-    url_api_webhook_caja: 'https://pf269175-2197.use2.devtunnels.ms/api',
+    url_api_webhook_caja: 'https://webhook-caja-automatica.fibextelecom.net/api',
     api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
-
-    kioskApiUrl: 'https://7lx1xvhp.use2.devtunnels.ms:3000/api/kiosks',
+    
+    kioskApiUrl: 'https://paygo-backend.solocodebase.com/api',
     
     // URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
     URL_IDLE_PAGE: 'https://mock-ads.solocodebase.com/',

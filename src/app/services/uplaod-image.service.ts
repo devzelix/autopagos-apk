@@ -11,7 +11,7 @@ import { FileBase64 } from '../interfaces/fibe-base64';
 })
 export class UplaodImageService {
 
-  private URLUPLOAD: string = env.urlUploadService;
+  private URLUPLOAD: string = env.upload_image_url;
   public limitMB: number = 10;
   constructor(
     private http: HttpClient

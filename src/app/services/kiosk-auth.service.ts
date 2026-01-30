@@ -17,12 +17,36 @@ export class KioskAuthService {
   public kioskStatus$ = this.kioskStatus.asObservable();
 
   private currentUuid: string = '';
-  
+
+  /** Regex UUID estándar: 8-4-4-4-12 hex con guiones */
+  private static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
   // Usamos la URL desde el environment
   private readonly API_URL = env.kioskApiUrl;
   private readonly API_URL_KIOSKS = `${this.API_URL}/kiosks`;
 
   constructor(private http: HttpClient) { }
+
+  /**
+   * Convierte el identificador del dispositivo a UUID v4 RFC 4122 (versión 4 + variante 10xx)
+   * para que validadores estrictos del backend lo acepten.
+   */
+  private toValidUuid(identifier: string): string {
+    const raw = (identifier || '').replace(/-/g, '').toLowerCase();
+    if (KioskAuthService.UUID_REGEX.test(identifier)) {
+      return identifier;
+    }
+    const hex16 = raw.padEnd(16, '0').slice(0, 16);
+    if (/^[0-9a-f]+$/.test(hex16)) {
+      // 3.er grupo debe empezar en "4" (versión), 4.º en "8" (variante RFC 4122)
+      return `${hex16.slice(0, 8)}-${hex16.slice(8, 12)}-4${hex16.slice(12, 15)}-8000-000000000000`;
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
 
   /**
    * Inicia el proceso de autenticación del Kiosco
@@ -31,7 +55,7 @@ export class KioskAuthService {
     this.kioskStatus.next('LOADING');
     try {
       const info = await Device.getId();
-      this.currentUuid = info.identifier;
+      this.currentUuid = this.toValidUuid(info.identifier);
       console.log('Kiosk UUID detected:', this.currentUuid);
 
       this.checkRegistration(this.currentUuid).subscribe();
@@ -84,7 +108,6 @@ export class KioskAuthService {
       }),
       catchError((error: any) => {
         console.error('Kiosk Auth Error:', error);
-        
         if (error.status === 404) {
           // No registrado en la DB
           this.kioskStatus.next('NOT_REGISTERED');
