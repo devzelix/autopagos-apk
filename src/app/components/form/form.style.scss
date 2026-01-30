@@ -13,7 +13,6 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
   color: rgba(22, 20, 20, 0.418);
 }
 
-
 .mat-step-header .mat-step-icon {
   background-color: rgba(35, 77, 167, 0.54);
   color: #fff;
@@ -51,7 +50,6 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
 }
 
 .cardflex {
-
   // display: flex;
   // align-items: center;
   // justify-content: center;
@@ -156,7 +154,11 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
   &:focus,
   &:active {
     // background-color: $app-dark-blue !important;
-    background: linear-gradient(36deg, $app-dark-blue 18%, $app-light-blue 100%) !important;
+    background: linear-gradient(
+      36deg,
+      $app-dark-blue 18%,
+      $app-light-blue 100%
+    ) !important;
   }
 
   h3 {
@@ -244,9 +246,6 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
   animation-name: fadeInUp;
 }
 
-
-
-
 @media screen and (max-width: 1342px) {
   .unicard {
     display: flex;
@@ -254,7 +253,6 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
     justify-content: center;
   }
 }
-
 
 @-webkit-keyframes fadeInUp {
   from {
@@ -300,11 +298,7 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
   }
 }
 
-
-
-
 @media screen and (max-width: 1342px) {
-
   .unicard {
     display: flex;
     align-items: center;
@@ -487,7 +481,7 @@ label.form-control-label {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.03);
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 
     &.input-active-color {
       background: #ffffff;
@@ -495,7 +489,6 @@ label.form-control-label {
       box-shadow: 0 0 0 4px rgba(33, 82, 136, 0.15); // Glow azul sutil
       transform: translateY(-2px);
     }
-
 
     &.form-input-empty {
       color: #ccc;
@@ -509,7 +502,11 @@ label.form-control-label {
 }
 
 .form-control-btn {
-  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%); // Fibex Gradient
+  background: linear-gradient(
+    135deg,
+    #215288 0%,
+    #2d7bc2 100%
+  ); // Fibex Gradient
   padding: 1.2rem 2rem;
   color: white;
   border-radius: 50px; // Pill button
@@ -522,7 +519,7 @@ label.form-control-label {
   gap: 0.8rem;
   width: 100%;
   box-shadow: 0 10px 20px -5px rgba(33, 82, 136, 0.4);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -623,24 +620,36 @@ label.form-control-label {
 
   .links-btn-navigation {
     width: fit-content;
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    padding: 0.5rem 0.9rem;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
-    border-radius: 2rem;
+    /* display: flex; */
+    /* gap: 0.4rem; */
+    /* align-items: center; */
+    /* padding: 0.5rem 0.9rem; */
+    /* margin-bottom: 1rem; */
+    /* background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%); */
+    /* border-radius: 2rem; */
     overflow: hidden;
-    font-size: 0.85rem;
-    color: white;
-    border: none;
-    cursor: pointer;
+    /* font-size: 0.85rem; */
+    /* color: white; */
+    /* border: none; */
+    /* cursor: pointer; */
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(33, 82, 136, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.1rem;
+    font-size: 1.25rem;
+    /* font-weight: 600; */
+    color: white;
+    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-bottom: 2rem;
 
     svg {
-      width: 1rem;
-      height: 1rem;
+      width: 2rem;
+      height: 2rem;
       transition: transform 0.2s ease;
     }
 
@@ -746,8 +755,6 @@ label.form-control-label {
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
-
-
   }
 }
 
@@ -787,7 +794,7 @@ label.form-control-label {
       font-size: 1.8rem;
       font-weight: 700;
       color: $fibex-blue;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
     .select-arrow {
@@ -811,7 +818,9 @@ label.form-control-label {
     min-width: 100%;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.15),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1);
     z-index: 9999; // Aumentar Z-Index para asegurar visibilidad
     padding: 0.5rem;
     display: flex;
@@ -831,7 +840,7 @@ label.form-control-label {
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
 
       &:hover {
         background: #f0f7ff;
@@ -1037,7 +1046,7 @@ label.form-control-label {
   color: #215288; // Fibex Blue
   margin: 0;
   text-align: center;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   letter-spacing: -0.5px;
   line-height: 1.2;
 }
@@ -1062,12 +1071,12 @@ label.form-control-label {
   font-size: 0.95rem;
   color: #555;
   transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 
   &:hover {
     background: #fff;
     border-color: #cbd5e0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
   }
 
   .detail-label {
@@ -1098,7 +1107,7 @@ label.form-control-label {
     width: auto;
     gap: 1.2rem;
   }
-  
+
   .user-name-title {
     text-align: left;
     font-size: 1.6rem;
@@ -1116,7 +1125,7 @@ label.form-control-label {
     padding: 1rem;
     gap: 0.8rem;
   }
-  
+
   .user-name-title {
     font-size: 1.3rem;
   }
@@ -1128,7 +1137,6 @@ label.form-control-label {
     justify-content: space-between;
   }
 }
-
 
 // ==========================================
 // COMPACT CONTRACT INFO STYLES (UPDATED)
@@ -1156,7 +1164,7 @@ label.form-control-label {
 .contract-info-panel.compact-panel .user-avatar-circle {
   width: 36px; // Smaller avatar
   height: 36px;
-  
+
   svg {
     width: 18px;
     height: 18px;
@@ -1206,9 +1214,13 @@ label.form-control-label {
   &.highlight {
     background: #ebf8ff;
     color: #2b6cb0;
-    
-    .lbl { color: #63b3ed; }
-    .val { color: #2c5282; }
+
+    .lbl {
+      color: #63b3ed;
+    }
+    .val {
+      color: #2c5282;
+    }
   }
 }
 
@@ -1226,21 +1238,20 @@ label.form-control-label {
     width: 100%;
     margin-bottom: 0.4rem;
   }
-  
+
   .contract-tags-group {
     width: 100%;
     justify-content: center;
     gap: 0.5rem;
   }
-  
+
   .mini-tag {
     font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
-     flex: 1; // Make tags take equal width
-     justify-content: center;
+    flex: 1; // Make tags take equal width
+    justify-content: center;
   }
 }
-
 
 // New styles for user subtitle
 .user-details-col {
@@ -1266,7 +1277,6 @@ label.form-control-label {
   }
 }
 
-
 .form-control-description {
   color: #718096;
   font-size: 1.1rem;
@@ -1285,7 +1295,6 @@ label.form-control-label {
   }
 }
 
-
 // ==========================================
 // MOBILE RESPONSIVE FIXES (THIN & COMPACT)
 // ==========================================
@@ -1296,20 +1305,20 @@ label.form-control-label {
     margin-bottom: 1rem !important;
     border-radius: 99px; // More pill-like
     min-height: auto; // Allow shrinking
-    
+
     // Dropdown trigger (V, J, etc)
     .dni-custom-trigger {
-       padding: 0 0.8rem 0 1rem !important; // Tighter padding
-       gap: 0.3rem !important;
-       
-       .curr-value {
-         font-size: 1.2rem !important; // Smaller text
-       }
-       
-       .select-arrow {
-         width: 0.9rem !important;
-         height: 0.9rem !important;
-       }
+      padding: 0 0.8rem 0 1rem !important; // Tighter padding
+      gap: 0.3rem !important;
+
+      .curr-value {
+        font-size: 1.2rem !important; // Smaller text
+      }
+
+      .select-arrow {
+        width: 0.9rem !important;
+        height: 0.9rem !important;
+      }
     }
 
     // Input Text (simulate)
@@ -1325,11 +1334,11 @@ label.form-control-label {
     font-size: 1.5rem !important; // Significantly smaller
     margin-bottom: 0.2rem !important;
   }
-  
+
   .form-control-description {
-     font-size: 0.9rem !important;
-     margin-bottom: 1.2rem !important;
-     line-height: 1.2;
+    font-size: 0.9rem !important;
+    margin-bottom: 1.2rem !important;
+    line-height: 1.2;
   }
 
   // 3. Slender Button
@@ -1337,7 +1346,7 @@ label.form-control-label {
     padding: 0.8rem 1.5rem !important;
     font-size: 1rem !important; // Smaller text
     margin-bottom: 1rem !important; // Less space below
-    
+
     svg {
       font-size: 1.2rem !important;
     }
@@ -1345,11 +1354,11 @@ label.form-control-label {
 
   // 4. Reduce container padding
   .form-login__group {
-    padding: 1.5rem 1rem !important; 
+    padding: 1.5rem 1rem !important;
     width: 92% !important;
     border-radius: 20px !important; // Slightly less rounded corners if needed
   }
-  
+
   // 5. Fibex Logo
   .fibex-main-title-logo {
     width: 10rem !important; // Smaller logo
@@ -1357,4 +1366,448 @@ label.form-control-label {
   }
 }
 
+.login-mode-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
 
+// ==========================================
+// NEW PAYMENT CARD DESIGN STYLES
+// (Matching provided image design)
+// ==========================================
+
+.new-payment-card-container {
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  /* box-shadow: 0 4px 20px rgba(33, 82, 136, 0.08); */
+  border: 1px solid rgba(227, 239, 250, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 2.6rem;
+  transition: all 0.3s ease;
+  
+
+  // &:hover {
+  //   box-shadow: 0 8px 30px rgba(33, 82, 136, 0.12);
+  // }
+}
+
+// User Info Section
+.new-user-info-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8ecf1;
+}
+
+.new-user-avatar {
+  // width: 48px;
+  // height: 48px;
+  width: 6rem;
+  height: 6rem;
+  background: linear-gradient(135deg, #e3effa 0%, #d4e7f8 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #215288;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(33, 82, 136, 0.1);
+
+  svg {
+    // width: 24px;
+    // height: 24px;
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+.new-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.new-user-greeting {
+  // font-size: 1.1rem;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: -0.3px;
+}
+
+.new-user-role {
+  // font-size: 0.7rem;
+  font-size: 1.3rem;
+  color: #718096;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+// Contract Details Section
+.new-contract-details-section {
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.new-detail-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f7f9fb;
+  // padding: 0.5rem 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 18px;
+  // font-size: 0.85rem;
+  font-size: 1.45rem;
+  border: 1px solid #e8ecf1;
+  flex: 1;
+  min-width: fit-content;
+
+  .new-detail-label {
+    font-weight: 500;
+    color: #718096;
+    // font-size: 0.75rem;
+    font-size: 1.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .new-detail-value {
+    font-weight: 700;
+    color: #2d3748;
+    // font-size: 0.85rem;
+    font-size: 2.05rem;
+  }
+
+  &.highlight-blue {
+    background: linear-gradient(135deg, #ebf4ff 0%, #e0eeff 100%);
+    border-color: #bee3f8;
+
+    .new-detail-label {
+      color: #4299e1;
+    }
+
+    .new-detail-value {
+      color: #2c5282;
+    }
+  }
+}
+
+// Balance Section
+.new-balance-section {
+  padding: 1.5rem 1rem;
+  background: #f7fafc;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+}
+
+.new-balance-text {
+  margin: 0;
+  font-size: 1.9rem !important;
+  color: #6a83ad;
+  text-align: center;
+  font-weight: 500;
+
+  strong {
+    font-weight: 700;
+    color: #2d3748;
+  }
+}
+
+// Payment Amount Container
+.new-payment-amount-container {
+  width: 100%;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8ecf1;
+}
+
+.new-amount-label {
+  // font-size: 1.1rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 1rem 0;
+  font-family: "Poppins", sans-serif;
+}
+
+.new-amount-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.new-amount-values {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.new-amount-bs {
+  // font-size: 1.8rem;
+  font-size: 3.3rem;
+  font-weight: 700;
+  color: #1a202c;
+  font-family: "Poppins", sans-serif;
+}
+
+.new-amount-separator {
+  // font-size: 1.2rem;
+  font-size: 3.5rem;
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+.new-amount-usd {
+  font-size: 3.3rem;
+  font-weight: 700;
+  color: #2b6cb0;
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+
+  .new-currency-symbol {
+    font-size: 1.6rem;
+    color: #2b6cb0;
+  }
+
+  .new-currency-label {
+    font-size: 1rem;
+    color: #4299e1;
+    font-weight: 500;
+    margin-left: 0.2rem;
+  }
+}
+
+.new-edit-amount-btn {
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(33, 82, 136, 0.25);
+  font-family: "Poppins", sans-serif;
+  text-transform: none;
+  letter-spacing: 0.3px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(33, 82, 136, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(33, 82, 136, 0.2);
+  }
+}
+
+// Payment Button (Main CTA)
+.new-payment-btn {
+  /* width: 100%; */
+  /* max-width: 350px; */
+  /* margin: 0 auto; */
+  /* background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%); */
+  /* color: white; */
+  /* border: none; */
+  /* border-radius: 50px; */
+  /* padding: 1.2rem 2rem; */
+  /* font-size: 1.1rem; */
+  /* font-weight: 700; */
+  /* cursor: pointer; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 10px 25px rgba(33, 82, 136, 0.4);
+  font-family: "Poppins", sans-serif;
+  /* text-transform: uppercase; */
+  letter-spacing: 1.5px;
+  width: 100% !important;
+  background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 30px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  max-width: 100%;
+  margin-top: 2rem;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(33, 82, 136, 0.5);
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(33, 82, 136, 0.35);
+  }
+
+  &:disabled {
+    background: #e0e0e0;
+    color: #a0a0a0;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Responsive Design
+@media only screen and (max-width: 768px) {
+  .new-payment-card-container {
+    padding: 1.2rem;
+    gap: 1rem;
+  }
+
+  .new-user-greeting {
+    font-size: 1rem;
+  }
+
+  .new-detail-item {
+    flex: 1 1 100%;
+  }
+
+  .new-amount-bs {
+    font-size: 1.5rem;
+  }
+
+  .new-amount-usd {
+    font-size: 1.8rem;
+
+    .new-currency-symbol {
+      font-size: 1.3rem;
+    }
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .new-payment-card-container {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .new-user-info-section {
+    padding-bottom: 0.8rem;
+  }
+
+  .new-user-avatar {
+    width: 6rem;
+    height: 6rem;
+
+    svg {
+      width: 4rem;
+      height: 4rem;
+    }
+  }
+
+  .new-user-greeting {
+    font-size: 0.95rem;
+  }
+
+  .new-user-role {
+    font-size: 0.65rem;
+  }
+
+  .new-contract-details-section {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .new-detail-item {
+    justify-content: space-between;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .new-payment-amount-container {
+    padding: 1.2rem;
+  }
+
+  .new-amount-label {
+    font-size: 1rem;
+  }
+
+  .new-amount-bs {
+    font-size: 1.3rem;
+  }
+
+  .new-amount-usd {
+    font-size: 1.6rem;
+
+    .new-currency-symbol {
+      font-size: 1.2rem;
+    }
+
+    .new-currency-label {
+      font-size: 0.85rem;
+    }
+  }
+
+  .new-edit-amount-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .new-payment-btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .new-balance-text {
+    font-size: 0.85rem;
+  }
+}

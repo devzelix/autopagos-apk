@@ -20,29 +20,39 @@
   <!-- Vista de pago: tarjeta con usuario, monto, botón PAGAR (se muestra al pulsar Empezar en el iframe/carrusel) -->
   <ng-container *ngIf="showFormView">
   <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable && showFormView">
-
-    <div class="form-login__offer">
-      <span class="main-title-login-container flex flex-col gap-2.5">
-        <img class="fibex-main-title-logo" src="assets/images/fibex-logo-positive.png" alt="Fibex Telecom Logo"
-          (click)="goHome()" (touchstart)="goHome()" style="cursor: pointer;">
-        <!-- <h1 class="main-title-login text-3xl">Registre su pago de <strong>Internet!</strong></h1> -->
-      </span>
-    </div>
+    <app-header-form (goHomeEmitter)="goHome()"></app-header-form>
 
     <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
-    <div class="form-login__group fancy_shadow" [ngClass]="nameClient ? 'form-login__group2' : ''">
-
+    <div
+      class="form-login__group fancy_shadow"
+      [ngClass]="{
+        'form-login__group2': nameClient,
+        'login-mode-container': navActive === ENUM_NAV.LOGIN
+      }"
+    >
       <!-- Mensajes de alerta -->
       <div>
-        <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">
-          Gracias por su pago, el mismo se encuentra en proceso de conciliación el
-          cual dura entre 24 a 48 horas ({{ Contar }})
+        <h3
+          class="message-succes"
+          *ngIf="payReported && !playDuplicated"
+          (click)="payReported = !payReported"
+        >
+          Gracias por su pago, el mismo se encuentra en proceso de conciliación
+          el cual dura entre 24 a 48 horas ({{ Contar }})
         </h3>
-        <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">
-          No es posible registrar su pago porque se cuenta está ANULADA o RETIRADA
-          ({{ Contar }})
+        <h3
+          class="message-succes"
+          *ngIf="CuentaAnulada && !playDuplicated"
+          (click)="CuentaAnulada = !CuentaAnulada"
+        >
+          No es posible registrar su pago porque se cuenta está ANULADA o
+          RETIRADA ({{ Contar }})
         </h3>
-        <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">
+        <h3
+          class="message-warning"
+          *ngIf="playDuplicated && !payReported"
+          (click)="playDuplicated = !playDuplicated"
+        >
           No es posible registrar el mismo pago dos veces ({{ Contar }})
         </h3>
         <h3 class="message-warning" *ngIf="ErrorRegistrando">
@@ -51,41 +61,79 @@
       </div>
       <!-- Mensajes de alerta -->
 
-      <div *ngIf="
+      <div
+        *ngIf="
           !payReported ||
           (CuentaAnulada && !playDuplicated) ||
           ErrorRegistrando ||
           (playDuplicated && !payReported)
-        " class="section-step-container">
+        "
+        class="section-step-container"
+      >
         <div *ngIf="AppFibex" class="links-nav-btns-container">
-
-          <button *ngIf="AppFibex && navActive !== ENUM_NAV.LOGIN" (click)="goStepBack()"
-            class="links-btn-navigation nav-back">
-            <svg class="text-3xl" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
-              <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"
-                d="M31 36L19 24l12-12" />
+          <button
+            type="button"
+            *ngIf="AppFibex && navActive !== ENUM_NAV.LOGIN"
+            (click)="goStepBack()"
+            class="links-btn-navigation nav-back"
+          >
+            <svg
+              class="text-3xl"
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 48 48"
+            >
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="4"
+                d="M31 36L19 24l12-12"
+              />
             </svg>
             <p>
-              {{ navActive === ENUM_NAV.PAYMENT_CARDS && userSelectList.length > 1 ? 'Ver usuarios' : 'Atrás' }}
+              {{
+                navActive === ENUM_NAV.PAYMENT_CARDS &&
+                userSelectList.length > 1
+                  ? "Ver usuarios"
+                  : "Atrás"
+              }}
             </p>
           </button>
 
           <!-- BTN to select option test and Admin panel -->
-          <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" [hidden]="showaBtnAdmin">
-            <app-btn-to-option (btnOption)="handlerAdminPanel($event)"></app-btn-to-option>
+          <div
+            *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT"
+            [hidden]="showaBtnAdmin"
+          >
+            <app-btn-to-option
+              (btnOption)="handlerAdminPanel($event)"
+            ></app-btn-to-option>
           </div>
         </div>
 
-
-        <!-- New Contract Info Design -->
-        <!-- New Contract Info Design (Compact) -->
-        <div *ngIf="AppFibex && userGreeting" class="contract-info-panel fancy_shadow_sm compact-panel">
-
+        <!-- ============================================ -->
+        <!-- OLD DESIGN (COMMENTED OUT - DO NOT DELETE) -->
+        <!-- ============================================ -->
+        <!-- 
+        <div
+          *ngIf="AppFibex && userGreeting"
+          class="contract-info-panel fancy_shadow_sm compact-panel"
+        >
           <div class="user-info-group">
             <div class="user-avatar-circle">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                />
               </svg>
             </div>
             <div class="user-details-col">
@@ -96,214 +144,228 @@
             </div>
           </div>
 
-          <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="contract-tags-group">
+          <div
+            *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT"
+            class="contract-tags-group"
+          >
             <div class="mini-tag">
               <span class="lbl">Contrato:</span>
-              <span class="val">{{nroContrato?.value}}</span>
+              <span class="val">{{ nroContrato?.value }}</span>
             </div>
             <div class="mini-tag highlight">
               <span class="lbl">Suscripción:</span>
-              <span class="val">{{this.subscription}} USD</span>
+              <span class="val">{{ this.subscription }} USD</span>
+            </div>
+          </div>
+        </div>
+        -->
+        <!-- End Old Contract Info Design -->
+
+        <!-- ============================================ -->
+        <!-- NEW DESIGN (MATCHING PROVIDED IMAGE) -->
+        <!-- ============================================ -->
+        <div
+          *ngIf="AppFibex && userGreeting"
+          class="new-payment-card-container"
+        >
+          <!-- User Info Section -->
+          <div class="new-user-info-section">
+            <div class="new-user-avatar">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                />
+              </svg>
+            </div>
+            <div class="new-user-details">
+              <h2 class="new-user-greeting">{{ userGreeting | titlecase }}</h2>
+              <p class="new-user-role">TITULAR DEL CONTRATO ASOCIADO</p>
             </div>
           </div>
 
-        </div>
-        <!-- End New Contract Info Design -->
+          <!-- Contract Details Section -->
+          <div
+            *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT"
+            class="new-contract-details-section"
+          >
+            <div class="new-detail-item">
+              <span class="new-detail-label">CONTRATO:</span>
+              <span class="new-detail-value">{{ nroContrato?.value }}</span>
+            </div>
+            <div class="new-detail-item highlight-blue">
+              <span class="new-detail-label">SUSCRIPCIÓN:</span>
+              <span class="new-detail-value">{{ this.subscription }} USD</span>
+            </div>
+          </div>
 
+          <!-- Balance Section -->
+          <div
+            *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
+            class="new-balance-section"
+          >
+            <p class="new-balance-text">
+              {{ saldoUSD | negativeAmount }} USD | {{ saldoBs | negativeAmount }} Bs
+              <strong>{{ saldoText }}</strong>
+            </p>
+          </div>
+        </div>
+        <!-- End New Design -->
+
+        <!-- ============================================ -->
+        <!-- CONTENT SECTIONS (KEPT AS IS) -->
+        <!-- ============================================ -->
+        
+        <!-- 
         <span *ngIf="mainTitle && !AppFibex" class="title-info-container">
           <h4>
             {{ mainTitle }}
           </h4>
         </span>
+        -->
+
         <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
         <!-- showDniForm && !AppFibex -->
-        <div *ngIf="navActive === ENUM_NAV.LOGIN" class="section-step-item keypad-form-step">
-
-          <!-- <app-tab-dni (typeDNIEmitter)="onLoginTypeChange($event)">
-          </app-tab-dni> -->
-
-          <div class="form-dni-keyboard-container flex gap-8">
-
-            <div class="form-dni-section">
-
-              <div class="form-login__item" fxFlex="1 0 auto" fxLayout="column">
-
-                <div div="form-control-item-container" [formGroup]="firstFormFibex">
-
-
-                  <!-- SOLO PARA DESARROLLO Y PRUEBAS >>> (click)="testNextPage()" -->
-                  <label class="form-control-label">
-                    {{ loginTypeSelectValue === 'V' ? 'Cédula del cliente' : loginTypeSelectValue === 'J' ? 'Jurídico' :
-                    'Extranjero' }}
-                  </label>
-                  <p class="form-control-description">
-                    Ingrese el documento de identidad del titular del contrato.
-                  </p>
-
-                  <div class="form-control-input form-dni-input">
-                    <!-- Selector de tipo de documento -->
-                    <div class="dni-select-wrapper relative">
-                      <button type="button" class="dni-custom-trigger" (click)="toggleDniDropdown()">
-                        <span class="curr-value">{{ loginTypeSelectValue }}</span>
-                        <svg class="select-arrow" [class.rotated]="showDniDropdown" xmlns="http://www.w3.org/2000/svg"
-                          width="12" height="12" viewBox="0 0 24 24">
-                          <path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z" />
-                        </svg>
-                      </button>
-
-                      <!-- Dropdown List -->
-                      <div class="dni-custom-dropdown" *ngIf="showDniDropdown">
-                        <button type="button" *ngFor="let opt of dniOptions" class="dni-option-item"
-                          [class.selected]="opt === loginTypeSelectValue" (click)="selectDniType(opt)">
-                          {{ opt }}
-                        </button>
-                      </div>
-                    </div>
-
-                    <h4 (click)="isActiveLoginInput = true"
-                      [ngClass]="{'form-input-empty': (!dni?.value || dni?.value?.length === 0), 'input-active-color': (dni?.value?.length || isActiveLoginInput), 'input-small-text-size': (dni?.value?.length || 0) > 8 }">
-
-                      {{ dni?.value || '00000000' }}
-
-                      <span *ngIf="(dni?.value?.length || 0) < 10" class="custom-cursor"></span>
-                    </h4>
-                  </div>
-
-
-                  <p class="form-control-error-text"
-                    *ngIf="firstFormFibex.get('dni')?.dirty && firstFormFibex.get('dni')?.hasError('required')">
-                    La cédula es requerida
-                  </p>
-                </div>
-
-                <div class="login-form-btns-section relative -mb-8 flex gap-4 w-full flex-col">
-                  <button class="form-control-btn" type="button" role="button" (click)="goToPayment()"
-                    [disabled]="dni?.invalid">
-                    Ingresar
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2.5" d="M9 4h10v14a2 2 0 0 1-2 2H9m3-5l3-3m0 0l-3-3m3 3H5" />
-                    </svg>
-                  </button>
-                  <!-- <button class="form-control-btn" type="button" role="button" (click)="checkLatestPayments()"
-                    [disabled]="dni?.invalid">
-                    Consultar últimos pagos
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path fill="currentColor" fill-rule="evenodd"
-                        d="M20 4H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1M4 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3zm2 5h2v2H6zm5 0a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2zm-3 4H6v2h2zm2 1a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2h-6a1 1 0 0 1-1-1m-2 3H6v2h2zm2 1a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2h-6a1 1 0 0 1-1-1"
-                        clip-rule="evenodd" />
-                    </svg>
-                  </button> -->
-
-                </div>
-
-                <!--  En caso de tener dos o más abonados -->
-
-                <div class="account-selector-container" *ngIf="false">
-
-                  <!-- En caso de tener dos o más abonados -->
-                  <h3 class="message-succes" *ngIf="listContratos.length > 1">
-                    Por favor seleccione su Nro. de Abonado
-                  </h3>
-                  <div *ngIf="LoadingLengthAbonado" class="spinner-pay">
-                    <mat-spinner></mat-spinner>
-                  </div>
-                  <div *ngIf="listContratos.length > 1 && !LoadingLengthAbonado"
-                    class="grid-cards cards-abonados animated fadeInUp">
-                    <button *ngFor="let contrato of listContratos; trackBy: trackByContratoId" class="grid-cards-item"
-                      (click)="contractSelected(contrato, true)">
-                      <h3>
-                        {{ contrato.contrato }}
-                      </h3>
-                      <p *ngIf="contrato.sector">
-                        {{ contrato.sector }}
-                      </p>
-                      <p>
-                        {{ contrato.status_contrato }}
-                      </p>
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            <app-keyboard-on-screen [isValidEnterBtn]="!dni?.invalid" classes="pinpad-big-size"
-              (valorTeclado)="onTecladoInput($event)" (deleteKeyEmitter)="deleteLastCharacter()"
-              (enterEmitter)="searchServicesv2(firstFormFibex.get('dni'), false, true)">
-            </app-keyboard-on-screen>
-
-          </div>
-
+        <div
+          *ngIf="navActive === ENUM_NAV.LOGIN"
+          class="section-step-item w-full flex justify-center items-center"
+        >
+          <app-login-form
+            [loginTypeSelectValue]="loginTypeSelectValue"
+            [dniValue]="firstFormFibex.get('dni')?.value || ''"
+            (onTypeChange)="onLoginTypeChange($event)"
+            (onKeyStroke)="onTecladoInput($event)"
+            (onDelete)="deleteLastCharacter()"
+            (onLogin)="goToPayment()"
+          >
+          </app-login-form>
         </div>
 
-        <div *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT" class="section-step-item">
-          <div class="user-list-select-content w-full flex justify-center txt-dark flex-col">
-
+        <div
+          *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT"
+          class="section-step-item"
+        >
+          <div
+            class="user-list-select-content w-full flex justify-center txt-dark flex-col"
+          >
             <div class="user-list-select-grid">
-
-              <app-user-item-card *ngFor="let user of userSelectList; trackBy: trackByUserId" [userItem]="user"
-                (onUserSelected)="onUserSelected($event)">
+              <app-user-item-card
+                *ngFor="let user of userSelectList; trackBy: trackByUserId"
+                [userItem]="user"
+                (onUserSelected)="onUserSelected($event)"
+              >
               </app-user-item-card>
-
             </div>
-
           </div>
         </div>
 
         <!-- PAYMENT CARDS STEP -->
-        <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
+        <div
+          *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
+          class="section-step-item"
+        >
 
-          <div class="payment-menu-content w-full flex justify-center txt-dark flex-col">
+          <app-unique-payment
+                [tasaCambio]="tasaCambio"
+                [saldoBs]="saldoBs"
+                [saldoUSD]="saldoUSD"
+                [mountTotalMonthUSD]="mountTotalMonthUSD"
+                [mountTotalMonthBs]="mountTotalMonthBs"
+                [subscription]="subscription"
+                [monthPayCount]="monthPayCount"
+                [setTitleFn]="setMainTitle"
+                (totalBs)="mountsToPaymentBs($event)"
+                (totalUSD)="mountsToPaymentUSD($event)"
+                (onEditAmountEvent)="onEditAmountClick()"
+              ></app-unique-payment>
+          <!-- Payment Amount Display -->
 
+          <!-- 
+          <div
+            class="payment-menu-content w-full flex justify-center txt-dark flex-col"
+          >
             <div class="payment-menu-subscription-section">
               <h4 class="name-client text-center text-base">
                 {{ saldoUSD | negativeAmount }} USD |
-                {{ saldoBs | negativeAmount }} Bs <strong>{{ saldoText }}</strong>
+                {{ saldoBs | negativeAmount }} Bs
+                <strong>{{ saldoText }}</strong>
               </h4>
             </div>
 
-            <!-- UNIQUE PAYMENT -->
-            <app-unique-payment [tasaCambio]="tasaCambio" [saldoBs]="saldoBs" [saldoUSD]="saldoUSD"
-              [mountTotalMonthUSD]="mountTotalMonthUSD" [mountTotalMonthBs]="mountTotalMonthBs"
-              [subscription]="subscription" [monthPayCount]="monthPayCount" [setTitleFn]="setMainTitle"
-              (totalBs)="mountsToPaymentBs($event)" (totalUSD)="mountsToPaymentUSD($event)"
-              (onEditAmountEvent)="onEditAmountClick()"></app-unique-payment>
-
+            <app-unique-payment
+              [tasaCambio]="tasaCambio"
+              [saldoBs]="saldoBs"
+              [saldoUSD]="saldoUSD"
+              [mountTotalMonthUSD]="mountTotalMonthUSD"
+              [mountTotalMonthBs]="mountTotalMonthBs"
+              [subscription]="subscription"
+              [monthPayCount]="monthPayCount"
+              [setTitleFn]="setMainTitle"
+              (totalBs)="mountsToPaymentBs($event)"
+              (totalUSD)="mountsToPaymentUSD($event)"
+              (onEditAmountEvent)="onEditAmountClick()"
+            ></app-unique-payment>
           </div>
+          -->
 
-          <button class="form-control-btn w-44 mx-auto payment-menu-success-btn" type="button" role="button"
-            (click)="handleShowTransactionModal(true)">
-            Pagar
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-              <g fill="none" fill-rule="evenodd">
-                <path
-                  d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-                <path fill="currentColor"
-                  d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z" />
-              </g>
+          <!-- Payment Button -->
+          <button
+            class="new-payment-btn"
+            type="button"
+            role="button"
+            (click)="handleShowTransactionModal(true)"
+          >
+            PAGAR
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"
+              />
             </svg>
           </button>
-
         </div>
-
       </div>
     </div>
   </form>
 
-  <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
-    [saldoUser]="saldoMounted" (closeEvent)="showStateTable = false">
+  <app-info-pay
+    *ngIf="showStateTable"
+    [stateTableData]="stateTableData"
+    [showStateTable]="showStateTable"
+    [saldoUser]="saldoMounted"
+    (closeEvent)="showStateTable = false"
+  >
   </app-info-pay>
 
-
   <!-- MODAL DE TRANSACCION DEL PAGO -->
-  <app-modal-payment *ngIf="showTransactionModal || showAnulationModal" [paymentType]="selectedPaymentType"
-    [dniValue]="this.dni?.value" [nroAbonado]="this.nroContrato?.value" [nroContrato]="idContrato"
-    [inputType]="showAnulationModal ? 'reference' : showTransactionModal ? 'mount' : ''" [saldoBs]="saldoBs"
-    [tasaCambio]="tasaCambio" [subscription]="subscription" [mountValue]="mountTotalMonthBs"
-    [activeInputFocus]="activeTransactionInputFocus" [viewAdmin]="false"
-    (closeEmmit)="handleShowTransactionModal(false)" (onSubmitPayForm)="resetAllForms()">
+  <app-modal-payment
+    *ngIf="showTransactionModal || showAnulationModal"
+    [paymentType]="selectedPaymentType"
+    [dniValue]="this.dni?.value"
+    [nroAbonado]="this.nroContrato?.value"
+    [nroContrato]="idContrato"
+    [inputType]="
+      showAnulationModal ? 'reference' : showTransactionModal ? 'mount' : ''
+    "
+    [saldoBs]="saldoBs"
+    [tasaCambio]="tasaCambio"
+    [subscription]="subscription"
+    [mountValue]="mountTotalMonthBs"
+    [activeInputFocus]="activeTransactionInputFocus"
+    [viewAdmin]="false"
+    (closeEmmit)="handleShowTransactionModal(false)"
+    (onSubmitPayForm)="resetAllForms()"
+  >
   </app-modal-payment>
   </ng-container>
 </div>

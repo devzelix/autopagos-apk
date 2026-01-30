@@ -22,7 +22,8 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #357CFF 0%, #2d9ae2 100%);
+  // background: linear-gradient(90deg, #357CFF 0%, #2d9ae2 100%);
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 10px;
 }
@@ -45,30 +46,32 @@
   letter-spacing: -0.5px;
 }
 
-// Info message
-.info-message {
-  background: linear-gradient(135deg, #e6f2ff 0%, #f0f7ff 100%);
-  border-left: 4px solid #357CFF;
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
+// Info message - Diseño compacto y moderno
+.info-message-compact {
+  background: linear-gradient(135deg, #e8f4fd 0%, #d4ebf7 100%);
+  border-radius: 50px;
+  padding: 0.8rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid rgba(53, 124, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(53, 124, 255, 0.1);
+  max-width: fit-content;
 
   svg {
     flex-shrink: 0;
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 1.8rem;
+    height: 1.8rem;
     color: #357CFF;
-    margin-top: 0.2rem;
   }
 
   p {
     margin: 0;
-    font-size: 1.5rem;
-    line-height: 1.5;
-    color: #1a202c;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: #1a426d;
+    font-weight: 600;
   }
 }
 
@@ -76,21 +79,27 @@
 .form-content {
   display: flex;
   gap: 2rem;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   min-height: 0;
+  flex-direction: column;
 
   &.with-keyboard {
     .step-form {
-      flex: 1;
-      max-width: 48%;
-      min-width: 350px;
+      // flex: 1;
+      // max-width: 48%;
+      // min-width: 350px;
+      width: 100%;
     }
 
     .virtual-keyboard-section {
-      flex: 1;
-      max-width: 48%;
-      min-width: 350px;
+      // flex: 1;
+      // max-width: 48%;
+      // min-width: 350px;
+      width: 100%;
+      app-keyboard-on-screen: {
+        width: 100%;
+      }
     }
   }
 
@@ -128,12 +137,13 @@
 }
 
 .field-label {
-  font-size: 1.3rem;
-  color: #313131;
-  font-weight: 500;
+  font-size: 1.8rem; // Más grande
+  color: #111827; // Color más oscuro como login
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .field-info-button-inline {
@@ -161,60 +171,86 @@
   }
 }
 
-// Input container (estilo punto de venta)
+// Input container (estilo login - display box)
 .input-container {
   display: flex;
   align-items: center;
   width: 100%;
   position: relative;
-  border-radius: 11px;
+  border-radius: 40px; // Más redondeado como en login
   transition: all 0.3s ease-in-out;
-  background: white;
-  border: 2px solid transparent;
+  background: #f9fafb; // Fondo gris claro como login
+  border: 4px solid #f3f4f6; // Borde grueso como login
+  padding: 0 40px; // Padding horizontal como login
+  // min-height: 6.9rem; // Altura como login
+  min-height: 6.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
 
   &.input-focused {
-    border-color: #357CFF;
-    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.1);
+    border-color: #1a426d; // Color azul oscuro del login
+    box-shadow: 0 4px 12px rgba(26, 66, 109, 0.15);
+    background: #fff;
   }
 }
 
 .input-prefix {
-  position: absolute;
-  left: 1.5rem;
-  font-size: 1.9rem;
-  font-weight: 600;
-  color: #313131;
+  // font-size: 4rem; // Tamaño grande como en login
+  font-size: 3rem;
+  font-weight: 800;
+  color: #1a426d; // Color azul oscuro del login
+  font-family: "Poppins", sans-serif;
+  min-width: 50px;
+  display: inline-block;
+  text-align: center;
+  flex-shrink: 0;
+  margin-right: 30px; // Espaciado como en login
+  position: relative;
   pointer-events: none;
   z-index: 1;
-  background: white;
-  padding: 0 0.3rem;
+  background: transparent;
+  padding: 0;
+  
+  // Separador visual
+  &::after {
+    content: '|';
+    color: #e5e7eb60;
+    margin-left: 30px;
+    font-weight: 200;
+    font-size: 3.5rem;
+  }
 }
 
 .form-input {
   width: 100%;
-  min-height: 3.9rem;
-  border-radius: 11px;
-  font-size: 1.9rem;
-  padding: 0 2rem;
-  padding-left: 4.5rem; // Espacio para el prefijo
+  min-height: auto;
+  border-radius: 0;
+  font-size: 4rem; // Texto grande como en login
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 2px;
+  font-family: "Courier New", monospace; // Fuente monospace como login
+  padding: 0;
   transition: all 0.3s ease-in-out;
   border: none;
   background: transparent;
-  color: #313131;
-  font-family: inherit;
+  text-align: left;
+  flex-grow: 1;
 
   &:focus {
     outline: none;
   }
 
   &::placeholder {
-    color: #a0aec0;
-    font-size: 1.6rem;
+    color: #9ca3af;
+    opacity: 0.5;
+    font-size: 4rem;
+    font-weight: 800;
   }
 
   &:disabled,
   &[readonly] {
-    background: #f7fafc;
+    background: transparent;
     cursor: default;
   }
 
@@ -230,10 +266,73 @@
   }
 }
 
-// Select sin prefijo - ajustar padding
+// Input sin prefijo - centrar y ajustar padding
 .input-container:not(:has(.input-prefix)) {
+  .form-input {
+    text-align: center; // Centrar cuando no hay prefijo
+    padding: 0 40px; // Padding horizontal uniforme
+  }
+  
   select.form-input {
-    padding-left: 2rem;
+    padding-left: 40px;
+    padding-right: 80px; // Espacio para la flecha
+  }
+}
+
+// ===== ESTILOS PARA INPUT TIPO PIN =====
+.pin-input-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.pin-input {
+  width: 100%;
+  min-height: auto;
+  border: none;
+  background: transparent;
+  font-size: 5rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 28px; // Espaciado entre caracteres para simular casillas
+  font-family: "Courier New", monospace;
+  padding: 0;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  caret-color: #1a426d;
+  
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #d1d5db;
+    opacity: 0.6;
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: 20px;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background: transparent;
+    cursor: default;
+  }
+}
+
+// Contenedor especial para inputs PIN (sin el borde del input-container)
+.input-container:has(.pin-input-container) {
+  border: none;
+  background: transparent;
+  padding: 2rem 0;
+  min-height: auto;
+  
+  &.input-focused {
+    border: none;
+    box-shadow: none;
+    background: transparent;
   }
 }
 
@@ -242,22 +341,23 @@ select.form-input {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23357CFF' d='M7 10l5 5l5-5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%231a426d' d='M7 10l5 5l5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 1.5rem center;
-  background-size: 2.4rem;
-  background-color: white;
-  padding-right: 5rem;
-  font-weight: 500;
+  background-position: right 40px center; // Ajustado para el nuevo padding
+  background-size: 3rem; // Flecha más grande
+  background-color: transparent;
+  padding-right: 80px; // Espacio para la flecha
+  font-weight: 800;
+  font-size: 4rem; // Tamaño grande como otros inputs
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: #f7fafc;
+    background-color: rgba(249, 250, 251, 0.5);
   }
   
   &:focus {
-    background-color: white;
-    box-shadow: 0 0 0 3px rgba(53, 124, 255, 0.1);
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(26, 66, 109, 0.15);
   }
   
   // Estilos para las opciones (limitado por el navegador)
@@ -265,26 +365,26 @@ select.form-input {
     padding: 1.2rem 1.5rem;
     font-size: 1.7rem;
     background: white;
-    color: #313131;
+    color: #111827;
     font-weight: 500;
     border-radius: 8px;
     margin: 0.2rem 0;
     
     &:hover {
       background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
-      color: #357CFF;
+      color: #1a426d;
     }
     
     &:checked,
     &:active,
     &[selected] {
-      background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%) !important;
+      background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%) !important;
       color: white !important;
       font-weight: 600;
     }
     
     &:disabled {
-      color: #a0aec0;
+      color: #9ca3af;
       background: #f7fafc;
     }
   }
@@ -293,7 +393,7 @@ select.form-input {
   @-moz-document url-prefix() {
     option {
       &:checked {
-        background: #357CFF !important;
+        background: #1a426d !important;
         color: white !important;
       }
     }
@@ -311,41 +411,78 @@ select.form-input {
   }
 }
 
-// Field info popover
-.field-info-popover {
+// Field info popover - Diseño moderno
+.info-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: backdropFadeIn 0.2s ease;
+}
+
+.field-info-popover-modern {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 2rem;
+  background: white;
+  border-radius: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   z-index: 1000;
-  animation: popoverFadeIn 0.2s ease;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
-  min-width: 300px;
+  animation: popoverSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 450px;
+  min-width: 320px;
+  overflow: hidden;
+  border: 3px solid #e8f4fd;
 
-  p {
-    font-size: 1.6rem;
-    color: #1a202c;
-    line-height: 1.6;
-    text-align: center;
-    margin: 0;
-    padding: 0 3rem;
+  .popover-header {
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+    padding: 1.8rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+
+    .popover-icon {
+      width: 2.8rem;
+      height: 2.8rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: white;
+      flex: 1;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .popover-body {
+    padding: 2.5rem;
+    background: white;
+
+    p {
+      font-size: 1.6rem;
+      color: #1a202c;
+      line-height: 1.7;
+      text-align: left;
+      margin: 0;
+    }
   }
 }
 
-.close-popover {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(220, 53, 69, 0.1);
-  border: none;
+.close-popover-modern {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -354,23 +491,34 @@ select.form-input {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #dc3545;
+  color: white;
+  flex-shrink: 0;
 
   &:hover {
-    background: rgba(220, 53, 69, 0.2);
+    background: rgba(255, 255, 255, 0.3);
     transform: rotate(90deg);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 
   svg {
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 2rem;
+    height: 2rem;
   }
 }
 
-@keyframes popoverFadeIn {
+@keyframes backdropFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popoverSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.9);
   }
   to {
     opacity: 1;
@@ -394,15 +542,16 @@ select.form-input {
 .navigation-buttons {
   display: flex;
   justify-content: space-between;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 2px solid #e2e8f0;
+  gap: 2rem;
+  margin-top: 0.6rem;
+  /* padding-top: 2rem; */
+  /* border-top: 2px solid #e2e8f0; */
+  width: 100%;
 }
 
 .nav-button {
   flex: 1;
-  min-height: 5rem;
+  min-height: 6rem; // Altura mínima mayor
   padding: 1.2rem 2.5rem;
   font-size: 1.7rem;
   font-weight: 600;
@@ -415,6 +564,7 @@ select.form-input {
   justify-content: center;
   gap: 0.8rem;
   font-family: inherit;
+  width: calc(30% - 1rem);
 
   svg {
     width: 2.4rem;
@@ -437,24 +587,40 @@ select.form-input {
 }
 
 .prev-button {
-  background: #6c757d;
-  color: white;
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+  /* background: #6c757d; */
+  color: #1a426d;
+  border-radius: 25px;
+  padding: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  /* box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3); */
 
   &:not(:disabled):hover {
     background: #5a6268;
     box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
   }
+  
+  &:not(:disabled):active {
+    transform: translateY(4px);
+  }
 }
 
 .next-button {
-  background: linear-gradient(135deg, #357CFF 0%, #2d9ae2 100%);
+  background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%); // Gradiente del login
   color: white;
-  box-shadow: 0 4px 12px rgba(53, 124, 255, 0.4);
+  border-radius: 25px; // Más redondeado como login
+  padding: 30px; // Padding del login
+  font-size: 2.5rem; // Tamaño de fuente del login
+  font-weight: 800; // Peso del login
+  text-transform: uppercase; // Mayúsculas como login
+  box-shadow: 0 4px 12px rgba(26, 66, 109, 0.3);
+  min-width: calc(70% - 1rem);
 
-  &:not(:disabled):hover {
-    background: linear-gradient(135deg, #2d9ae2 0%, #357CFF 100%);
-    box-shadow: 0 6px 16px rgba(53, 124, 255, 0.5);
+  &:not(:disabled):hover,
+  &:not(:disabled):active {
+    background: linear-gradient(135deg, #14375c 0%, #1e5284 100%); // Hover del login
+    transform: translateY(6px); // Efecto de presionar hacia abajo
+    box-shadow: 0 2px 8px rgba(26, 66, 109, 0.4);
   }
 }
 

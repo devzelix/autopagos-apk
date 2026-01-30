@@ -10,7 +10,7 @@
         <button *ngIf="hasDebt()" (click)="openAdvancePaymentModal()"
           class="bg-[var(--primary-accent-color)] flex items-center gap-2 p-2 pr-4 rounded-full text-white font-semibold animation-class mt-5"
           [class.reset-mode]="isAdvancePaymentActive">
-          <div class="flex items-center p-2 rounded-full bg-blue-600">
+          <div class="flex items-center p-2 rounded-full">
             <!-- Plus icon when not active -->
             <svg *ngIf="!isAdvancePaymentActive" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
               viewBox="0 0 24 24">
@@ -29,7 +29,7 @@
 
       <div class="payment-menu-mount-section">
 
-        <button class="pencil-edit-amount" (click)="onEditAmount()">
+        <!-- <button class="pencil-edit-amount" (click)="onEditAmount()">
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
             <g fill="none" stroke="#0154e9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
               <path stroke-dasharray="20" stroke-dashoffset="20" d="M3 21h18">
@@ -45,7 +45,7 @@
               </path>
             </g>
           </svg>
-        </button>
+        </button> -->
 
         <h1 class="payment-mount-small">{{ mountTotalMonthBs | number:'1.2-2' }} &nbsp; <small>Bs</small></h1>
         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16">
