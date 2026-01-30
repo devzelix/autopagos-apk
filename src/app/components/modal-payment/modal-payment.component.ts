@@ -12,6 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { KioskAuthService } from 'src/app/services/kiosk-auth.service';
 import {
   IPaymentTypes,
   ITransactionInputs,
@@ -126,7 +127,8 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     private _registerTransaction: PaymentsService,
     private _localStorageService: LocalstorageService,
     private _webhookAutopagoS: WebhookAutopagoService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private _kioskAuth: KioskAuthService,
   ) {}
 
   ngOnInit(): void {
@@ -434,7 +436,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
           numSubscriber: this.nroAbonado,
           lastCardNum: resPay.data.PAN.slice(-4),
           amount: this.mountFormat,
-          terminalVirtual: resPay.data.TERMINAL,
+          terminalVirtual: this._kioskAuth.getUuid() || resPay.data.TERMINAL,          
           status:
             saeRegister.data.data.success &&
             saeRegister.data.message === 'ok'

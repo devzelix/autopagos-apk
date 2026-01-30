@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LocalstorageService } from 'src/app/services/localstorage.service';
 import { EventEmitter } from '@angular/core';
@@ -15,6 +15,8 @@ import { IResponse } from 'src/app/interfaces/api/handlerResReq';
   styleUrls: ['./config-ip-ubiipos.component.scss'],
 })
 export class ConfigIpUbiiposComponent implements OnInit {
+  @Input() initialIp: string | null = null;
+  @Input() initialPort: number | null = null;
   @Output() ipUbiipos = new EventEmitter<boolean>();
 
   constructor(
@@ -22,7 +24,14 @@ export class ConfigIpUbiiposComponent implements OnInit {
     private _ubiiposService: UbiiposService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.initialIp != null && this.initialIp !== '') {
+      this.ipAddress = this.initialIp;
+    }
+    if (this.initialPort != null && this.initialPort > 0) {
+      this.portNumber = this.initialPort;
+    }
+  }
 
   // Propiedades para el binding
   ipAddress: string = '';

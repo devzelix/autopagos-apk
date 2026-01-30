@@ -263,3 +263,178 @@
     }
   }
 }
+
+// Pantalla "Verificando POS Ubi" (auto-config desde kiosk)
+.verifying-pos-ubi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.verifying-pos-ubi__message {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 1.5rem;
+  font-weight: 600;
+}
+
+.verifying-pos-ubi__spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: verifying-spin 0.9s linear infinite;
+}
+
+@keyframes verifying-spin {
+  to { transform: rotate(360deg); }
+}
+
+// Pantalla de fallo de conexión POS Ubi — mismo layout y estilos que kiosk-guard (status-card + btn-primary-action)
+.pos-ubi-failed-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 9999;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: white;
+  padding: 1rem;
+  gap: 3rem;
+}
+
+.pos-ubi-failed-overlay__brand-header {
+  text-align: center;
+  margin: 0;
+  animation: fadeIn 0.8s ease-in;
+}
+
+.pos-ubi-failed-overlay__logo {
+  height: 90px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  margin: 0;
+}
+
+.pos-ubi-failed-overlay__status-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pos-ubi-failed-overlay__card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;
+  padding: 3rem 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: #333;
+  margin: 0;
+  animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pos-ubi-failed-overlay__icon-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 2rem;
+  font-size: 3rem;
+
+  &--network {
+    color: #555;
+    background: #e2e8f0;
+  }
+}
+
+.pos-ubi-failed-overlay__title {
+  font-size: 1.8rem;
+  color: #215288;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.pos-ubi-failed-overlay__detail {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+}
+
+.pos-ubi-failed-overlay__btn-retry {
+  background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(33, 82, 136, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(33, 82, 136, 0.5);
+    background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.pos-ubi-failed-overlay__footer {
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

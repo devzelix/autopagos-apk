@@ -104,7 +104,7 @@ export const environment = {
     //LOCAL API-DRIVER
     //API_Printer: 'https://billing-regions-david-advertisers.trycloudflare.com/api',
     //API_Printer: 'https://moms-ampland-buried-cooler.trycloudflare.com/api',
-    API_Printer: 'https://enterprises-obtaining-dedicated-wheel.trycloudflare.com/api',
+    API_Printer: 'https://restricted-strongly-easy-refresh.trycloudflare.com/api',
     API_PRINTER_TOKEN: 'rJ4EctGahhSkEU2ZNhrzU4IjL06wUP',
 
     // ----CMS SERVER-----
@@ -133,8 +133,8 @@ export const environment = {
     
     url_api_webhook_caja: 'https://pf269175-2197.use2.devtunnels.ms/api',
     api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
-
-    kioskApiUrl: 'https://hgctx1nx.use2.devtunnels.ms:3000/api/kiosks',
+    
+    kioskApiUrl: 'http://localhost:9191/api',
     
     // URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
     URL_IDLE_PAGE: 'http://localhost:3002',

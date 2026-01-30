@@ -2,20 +2,54 @@
 <div class="app-root">
 <div id="content-scrollable" class="container">
   
-  <div *ngIf="!isLoginKiosk || (kioskStatus$ | async) === 'REGISTERED'; else kioskStatusBlock" 
+  <!-- Sin modo kiosk: contenido principal -->
+  <div *ngIf="!isLoginKiosk"
        class="flex-container-column"
        [@routeAnimations]="prepareRoute(outlet)">
     <router-outlet #outlet="outlet"></router-outlet>
     <app-footer *ngIf="!helper.view"></app-footer>
-    
-    <!-- Panel de administración Global -->
     <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
   </div>
 
-  <!-- Template para bloqueos de estado del Kiosco -->
-  <ng-template #kioskStatusBlock>
-    <app-kiosk-guard></app-kiosk-guard>
-  </ng-template>
+  <!-- Modo kiosk: flujo registro → Verificando POS Ubi → contenido principal -->
+  <ng-container *ngIf="isLoginKiosk">
+    <ng-container *ngIf="(kioskStatus$ | async) !== 'REGISTERED'; else kioskRegisteredBlock">
+      <app-kiosk-guard></app-kiosk-guard>
+    </ng-container>
+    <ng-template #kioskRegisteredBlock>
+      <div *ngIf="verifyingPosUbi" class="verifying-pos-ubi">
+        <p class="verifying-pos-ubi__message">Verificando POS Ubi</p>
+        <div class="verifying-pos-ubi__spinner" aria-hidden="true"></div>
+      </div>
+      <div *ngIf="posUbiConnectionFailed" class="pos-ubi-failed-overlay">
+        <div class="pos-ubi-failed-overlay__brand-header">
+          <img src="assets/images/fibex-logo-positive.png" alt="Fibex" class="pos-ubi-failed-overlay__logo">
+        </div>
+        <div class="pos-ubi-failed-overlay__status-container">
+          <div class="pos-ubi-failed-overlay__card">
+            <div class="pos-ubi-failed-overlay__icon-circle pos-ubi-failed-overlay__icon-circle--network">
+              <i class="fa fa-wifi" aria-hidden="true"></i>
+            </div>
+            <h2 class="pos-ubi-failed-overlay__title">No se pudo conectar al POS Ubi</h2>
+            <p class="pos-ubi-failed-overlay__detail">Verifique que el dispositivo esté encendido y en la misma red. Puede reintentar la conexión.</p>
+            <button type="button" class="pos-ubi-failed-overlay__btn-retry" (click)="retryPosUbiTest()">
+              <i class="fa fa-refresh" aria-hidden="true"></i> Reintentar Conexión
+            </button>
+          </div>
+        </div>
+        <div class="pos-ubi-failed-overlay__footer">
+          <small>Fibex AutoPago v1.0.0</small>
+        </div>
+      </div>
+      <div *ngIf="!verifyingPosUbi && !posUbiConnectionFailed"
+           class="flex-container-column"
+           [@routeAnimations]="prepareRoute(outlet)">
+        <router-outlet #outlet="outlet"></router-outlet>
+        <app-footer *ngIf="!helper.view"></app-footer>
+        <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
+      </div>
+    </ng-template>
+  </ng-container>
 
   <!-- Carrusel de publicidad - Solo en vista de inicio -->
   <!-- 🚩 DESHABILITADO: Para habilitar cambiar ENABLE_AD_CAROUSEL a true en app.component.ts -->
@@ -43,9 +77,9 @@
     <!-- EL BOTÓN SE MOVIÓ A NIVEL GLOBAL -->
   </div>
 
-  <!-- BOTÓN GLOBAL INMORTAL (Visible solo en WelcomeView '/' y en IdlePage '/idle') -->
+  <!-- BOTÓN GLOBAL INMORTAL (Visible solo en WelcomeView '/' y en IdlePage '/idle', cuando kiosk y POS Ubi están configurados; no mostrar durante Verificando POS Ubi ni en pantalla de fallo de conexión) -->
   <div class="idle-page-button-zone" 
-       *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED'"
+       *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED' && posUbiConfigured && !verifyingPosUbi && !posUbiConnectionFailed"
        [class.idle-page-button-zone--hidden]="!showGlobalButton"
        (click)="handleGlobalStart()" 
        (touchstart)="handleGlobalStart()">
