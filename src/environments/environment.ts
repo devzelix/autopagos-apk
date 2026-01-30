@@ -134,10 +134,10 @@ export const environment = {
     url_api_webhook_caja: 'https://pf269175-2197.use2.devtunnels.ms/api',
     api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
 
-    kioskApiUrl: 'https://hgctx1nx.use2.devtunnels.ms:3000/api/kiosks',
+    kioskApiUrl: 'https://7lx1xvhp.use2.devtunnels.ms:3000/api/kiosks',
     
     // URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
-    URL_IDLE_PAGE: 'http://localhost:3002',
+    URL_IDLE_PAGE: 'https://mock-ads.solocodebase.com/',
 
     /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
     adminRif: 'J3081825169',
