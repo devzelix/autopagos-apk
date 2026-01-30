@@ -3,10 +3,12 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
+import { LocalstorageService } from './services/localstorage.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil, startWith, filter, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AdminPanelStateService } from './services/admin-panel-state.service';
+import { UbiiposService } from './services/api/ubiipos.service';
 import { routeAnimations } from './route-animations';
 
 @Component({
@@ -32,6 +34,12 @@ export class AppComponent implements OnInit, OnDestroy {
   public idlePageUrlSafe: SafeResourceUrl;
 
   public kioskStatus$ = this.kioskAuth.kioskStatus$;
+  /** Si el POS Ubi ya fue configurado (existe ubiiposHost en localStorage). */
+  public posUbiConfigured = false;
+  /** Mientras es true se muestra "Verificando POS Ubi" (auto-config desde datos del kiosk). */
+  public verifyingPosUbi = false;
+  /** Si el test de conexión al POS Ubi falló; se muestra pantalla con botón de reintento. */
+  public posUbiConnectionFailed = false;
   /** No mostrar carrusel cuando el panel de administración está abierto. */
   public adminPanelOpen$ = this.adminPanelStateService.isOpen;
 
@@ -76,8 +84,8 @@ export class AppComponent implements OnInit, OnDestroy {
         // Detener reintentos porque ya respondió
         this.stopIframeRetry();
 
-        // Iniciar transición con delay mínimo (si estamos en WelcomeView y Kiosco Registrado)
-        if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
+        // Iniciar transición con delay mínimo (si estamos en WelcomeView, Kiosco y POS Ubi configurados)
+        if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED' && this.posUbiConfigured) {
           this.scheduleIdleActivation();
         }
       });
@@ -129,8 +137,8 @@ export class AppComponent implements OnInit, OnDestroy {
       
       console.log('⏰ Timeout cumplido. Verificando condiciones para activar Idle...');
 
-      // Verificar de nuevo por seguridad (Ruta y Estado)
-      if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
+      // Verificar de nuevo por seguridad (Ruta, Estado y POS Ubi configurado)
+      if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED' && this.posUbiConfigured) {
          console.log('🚀 Condiciones OK. Ejecutando transición a Idle Mode.');
          
          // Mantenemos el botón encendido para que no parpadee durante el carrusel lateral
@@ -145,9 +153,13 @@ export class AppComponent implements OnInit, OnDestroy {
    * Inicia el monitoreo del iframe: Carga inicial y bucle de reintento
    */
   private startIframeMonitoring(): void {
-    // CONDICIÓN CRÍTICA: Solo iniciar si estamos en Welcome View Y el Kiosco está Registrado.
+    // CONDICIÓN CRÍTICA: Kiosco registrado y POS Ubi configurado.
     if (this.currentKioskStatus !== 'REGISTERED') {
       console.log('⛔ Kiosco no registrado. Iframe en pausa.');
+      return;
+    }
+    if (!this.posUbiConfigured) {
+      console.log('⛔ POS Ubi no configurado. Iframe en pausa.');
       return;
     }
 
@@ -224,6 +236,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public helper: HelperService,
     private kioskAuth: KioskAuthService,
+    private localStorageService: LocalstorageService,
+    private ubiiposService: UbiiposService,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
@@ -232,6 +246,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.posUbiConfigured = !!this.localStorageService.get<string>('ubiiposHost');
     // Forzar navegación al inicio siempre que se carga la app (ej. refresh)
     this.router.navigate(['/']);
 
@@ -265,9 +280,9 @@ export class AppComponent implements OnInit, OnDestroy {
       } 
       this.cdr.detectChanges();
 
-      // Si llegamos al Welcome View ('/'), iniciamos la maquinaria
+      // Si llegamos al Welcome View ('/') y POS Ubi ya está configurado, iniciamos la maquinaria del iframe
       if (this.currentRoute === '/' || this.currentRoute === '/idle') {
-        if (this.currentRoute === '/') this.startIframeMonitoring();
+        if (this.currentRoute === '/' && this.posUbiConfigured) this.startIframeMonitoring();
       } else {
         this.stopIframeMonitoring();
       }
@@ -289,10 +304,12 @@ export class AppComponent implements OnInit, OnDestroy {
        this.currentKioskStatus = status;
 
        if (status === 'REGISTERED') {
-         if (this.currentRoute === '/' || this.router.url === '/') {
-           this.startIframeMonitoring();
-         }
+         this.verifyingPosUbi = true;
+         this.cdr.detectChanges();
+         this.runPosUbiVerificationAndTest();
        } else {
+         this.verifyingPosUbi = false;
+         this.posUbiConnectionFailed = false;
          this.stopIframeMonitoring();
        }
     });
@@ -302,6 +319,55 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.kioskAuth.initAuth();
     }, 1000); 
+  }
+
+  /**
+   * Tras kiosk REGISTERED: obtiene el primer POS Ubi, guarda la URL en localStorage,
+   * ejecuta test de conexión a la API de Ubi (testUbiipos) para verificar sincronía, y luego habilita el contenido.
+   */
+  private async runPosUbiVerificationAndTest(): Promise<void> {
+    const posUbi = this.kioskAuth.getFirstPosUbi();
+    if (!posUbi?.ip) {
+      this.ngZone.run(() => {
+        this.verifyingPosUbi = false;
+        this.posUbiConnectionFailed = false;
+        this.cdr.detectChanges();
+      });
+      return;
+    }
+    const fullAddress = `http://${posUbi.ip}:${posUbi.port}`;
+    this.localStorageService.set('ubiiposHost', fullAddress);
+    let testOk = false;
+    try {
+      const result = await this.ubiiposService.testUbiipos(fullAddress);
+      testOk = !!(result && result.status >= 200 && result.status < 300);
+      if (!testOk) {
+        console.warn('⚠️ [Verificación POS Ubi] Test de conexión no exitoso:', result?.message || result?.status);
+      }
+    } catch (err) {
+      console.warn('⚠️ [Verificación POS Ubi] Error en test de conexión:', err);
+    }
+    this.ngZone.run(() => {
+      this.verifyingPosUbi = false;
+      if (testOk) {
+        this.posUbiConnectionFailed = false;
+        this.posUbiConfigured = true;
+        if (this.currentRoute === '/' || this.router.url === '/') {
+          this.startIframeMonitoring();
+        }
+      } else {
+        this.posUbiConnectionFailed = true;
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  /** Reintenta la verificación y test de conexión al POS Ubi (desde la pantalla de fallo). */
+  public retryPosUbiTest(): void {
+    this.posUbiConnectionFailed = false;
+    this.verifyingPosUbi = true;
+    this.cdr.detectChanges();
+    this.runPosUbiVerificationAndTest();
   }
 
   ngOnDestroy(): void {

@@ -3,7 +3,7 @@
  */
 export interface IUbiiposDataSend {
   paymentId?: string; // Unique payment identifier
-  amount?: number | string; // Amount to be paid (en centavos, puede ser string o number)
+  amount?:  string; // Amount to be paid (en centavos, puede ser string o number)
   uniqueSpId?: string;
   customerId?: string; // Customer identifier (cedula or rif)
   stationId?: string;

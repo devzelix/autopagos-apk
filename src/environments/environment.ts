@@ -104,7 +104,7 @@ export const environment = {
     //LOCAL API-DRIVER
     //API_Printer: 'https://billing-regions-david-advertisers.trycloudflare.com/api',
     //API_Printer: 'https://moms-ampland-buried-cooler.trycloudflare.com/api',
-    API_Printer: 'https://enterprises-obtaining-dedicated-wheel.trycloudflare.com/api',
+    API_Printer: 'https://restricted-strongly-easy-refresh.trycloudflare.com/api',
     API_PRINTER_TOKEN: 'rJ4EctGahhSkEU2ZNhrzU4IjL06wUP',
 
     // ----CMS SERVER-----

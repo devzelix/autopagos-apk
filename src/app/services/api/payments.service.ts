@@ -34,7 +34,7 @@ export class PaymentsService {
       }
 
       const bodyReq: IRequest = {
-        url: `${environment.URL_API_MASTER}/api-transactions/register/sae-plus`,
+        url: `${environment.kioskApiUrl}/transactions/register/sae-plus`,
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -78,7 +78,7 @@ export class PaymentsService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${environment.URL_API_MASTER}/api-transactions/register/sae-plus`,
+        route_api: `${environment.kioskApiUrl}/transactions/register/sae-plus`,
 
         req_body: JSON.stringify(paymenteInfo),
         res_code: 'ERROR',
@@ -124,12 +124,12 @@ export class PaymentsService {
       };
 
       console.log('📤 [Payment Create] Request completo:', {
-        url: `${environment.URL_API_MASTER}/api-transactions/store`,
+        url: `${environment.kioskApiUrl}/transactions/store`,
         data: validatedPaymentInfo,
       });
 
       const bodyReq: IRequest = {
-        url: `${environment.URL_API_MASTER}/api-transactions/store`,
+        url: `${environment.kioskApiUrl}/transactions/store`,
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -173,7 +173,7 @@ export class PaymentsService {
         is_success: false,
         http_method: 'POST',
         status: errRes.status,
-        route_api: `${environment.URL_API_MASTER}/administrative/payment/create-transaction`,
+        route_api: `${environment.kioskApiUrl}/transactions/store`,
 
         req_body: JSON.stringify(paymenteInfo),
         res_code: 'ERROR',

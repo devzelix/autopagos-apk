@@ -119,7 +119,7 @@ export const environment = {
   url_api_webhook_caja: 'https://pf269175-9194.use2.devtunnels.ms/api',
   api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
 
-  kioskApiUrl: 'http://localhost:3000/api/kiosks',
+  kioskApiUrl: 'http://localhost:9191/api',
 
   URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
 
