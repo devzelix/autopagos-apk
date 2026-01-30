@@ -116,15 +116,15 @@ export const environment = {
   api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
 
   // API Webhook Caja Automática
-  url_api_webhook_caja: 'https://pf269175-9194.use2.devtunnels.ms/api',
+  url_api_webhook_caja: 'https://webhook-caja-automatica.fibextelecom.net/api',
   api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
 
-  kioskApiUrl: 'http://localhost:9191/api',
+  kioskApiUrl: 'https://paygo-backend.solocodebase.com/api/kiosks',
 
-  URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
+  URL_IDLE_PAGE: 'https://mock-ads.solocodebase.com/',
 
   /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
-  adminRif: 'J308182516',
+  adminRif: 'J3081825169',
   is_login_kiosk: true
 };
 
