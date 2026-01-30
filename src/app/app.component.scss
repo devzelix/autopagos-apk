@@ -4,7 +4,7 @@
   width: 100%;
 }
 
-// Pantalla de inactividad: iframe a pantalla completa, botón superpuesto abajo (entrada/salida suave)
+// Pantalla de inactividad: iframe a pantalla completa
 .idle-page-overlay {
   position: fixed;
   top: 0;
@@ -13,24 +13,35 @@
   height: 100vh;
   z-index: 10000;
   background: #000;
+  
+  // ESTADO OCULTO POR DEFECTO: Fuera a la derecha
+  transform: translate3d(100%, 0, 0);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  will-change: transform, opacity;
 
-  &.idle-page-overlay--visible {
-    opacity: 1;
-    pointer-events: auto;
-
-    .idle-page-button-zone {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  // REGLA DE ORO: Cuando NO es visible, el cambio de posición es INSTANTÁNEO (0s)
+  // Esto evita ver la sombra diagonal al volver de Pay -> Welcome
+  &:not(.idle-page-overlay--visible) {
+    transition: transform 0s, opacity 0.4s ease;
   }
 
-  .idle-page-button-zone {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.35s ease 0.15s, transform 0.35s ease 0.15s;
+  // ENTRADA: Animación suave de carrusel (Horizontal)
+  &.idle-page-overlay--visible {
+    transform: translate3d(0, 0, 0) !important;
+    opacity: 1;
+    pointer-events: auto;
+    // Sincronización milimétrica con route-animations (800ms)
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.2s ease; // Opacidad más rápida para evitar solapamientos raros
+  }
+
+  // SALIDA A PAGO: Animación vertical (Empuje)
+  &.idle-page-overlay--going-to-pay:not(.idle-page-overlay--visible) {
+    transform: translate3d(0, -100%, 0) !important; // Sube al techo
+    opacity: 1 !important; // Se mantiene sólido mientras sube
+    // Aquí SÍ permitimos transición porque queremos ver el empuje vertical
+    transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -58,28 +69,52 @@
 .idle-page-button-zone {
   position: absolute;
   bottom: 0;
-  z-index: 2;
+  z-index: 10001; // SUPERIOR al overlay (10000) para ser inmortal
   left: 0;
   right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 2rem;
   padding: 2rem 1rem 3.5rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
   cursor: pointer;
   min-height: 120px;
   pointer-events: auto;
   touch-action: manipulation;
+  
+  // OPTIMIZACIÓN: Transición suave de entrada/salida para el contenedor entero
+  will-change: opacity, transform;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s ease;
+
+  // ESTADO BASE: Visible en su posición final
+  transform: translateY(0);
+  opacity: 1;
+}
+
+// Clase para ocultar el botón (se usa durante el delay inicial y al ir a Pagar)
+.idle-page-button-zone--hidden {
+  transform: translateY(100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: transform 0.4s ease-in, opacity 0.3s ease-in !important;
+}
+
+@keyframes zoneFadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .idle-page-chevron {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 2rem;
+  font-size: 5rem;
   line-height: 1;
-  animation: idle-chevron-bounce 1.8s ease-in-out infinite;
+  margin-bottom: 1rem; // Espacio extra subiendo el chevron
+  animation: idle-chevron-bounce 2s ease-in-out infinite;
   pointer-events: none;
+  will-change: transform; // Optimización GPU
 }
 
 .idle-page-chevron i {
@@ -88,77 +123,57 @@
 
 @keyframes idle-chevron-bounce {
   0%, 100% { transform: translateY(0); opacity: 0.85; }
-  50% { transform: translateY(8px); opacity: 1; }
+  50% { transform: translateY(15px); opacity: 1; }
 }
 
 .idle-page-btn {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 245, 0.9) 50%, rgba(232, 232, 232, 0.9) 100%);
   color: #215288;
   border: none;
-  padding: 1.25rem 3rem;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  font-weight: 700;
+  padding: 1.8rem 5rem;
+  border-radius: 20px;
+  font-size: 2.5rem;
+  font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
-  min-width: 280px;
-  max-width: 420px;
+  min-width: 480px;
+  max-width: 700px;
   width: 100%;
+  // Sombra estática optimizada (sin animación constante)
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.12),
-    0 16px 48px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.25) inset,
-    0 0 0 1px rgba(0, 0, 0, 0.06);
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    0 24px 64px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset;
   text-transform: uppercase;
   letter-spacing: 2px;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  animation: idle-btn-pulse 2.5s ease-in-out infinite, idle-btn-glow 2.5s ease-in-out infinite;
+  
+  // Transiciones solo para interacción (hover/click)
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
+  
+  // Solo animamos la escala (barato para la RAM), quitamos el glow (caro)
+  animation: idle-btn-pulse 3s ease-in-out infinite;
+  will-change: transform;
 
   &:hover {
     background: linear-gradient(135deg, rgba(248, 248, 248, 0.98) 0%, rgba(238, 238, 238, 0.95) 50%, rgba(224, 224, 224, 0.95) 100%);
-    transform: scale(1.03);
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 12px 32px rgba(0, 0, 0, 0.15),
-      0 20px 56px rgba(0, 0, 0, 0.12),
-      0 0 0 1px rgba(255, 255, 255, 0.3) inset,
-      0 0 0 1px rgba(0, 0, 0, 0.08);
-    animation: none;
+    transform: scale(1.02);
+    // Pausamos la animación infinita al hacer hover para evitar conflicto visual
+    animation-play-state: paused;
   }
 
   &:active {
-    transform: scale(0.98);
-    animation: none;
+    transform: scale(0.96);
+    background: #e0e0e0;
   }
 }
 
 @keyframes idle-btn-pulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-@keyframes idle-btn-glow {
-  0%, 100% {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.08),
-      0 8px 24px rgba(0, 0, 0, 0.12),
-      0 16px 48px rgba(0, 0, 0, 0.1),
-      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
-      0 0 0 1px rgba(0, 0, 0, 0.06);
-  }
-  50% {
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 12px 32px rgba(0, 0, 0, 0.14),
-      0 20px 56px rgba(0, 0, 0, 0.12),
-      0 0 0 1px rgba(255, 255, 255, 0.3) inset,
-      0 0 0 1px rgba(0, 0, 0, 0.08),
-      0 0 24px rgba(33, 82, 136, 0.08);
-  }
+  50% { transform: scale(1.02); } // Pulso muy sutil
 }
 
 .arrow_up {
@@ -187,6 +202,10 @@
   position: relative;
   z-index: 1; // Contenido por encima del fondo
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+  overflow: hidden; // Evita que hijos absolutos causen scroll horizontal
 }
 
 #content-scrollable {

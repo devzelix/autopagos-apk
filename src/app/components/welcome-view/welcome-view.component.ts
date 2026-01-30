@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-welcome-view',
@@ -12,10 +13,10 @@ export class WelcomeViewComponent implements OnInit {
   // Variables para detectar doble tap
   private tapCount: number = 0;
   private tapTimer: any = null;
-  private readonly DOUBLE_TAP_DELAY = 300; // 300ms entre taps para doble tap
+  private readonly MULTI_TAP_DELAY = 400; // Tiempo máx entre taps
   private lastTapTime: number = 0;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     // Escuchar evento personalizado de apertura del panel admin (respaldo)
@@ -26,54 +27,44 @@ export class WelcomeViewComponent implements OnInit {
 
   /**
    * Maneja el tap/touch en el logo
-   * Detecta doble tap para abrir panel admin
+   * Detecta 10 taps para acciones (antes admin, ahora deshabilitado)
    */
   public onLogoTap(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
     
-    const currentTime = Date.now();
-    
-    // Si pasó más de 300ms desde el último tap, resetear contador
-    if (currentTime - this.lastTapTime > this.DOUBLE_TAP_DELAY) {
-      this.tapCount = 0;
-    }
-    
-    this.tapCount++;
-    this.lastTapTime = currentTime;
-    
     // Limpiar timer anterior
     if (this.tapTimer) {
       clearTimeout(this.tapTimer);
     }
+
+    this.tapCount++;
     
-    // Si es el segundo tap, abrir panel admin
-    if (this.tapCount === 2) {
-      console.log('🔓 Doble tap detectado en logo - Abriendo panel administrativo');
-      this.openAdminPanelFromDoubleTap();
+    // Si llegamos a 10 taps...
+    if (this.tapCount >= 10) {
+      console.log('🔄 10 taps detectados - Ya estamos en Inicio.');
+      // Lógica de admin comentada por petición del usuario
+      // this.openAdminPanelFromDoubleTap();
       this.resetTapCount();
       return;
     }
     
-    // Si es un solo tap: mostrar iframe del carrusel de publicidad
-    if (this.tapCount === 1) {
-      this.tapTimer = setTimeout(() => {
-        document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
-        this.resetTapCount();
-      }, this.DOUBLE_TAP_DELAY);
-    }
+    // Resetear cuenta si dejan de tocar por un momento
+    this.tapTimer = setTimeout(() => {
+      this.resetTapCount();
+    }, this.MULTI_TAP_DELAY);
   }
 
   /**
-   * Abre el panel administrativo desde doble tap
+   * Abre el panel administrativo (DESHABILITADO)
    */
   private openAdminPanelFromDoubleTap(): void {
-    // Emitir evento para que form.component lo maneje
+    // Comentado para no romper lógica pero deshabilitar acceso
+    /*
     this.openAdminPanel.emit();
-    
-    // También disparar evento personalizado como respaldo
     const customEvent = new CustomEvent('openAdminPanel');
     document.dispatchEvent(customEvent);
+    */
   }
 
   /**
@@ -88,7 +79,8 @@ export class WelcomeViewComponent implements OnInit {
   }
 
   showForm = () => {
-    this.showFormEmitter.emit()
+    // this.showFormEmitter.emit()
+    this.router.navigate(['/pay']);
   }
 
 }

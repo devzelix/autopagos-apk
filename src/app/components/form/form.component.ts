@@ -43,7 +43,7 @@ import { ApiMercantilService } from '../../services/ApiMercantil';
 import { TypeBrowserService } from '../../services/TypeBrowser';
 import { CdkStepper, StepState } from '@angular/cdk/stepper';
 import Swal from 'sweetalert2';
-import { debounceTime, filter, fromEvent, merge, Subject, Subscription, switchMap, takeUntil, tap, timer } from 'rxjs';
+import { debounceTime, filter, fromEvent, merge, Subject, Subscription, switchMap, takeUntil, tap, timer, startWith } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AdminPanelStateService } from 'src/app/services/admin-panel-state.service';
 
@@ -341,8 +341,9 @@ export class FormComponent implements OnInit {
   }
 
   goHome() {
-    this.showFormView = false;
-    document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
+    this.resetAllForms(); // Borrar todo antes de salir
+    this.router.navigate(['/']);
+    // Ahora mostrará WelcomeView y esperará a que el iframe avise "estoy listo"
   }
 
   constructor(
@@ -401,7 +402,7 @@ export class FormComponent implements OnInit {
     this.firstFormFibex = this.fb.group(
       {
         name: ['', [Validators.required]],
-        dni: ['31881540', [Validators.required, Validators.minLength(7)]], // Mínimo: Letra + guión + 6 dígitos = 7 caracteres
+        dni: ['', [Validators.required, Validators.minLength(7)]], // Valor vaciado
         email: ['', [Validators.required, Validators.pattern(this.regexEmail)]],
         bank: ['', [Validators.required]],
         nroContrato: ['', [Validators.required]],
@@ -619,6 +620,9 @@ export class FormComponent implements OnInit {
     // this.amountInvalid();
     // this.amountInvalidCreditoDebitoPagoMovil();
     // this.getDaysFeriados();
+
+    // Iniciar el temporizador de inactividad al cargar el componente
+    this.startInactivityTimer();
   }
 
   /**
@@ -787,6 +791,7 @@ export class FormComponent implements OnInit {
     // ---- SUSCRIPCIÓN 1: INICIA EL AVISO Y EL CONTADOR FINAL ----
     // Esta suscripción se activa solo cuando el usuario ha estado inactivo.
     this.warningSubscription = activity$.pipe(
+      startWith(null), // <--- CRÍTICO: Arranca el timer aunque no toque nada
       debounceTime(TIME_FOR_WARNING)
     ).subscribe(() => {
       // Muestra el aviso (diseño alineado con modales FIBEX + botón Continuar)
@@ -808,11 +813,17 @@ export class FormComponent implements OnInit {
         }
       });
 
-      // Inicia el contador final: si no toca "Continuar", enviar al iframe del carrusel
+      // Inicia el contador final: si no toca "Continuar", enviar al inicio (borrando todo)
       this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
-        console.log("Timeout final alcanzado. Enviando al iframe del carrusel.");
+        console.log("Timeout final alcanzado. Limpiando y volviendo al inicio.");
+        
+        // 1. Cerramos el modal de inmediato
         this.closeInactivitySwal();
-        document.dispatchEvent(new CustomEvent('showIdlePage', { detail: {} }));
+        
+        // 2. Esperamos un brevísimo instante a que el DOM se libere del modal
+        setTimeout(() => {
+          this.goHome(); // 3. Ahora sí, navegamos tranquilos
+        }, 150);
       });
     });
 
@@ -2861,9 +2872,6 @@ export class FormComponent implements OnInit {
     this.showFormView = showValue;
     if (showValue) {
       this.startInactivityTimer();
-
-      const formComponent = document.getElementsByTagName('app-form')[0]
-      formComponent?.classList.add('m-auto')
     } else {
       this.stopInactivityTimer();
     }

@@ -1,22 +1,22 @@
 import { Component, HostListener, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { HelperService } from './services/helper.service';
 import { KioskAuthService } from './services/kiosk-auth.service';
 import { Subject, merge, fromEvent } from 'rxjs';
 import { debounceTime, takeUntil, startWith, filter, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AdminPanelStateService } from './services/admin-panel-state.service';
+import { routeAnimations } from './route-animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  animations: [routeAnimations]
 })
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private inactivityTimer: any;
-  private activitySubscription: any;
   private viewCheckInterval: any;
   
   // 🚩 FLAG: Cambiar a true para habilitar el carrusel de publicidad
@@ -35,6 +35,183 @@ export class AppComponent implements OnInit, OnDestroy {
   /** No mostrar carrusel cuando el panel de administración está abierto. */
   public adminPanelOpen$ = this.adminPanelStateService.isOpen;
 
+  /** Variable para saber qué tiene el iframe (opcional, por si la necesitas usar luego) */
+  public iframeContentType: 'video' | 'image' | 'unknown' = 'unknown';
+
+  /** Indica si el iframe ya cargó y mandó su señal de listo */
+  private isIframeReady = false;
+
+  // --- VARIABLES PARA GESTIÓN DE IFRAME Y REINTENTOS ---
+  private iframeRetryInterval: any = null; // Intervalo para reintentar carga si falla
+  private minDisplayTimeout: any = null;   // Timeout para el delay mínimo
+  private readonly IFRAME_RETRY_MS = 10000; // Reintentar cada 10 segundos si no responde
+  private readonly MIN_DISPLAY_DELAY_MS = 3000; // Esperar al menos 3s antes de mostrar (para evitar parpadeo)
+  private isMonitoringIframe = false; // Bandera para saber si estamos en modo escucha activa
+
+  // Ruta actual para controlar la visibilidad del botón global
+  public currentRoute: string = '';
+  
+  // Estado actual del kiosco para lógica interna
+  private currentKioskStatus: string = 'LOADING';
+
+  // CONTROL DE VISIBILIDAD DEL BOTÓN CON TIMING
+  public showGlobalButton = false;
+
+  // FLAG PARA DIRECCIÓN DE SALIDA DEL IFRAME
+  public isGoingToPay = false;
+
+  @HostListener('window:message', ['$event'])
+  onMessage(event: MessageEvent) {
+    // Solo procesar si estamos monitoreando activamente
+    if (!this.isMonitoringIframe) return;
+
+    // Verificamos si el mensaje viene con la etiqueta que acordamos
+    if (event.data && event.data.type === 'IDLE_CONTENT_INFO') {
+      
+      // IMPORTANTE: Ejecutar dentro de Angular Zone para que la UI se actualice
+      this.ngZone.run(() => {
+        this.iframeContentType = event.data.contentType;
+        console.log('✅ Iframe reportó listo. Tipo:', this.iframeContentType);
+        
+        // Detener reintentos porque ya respondió
+        this.stopIframeRetry();
+
+        // Iniciar transición con delay mínimo (si estamos en WelcomeView y Kiosco Registrado)
+        if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
+          this.scheduleIdleActivation();
+        }
+      });
+    }
+  }
+
+  /**
+   * Prepara la animación según la ruta actual
+   */
+  public prepareRoute(outlet: any) {
+    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
+  }
+
+  /**
+   * Maneja el clic en el botón "EMPEZAR" global.
+   * REGLA: El botón desaparece ANTES de que el resto se mueva.
+   */
+  public handleGlobalStart(): void {
+    if (!this.showGlobalButton) return;
+
+    console.log('🔘 Botón Global START presionado - Desapareciendo botón');
+    
+    // 1. Desaparecer botón de inmediato para que no estorbe la animación vertical
+    this.showGlobalButton = false;
+    this.cdr.detectChanges();
+
+    // 2. Esperar un instante y ejecutar movimiento
+    setTimeout(() => {
+      if (this.showIdlePage) {
+        this.isGoingToPay = true; // Activar salida vertical
+        this.hideIdlePage();
+      } else {
+        this.router.navigate(['/pay']);
+      }
+    }, 50); // Reducido de 150ms a 50ms
+  }
+
+  /**
+   * Programa la activación del Idle Mode respetando un tiempo mínimo
+   */
+  private scheduleIdleActivation(): void {
+    if (this.minDisplayTimeout) return; // Ya hay una activación programada
+
+    console.log(`⏳ Iframe listo. Esperando ${this.MIN_DISPLAY_DELAY_MS}ms para transición suave...`);
+    
+    this.minDisplayTimeout = setTimeout(() => {
+      // IMPORTANTE: Limpiar la variable del timeout una vez que se ejecuta
+      this.minDisplayTimeout = null;
+      
+      console.log('⏰ Timeout cumplido. Verificando condiciones para activar Idle...');
+
+      // Verificar de nuevo por seguridad (Ruta y Estado)
+      if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
+         console.log('🚀 Condiciones OK. Ejecutando transición a Idle Mode.');
+         
+         // Mantenemos el botón encendido para que no parpadee durante el carrusel lateral
+         this.activateIdleMode();
+      } else {
+         console.warn('⚠️ Condiciones no cumplidas tras timeout (Ruta o Estado cambiaron). Cancelando.');
+      }
+    }, this.MIN_DISPLAY_DELAY_MS);
+  }
+
+  /**
+   * Inicia el monitoreo del iframe: Carga inicial y bucle de reintento
+   */
+  private startIframeMonitoring(): void {
+    // CONDICIÓN CRÍTICA: Solo iniciar si estamos en Welcome View Y el Kiosco está Registrado.
+    if (this.currentKioskStatus !== 'REGISTERED') {
+      console.log('⛔ Kiosco no registrado. Iframe en pausa.');
+      return;
+    }
+
+    if (this.isMonitoringIframe) return; // Ya estamos monitoreando
+    
+    console.log('📡 Iniciando monitoreo de Iframe (Welcome View detectado)');
+    this.isMonitoringIframe = true;
+    this.isIframeReady = false;
+    
+    // Carga inicial
+    this.reloadIframe();
+
+    // Configurar reintento periódico (Watchdog)
+    // Si el iframe no responde en X segundos, recargamos
+    this.stopIframeRetry(); // Limpiar por si acaso
+    this.iframeRetryInterval = setInterval(() => {
+      console.warn('⚠️ Iframe no respondió a tiempo. Reintentando carga (Watchdog)...');
+      this.reloadIframe();
+    }, this.IFRAME_RETRY_MS);
+  }
+
+  /**
+   * Detiene todo monitoreo y limpia recursos (Al salir de Welcome View o perder registro)
+   */
+  private stopIframeMonitoring(): void {
+    console.log('🛑 Deteniendo monitoreo y limpiando Iframe');
+    this.isMonitoringIframe = false;
+    this.stopIframeRetry();
+    
+    if (this.minDisplayTimeout) {
+      clearTimeout(this.minDisplayTimeout);
+      this.minDisplayTimeout = null;
+    }
+
+    // AHORRO DE RAM: Descargar el iframe después de que termine la animación de salida
+    setTimeout(() => {
+      if (this.currentRoute !== '/' && this.currentRoute !== '/idle') {
+        this.idlePageUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+        console.log('🧹 Iframe descargado tras animación');
+      }
+    }, 1000);
+  }
+
+  private stopIframeRetry(): void {
+    if (this.iframeRetryInterval) {
+      clearInterval(this.iframeRetryInterval);
+      this.iframeRetryInterval = null;
+    }
+  }
+
+  /**
+   * Activa el modo inactivo: Muestra Iframe y navega a ruta vacía para liberar RAM
+   */
+  private activateIdleMode(): void {
+    this.isMonitoringIframe = false;
+    this.stopIframeRetry(); 
+    
+    this.ngZone.run(() => {
+      this.showIdlePage = true;
+      this.router.navigate(['/idle']); // <--- AHORRO DE RAM: Destruye WelcomeView
+      this.cdr.detectChanges();
+    });
+  }
+
   @HostListener('document:contextmenu', ['$event'])
   onRightClick(event: MouseEvent) {
     event.preventDefault();
@@ -50,135 +227,120 @@ export class AppComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
-    private adminPanelStateService: AdminPanelStateService
+    private adminPanelStateService: AdminPanelStateService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.idlePageUrlSafe = this.idlePageUrl
-      ? this.sanitizer.bypassSecurityTrustResourceUrl(this.idlePageUrl)
-      : this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
-    this.startInactivityTimer();
+    // Forzar navegación al inicio siempre que se carga la app (ej. refresh)
+    this.router.navigate(['/']);
 
-    // Vista principal: iframe (imágenes) + botón Empezar. Al estar el kiosko registrado, se muestra primero esta pantalla.
-    this.kioskStatus$.pipe(
-      filter(status => status === 'REGISTERED'),
-      take(1),
+    // Escuchar cambios de ruta para activar/desactivar lógica según donde estemos
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.ngZone.run(() => {
-        this.showIdlePage = true;
-        this.cdr.detectChanges();
-      });
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:ngOnInit:kioskStatus', message: 'showIdlePage set true', data: { source: 'kioskRegistered' }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'D' }) }).catch(() => {});
-      // #endregion
+    ).subscribe((event: NavigationEnd) => {
+      const prevRoute = this.currentRoute;
+      this.currentRoute = event.urlAfterRedirects;
+      
+      // FIX IFRAME: Solo volvemos al modo horizontal si regresamos a la Home
+      if (this.currentRoute === '/') {
+        this.isGoingToPay = false; 
+      }
+
+      // --- LÓGICA DE VISIBILIDAD DEL BOTÓN (CON DELAY TRAS RENDERIZADO) ---
+      const isAdsCurrent = this.currentRoute === '/' || this.currentRoute === '/idle';
+      const isAdsPrev = prevRoute === '/' || prevRoute === '/idle' || prevRoute === '';
+
+      if (isAdsCurrent) {
+        // Esperamos a que la vista empiece a posicionarse (400ms)
+        setTimeout(() => {
+          if (this.currentRoute === '/' || this.currentRoute === '/idle') {
+            this.ngZone.run(() => {
+              this.showGlobalButton = true;
+              this.cdr.detectChanges();
+            });
+          }
+        }, 400); // Casi inmediato
+      } 
+      this.cdr.detectChanges();
+
+      // Si llegamos al Welcome View ('/'), iniciamos la maquinaria
+      if (this.currentRoute === '/' || this.currentRoute === '/idle') {
+        if (this.currentRoute === '/') this.startIframeMonitoring();
+      } else {
+        this.stopIframeMonitoring();
+      }
     });
 
-    // Tap en logos (welcome-view o form): mostrar iframe del carrusel de publicidad
-    fromEvent(document, 'showIdlePage')
+    // Escuchar evento para abrir panel admin (DESHABILITADO)
+    /*
+    fromEvent(document, 'openAdminPanel')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        this.ngZone.run(() => {
-          this.showIdlePage = true;
-          this.cdr.detectChanges();
-        });
+        this.adminPanelStateService.setOpen(true);
       });
+    */
+
+    this.kioskStatus$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((status) => {
+       console.log('🔄 Estado del Kiosco actualizado:', status);
+       this.currentKioskStatus = status;
+
+       if (status === 'REGISTERED') {
+         if (this.currentRoute === '/' || this.router.url === '/') {
+           this.startIframeMonitoring();
+         }
+       } else {
+         this.stopIframeMonitoring();
+       }
+    });
 
     // Forzamos visualización de carga al inicio
     this.kioskAuth.setLoadingState();
     setTimeout(() => {
       this.kioskAuth.initAuth();
-    }, 1000); // Reducido a 1s
+    }, 1000); 
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.stopInactivityTimer();
-    this.clearActivitySubscription();
     this.stopViewCheck();
+  }
+
+  /**
+   * Recarga el iframe para forzar un nuevo evento de carga/mensaje
+   */
+  private reloadIframe(): void {
+    this.isIframeReady = false; 
+    if (this.idlePageUrl) {
+      const separator = this.idlePageUrl.includes('?') ? '&' : '?';
+      const urlWithTimestamp = `${this.idlePageUrl}${separator}t=${Date.now()}`;
+      this.idlePageUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(urlWithTimestamp);
+    } else {
+      this.idlePageUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+    }
   }
 
   /**
    * Verifica si estamos en la vista de inicio (welcome-view)
    */
   private isInWelcomeView(): boolean {
-    // Solo mostrar carrusel cuando:
-    // 1. helper.view es false (vista de inicio, no la app)
-    // 2. El welcome-view está visible en el DOM
-    if (this.helper.view) {
-      return false; // Está en la vista de la app, no en el inicio
-    }
-    
-    // Verificar si el welcome-view está visible
+    if (this.helper.view) return false; 
     const welcomeView = document.querySelector('app-welcome-view');
     const formView = document.querySelector('form.form-login');
-    
-    // Está en welcome-view si welcome-view existe y el formulario no está visible
     return welcomeView !== null && formView === null;
   }
 
-  /**
-   * Inicia el temporizador de inactividad
-   */
-  private startInactivityTimer(): void {
-    this.stopInactivityTimer();
-    
-    // Limpiar suscripción anterior si existe
-    this.clearActivitySubscription();
-    
-    // Iniciar verificación periódica de la vista
-    this.startViewCheck();
-    
-    // Detectar actividad del usuario (sin mousemove para que no reinicie con cada movimiento)
-    const activity$ = merge(
-      fromEvent(document, 'click'),
-      fromEvent(document, 'keypress'),
-      fromEvent(document, 'touchstart'),
-      fromEvent(document, 'scroll')
-    ).pipe(takeUntil(this.destroy$));
-
-    // Suscripción única: 10 s sin clic/toque/tecla/scroll. startWith(null) hace que el primer
-    // período de 10 s cuente desde la carga (sin él, debounceTime nunca emite si no hubo ningún evento).
-    this.activitySubscription = activity$.pipe(
-      startWith(null),
-      debounceTime(this.INACTIVITY_TIME),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      // Pantalla de inactividad: iframe + botón "Empezar pago"
-      if (this.idlePageUrl && !this.showIdlePage) {
-        this.ngZone.run(() => {
-          this.showIdlePage = true;
-          this.cdr.detectChanges();
-        });
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:inactivity', message: 'showIdlePage set true', data: { source: 'inactivity' }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'D' }) }).catch(() => {});
-        // #endregion
-        console.log('Mostrando pantalla de inactividad');
-      }
-      // Solo mostrar carrusel si está habilitado y estamos en la vista de inicio
-      if (this.ENABLE_AD_CAROUSEL && !this.showAdCarousel && this.isInWelcomeView()) {
-        this.showAdCarousel = true;
-        console.log('Mostrando carrusel de publicidad por inactividad');
-      }
-    });
-  }
-
-  /**
-   * Inicia la verificación periódica de la vista
-   */
   private startViewCheck(): void {
     this.stopViewCheck();
-    
-    // Verificar cada segundo si debemos ocultar el carrusel
     this.viewCheckInterval = setInterval(() => {
       this.checkViewAndHideCarousel();
     }, 1000);
   }
 
-  /**
-   * Detiene la verificación periódica de la vista
-   */
   private stopViewCheck(): void {
     if (this.viewCheckInterval) {
       clearInterval(this.viewCheckInterval);
@@ -186,102 +348,38 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Verifica periódicamente si debemos ocultar el carrusel
-   */
   private checkViewAndHideCarousel(): void {
-    // Si el carrusel está visible pero no estamos en welcome-view, ocultarlo
     if (this.showAdCarousel && !this.isInWelcomeView()) {
       this.showAdCarousel = false;
-      console.log('Carrusel ocultado - no está en vista de inicio');
     }
   }
 
-  /**
-   * Limpia la suscripción de actividad
-   */
-  private clearActivitySubscription(): void {
-    if (this.activitySubscription) {
-      this.activitySubscription.unsubscribe();
-      this.activitySubscription = null;
-    }
-  }
-
-  /**
-   * Detiene el temporizador de inactividad
-   */
-  private stopInactivityTimer(): void {
-    if (this.inactivityTimer) {
-      clearTimeout(this.inactivityTimer);
-    }
-  }
-
-  // #region agent log
-  /** Wrapper para registrar evento (click/touch) y llamar hideIdlePage — hipótesis A/B/E */
   public onIdleButtonInteraction(ev: Event): void {
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
+    if (ev.cancelable) ev.preventDefault();
     ev.stopPropagation();
-    const t = ev.target as HTMLElement;
-    fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:onIdleButtonInteraction', message: 'Idle button event', data: { eventType: ev.type, targetTag: t?.tagName, targetClass: t?.className }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'A' }) }).catch(() => {});
     this.hideIdlePage();
   }
-  // #endregion
 
-  /**
-   * Oculta la pantalla de inactividad (iframe/carrusel) y muestra la pantalla de pago (tarjeta con usuario, monto, PAGAR)
-   */
   public hideIdlePage(): void {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:hideIdlePage', message: 'hideIdlePage called', data: { showIdlePageBefore: this.showIdlePage }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'B' }) }).catch(() => {});
-    // #endregion
     this.showIdlePage = false;
-    this.startInactivityTimer();
-    // Disparar en el siguiente ciclo para que Angular oculte el overlay antes; así el form recibe el evento y muestra la pantalla de pago
     setTimeout(() => {
       this.goToPaymentForm();
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/8b7dd6ab-36d4-4b9c-97a5-d4d8e7b12fd4', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'app.component.ts:hideIdlePage:afterGoToPaymentForm', message: 'goToPaymentForm dispatched', data: {}, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'C' }) }).catch(() => {});
-      // #endregion
     }, 0);
-    console.log('Pantalla de inactividad cerrada, mostrando pantalla de pago');
   }
 
-  /**
-   * Oculta el carrusel cuando el usuario toca la pantalla
-   */
   public hideAdCarousel(): void {
     this.showAdCarousel = false;
-    this.startInactivityTimer(); // Reiniciar el timer
-    console.log('Carrusel ocultado, volviendo al inicio');
-    
-    // Resetear el form component para volver al welcome-view
     this.resetToWelcomeView();
   }
 
-  /**
-   * Resetea el form component para mostrar el welcome-view
-   */
   private resetToWelcomeView(): void {
-    const formComponent = document.querySelector('app-form');
-    if (formComponent) {
-      const event = new CustomEvent('resetToWelcome', { detail: {} });
-      formComponent.dispatchEvent(event);
-    }
+    this.router.navigate(['/']);
   }
 
-  /**
-   * Indica al form component que muestre la pantalla de pago (usuario, monto, botón PAGAR)
-   */
   private goToPaymentForm(): void {
-    // Disparar en document para que el form component lo reciba aunque aún no esté visible
-    document.dispatchEvent(new CustomEvent('goToPaymentForm', { detail: {} }));
+    this.router.navigate(['/pay']);
   }
 
-  /**
-   * Llevar la vista a la parte superior
-   */
   public handleShowScrollArrow = (event: Event) => {
     this.showScrollArrow = ((event.target as HTMLDivElement).scrollTop > 0)
   }
@@ -289,6 +387,10 @@ export class AppComponent implements OnInit, OnDestroy {
   public scrollToTop = () => {
     const scrollElement: HTMLElement | null = document.getElementById('content-scrollable')
     scrollElement?.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  public closeAdminPanel(): void {
+    this.adminPanelStateService.setOpen(false);
   }
 
 }

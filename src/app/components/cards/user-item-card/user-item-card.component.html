@@ -1,4 +1,4 @@
-<button (click)="onUserClick()" class="user-select-item-card" [attr.aria-label]="'Contrato ' + (userItem?.nro_contrato || '')">
+<button (click)="onUserClick()" class="user-select-item-card" [attr.aria-label]="'Contrato ' + (userItem.nro_contrato || '')">
   <div class="card-left">
     <div class="contract-number">{{ userItem.nro_contrato }}</div>
     <div class="last-payment" *ngIf="userItem.ultimo_fecha_pago">Últ. pago {{ userItem.ultimo_fecha_pago | date:'MMM d, yyyy' }}</div>

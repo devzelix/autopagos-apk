@@ -61,9 +61,12 @@ import { EditAmountModalComponent } from './components/modals/edit-amount-modal/
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 import { KioskGuardComponent } from './components/kiosk-guard/kiosk-guard.component';
 
+import { IdlePlaceholderComponent } from './components/idle-placeholder/idle-placeholder.component';
+
 const routes: Routes = [
-  { path: '', component: FormComponent },
-  { path: 'pay', component: FormComponent },
+  { path: '', component: WelcomeViewComponent, data: { animation: 'WelcomePage' } },
+  { path: 'pay', component: FormComponent, data: { animation: 'PayPage' } },
+  { path: 'idle', component: IdlePlaceholderComponent, data: { animation: 'IdlePage' } },
   // { path: 'serial', component: SerialComponent },
   { path: 'coinx', component: CoincoinxComponent },
   { path: 'paypal', component: PaypalComponent },
@@ -114,7 +117,8 @@ const routes: Routes = [
     AdvancePaymentModalComponent,
     EditAmountModalComponent,
     CustomSelectComponent,
-    KioskGuardComponent
+    KioskGuardComponent,
+    IdlePlaceholderComponent
   ],
   imports: [
     BrowserModule,

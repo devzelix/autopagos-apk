@@ -1,7 +1,3 @@
-<!-- Panel de administración - Mostrar cuando showadmin es true (p. ej. al ingresar RIF admin e Ingresar) -->
-<app-administrative-module *ngIf="showadmin" (closeModal)="onCloseAdminPanel()"></app-administrative-module>
-
-<!-- No mostrar nada mientras se valida la sesión (isAdminLogged === null) -->
 <!-- Mostrar login solo si isAdminLogged es explícitamente false Y showadmin es false -->
 <!-- <div *ngIf="isAdminLogged === false && !showadmin">
   <app-login
@@ -10,16 +6,11 @@
   ></app-login>
 </div> -->
 
-<!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true Y showadmin es false -->
-<div *ngIf="isAdminLogged === true && !showadmin">
-  <!-- Vista de bienvenida: logo, "Realiza tu pago aquí", chevrón, botón Empezar (visible cuando no se muestra el formulario de pago) -->
-  <app-welcome-view *ngIf="!showFormView" (showFormEmitter)="handleShowFormView(true)"
-    (openAdminPanel)="openAdminPanelFromDoubleTap()">
-  </app-welcome-view>
-
-  <!-- Vista de pago: tarjeta con usuario, monto, botón PAGAR (se muestra al pulsar Empezar en el iframe/carrusel) -->
-  <ng-container *ngIf="showFormView">
-  <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable && showFormView">
+<!-- Mostrar contenido principal solo si isAdminLogged es explícitamente true -->
+<div *ngIf="isAdminLogged === true">
+  <!-- Vista de pago: tarjeta con usuario, monto, botón PAGAR -->
+  <ng-container>
+  <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable">
     <app-header-form (goHomeEmitter)="goHome()"></app-header-form>
 
     <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->

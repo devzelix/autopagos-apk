@@ -18,11 +18,8 @@
     width: 51rem;
     aspect-ratio: 48 / 19;
     margin: auto;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-
-    &:active {
-      transform: scale(0.95);
-    }
+    cursor: default; // Cursor normal, no indica click
+    user-select: none; // Evita selección azul al tocar mucho
+    -webkit-tap-highlight-color: transparent; // Quita el recuadro gris al tocar en Android
   }
 }

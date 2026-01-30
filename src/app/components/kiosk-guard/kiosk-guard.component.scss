@@ -7,8 +7,9 @@
   overflow: hidden;
   z-index: 9999;
 
-  background: rgba(33, 50, 80, 0.6);
-  backdrop-filter: blur(8px); 
+  // Fondo transparente para que se vea el fondo de app.component
+  background: transparent;
+  backdrop-filter: none; 
 
   display: flex;
   flex-direction: column;
