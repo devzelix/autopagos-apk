@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Device } from '@capacitor/device';
 import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, timeout } from 'rxjs/operators';
 import { environment as env } from '../../environments/environment';
 import { IKioskAuthResponse, IKioskConfig } from '../interfaces/kiosk.interface';
 
@@ -47,6 +47,7 @@ export class KioskAuthService {
     const params = new HttpParams().set('uuid', uuid);
 
     return this.http.get<any>(this.API_URL, { params }).pipe(
+      timeout(15000), // 15s timeout
       tap(res => {
         // Si el backend responde 200 y success: true
         if (res.success && res.data) {
@@ -67,7 +68,7 @@ export class KioskAuthService {
           }
         }
       }),
-      catchError((error: HttpErrorResponse) => {
+      catchError((error: any) => {
         console.error('Kiosk Auth Error:', error);
         
         if (error.status === 404) {
@@ -77,7 +78,7 @@ export class KioskAuthService {
           // Error fatal o mal formado
           this.kioskStatus.next('ERROR');
         } else {
-          // Otros errores (CORS, Red caída, etc)
+          // Otros errores (CORS, Red caída, Timeout, etc)
           this.kioskStatus.next('ERROR');
         }
         

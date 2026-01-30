@@ -41,7 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public showScrollArrow: boolean = false;
-  public showUuid: boolean = false;
 
   public isLoginKiosk: boolean = environment.is_login_kiosk;
 
@@ -90,28 +89,6 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.kioskAuth.initAuth();
     }, 1000); // Reducido a 1s
-  }
-
-  get kioskUuid() {
-    return this.kioskAuth.getUuid();
-  }
-
-  retryAuth() {
-    // 1. Mostrar estado de carga visualmente
-    this.kioskAuth.setLoadingState(); 
-    
-    setTimeout(() => {
-      this.kioskAuth.initAuth();
-    }, 1000); // Reducido a 1s
-  }
-
-  copyUuid() {
-    if (this.kioskUuid) {
-      navigator.clipboard.writeText(this.kioskUuid).then(() => {
-        // Podrías mostrar un toast aquí si tuvieras uno configurado
-        console.log('UUID copiado al portapapeles');
-      });
-    }
   }
 
   ngOnDestroy(): void {

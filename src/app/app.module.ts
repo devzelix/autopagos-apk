@@ -59,6 +59,7 @@ import { StepperFormComponent } from './components/stepper-form/stepper-form.com
 import { AdvancePaymentModalComponent } from './components/modals/advance-payment-modal/advance-payment-modal.component';
 import { EditAmountModalComponent } from './components/modals/edit-amount-modal/edit-amount-modal.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
+import { KioskGuardComponent } from './components/kiosk-guard/kiosk-guard.component';
 
 const routes: Routes = [
   { path: '', component: FormComponent },
@@ -112,7 +113,8 @@ const routes: Routes = [
     StepperFormComponent,
     AdvancePaymentModalComponent,
     EditAmountModalComponent,
-    CustomSelectComponent
+    CustomSelectComponent,
+    KioskGuardComponent
   ],
   imports: [
     BrowserModule,

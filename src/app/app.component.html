@@ -9,75 +9,7 @@
 
   <!-- Template para bloqueos de estado del Kiosco -->
   <ng-template #kioskStatusBlock>
-    <div class="kiosk-overlay">
-      
-      <!-- HEADER FIJO (Oculto en LOADING) -->
-      <div class="brand-header" *ngIf="(kioskStatus$ | async) !== 'LOADING'">
-        <img src="assets/images/fibex-logo-positive.png" alt="Fibex" class="logo-overlay"> 
-      </div>
-
-      <!-- CONTENIDO DINÁMICO SEGÚN ESTADO -->
-      <div [ngSwitch]="kioskStatus$ | async" class="status-container">
-
-        <!-- LOADING -->
-        <div *ngSwitchCase="'LOADING'" class="loading-minimal">
-          <div class="loader-ring white"></div>
-          <h2>Validando Kiosko...</h2>
-        </div>
-
-        <!-- NOT_REGISTERED -->
-        <div *ngSwitchCase="'NOT_REGISTERED'" class="status-card">
-          <div class="icon-circle warning">
-            <i class="fa fa-cogs"></i>
-          </div>
-          <h2>Configuración del Kiosko</h2>
-          <p>Este kiosko requiere activación por parte del personal autorizado para operar.</p>
-          
-          <div class="tech-details">
-            <div class="uuid-container">
-              <small>ID DEL KIOSKO</small>
-              <code>{{ kioskUuid }}</code>
-            </div>
-          </div>
-
-          <button class="btn-primary-action" (click)="retryAuth()">
-            <i class="fa fa-refresh"></i> Verificar Activación
-          </button>
-        </div>
-
-        <!-- DISABLED -->
-        <div *ngSwitchCase="'DISABLED'" class="status-card">
-          <div class="icon-circle locked">
-            <i class="fa fa-ban"></i>
-          </div>
-          <h2>Kiosko Inhabilitado</h2>
-          <p>Este Kiosko se encuentra temporalmente fuera de servicio.</p>
-          
-          <button class="btn-primary-action" (click)="retryAuth()">
-             <i class="fa fa-sync"></i> Verificar Acceso
-          </button>
-        </div>
-
-        <!-- ERROR -->
-        <div *ngSwitchCase="'ERROR'" class="status-card">
-          <div class="icon-circle network">
-            <i class="fa fa-wifi"></i>
-          </div>
-          <h2>Sin Conexión</h2>
-          <p>No se puede establecer comunicación con el servidor central.</p>
-          <button class="btn-primary-action" (click)="retryAuth()">
-            <i class="fa fa-refresh"></i> Reintentar Ahora
-          </button>
-        </div>
-
-      </div>
-
-      <!-- FOOTER FIJO (Oculto en LOADING) -->
-      <div class="footer-info" *ngIf="(kioskStatus$ | async) !== 'LOADING'">
-        <small>Fibex AutoPago v1.0.0</small>
-      </div>
-
-    </div>
+    <app-kiosk-guard></app-kiosk-guard>
   </ng-template>
 
   <!-- Carrusel de publicidad - Solo en vista de inicio -->
