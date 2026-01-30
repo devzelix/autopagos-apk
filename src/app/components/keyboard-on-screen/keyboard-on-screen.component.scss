@@ -1,3 +1,8 @@
+:host {
+  width: 100%;
+  overflow: hidden;
+}
+
 .pinpad-container {
   text-align: center;
   display: flex;
@@ -233,6 +238,7 @@
   width: 100%;
   max-width: 100%;
   padding: 0;
+  overflow: hidden;
 
   .pinpad {
     display: grid;
@@ -242,6 +248,7 @@
     max-width: 100%;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 
     button {
       all: unset;

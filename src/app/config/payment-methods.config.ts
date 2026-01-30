@@ -74,7 +74,7 @@ export const C2P_STEP_CONFIG: IStepConfig[] = [
         name: 'cedula',
         label: 'Cédula del Pagador',
         type: 'tel',
-        placeholder: 'Ej: 12345678',
+        placeholder: '12345678',
         required: true,
         minLength: 6,
         maxLength: 10,
@@ -85,12 +85,28 @@ export const C2P_STEP_CONFIG: IStepConfig[] = [
         name: 'telefono',
         label: 'Teléfono del Pagador',
         type: 'tel',
-        placeholder: 'Ej: 04121234567',
+        placeholder: '04121234567',
         required: true,
         minLength: 11,
         maxLength: 11,
         pattern: '^(0412|0414|0424|0416|0426)[0-9]{7}$',
         infoText: 'Ingresa tu número de teléfono móvil (11 dígitos sin el 0 inicial)'
+      },
+    ]
+  },
+  {
+    stepNumber: 2,
+    title: 'Datos del Pagador',
+    fields: [
+       {
+        name: 'monto',
+        label: 'Monto a Pagar (Bs.)',
+        type: 'tel',
+        placeholder: '0.00',
+        required: true,
+        maxLength: 12,
+        pattern: '^[0-9]+(\\.[0-9]{1,2})?$',
+        infoText: 'Ingresa el monto que deseas pagar en bolívares'
       },
       {
         name: 'banco',
@@ -100,33 +116,23 @@ export const C2P_STEP_CONFIG: IStepConfig[] = [
         options: BANKS_C2P.map(bank => ({ value: bank.code, label: bank.name })),
         infoText: 'Selecciona tu banco emisor'
       },
-      {
-        name: 'monto',
-        label: 'Monto a Pagar (Bs.)',
-        type: 'tel',
-        placeholder: '0.00',
-        required: true,
-        maxLength: 12,
-        pattern: '^[0-9]+(\\.[0-9]{1,2})?$',
-        infoText: 'Ingresa el monto que deseas pagar en bolívares'
-      }
     ]
   },
   {
-    stepNumber: 2,
+    stepNumber: 3,
     title: 'Token de Confirmación',
-    infoMessage: 'Para completar tu pago, ingresa el código OTP (Token) que te envió tu banco. Este código es temporal y lo recibes por SMS o en tu app bancaria.',
+    infoMessage: 'Para completar tu pago, ingresa el código OTP (Token) de tu banco. Este código es temporal y lo recibes por SMS o en tu app bancaria.',
     fields: [
       {
         name: 'otp',
         label: 'Token/OTP del Banco',
-        type: 'tel',
-        placeholder: 'Ej: 123456',
+        type: 'pin',
+        placeholder: '_ _ _ _ _ _',
         required: true,
         minLength: 4,
         maxLength: 8,
         pattern: '^[0-9]*$',
-        infoText: 'Código de seguridad enviado por tu banco para confirmar la transacción'
+        infoText: 'Código de seguridad temporal enviado por tu banco para confirmar esta transacción'
       }
     ]
   }
@@ -154,7 +160,7 @@ export const DEBITO_INMEDIATO_STEP_CONFIG: IStepConfig[] = [
         name: 'cedula',
         label: 'Cédula del Pagador',
         type: 'tel',
-        placeholder: 'Ej: 12345678',
+        placeholder: '12345678',
         required: true,
         minLength: 6,
         maxLength: 10,
@@ -165,13 +171,37 @@ export const DEBITO_INMEDIATO_STEP_CONFIG: IStepConfig[] = [
         name: 'telefono',
         label: 'Teléfono del Pagador',
         type: 'tel',
-        placeholder: 'Ej: 04121234567',
+        placeholder: '04121234567',
         required: true,
         minLength: 11,
         maxLength: 11,
         pattern: '^(0412|0414|0424|0416|0426)[0-9]{7}$',
         infoText: 'Ingresa tu número de teléfono móvil (11 dígitos)'
       },
+     /*  {
+        name: 'nombre',
+        label: 'Nombre del Pagador',
+        type: 'text',
+        placeholder: 'Juan Pérez',
+        required: true,
+        maxLength: 50,
+        infoText: 'Ingresa tu nombre completo'
+      }, */
+      /* {
+        name: 'concepto',
+        label: 'Concepto del Pago',
+        type: 'text',
+        placeholder: 'Pago de servicio',
+        required: true,
+        maxLength: 100,
+        infoText: 'Describe el concepto del pago'
+      } */
+    ]
+  },
+  {
+    stepNumber: 2,
+    title: 'Datos del Pagador',
+    fields: [
       {
         name: 'banco',
         label: 'Banco origen',
@@ -190,41 +220,23 @@ export const DEBITO_INMEDIATO_STEP_CONFIG: IStepConfig[] = [
         pattern: '^[0-9]+(\\.[0-9]{1,2})?$',
         infoText: 'Ingresa el monto que deseas pagar en bolívares'
       },
-     /*  {
-        name: 'nombre',
-        label: 'Nombre del Pagador',
-        type: 'text',
-        placeholder: 'Ej: Juan Pérez',
-        required: true,
-        maxLength: 50,
-        infoText: 'Ingresa tu nombre completo'
-      }, */
-      /* {
-        name: 'concepto',
-        label: 'Concepto del Pago',
-        type: 'text',
-        placeholder: 'Ej: Pago de servicio',
-        required: true,
-        maxLength: 100,
-        infoText: 'Describe el concepto del pago'
-      } */
     ]
   },
   {
-    stepNumber: 2,
+    stepNumber: 3,
     title: 'Confirmación de Pago',
-    infoMessage: 'Ingresa el código PIN que recibiste por SMS para completar tu pago. Este código es temporal y único para esta transacción.',
+    infoMessage: 'Ingresa el código PIN recibido por SMS',
     fields: [
       {
         name: 'otp',
         label: 'PIN/OTP recibido por SMS',
-        type: 'tel',
-        placeholder: 'Ej: 123456',
+        type: 'pin',
+        placeholder: '_ _ _ _ _ _',
         required: true,
         minLength: 4,
         maxLength: 8,
         pattern: '^[0-9]*$',
-        infoText: 'Código PIN enviado a tu teléfono para confirmar la transacción'
+        infoText: 'Código PIN temporal enviado a tu teléfono para confirmar esta transacción'
       }
     ]
   }

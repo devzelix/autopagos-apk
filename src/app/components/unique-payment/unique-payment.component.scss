@@ -7,8 +7,11 @@ $text-dark: #333;
   position: relative;
   text-align: end;
   align-items: center;
-  margin: 0.2rem 0.4rem 0.6rem 0.4rem; // Reduced top and bottom margin
+  // margin: 0.2rem 0.4rem 0.6rem 0.4rem; // Reduced top and bottom margin
+  margin: 1.8rem 0.4rem 1.8rem 0.4rem;
   justify-content: space-between;
+  // margin: 1.6rem;
+  font-size: 1.75rem;
 
   button {
     background: $fibex-gradient;
@@ -36,13 +39,16 @@ $text-dark: #333;
     }
 
     svg {
-      width: 18px; // Smaller icon
-      height: 18px;
+      // width: 18px; // Smaller icon
+      // height: 18px;
+      width: 2rem;
+      height: 2rem;
     }
 
     p {
       margin: 0;
-      font-size: 0.85rem;
+      // font-size: 0.85rem;
+      font-size: 1.55rem;
     }
   }
 
@@ -64,7 +70,8 @@ $text-dark: #333;
 }
 
 .h4-amount {
-  font-size: 1.4rem;
+  // font-size: 1.4rem;
+  font-size: 2rem;
   color: #555;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
@@ -81,7 +88,7 @@ $text-dark: #333;
   background: #f8f9fa;
   padding: 1.5rem;
   border-radius: 20px;
-  margin-top: 1rem;
+  margin: 1.3rem 0;
   width: 100%;
   position: relative; // Changed for absolute positioning of pencil
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -92,7 +99,7 @@ $text-dark: #333;
 
   h1 {
     font-weight: 800;
-    font-size: 2.2rem;
+    font-size: 3rem !important;
     color: $fibex-blue; // Amounts in blue
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -101,14 +108,15 @@ $text-dark: #333;
     gap: 0.3rem;
 
     small {
-      font-size: 1rem;
+      font-size: 2rem;
       color: #888;
       font-weight: 500;
     }
 
     &.payment-mount-small {
       color: #555;
-      font-size: 1.8rem;
+      // font-size: 1.8rem;
+      font-size: 3rem !important;
     }
   }
 

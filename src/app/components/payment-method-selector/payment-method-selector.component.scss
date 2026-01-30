@@ -1,5 +1,6 @@
 .payment-method-selector {
-  padding: 1rem 2rem;
+  // padding: 1rem 2rem;
+  padding: 2rem;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -15,10 +16,12 @@
 }
 
 .methods-grid {
-  display: grid;
+  // display: grid;
+  display: flex;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   margin-bottom: 0;
+  flex-direction: column;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -30,17 +33,22 @@
   position: relative;
   background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
   border: 3px solid #e2e8f0;
-  border-radius: 20px;
+  // border-radius: 20px;
+  border-radius: 39px;
   padding: 2rem 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out; //cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+  // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  /* flex-direction: column; */
+  /* align-items: start; */
   text-align: center;
   gap: 1.2rem;
   min-height: 200px;
+  flex-direction: row;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
   // aspect-ratio: 1 / 1; // Hace las tarjetas cuadradas
 
   // &:hover {
@@ -75,7 +83,9 @@
 // Icono grande del método
 .method-icon {
   width: 120px;
+  min-width: 120px;
   height: 120px;
+  min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +108,8 @@
   svg {
     width: 72px;
     height: 72px;
-    color: #357CFF;
+    // color: #357CFF;
+    color: #215288;
     transition: all 0.3s ease;
     filter: drop-shadow(0 2px 4px rgba(53, 124, 255, 0.2));
     position: relative;
@@ -151,8 +162,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  flex: 1;
-  justify-content: space-between;
+  /* flex: 1; */
+  justify-content: start;
+  height: 100%;
+  text-align: start;
+  min-height: 100%;
+  margin: auto 0;
+  width: calc(100% - 130px - 5rem);
 }
 
 .method-name {
@@ -221,7 +237,9 @@
 
   .method-icon {
     width: 130px;
+    min-width: 130px;
     height: 130px;
+    min-height: 130px;
 
     svg {
       width: 80px;
@@ -267,6 +285,8 @@
   .method-icon {
     width: 90px;
     height: 90px;
+    min-width: 90px;
+    min-height: 90px;
 
     svg {
       width: 54px;
@@ -299,3 +319,11 @@
 
 
 
+.method-payment-arrow {
+  width: 3.2rem;
+  max-width: 3.2rem;
+  svg {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+}

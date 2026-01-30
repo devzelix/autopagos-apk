@@ -18,7 +18,7 @@ export interface IStepConfig {
 export interface IFieldConfig {
   name: string;
   label: string;
-  type: 'text' | 'tel' | 'select' | 'number';
+  type: 'text' | 'tel' | 'select' | 'number' | 'pin';
   placeholder?: string;
   required: boolean;
   maxLength?: number;

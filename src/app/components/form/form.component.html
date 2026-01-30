@@ -119,8 +119,10 @@
           </div>
         </div>
 
-        <!-- New Contract Info Design -->
-        <!-- New Contract Info Design (Compact) -->
+        <!-- ============================================ -->
+        <!-- OLD DESIGN (COMMENTED OUT - DO NOT DELETE) -->
+        <!-- ============================================ -->
+        <!-- 
         <div
           *ngIf="AppFibex && userGreeting"
           class="contract-info-panel fancy_shadow_sm compact-panel"
@@ -161,13 +163,77 @@
             </div>
           </div>
         </div>
-        <!-- End New Contract Info Design -->
+        -->
+        <!-- End Old Contract Info Design -->
 
+        <!-- ============================================ -->
+        <!-- NEW DESIGN (MATCHING PROVIDED IMAGE) -->
+        <!-- ============================================ -->
+        <div
+          *ngIf="AppFibex && userGreeting"
+          class="new-payment-card-container"
+        >
+          <!-- User Info Section -->
+          <div class="new-user-info-section">
+            <div class="new-user-avatar">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                />
+              </svg>
+            </div>
+            <div class="new-user-details">
+              <h2 class="new-user-greeting">{{ userGreeting | titlecase }}</h2>
+              <p class="new-user-role">TITULAR DEL CONTRATO ASOCIADO</p>
+            </div>
+          </div>
+
+          <!-- Contract Details Section -->
+          <div
+            *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT"
+            class="new-contract-details-section"
+          >
+            <div class="new-detail-item">
+              <span class="new-detail-label">CONTRATO:</span>
+              <span class="new-detail-value">{{ nroContrato?.value }}</span>
+            </div>
+            <div class="new-detail-item highlight-blue">
+              <span class="new-detail-label">SUSCRIPCIÓN:</span>
+              <span class="new-detail-value">{{ this.subscription }} USD</span>
+            </div>
+          </div>
+
+          <!-- Balance Section -->
+          <div
+            *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
+            class="new-balance-section"
+          >
+            <p class="new-balance-text">
+              {{ saldoUSD | negativeAmount }} USD | {{ saldoBs | negativeAmount }} Bs
+              <strong>{{ saldoText }}</strong>
+            </p>
+          </div>
+        </div>
+        <!-- End New Design -->
+
+        <!-- ============================================ -->
+        <!-- CONTENT SECTIONS (KEPT AS IS) -->
+        <!-- ============================================ -->
+        
+        <!-- 
         <span *ngIf="mainTitle && !AppFibex" class="title-info-container">
           <h4>
             {{ mainTitle }}
           </h4>
         </span>
+        -->
+
         <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
         <!-- showDniForm && !AppFibex -->
         <div
@@ -208,6 +274,23 @@
           *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
           class="section-step-item"
         >
+
+          <app-unique-payment
+                [tasaCambio]="tasaCambio"
+                [saldoBs]="saldoBs"
+                [saldoUSD]="saldoUSD"
+                [mountTotalMonthUSD]="mountTotalMonthUSD"
+                [mountTotalMonthBs]="mountTotalMonthBs"
+                [subscription]="subscription"
+                [monthPayCount]="monthPayCount"
+                [setTitleFn]="setMainTitle"
+                (totalBs)="mountsToPaymentBs($event)"
+                (totalUSD)="mountsToPaymentUSD($event)"
+                (onEditAmountEvent)="onEditAmountClick()"
+              ></app-unique-payment>
+          <!-- Payment Amount Display -->
+
+          <!-- 
           <div
             class="payment-menu-content w-full flex justify-center txt-dark flex-col"
           >
@@ -219,7 +302,6 @@
               </h4>
             </div>
 
-            <!-- UNIQUE PAYMENT -->
             <app-unique-payment
               [tasaCambio]="tasaCambio"
               [saldoBs]="saldoBs"
@@ -234,29 +316,26 @@
               (onEditAmountEvent)="onEditAmountClick()"
             ></app-unique-payment>
           </div>
+          -->
 
+          <!-- Payment Button -->
           <button
-            class="form-control-btn w-44 mx-auto payment-menu-success-btn"
+            class="new-payment-btn"
             type="button"
             role="button"
             (click)="handleShowTransactionModal(true)"
           >
-            Pagar
+            PAGAR
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
             >
-              <g fill="none" fill-rule="evenodd">
-                <path
-                  d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"
-                />
-              </g>
+              <path
+                fill="currentColor"
+                d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"
+              />
             </svg>
           </button>
         </div>

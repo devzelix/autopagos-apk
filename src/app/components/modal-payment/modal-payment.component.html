@@ -16,13 +16,37 @@
       </div>
 
     <!-- T\u00edtulo din\u00e1mico -->
-    <h1 class="text-4xl text-center mb-2 font-bold">
+    <!-- <h1 class="text-4xl text-center mb-2 font-bold" >
       {{ viewAdmin ? 'PANEL DE ADMINISTRACI\u00d3N' : 
-         showPaymentMethodSelector ? 'Seleccione el m\u00e9todo de pago' :
+      inputType === 'reference' ? 'INGRESAR DATOS' : 'CONFIRMAR DATOS'}}
+    </h1> -->
+
+
+    <!-- showPaymentMethodSelector ? 'Seleccione el m\u00e9todo de pago' :
          showC2PForm ? 'M\u00e9todo de pago C2P' :
-         showDebitoInmediatoForm ? 'M\u00e9todo de pago D\u00e9bito Inmediato' :
-         inputType === 'reference' ? 'INGRESAR DATOS' : 'CONFIRMAR DATOS'}}
-    </h1>
+         showDebitoInmediatoForm ? 'M\u00e9todo de pago D\u00e9bito Inmediato' : -->
+
+    <span class="title-modal-payment-method-item">
+      <ng-container *ngIf="showPaymentMethodSelector">
+        <h2>
+          Seleccione el <br> 
+          <span class="title-text-primary">método de pago</span>
+        </h2>
+        <p>
+          Elige cómo deseas realizar tu transacción
+        </p>
+      </ng-container>
+      <ng-container *ngIf="showC2PForm">
+        <h2>
+          Método de pago C2P
+        </h2>
+      </ng-container>
+      <ng-container *ngIf="showDebitoInmediatoForm">
+        <h2>
+          Débito Inmediato
+        </h2>
+      </ng-container>
+    </span>
 
     <!-- Secci\u00f3n de selecci\u00f3n de m\u00e9todo de pago -->
     <div *ngIf="!viewAdmin && inputType === 'mount' && showPaymentMethodSelector">
@@ -215,6 +239,57 @@
           (deleteKeyEmitter)="deleteLastCharacter()"
         >
         </app-keyboard-on-screen>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SUCCESS PAYMENT MODAL -->
+    <!-- ============================================ -->
+    <div *ngIf="showSuccessModal" class="success-modal-overlay">
+      <div class="success-modal-container">
+        <!-- Animated Check Icon -->
+        <div class="success-check-wrapper">
+          <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="success-checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="success-checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+
+        <!-- Success Title -->
+        <h2 class="success-modal-title">¡Pago Exitoso!</h2>
+        
+        <!-- Success Message -->
+        <p class="success-modal-message">{{ successPaymentData?.message }}</p>
+
+        <!-- Payment Details Card -->
+        <div class="success-details-card">
+          <div class="success-detail-row">
+            <span class="success-detail-label">Método de Pago:</span>
+            <span class="success-detail-value">{{ successPaymentData?.paymentType }}</span>
+          </div>
+          
+          <div class="success-detail-divider"></div>
+          
+          <div class="success-detail-row highlight">
+            <span class="success-detail-label">Referencia:</span>
+            <span class="success-detail-value reference-number">{{ successPaymentData?.reference }}</span>
+          </div>
+          
+          <div class="success-detail-divider"></div>
+          
+          <div class="success-detail-row">
+            <span class="success-detail-label">Monto Pagado:</span>
+            <span class="success-detail-value amount">{{ successPaymentData?.amount }}</span>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button class="success-modal-btn" type="button" (click)="closeSuccessModal()">
+          Aceptar
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+        </button>
       </div>
     </div>
   </div>

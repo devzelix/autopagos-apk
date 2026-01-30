@@ -12,8 +12,8 @@
   <!-- Step title -->
   <!-- <h2 class="step-title">{{ currentStepConfig.title }}</h2> -->
 
-  <!-- Info message (si existe) -->
-  <div class="info-message" *ngIf="currentStepConfig.infoMessage">
+  <!-- Info message (si existe) - Diseño compacto -->
+  <div class="info-message-compact" *ngIf="currentStepConfig.infoMessage">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="1em"
@@ -91,9 +91,29 @@
             (focus)="setActiveField(field.name)"
           ></app-custom-select>
 
+          <!-- Input tipo PIN con casillas separadas -->
+          <div *ngIf="field.type === 'pin'" class="pin-input-container">
+            <input
+              [id]="field.name"
+              type="tel"
+              [formControlName]="field.name"
+              [placeholder]="field.placeholder || ''"
+              [attr.maxlength]="field.maxLength || null"
+              class="pin-input"
+              (focus)="
+                setActiveField(field.name);
+                useVirtualKeyboard && preventNativeKeyboard($event)
+              "
+              (click)="useVirtualKeyboard && preventNativeKeyboard($event)"
+              (input)="onInputChange($event, field.name)"
+              [readonly]="useVirtualKeyboard"
+              #activeInput
+            />
+          </div>
+
           <!-- Input text/tel/number -->
           <input
-            *ngIf="field.type !== 'select'"
+            *ngIf="field.type !== 'select' && field.type !== 'pin'"
             [id]="field.name"
             [type]="field.type"
             [formControlName]="field.name"
@@ -133,51 +153,58 @@
           </small>
         </div>
 
-        <!-- Info popover -->
+        <!-- Info popover mejorado -->
         <div
-          class="field-info-popover"
+          class="info-backdrop"
+          *ngIf="showInfoPopover === field.name"
+          (click)="showInfoPopover = null"
+        ></div>
+        <div
+          class="field-info-popover-modern"
           *ngIf="showInfoPopover === field.name"
           (click)="$event.stopPropagation()"
         >
-          <button
-            type="button"
-            class="close-popover"
-            (click)="showInfoPopover = null"
-            aria-label="Cerrar información"
-          >
+          <div class="popover-header">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1em"
               height="1em"
               viewBox="0 0 24 24"
+              class="popover-icon"
             >
               <path
                 fill="currentColor"
-                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"
+                d="M11 9h2V7h-2m1 13c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m-1 15h2v-6h-2z"
               />
             </svg>
-          </button>
-          <p>{{ field.infoText }}</p>
+            <h3>Información</h3>
+            <button
+              type="button"
+              class="close-popover-modern"
+              (click)="showInfoPopover = null"
+              aria-label="Cerrar información"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="popover-body">
+            <p>{{ field.infoText }}</p>
+          </div>
         </div>
       </div>
     </form>
 
-    <!-- Virtual keyboard (si está habilitado y visible) - FIXED on mobile -->
-    <div
-      class="virtual-keyboard-section fixed-keyboard"
-      *ngIf="useVirtualKeyboard && keyboardVisible"
-    >
-      <app-keyboard-on-screen
-        [classes]="
-          keyboardVisible ? 'kiosk-mode virtual-keyboard-fixed' : 'kiosk-mode'
-        "
-        (valorTeclado)="onVirtualKeyboardInput($event)"
-        (deleteKeyEmitter)="onVirtualKeyboardDelete()"
-      ></app-keyboard-on-screen>
-    </div>
-  </div>
-
-  <!-- Navigation buttons -->
+    <!-- Navigation buttons -->
   <div class="navigation-buttons">
     <button
       type="button"
@@ -233,4 +260,20 @@
       </svg>
     </button>
   </div>
+
+    <!-- Virtual keyboard (si está habilitado y visible) - FIXED on mobile -->
+    <div
+      class="virtual-keyboard-section fixed-keyboard"
+      *ngIf="useVirtualKeyboard && keyboardVisible"
+    >
+      <app-keyboard-on-screen
+        [classes]="
+          keyboardVisible ? 'kiosk-mode virtual-keyboard-fixed' : 'kiosk-mode'
+        "
+        (valorTeclado)="onVirtualKeyboardInput($event)"
+        (deleteKeyEmitter)="onVirtualKeyboardDelete()"
+      ></app-keyboard-on-screen>
+    </div>
+  </div>
+
 </div>

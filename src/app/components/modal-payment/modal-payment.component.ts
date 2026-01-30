@@ -106,6 +106,16 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   public otpGenerated: boolean = false;
   public processingDebito: boolean = false;
 
+  // Success Modal Properties
+  public showSuccessModal: boolean = false;
+  public successPaymentData: {
+    reference: string;
+    amount: string;
+    message: string;
+    paymentType: string;
+  } | null = null;
+
+
   constructor(
     private fb: FormBuilder,
     private _ubiipos: UbiiposService, // API Ubiipos -By:MR-
@@ -1175,32 +1185,32 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private async handleSuccessfulC2PPayment(response: IC2PResponse, formData: any): Promise<void> {
     const { c2pResponse, saeResponse } = response.data;
 
-    // Mostrar modal de \u00e9xito
-    await Swal.fire({
-      icon: 'success',
-      title: '\u00a1Pago Exitoso!',
-      html: `
-        <div style="text-align: left; padding: 1rem;">
-          <p style="margin-bottom: 1rem;"><strong>Su pago ha sido procesado y conciliado autom\u00e1ticamente.</strong></p>
-          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e2e8f0;">
-          <p style="margin: 0.5rem 0;"><strong>Referencia:</strong> ${c2pResponse.reference}</p>
-          <p style="margin: 0.5rem 0;"><strong>Monto:</strong> Bs. ${formData.monto}</p>
-          <p style="margin: 0.5rem 0;"><strong>Mensaje:</strong> ${c2pResponse.message}</p>
-        </div>
-      `,
-      confirmButtonText: 'Aceptar',
-      allowOutsideClick: false,
-      customClass: {
-        popup: 'fibex-swal-popup',
-        title: 'fibex-swal-title',
-        htmlContainer: 'fibex-swal-html',
-        confirmButton: 'fibex-swal-confirm-btn'
-      },
-      buttonsStyling: false,
-      didClose: () => {
-        this.onSubmitPayForm.emit();
-      }
-    });
+    // Cerrar el loading de Swal si está abierto
+    Swal.close();
+
+    // Configurar datos del modal de éxito
+    this.successPaymentData = {
+      reference: c2pResponse.reference,
+      amount: `Bs. ${formData.monto}`,
+      message: c2pResponse.message || 'Su pago ha sido procesado y conciliado automáticamente.',
+      paymentType: 'C2P'
+    };
+
+    // Mostrar modal de éxito personalizado
+    this.showSuccessModal = true;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Cierra el modal de éxito y emite el evento de finalización
+   */
+  public closeSuccessModal(): void {
+    this.showSuccessModal = false;
+    this.successPaymentData = null;
+    this.cdr.markForCheck();
+    
+    // Emitir evento para resetear formularios
+    this.onSubmitPayForm.emit();
   }
 
   /**
@@ -1210,7 +1220,7 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('📋 Step change débito inmediato:', event);
     
     // Si avanza del step 1 al step 2, generar OTP
-    if (event.step === 1 && !this.otpGenerated) {
+    if (event.step === 2 && !this.otpGenerated) {
       this.debitoFormDataTemp = { ...event.data };
       await this.generateOTPForDebito(event.data);
     }
@@ -1491,32 +1501,20 @@ export class ModalPaymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private async handleSuccessfulDebitoPayment(response: IProcessDebitoResponse, formData: any): Promise<void> {
     const { paymentDetails, saeResponse } = response.data;
 
-    // Mostrar modal de éxito
-    await Swal.fire({
-      icon: 'success',
-      title: '¡Pago Exitoso!',
-      html: `
-        <div style="text-align: left; padding: 1rem;">
-          <p style="margin-bottom: 1rem;"><strong>Su pago ha sido procesado y conciliado automáticamente.</strong></p>
-          <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #e2e8f0;">
-          <p style="margin: 0.5rem 0;"><strong>Referencia:</strong> ${paymentDetails.reference}</p>
-          <p style="margin: 0.5rem 0;"><strong>Monto:</strong> Bs. ${formData.monto}</p>
-          <p style="margin: 0.5rem 0;"><strong>Mensaje:</strong> ${response.data.message}</p>
-        </div>
-      `,
-      confirmButtonText: 'Aceptar',
-      allowOutsideClick: false,
-      customClass: {
-        popup: 'fibex-swal-popup',
-        title: 'fibex-swal-title',
-        htmlContainer: 'fibex-swal-html',
-        confirmButton: 'fibex-swal-confirm-btn'
-      },
-      buttonsStyling: false,
-      didClose: () => {
-        this.onSubmitPayForm.emit();
-      }
-    });
+    // Cerrar el loading de Swal si está abierto
+    Swal.close();
+
+    // Configurar datos del modal de éxito
+    this.successPaymentData = {
+      reference: paymentDetails.reference,
+      amount: `Bs. ${formData.monto}`,
+      message: response.data.message || 'Su pago ha sido procesado y conciliado automáticamente.',
+      paymentType: 'Débito Inmediato'
+    };
+
+    // Mostrar modal de éxito personalizado
+    this.showSuccessModal = true;
+    this.cdr.markForCheck();
   }
 
   /**

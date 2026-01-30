@@ -403,7 +403,7 @@ export class ActionAdminComponent implements OnInit {
         `,
         input: 'text',
         inputLabel: 'Número de Referencia',
-        inputPlaceholder: 'Ej: 251216000079',
+        inputPlaceholder: '251216000079',
         showCancelButton: true,
         confirmButtonText: 'Anular',
         cancelButtonText: 'Cancelar',
@@ -833,7 +833,7 @@ export class ActionAdminComponent implements OnInit {
                 id="swal-input-ip" 
                 class="swal2-input fibex-input" 
                 type="text" 
-                placeholder="Ej: 192.168.1.1" 
+                placeholder="192.168.1.1" 
                 value="${currentIp}"
                 maxlength="15"
                 style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: 'Poppins', sans-serif; background: #f7fafc; color: #1a202c; transition: all 0.3s ease; outline: none; box-sizing: border-box;"
@@ -848,7 +848,7 @@ export class ActionAdminComponent implements OnInit {
                 id="swal-input-port" 
                 class="swal2-input fibex-input" 
                 type="number" 
-                placeholder="Ej: 4080" 
+                placeholder="4080" 
                 value="${currentPort || ''}"
                 min="1" 
                 max="65535"

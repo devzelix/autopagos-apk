@@ -286,8 +286,8 @@ export class StepperFormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.useVirtualKeyboard) {
       const field = this.getCurrentField(fieldName);
       if (field) {
-        // Show keyboard for numeric/tel/monto inputs, hide for others
-        if (field.type === 'tel' || field.type === 'number' || field.name === 'monto') {
+        // Show keyboard for numeric/tel/monto/pin inputs, hide for others
+        if (field.type === 'tel' || field.type === 'number' || field.type === 'pin' || field.name === 'monto') {
           this.keyboardVisible = true;
         } else {
           this.keyboardVisible = false;

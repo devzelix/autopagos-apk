@@ -7,12 +7,12 @@
   min-height: 100%;
   margin: 0 auto;
   background-color: transparent;
-  padding: 30px 0;
+  // padding: 30px 0;
 }
 
 .login-card-vertical {
   background: white;
-  width: 900px; /* ANCHO TOTAL FIJO */
+  width: 840px; //900px; /* ANCHO TOTAL FIJO */
   height: 1400px; /* Reducido de 1650px para evitar desborde con el logo gigante */
   display: flex;
   flex-direction: column;

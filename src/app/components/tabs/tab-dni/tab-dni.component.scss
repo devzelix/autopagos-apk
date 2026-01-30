@@ -1,29 +1,46 @@
-.tabs-login-type-container h6 {
-  margin-bottom: 0.5rem;
-  letter-spacing: 1px;
-  color: #ffffffed;
+.dni-type-selector-new {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  flex-shrink: 0;
+  // height: 100px; /* Altura más compacta */
+  height: 80px;
 }
 
-.tabs-login-type {
-  button {
-    padding: 1rem 2rem;
-    border-radius: 9rem;
-    // background: rgb(223 228 240 / 40%);
-    background: lightblue;
-    color: white;
-    overflow: hidden;
-    font-size: 1.3rem;
-    // transition: all .3s ease-in-out;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+.dni-type-btn {
+  flex: 1;
+  border: none;
+  background: #f3f4f6;
+  color: #9ca3af;
+  padding: 10px;
+  border-radius: 25px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 100%; /* Ocupar el alto fijo del padre */
 
-    &.activeTab {
-      // background: linear-gradient(36deg, rgb(89, 152, 224) 18%, rgb(48, 228, 210) 100%);
-      background: var(--primary-accent-color);
-    }
+  .btn-content {
+    display: flex;
+    flex-direction: row; /* Icono al lado del texto */
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+
     svg {
-      font-size: 1.9rem;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
     }
+
+    span {
+      white-space: nowrap;
+    }
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+    color: white;
   }
 }
