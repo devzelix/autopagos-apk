@@ -6,6 +6,7 @@ import { LocalstorageService } from '../localstorage.service';
 import { LogService } from '../log.service';
 import { ILog } from 'src/app/interfaces/log.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +49,7 @@ export class UbiiposService {
   async testUbiipos(iptest: string): Promise<IResponse> {
     console.log('🧪 [UbiPOS Test] Iniciando test de conexión...');
     console.log('🧪 [UbiPOS Test] IP a probar:', iptest);
-    
+
     let resReturn: IResponse;
 
     try {
@@ -76,6 +77,7 @@ export class UbiiposService {
           amount: '100', // String
           operation: 'PAYMENT',
         },
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -145,7 +147,7 @@ export class UbiiposService {
       return resReturn;
     } catch (error) {
       console.error('❌ [UbiPOS Test] Error en la petición:', error);
-      
+
       const errRes: IResponse = handleApiError(error);
 
       console.error('❌ [UbiPOS Test] Error procesado:', {
@@ -173,7 +175,7 @@ export class UbiiposService {
       });
 
       // Retornar el error sin mostrar alert, el componente se encargará de mostrarlo en Swal
-      return errRes;      
+      return errRes;
     }
   }
 
@@ -185,7 +187,7 @@ export class UbiiposService {
   async paymentUbiipos(request: IUbiiposDataSend): Promise<IResponse> {
     console.log('💳 [UbiPOS Payment] Iniciando procesamiento de pago...');
     console.log('💳 [UbiPOS Payment] Datos recibidos:', JSON.stringify(request, null, 2));
-    
+
     let resReturn: IResponse;
 
     try {
@@ -237,6 +239,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: body,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -248,7 +251,7 @@ export class UbiiposService {
       console.log('📋 HEADERS:', JSON.stringify(bodyReq.headers, null, 2));
       console.log('📦 BODY:', JSON.stringify(bodyReq.data, null, 2));
       console.log('⏰ TIMESTAMP:', new Date().toISOString());
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       // Make request
       const response = await axios.request(bodyReq);
@@ -311,7 +314,7 @@ export class UbiiposService {
       return resReturn;
     } catch (error) {
       console.error('❌ [UbiPOS Payment] Error en la petición:', error);
-      
+
       const errRes: IResponse = handleApiError(error);
 
       console.error('❌ [UbiPOS Payment] Error procesado:', {
@@ -346,7 +349,7 @@ export class UbiiposService {
    */
   async printTicket(): Promise<IResponse> {
     console.log('🖨️ [UbiPOS Print] Iniciando reimpresión de ticket...');
-    
+
     let resReturn: IResponse;
 
     const bodyPrint: IUbiiposDataSend = {
@@ -384,7 +387,7 @@ export class UbiiposService {
 
         return resReturn;
       }
-      
+
       // Get headers
       const bodyReq: IRequest = {
         url: url,
@@ -394,6 +397,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: bodyPrint,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -446,7 +450,7 @@ export class UbiiposService {
       return resReturn;
     } catch (error) {
       console.error('❌ [UbiPOS Print] Error en la petición:', error);
-      
+
       const errRes: IResponse = handleApiError(error);
 
       console.error('❌ [UbiPOS Print] Error procesado:', {
@@ -475,7 +479,7 @@ export class UbiiposService {
 
   async closeBatch(): Promise<IResponse> {
     console.log('🔄 [UbiPOS CloseBatch] Iniciando cierre de lote...');
-    
+
     let resReturn: IResponse;
 
     const bodyClose: IUbiiposDataSend = {
@@ -513,7 +517,7 @@ export class UbiiposService {
 
         return resReturn;
       }
-      
+
       // Get headers
       const bodyReq: IRequest = {
         url: url,
@@ -523,6 +527,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: bodyClose,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -535,7 +540,7 @@ export class UbiiposService {
       console.log('📦 BODY:', JSON.stringify(bodyReq.data, null, 2));
       console.log('⏰ TIMESTAMP:', new Date().toISOString());
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      
+
       const response = await axios.request(bodyReq);
 
       // 📋 LOG COMPLETO DEL RESPONSE
@@ -547,16 +552,16 @@ export class UbiiposService {
       console.log('📦 DATA:', JSON.stringify(response.data, null, 2));
       console.log('⏰ TIMESTAMP:', new Date().toISOString());
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      
+
       // Verificar estructura de respuesta
       const transCodeResult = response.data?.TRANS_CODE_RESULT || 'UNKNOWN';
       const isTransactionSuccess = transCodeResult === '00';
-      
+
       console.log('📊 [UbiPOS CloseBatch] TRANS_CODE_RESULT:', transCodeResult);
       console.log('📊 [UbiPOS CloseBatch] TRANS_MESSAGE_RESULT:', response.data?.TRANS_MESSAGE_RESULT || 'Sin mensaje');
       console.log('📊 [UbiPOS CloseBatch] RESPONSE_TYPE:', response.data?.RESPONSE_TYPE);
       console.log('📊 [UbiPOS CloseBatch] Cierre exitoso:', isTransactionSuccess);
-      
+
       if (isTransactionSuccess) {
         console.log('✅ [UbiPOS CloseBatch] Cierre de lote APROBADO');
         console.log('✅ [UbiPOS CloseBatch] Terminal:', response.data?.TERMINAL);
@@ -573,7 +578,7 @@ export class UbiiposService {
         message: response.statusText,
         data: response.data as any,
       };
-      
+
       console.log('📋 [UbiPOS CloseBatch] Respuesta formateada:', JSON.stringify(resReturn, null, 2));
 
       // LOGS SAVE - Usar el estado real del cierre
@@ -594,7 +599,7 @@ export class UbiiposService {
       return resReturn;
     } catch (error) {
       console.error('❌ [UbiPOS CloseBatch] Error en la petición:', error);
-      
+
       const errRes: IResponse = handleApiError(error);
 
       console.error('❌ [UbiPOS CloseBatch] Error procesado:', {
@@ -630,7 +635,7 @@ export class UbiiposService {
   async voidTransaction(reference: string): Promise<IResponse> {
     console.log('🔄 [UbiPOS Void] Iniciando anulación de transacción...');
     console.log('🔄 [UbiPOS Void] Referencia:', reference);
-    
+
     let resReturn: IResponse;
 
     try {
@@ -689,7 +694,7 @@ export class UbiiposService {
 
       // Construir body - El API espera paymentId directamente en el body
       const paymentId = 'Taubii';
-      
+
       const body = {
         paymentId: paymentId,
         reference: reference.trim(),
@@ -703,7 +708,7 @@ export class UbiiposService {
           status: 400,
           message: 'paymentId is required and cannot be empty',
         };
-        
+
         // LOGS SAVE ERROR
         this._logService.storagelog({
           date_time: new Date(),
@@ -734,6 +739,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: body,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -807,7 +813,7 @@ export class UbiiposService {
       return resReturn;
     } catch (error) {
       console.error('❌ [UbiPOS Void] Error en la petición:', error);
-      
+
       const errRes: IResponse = handleApiError(error);
 
       console.error('❌ [UbiPOS Void] Error procesado:', {

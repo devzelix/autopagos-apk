@@ -1,79 +1,52 @@
 <!-- (scroll)="handleShowScrollArrow($event)" -->
 <div class="app-root">
-<div id="content-scrollable" class="container">
-  
-  <!-- Sin modo kiosk: contenido principal -->
-  <!-- [@routeAnimations]="prepareRoute(outlet)" -->
-  <div *ngIf="!isLoginKiosk"
-       class="flex-container-column animated fadeInUp"
-       >
-    <router-outlet #outlet="outlet"></router-outlet>
-    <app-footer *ngIf="!helper.view"></app-footer>
-    <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
-  </div>
+  <div id="content-scrollable" class="container">
 
-  <!-- Modo kiosk: flujo registro → Verificando POS Ubi → contenido principal -->
-  <ng-container *ngIf="isLoginKiosk">
-    <ng-container *ngIf="(kioskStatus$ | async) !== 'REGISTERED'; else kioskRegisteredBlock">
-      <app-kiosk-guard></app-kiosk-guard>
+    <!-- Sin modo kiosk: contenido principal -->
+    <!-- [@routeAnimations]="prepareRoute(outlet)" -->
+    <div *ngIf="!isLoginKiosk" class="flex-container-column animated fadeInUp">
+      <router-outlet #outlet="outlet"></router-outlet>
+      <app-footer *ngIf="!helper.view"></app-footer>
+      <app-administrative-module *ngIf="adminPanelOpen$ | async"
+        (closeModal)="closeAdminPanel()"></app-administrative-module>
+    </div>
+
+    <!-- Modo kiosk: flujo registro → Verificando POS Ubi → contenido principal -->
+    <ng-container *ngIf="isLoginKiosk">
+      <ng-container *ngIf="(kioskStatus$ | async) !== 'REGISTERED'; else kioskRegisteredBlock">
+        <app-kiosk-guard></app-kiosk-guard>
+      </ng-container>
+      <ng-template #kioskRegisteredBlock>
+        <ng-container *ngIf="verifyingPosUbi || posUbiConnectionFailed">
+          <app-pos-guard [status]="posGuardStatus" (retry)="retryPosUbiTest()" (continue)="onPosGuardContinue()">
+          </app-pos-guard>
+        </ng-container>
+        <!-- [@routeAnimations]="prepareRoute(outlet)" -->
+        <div *ngIf="!verifyingPosUbi && !posUbiConnectionFailed" class="flex-container-column animated fadeInUp">
+          <router-outlet #outlet="outlet"></router-outlet>
+          <app-footer *ngIf="!helper.view"></app-footer>
+          <app-administrative-module *ngIf="adminPanelOpen$ | async"
+            (closeModal)="closeAdminPanel()"></app-administrative-module>
+        </div>
+      </ng-template>
     </ng-container>
-    <ng-template #kioskRegisteredBlock>
-      <div *ngIf="verifyingPosUbi" class="verifying-pos-ubi">
-        <p class="verifying-pos-ubi__message">Verificando POS Ubi</p>
-        <div class="verifying-pos-ubi__spinner" aria-hidden="true"></div>
-      </div>
-      <div *ngIf="posUbiConnectionFailed" class="pos-ubi-failed-overlay">
-        <div class="pos-ubi-failed-overlay__brand-header">
-          <img src="assets/images/fibex-logo-positive.png" alt="Fibex" class="pos-ubi-failed-overlay__logo">
-        </div>
-        <div class="pos-ubi-failed-overlay__status-container">
-          <div class="pos-ubi-failed-overlay__card">
-            <div class="pos-ubi-failed-overlay__icon-circle pos-ubi-failed-overlay__icon-circle--network">
-              <i class="fa fa-wifi" aria-hidden="true"></i>
-            </div>
-            <h2 class="pos-ubi-failed-overlay__title">No se pudo conectar al POS Ubi</h2>
-            <p class="pos-ubi-failed-overlay__detail">Verifique que el dispositivo esté encendido y en la misma red. Puede reintentar la conexión.</p>
-            <button type="button" class="pos-ubi-failed-overlay__btn-retry" (click)="retryPosUbiTest()">
-              <i class="fa fa-refresh" aria-hidden="true"></i> Reintentar Conexión
-            </button>
-          </div>
-        </div>
-        <div class="pos-ubi-failed-overlay__footer">
-          <small>Fibex AutoPago v1.0.0</small>
-        </div>
-      </div>
-      <!-- [@routeAnimations]="prepareRoute(outlet)" -->
-      <div *ngIf="!verifyingPosUbi && !posUbiConnectionFailed"
-           class="flex-container-column animated fadeInUp"
-           
-           >
-        <router-outlet #outlet="outlet"></router-outlet>
-        <app-footer *ngIf="!helper.view"></app-footer>
-        <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
-      </div>
-    </ng-template>
-  </ng-container>
 
-  <!-- Carrusel de publicidad - Solo en vista de inicio -->
-  <!-- 🚩 DESHABILITADO: Para habilitar cambiar ENABLE_AD_CAROUSEL a true en app.component.ts -->
-  <app-ad-carousel 
-    *ngIf="showAdCarousel && !helper.view && !(adminPanelOpen$ | async)" 
-    (touch)="hideAdCarousel()"
-    (click)="hideAdCarousel()">
-  </app-ad-carousel>
+    <!-- Carrusel de publicidad - Solo en vista de inicio -->
+    <!-- 🚩 DESHABILITADO: Para habilitar cambiar ENABLE_AD_CAROUSEL a true en app.component.ts -->
+    <app-ad-carousel *ngIf="showAdCarousel && !helper.view && !(adminPanelOpen$ | async)" (touch)="hideAdCarousel()"
+      (click)="hideAdCarousel()">
+    </app-ad-carousel>
 
     <!-- * Arrow button to scroll up -->
     <!-- <button class="arrow_up animated faster" (click)="scrollToTop()" [class.fadeInUp]="showScrollArrow"
     [class.fadeOutDown]="!showScrollArrow">
     <img src="../assets/images/arrow_up.png" alt="Ir hacia arriba">
   </button> -->
-</div>
+  </div>
 
   <!-- Pantalla de inactividad: iframe a pantalla completa (FONDO) -->
-  <div class="idle-page-overlay" 
-       [class.idle-page-overlay--visible]="showIdlePage" 
-       [class.idle-page-overlay--going-to-pay]="isGoingToPay"
-       [attr.aria-hidden]="!showIdlePage">
+  <div class="idle-page-overlay" [class.idle-page-overlay--visible]="showIdlePage"
+    [class.idle-page-overlay--going-to-pay]="isGoingToPay" [attr.aria-hidden]="!showIdlePage">
     <div class="idle-page-iframe-zone">
       <iframe [src]="idlePageUrlSafe" class="idle-page-iframe" title="Página de inactividad"></iframe>
     </div>
@@ -84,7 +57,7 @@
   <div class="idle-page-button-zone" 
        *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED'"
        [class.idle-page-button-zone--hidden]="!showGlobalButton"
-       (click)="handleGlobalStart()" 
+       (click)="handleGlobalStart()"
        (touchstart)="handleGlobalStart()">
     <div class="idle-page-chevron" aria-hidden="true">
       <i class="fa fa-chevron-down"></i>

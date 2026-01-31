@@ -1,6 +1,7 @@
 // Variables
 $fibex-gradient: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
 $fibex-blue: #215288;
+$text-dark: #0d2846; // Mismo color oscuro que Kiosk Guard
 
 .modal-overlay {
     position: fixed;
@@ -30,11 +31,12 @@ $fibex-blue: #215288;
 
 .modal-container {
     background: white;
+    // Estilo GIGANTE igual a Kiosk Guard
     border-radius: 16px;
-    padding: 1.2rem;
-    max-width: 380px;
+    padding: 6rem 5rem;
+    max-width: 900px; // Ancho igual a Kiosk Guard
     width: 100%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
     animation: slideUp 0.3s ease;
     position: relative;
 }
@@ -53,13 +55,14 @@ $fibex-blue: #215288;
 
 .close-btn {
     position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
+    // Ajustado posición para compensar el padding gigante
+    top: 1.5rem;
+    right: 1.5rem;
     background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
     border: none;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 60px; // Más grande
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,51 +83,55 @@ $fibex-blue: #215288;
 
     svg {
         color: white;
-        width: 16px;
-        height: 16px;
+        width: 32px; // Icono más grande
+        height: 32px;
     }
 }
 
 .modal-title {
-    font-size: 0.95rem;
-    color: #718096;
-    margin: 0 0 1.5rem 0;
+    // Título igual de grande que Kiosk Guard
+    font-size: 4rem;
+    color: $text-dark;
+    font-weight: 800;
+    margin: 0 0 3rem 0; // Margen aumentado
     text-align: center;
-    line-height: 1.3;
-    padding-right: 1.5rem;
+    line-height: 1;
+    padding-right: 0; // Padding derecho no necesario si centrado y grande
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -2px;
 }
 
 .counter-section {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 3rem; // Gap aumentado
+    margin-bottom: 3rem;
 }
 
 .counter-btn {
     background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
     border: none;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    width: 80px; // Botones más grandes
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(33, 82, 136, 0.3);
+    box-shadow: 0 6px 16px rgba(33, 82, 136, 0.3);
 
     svg {
         color: white;
-        width: 24px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
     }
 
     &:hover:not(:disabled) {
         background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
         transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(33, 82, 136, 0.4);
+        box-shadow: 0 8px 20px rgba(33, 82, 136, 0.4);
     }
 
     &:active:not(:disabled) {
@@ -143,20 +150,20 @@ $fibex-blue: #215288;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
+    min-width: 150px;
 }
 
 .counter-number {
-    font-size: 3.5rem;
+    font-size: 7rem; // Número gigante
     font-weight: 800;
     color: $fibex-blue;
     font-family: 'Poppins', sans-serif;
     line-height: 1;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
 }
 
 .counter-label {
-    font-size: 0.9rem;
+    font-size: 1.8rem; // Label más grande
     font-weight: 600;
     color: #8898aa;
     text-transform: uppercase;
@@ -165,12 +172,12 @@ $fibex-blue: #215288;
 
 .price-display {
     background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1.2rem;
+    border-radius: 16px;
+    padding: 2rem; // Padding aumentado
+    margin-bottom: 3rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 1rem;
 }
 
 .price-row {
@@ -180,13 +187,13 @@ $fibex-blue: #215288;
 }
 
 .price-label {
-    font-size: 0.9rem;
-    color: #8898aa;
+    font-size: 1.6rem; // Más grande
+    color: #555;
     font-weight: 500;
 }
 
 .price-value {
-    font-size: 1.1rem;
+    font-size: 2rem; // Más grande
     color: $fibex-blue;
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
@@ -197,76 +204,25 @@ $fibex-blue: #215288;
     background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
     color: white;
     border: none;
-    border-radius: 50px;
-    padding: 0.9rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 12px;
+    padding: 1.6rem 2.5rem;
+    // Texto GIGANTE igual al botón Kiosk Guard
+    font-size: 2.2rem;
+    font-weight: 800;
     font-family: 'Poppins', sans-serif;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(33, 82, 136, 0.3);
+    transition: all 0.2s ease;
+    box-shadow: none; // Sin sombra
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 
     &:hover {
         background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(33, 82, 136, 0.4);
+        opacity: 0.95;
     }
 
     &:active {
-        transform: translateY(0);
-    }
-}
-
-// Mobile responsive
-@media only screen and (max-width: 480px) {
-    .modal-container {
-        padding: 1.2rem;
-        max-width: 95%;
-    }
-
-    .modal-title {
-        font-size: 0.85rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .counter-section {
-        gap: 1rem;
-    }
-
-    .counter-btn {
-        width: 42px;
-        height: 42px;
-
-        svg {
-            width: 20px;
-            height: 20px;
-        }
-    }
-
-    .counter-number {
-        font-size: 3rem;
-    }
-
-    .counter-label {
-        font-size: 0.8rem;
-    }
-
-    .price-display {
-        padding: 0.8rem;
-    }
-
-    .price-label {
-        font-size: 0.85rem;
-    }
-
-    .price-value {
-        font-size: 1rem;
-    }
-
-    .confirm-btn {
-        font-size: 0.9rem;
-        padding: 0.8rem 1.2rem;
+        transform: scale(0.98);
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, timeout } from 'rxjs/operators';
 import { environment as env } from '../../environments/environment';
 import { RegisterPay } from '../interfaces/registerPay';
 import * as CryptoJS from 'crypto-js';
@@ -17,7 +17,7 @@ import { IUserSaldo } from '../interfaces/contratos';
 })
 
 export class RegisterPayService {
-  private stripeAPI=env.ApiMercantil //Esto luego lo metes en un environment
+  private stripeAPI = env.ApiMercantil //Esto luego lo metes en un environment
 
   private URLGRAPH: string = env.urlGraphql;
   private URLTRASNF: string = env.ApiTransf;
@@ -89,7 +89,7 @@ export class RegisterPayService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
-        infoClient.name=infoClient.name.replace(/["]+/g, '');
+        infoClient.name = infoClient.name.replace(/["]+/g, '');
         const DataQuery = {
           query: `
           query{
@@ -168,36 +168,36 @@ export class RegisterPayService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
 
-        if(infoClient.bank == "ZELLE WELL FARGO zellepagos@fibextelecom.net"){
-          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img + ' nameTitular: '+ infoClient.nameTitular + ' emailTitular: '+ infoClient.emailTitular
-          infoClient.name=infoClient.name.replace(/["]+/g, '');
-        }else{
+        if (infoClient.bank == "ZELLE WELL FARGO zellepagos@fibextelecom.net") {
+          infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img + ' nameTitular: ' + infoClient.nameTitular + ' emailTitular: ' + infoClient.emailTitular
+          infoClient.name = infoClient.name.replace(/["]+/g, '');
+        } else {
           infoClient.note = infoClient.note + ' -Recibo:' + infoClient.img
-          infoClient.name=infoClient.name.replace(/["]+/g, '');
+          infoClient.name = infoClient.name.replace(/["]+/g, '');
         }
 
         const DataQuery = {
-            Nombre:infoClient.name,
-            Cedula:infoClient.dni,
-            Email:infoClient.email,
-            Motivo:"Pago",
-            Fecha:infoClient.date,
-            Nota:infoClient.note,
-            Imagen:infoClient.img,
-            Banco:infoClient.bank,
-            id_Cuba:infoClient.id_Cuba,
-            Monto:infoClient.amount,
-            IdContrato:infoClient.IdContrato,
-            comprobante:infoClient.voucher,
-            NombreTitular:infoClient.nameTitular || "",
-            CedulaTitula:infoClient.dniTitular || "",
-            EmailTitular:infoClient.emailTitular || "",
-            Tipo:"Pago",
-            BancoEmisor:infoClient.BancoEmisor,
-            ipaddress:infoClient.AddresIp,
-            browser_agent:infoClient.Browser
+          Nombre: infoClient.name,
+          Cedula: infoClient.dni,
+          Email: infoClient.email,
+          Motivo: "Pago",
+          Fecha: infoClient.date,
+          Nota: infoClient.note,
+          Imagen: infoClient.img,
+          Banco: infoClient.bank,
+          id_Cuba: infoClient.id_Cuba,
+          Monto: infoClient.amount,
+          IdContrato: infoClient.IdContrato,
+          comprobante: infoClient.voucher,
+          NombreTitular: infoClient.nameTitular || "",
+          CedulaTitula: infoClient.dniTitular || "",
+          EmailTitular: infoClient.emailTitular || "",
+          Tipo: "Pago",
+          BancoEmisor: infoClient.BancoEmisor,
+          ipaddress: infoClient.AddresIp,
+          browser_agent: infoClient.Browser
         }
-       this.http.post(this.URLTRASNF+"SearchPay", DataQuery).subscribe((Response: any) => {
+        this.http.post(this.URLTRASNF + "SearchPay", DataQuery).subscribe((Response: any) => {
           console.log("Respuesta del SAE");
           console.log(Response);
           resolve(Response)
@@ -212,10 +212,10 @@ export class RegisterPayService {
     })
   }
 
-  ReferenciaMes(DataReference:SearchReference){
+  ReferenciaMes(DataReference: SearchReference) {
     return new Promise(async (resolve: any, reject: any) => {
       //console.log(DataReference);
-      this.http.post(this.URLTRASNF+"SeaRefMs", DataReference).subscribe((Response: any) => {
+      this.http.post(this.URLTRASNF + "SeaRefMs", DataReference).subscribe((Response: any) => {
         // console.log("Repondio");
         // console.log(Response);
         resolve(Response)
@@ -225,10 +225,10 @@ export class RegisterPayService {
     })
   }
 
-  AbonadoSearchSector(abonado:any){
+  AbonadoSearchSector(abonado: any) {
     return new Promise(async (resolve: any, reject: any) => {
-      let DataQuery= {
-        "abonado":abonado
+      let DataQuery = {
+        "abonado": abonado
       }
 
       const headersData: any = {
@@ -236,7 +236,7 @@ export class RegisterPayService {
         'Authorization': env.authdbCheckDigital
       }
 
-      this.http.post(this.URLTRASNF+"SearchSector", DataQuery,{headers:headersData}).subscribe((Response: any) => {
+      this.http.post(this.URLTRASNF + "SearchSector", DataQuery, { headers: headersData }).subscribe((Response: any) => {
         resolve(Response)
       }, (error) => {
         reject(error)
@@ -250,10 +250,10 @@ export class RegisterPayService {
         console.log("Me llego esto");
         console.log(Abonado);
         const DataQuery = {
-          Abonado:Abonado
+          Abonado: Abonado
         }
 
-        this.http.post(this.URLTRASNF+"StatusPay", DataQuery).subscribe((Response: any) => {
+        this.http.post(this.URLTRASNF + "StatusPay", DataQuery).subscribe((Response: any) => {
           resolve(Response)
         }, (error) => {
           reject(error)
@@ -270,10 +270,10 @@ export class RegisterPayService {
     return new Promise(async (resolve: any, reject: any) => {
       try {
         const DataQuery = {
-          Abonado:Abonado
+          Abonado: Abonado
         }
 
-        this.http.post(this.URLTRASNF+"StatusPaysTeen", DataQuery).subscribe((Response: any) => {
+        this.http.post(this.URLTRASNF + "StatusPaysTeen", DataQuery).subscribe((Response: any) => {
           resolve(Response)
         }, (error) => {
           reject(error)
@@ -329,14 +329,14 @@ export class RegisterPayService {
     })
   }
 
-  PostRegisPaypal(BodyJson:any) {
+  PostRegisPaypal(BodyJson: any) {
     return new Promise<any>(async (resolve, reject) => {
       try {
         let PreHeaders = {
           db: `thomas_cobertura`,
           table: `paypal_pay`,
         };
-        const body ={
+        const body = {
           name_user: BodyJson.name_user, //us
           customer_id: BodyJson.customer_id,//us
           email: BodyJson.purchase_units[0].payee.email_address,
@@ -378,7 +378,7 @@ export class RegisterPayService {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
         headers.TokenAuthPlataform = this.tokendbfulll
         headers.Authorization = this.authDBFULL
-        console.log('headers:', headers, 'url:', url )
+        console.log('headers:', headers, 'url:', url)
         this.http.get(url, { headers }).subscribe((res: any) => {
           let jsonres;
           resolve(res);
@@ -393,51 +393,51 @@ export class RegisterPayService {
   DbFullPost(Url: string, headers1: {}, Databody: any, registerChange: string) {
     console.log('entró :>> ');
     return new Promise(async (resolve: any, reject: any) => {
+      try {
+        const headersData: any = {
+          ...headers1,
+          'TokenAuthPlataform': this.tokendbfulll,
+          'Authorization': this.authDBFULL,
+          'x-keys-to-add-id': `${registerChange}`,
+          'x-keys-of-arrays': '[]',
+          'x-relations': 'false',
+          'Content-Type': 'application/json'
+        }
+        let databodyF: any = {
+          ...Databody,
+        }
+        console.log('headersData :>> ', headersData);
+        console.log('databodyF :>> ', databodyF);
+        this.http.post<any>(`${this.URLDBFULL}create-info`, databodyF, { headers: headersData }).subscribe((response: any) => {
+          console.log('response :>> ', response);
+          let jsonres;
           try {
-            const headersData: any = {
-              ...headers1,
-              'TokenAuthPlataform': this.tokendbfulll,
-              'Authorization': this.authDBFULL,
-              'x-keys-to-add-id': `${registerChange}`,
-              'x-keys-of-arrays': '[]',
-              'x-relations': 'false',
-              'Content-Type': 'application/json'
+            if (this.isJsonString(response)) {
+              jsonres = JSON.parse(response)
+            } else {
+              jsonres = response
             }
-            let databodyF: any = {
-              ...Databody,
-            }
-            console.log('headersData :>> ', headersData);
-            console.log('databodyF :>> ', databodyF);
-            this.http.post<any>(`${this.URLDBFULL}create-info`, databodyF, { headers: headersData }).subscribe((response: any) => {
-              console.log('response :>> ', response);
-              let jsonres;
-              try {
-                if (this.isJsonString(response)) {
-                  jsonres = JSON.parse(response)
-                } else {
-                  jsonres = response
-                }
-                console.log('salio:>>')
-                resolve(jsonres);
-              } catch (error) {
-                console.log(error)
-              }
-            }, err => {
-              reject(err);
-            });
+            console.log('salio:>>')
+            resolve(jsonres);
           } catch (error) {
             console.log(error)
-            reject(error)
           }
+        }, err => {
+          reject(err);
+        });
+      } catch (error) {
+        console.log(error)
+        reject(error)
+      }
     })
   }
 
-  MasterPOSTDBFULL(headersData: any, body:any, url: string) {
+  MasterPOSTDBFULL(headersData: any, body: any, url: string) {
     return new Promise(async (resolve: any, reject: any) => {
       this.security.EncrypDataHash(headersData).then((headers: any) => {
         headers.TokenAuthPlataform = this.tokendbfulll
         headers.Authorization = this.authDBFULL
-        this.http.post(url,body,{ headers }).subscribe((res: any) => {
+        this.http.post(url, body, { headers }).subscribe((res: any) => {
           resolve(res);
         })
       }).catch((error: any) => {
@@ -466,7 +466,7 @@ export class RegisterPayService {
     })
   }
 
-  AjusteDataPaypal(Body:any){
+  AjusteDataPaypal(Body: any) {
     // const BodyJSON ={
     //   name_user: BodyJson.name_user,
     //   customer_id: BodyJson.customer_id,
@@ -526,24 +526,24 @@ export class RegisterPayService {
     );
   }
 
-  confirmPaymen(data: any){
-    return new Promise((resolve,reject)=>{
+  confirmPaymen(data: any) {
+    return new Promise((resolve, reject) => {
       this.http.post(`${env.ApiMercantil}payment`, data).subscribe({
         next: data => {
           console.log(data);
-            resolve(data)
+          resolve(data)
         },
         error: error => {
           console.log(error);
-            reject(error);
+          reject(error);
         }
-    });
+      });
     });
   }
 
   stripePost(data: any) {
 
-    let DataUSer={
+    let DataUSer = {
       "name_user": data.Name,
       "customer_id": data.c_iDC,
       "stripe_id": data.id,
@@ -560,17 +560,17 @@ export class RegisterPayService {
     }
     console.log("Lo que le voy a enviar stripePost");
     console.log(DataUSer);
-    const headers = new HttpHeaders({'TokenAuth':env.NewTokenMercantil,'Authorization':env.AuthdbMercantil});
+    const headers = new HttpHeaders({ 'TokenAuth': env.NewTokenMercantil, 'Authorization': env.AuthdbMercantil });
     this.security.EncrypDataHash(DataUSer)
-    .then((resp:any)=>{
-      console.log(resp);
-       this.http.post(`${env.ApiMercantil}SavStr`, resp,{headers:headers}).subscribe({
-         error: error => {
-           console.log(error);
-         }
-       })
-    })
-    .catch((error:any)=>console.error(error));
+      .then((resp: any) => {
+        console.log(resp);
+        this.http.post(`${env.ApiMercantil}SavStr`, resp, { headers: headers }).subscribe({
+          error: error => {
+            console.log(error);
+          }
+        })
+      })
+      .catch((error: any) => console.error(error));
   }
 
   getNewBankList() {
@@ -603,15 +603,15 @@ export class RegisterPayService {
         /**
          * Validación extraña pero funciona para API TLS (NOTA: En apiSSL no era necesario este enfoque pero bueno, la verdad es que ni idea :D)
          */
-        if(d instanceof Object && typeof d.message === "string") {
+        if (d instanceof Object && typeof d.message === "string") {
           try {
             d = JSON.parse(this.enc.Descrypt(d.message));
 
-            if(d instanceof Array) {
+            if (d instanceof Array) {
               d = JSON.parse(d[0]);
             }
           }
-          catch(err) { }
+          catch (err) { }
         }
         _resolve(d);
       }
@@ -624,28 +624,7 @@ export class RegisterPayService {
         console.log(headersData);
         console.log(body);
         this.security.EncrypDataHash(headersData).then((headers: any) => {
-          this.http.post(url, body, { headers }).subscribe((res: any) => {
-            let jsonres;
-            try {
-              if (this.isJsonString(res)) {
-                jsonres = JSON.parse(res)
-              } else {
-                jsonres = res
-              }
-
-              resolve(jsonres);
-            }catch (error) {
-              console.log(error)
-            }
-          })
-        }).catch((error: any) => {
-          reject(error)
-        })
-      }
-      else {
-        this.security.EncrypDataHash(headersData).then((headers: any) => {
-          // se debe cambiar por axion para colocarle un timeout
-          this.http.get(url, { headers }).subscribe((res: any) => {
+          this.http.post(url, body, { headers }).pipe(timeout(env.API_TIMEOUT_STANDARD)).subscribe((res: any) => {
             let jsonres;
             try {
               if (this.isJsonString(res)) {
@@ -658,7 +637,28 @@ export class RegisterPayService {
             } catch (error) {
               console.log(error)
             }
-          })
+          }, (err) => reject(err))
+        }).catch((error: any) => {
+          reject(error)
+        })
+      }
+      else {
+        this.security.EncrypDataHash(headersData).then((headers: any) => {
+          // se debe cambiar por axion para colocarle un timeout
+          this.http.get(url, { headers }).pipe(timeout(env.API_TIMEOUT_STANDARD)).subscribe((res: any) => {
+            let jsonres;
+            try {
+              if (this.isJsonString(res)) {
+                jsonres = JSON.parse(res)
+              } else {
+                jsonres = res
+              }
+
+              resolve(jsonres);
+            } catch (error) {
+              console.log(error)
+            }
+          }, (err) => reject(err))
         }).catch((error: any) => {
           reject(error)
         })

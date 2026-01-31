@@ -26,20 +26,20 @@ export class PaypalComponent implements OnInit {
   public saldoBs: string = ''
   public saldoText: string = ''
   public subscription: string = ''
-  private TypeNavegador: string ='';
-  private PaypalTasa:number = 5.5;
-  private ComissionF:number = 0.3;
-  public MontoCancelar: any="";
-  public ValidoPagoPaypal: boolean= false;
+  private TypeNavegador: string = '';
+  private PaypalTasa: number = 5.5;
+  private ComissionF: number = 0.3;
+  public MontoCancelar: any = "";
+  public ValidoPagoPaypal: boolean = false;
   public ReciberPay: boolean = false;
   public MountNegative: boolean = false;
   public AmountMinin: boolean = true;
 
   public MountPaypal: FormGroup;
   public regexAmount: RegExp = /^(\d+(\.\d{0,2})?|\.?\d{1,2})$/;
-  public TasaCambio: string ="";
+  public TasaCambio: string = "";
 
-  constructor(private _TypeBrowserService: TypeBrowserService,private fb: UntypedFormBuilder ,private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router,private _apimercantil: ApiMercantilService) {
+  constructor(private _TypeBrowserService: TypeBrowserService, private fb: UntypedFormBuilder, private _seguridadDatos: SeguridadDatos, private _hModal: HelperModalsService, private _helper: HelperService, public router: Router, private _apimercantil: ApiMercantilService) {
     this.nameClient = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
     this.saldoUSD = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.paquete = JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)) != "" ? JSON.parse(this._seguridadDatos.decrypt(localStorage.getItem("Service")!)).join() : "";
@@ -52,14 +52,14 @@ export class PaypalComponent implements OnInit {
   ngOnInit() {
     this.MountPaypal = this.fb.group({
       cantidad: ['', [Validators.required, Validators.pattern(this.regexAmount)]],
-    },{ validator: isNegativeNumber })
+    }, { validator: isNegativeNumber })
     this.MontoCancelar = this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Monto")!) : "";
     this.initConfig();
     this.TypeNavegador = this._TypeBrowserService.detectBrowserVersion();
-    if(Number(this.MontoCancelar<=1)){
+    if (Number(this.MontoCancelar <= 1)) {
       this.ValidoPagoPaypal = true;
     }
-    else{
+    else {
       this.cantidadPaypal?.setValue(this.MontoCancelar);
     }
     this.PagoACobrar();
@@ -67,11 +67,11 @@ export class PaypalComponent implements OnInit {
 
   get cantidadPaypal() { return this.MountPaypal.get('cantidad'); }
 
-  PagoACobrar(){
+  PagoACobrar() {
     this.cantidadPaypal?.valueChanges.subscribe({
 
       next: (value) => {
-        if(value <= 0){
+        if (value <= 0) {
           this.AmountMinin = false;
           return;
         }
@@ -81,11 +81,11 @@ export class PaypalComponent implements OnInit {
             this.invalidForm(`Usted no puede reportar con más de 8 meses de su suscripción`, ``);
             this.cantidadPaypal?.setValue('');
             return;
-          }else{
+          } else {
             this.AmountMinin = true;
             this.ValidoPagoPaypal = false;
           }
-          this.MontoCancelar=value;
+          this.MontoCancelar = value;
           this.GetMontoNetoRecibir();
         }
       }
@@ -103,12 +103,12 @@ export class PaypalComponent implements OnInit {
 
 
   Clear() {
-    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
+    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : '';
     localStorage.clear();
     this.router.navigate(['']);
   }
 
-  GetMontoNetoRecibir(){
+  GetMontoNetoRecibir() {
     return (eval(`parseFloat((100*(this.ComissionF + Number(this.MontoCancelar))) / (0 - this.PaypalTasa + 100)).toFixed(2)`));
   }
 
@@ -186,19 +186,19 @@ export class PaypalComponent implements OnInit {
           browser_agent: this.TypeNavegador,
           montoarecibir: this.MontoCancelar
         }
-       // this._RegisterPayService.PostRegisPaypal(dataRegis).then((payResult) => {
+        // this._RegisterPayService.PostRegisPaypal(dataRegis).then((payResult) => {
         if (data.status === 'COMPLETED') {
-          if(Number(data.purchase_units[0].amount.value) == this.GetMontoNetoRecibir() || Number(data.purchase_units[0].amount.value) >= this.GetMontoNetoRecibir()){
-            this._apimercantil.RegPay(dataRegis).then((resp:any)=>{
+          if (Number(data.purchase_units[0].amount.value) == this.GetMontoNetoRecibir() || Number(data.purchase_units[0].amount.value) >= this.GetMontoNetoRecibir()) {
+            this._apimercantil.RegPay(dataRegis).then((resp: any) => {
               try {
-                  this.ReciberPay = true;
-                  this._hModal.alertexit("Pago aprobado")
+                this.ReciberPay = true;
+                this._hModal.alertexit("Pago aprobado")
               } catch (error) {
                 console.error('Error:', error);
               }
             })
-            .catch((error:any)=>console.error(error));
-          }else{
+              .catch((error: any) => console.error(error));
+          } else {
             this._hModal.invalidForm("El monto es menor a lo indicado, por favor comuniquese con soporte");
           }
         }

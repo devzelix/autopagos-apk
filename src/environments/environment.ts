@@ -130,19 +130,23 @@ export const environment = {
     // API Telegram Support
     url_api_telegram: 'https://telegramfront.fibex.info/',
     api_telegram_token: '4AA38428-14F2-4FE4-9218-12C399AA6D08',
-    
+
     url_api_webhook_caja: 'https://webhook-caja-automatica.fibextelecom.net/api',
     api_webhook_caja_token: 'a5118521-62d6-4d0c-bace-12e11bc64087',
-    
+
     kioskApiUrl: 'https://paygo-backend.solocodebase.com/api',
-    
+
     // URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
     URL_IDLE_PAGE: 'https://shell-ads.solocodebase.com/',
 
     /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
     adminRif: 'J3081825169',
 
-    is_login_kiosk: true
+    /** URL de la API del POS Ubi */
+    posUbiApiUrl: 'https://pos-ubi.solocodebase.com/api',
+
+    is_login_kiosk: true,
+    API_TIMEOUT_STANDARD: 10000,
 };
 
 /*

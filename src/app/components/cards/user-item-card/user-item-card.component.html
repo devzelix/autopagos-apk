@@ -1,23 +1,35 @@
-<button (click)="onUserClick()" class="user-select-item-card" [attr.aria-label]="'Contrato ' + (userItem.nro_contrato || '')">
-  <div class="card-left">
-    <div class="contract-number">{{ userItem.nro_contrato }}</div>
-    <div class="last-payment" *ngIf="userItem.ultimo_fecha_pago">Últ. pago {{ userItem.ultimo_fecha_pago | date:'MMM d, yyyy' }}</div>
-    <div class="last-payment" *ngIf="!userItem.ultimo_fecha_pago">Sin fecha</div>
+<button (click)="onUserClick()" class="contract-card" [attr.aria-label]="'Contrato ' + (userItem.nro_contrato || '')">
+  <div class="card-header">
+    <div class="status-indicator" [ngClass]="{
+         'status-active': userItem.status_contrato === 'activo',
+         'status-cancelled': userItem.status_contrato === 'anulado',
+         'status-pending': userItem.status_contrato === 'pendiente'
+       }"></div>
+    <span class="contract-label">CONTRATO</span>
+    <span class="status-text">{{ userItem.status_contrato | titlecase }}</span>
   </div>
 
-  <div class="card-right">
-    <div class="status-badge" [ngClass]="{
-        'status-active': userItem.status_contrato === 'activo',
-        'status-cancelled': userItem.status_contrato === 'anulado',
-        'status-pending': userItem.status_contrato === 'pendiente'
-      }">
-      {{ userItem.status_contrato | titlecase }}
+  <div class="card-body">
+    <h3 class="contract-id">{{ userItem.nro_contrato }}</h3>
+    <div class="last-payment-info" *ngIf="userItem.ultimo_fecha_pago">
+      <i class="material-icons">event</i>
+      <span>{{ userItem.ultimo_fecha_pago | date:'MMM d, yyyy' }}</span>
     </div>
-
-    <div class="balance">
-      <div class="balance-label">{{ (userItem.isDebtor) ? 'Saldo a pagar' : 'Saldo a favor' }}</div>
-      <div class="balance-value">{{ userItem.saldo | currency }}</div>
+    <div class="last-payment-info" *ngIf="!userItem.ultimo_fecha_pago">
+      <i class="material-icons">event_busy</i>
+      <span>Sin fecha</span>
     </div>
   </div>
 
+  <div class="card-footer">
+    <div class="balance-info">
+      <span class="balance-title">{{ (userItem.isDebtor) ? 'Saldo a pagar' : 'Saldo a favor' }}</span>
+      <div class="balance-amount" [ngClass]="{'debtor': userItem.isDebtor}">
+        {{ userItem.saldo | currency }}
+      </div>
+    </div>
+    <div class="selection-arrow">
+      <i class="material-icons">chevron_right</i>
+    </div>
+  </div>
 </button>

@@ -1,0 +1,298 @@
+.kiosk-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 9999;
+
+    // Fondo transparente para que se vea el fondo de app.component
+    background: transparent;
+    backdrop-filter: none;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; // Cambiado de center a flex-start para controlar mejor con flex-grow
+    align-items: center;
+    font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: white;
+    padding: 0; // Eliminamos padding general para que el header toque el borde si es necesario
+    gap: 0; // Controlaremos el espaciado con márgenes o flex
+
+    >* {
+        position: relative;
+        z-index: 10;
+        width: 100%; // Asegurar que los hijos tomen el ancho completo
+    }
+
+    // Wrapper del Header
+    app-header-form {
+        width: 100%;
+        margin-top: 1rem; // Un poco de espacio superior
+    }
+
+    // Contenedor Central (Status)
+    .status-container {
+        flex: 1; // Toma el espacio disponible
+        display: flex;
+        justify-content: center;
+        align-items: center; // Centra verticalmente la tarjeta
+        width: 100%;
+        padding: 1rem;
+        // Agregamos padding inferior extra para compensar la altura del header 
+        // y lograr un centrado visual "respecto a la pantalla" más preciso
+        padding-bottom: 8rem;
+        box-sizing: border-box;
+    }
+
+    // Footer
+    app-footer {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+
+
+
+
+    .loading-minimal {
+        text-align: center;
+        color: white;
+        animation: fadeIn 0.5s ease-in forwards;
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 1.5px;
+            margin-top: 1.5rem;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+
+            &:after {
+                width: 60px;
+                height: 60px;
+                border-width: 5px;
+            }
+        }
+
+        .loader-ring.white:after {
+            border-color: white transparent white transparent;
+        }
+    }
+
+    .status-card {
+        background: #ffffff;
+        width: 100%;
+        // Ancho aumentado considerablemente
+        max-width: 900px;
+        // Padding aumentado mucho para mayor altura
+        padding: 6rem 5rem;
+        border-radius: 16px;
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        color: #333;
+        margin: 0 1rem; // Margen lateral para pantallas pequeñas
+
+        animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .icon-circle {
+            width: 120px;
+            height: 120px;
+            // Bordes un poco menos circulares si se desea, o mantener circulo. 
+            // La imagen muestra botones cuadrados redondeados, pero un icono suele ser circular.
+            // Mantendremos círculo para el icono pero ajustamos el margen.
+            border-radius: 50%;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2rem;
+            font-size: 5rem;
+
+            &.warning {
+                color: #215288;
+                background: #e3effa;
+            }
+
+            &.error {
+                color: #b71c1c;
+                background: #ffebee;
+            }
+
+            &.network {
+                color: #555;
+                background: #e2e8f0;
+            }
+
+            &.locked {
+                color: #215288;
+                background: #e3effa;
+            }
+        }
+
+        h2 {
+            // Título GIGANTE
+            font-size: 4rem;
+            color: #0d2846;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-transform: none;
+            letter-spacing: -2px;
+            line-height: 1;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        p {
+            color: #718096;
+            line-height: 1.4;
+            margin-bottom: 3rem;
+            // Subtítulo
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+
+        .tech-details {
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
+            margin-bottom: 3rem; // Aumentado para separar del botón
+
+            .uuid-container {
+                background: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 12px;
+                border: 1px solid #e9ecef;
+
+                small {
+                    display: block;
+                    color: #999;
+                    font-size: 1.2rem; // Reduced slightly
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    margin-bottom: 0.8rem;
+                    letter-spacing: 1.5px;
+                }
+
+                code {
+                    color: #333;
+                    font-family: 'Consolas', 'Monaco', monospace;
+                    // Reducido un poco para que quepa en una sola línea
+                    font-size: 1.8rem;
+                    font-weight: 800;
+                    word-break: break-all;
+                    display: block;
+                }
+            }
+        }
+
+        .btn-primary-action {
+            background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
+            color: white;
+            border: none;
+            padding: 1.6rem 2.5rem;
+            border-radius: 12px;
+            // Botón GIGANTE
+            font-size: 2.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            // SIN SOMBRA (Flat style)
+            box-shadow: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s ease;
+            margin-top: 1.5rem;
+
+            i {
+                font-size: 2.4rem;
+            }
+
+            &:hover {
+                transform: translateY(-2px);
+                // Sin sombra al hover tampoco, solo brillo/gradiente
+                box-shadow: none;
+                background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+                opacity: 0.95;
+            }
+
+            &:active {
+                transform: scale(0.98);
+                box-shadow: none;
+            }
+        }
+
+        .btn-text {
+            margin-top: 1rem; // Reduced to stick closer to primary button
+            background: none;
+            border: none;
+            color: #718096;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            width: 100%;
+        }
+    }
+
+
+
+    .loader-ring {
+        display: inline-block;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+
+        &:after {
+            content: " ";
+            display: block;
+            width: 46px;
+            height: 46px;
+            margin: 8px;
+            border-radius: 50%;
+            border: 5px solid #215288;
+            border-color: #215288 transparent #215288 transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
