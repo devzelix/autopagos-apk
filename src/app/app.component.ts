@@ -61,6 +61,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Estado actual del kiosco para lógica interna
   private currentKioskStatus: string = 'LOADING';
+  // Estado del guard POS
+  public posGuardStatus: 'LOADING' | 'CONNECTION_ERROR' | 'SERVER_ERROR' = 'LOADING';
 
   // CONTROL DE VISIBILIDAD DEL BOTÓN CON TIMING
   public showGlobalButton = false;
@@ -333,18 +335,30 @@ export class AppComponent implements OnInit, OnDestroy {
    * ejecuta test de conexión a la API de Ubi (testUbiipos) para verificar sincronía, y luego habilita el contenido.
    */
   private async runPosUbiVerificationAndTest(): Promise<void> {
+    // 1. Iniciar estado LOADING
+    this.ngZone.run(() => {
+      this.posGuardStatus = 'LOADING';
+      this.cdr.detectChanges();
+    });
+
     const posUbi = this.kioskAuth.getFirstPosUbi();
     if (!posUbi?.ip) {
       this.ngZone.run(() => {
-        this.verifyingPosUbi = false;
-        this.posUbiConnectionFailed = false;
+        // Si no hay configuración de POS en el backend, ¿qué hacemos?
+        // Asumiremos que es un error de configuración del servidor/kiosco
+        this.posGuardStatus = 'SERVER_ERROR'; // O simplemente no mostrar nada si no es obligatorio
+        this.verifyingPosUbi = true;
+        this.posUbiConnectionFailed = true;
         this.cdr.detectChanges();
       });
       return;
     }
     const fullAddress = `http://${posUbi.ip}:${posUbi.port}`;
     this.localStorageService.set('ubiiposHost', fullAddress);
+
     let testOk = false;
+    let isServerError = false;
+
     try {
       const result = await this.ubiiposService.testUbiipos(fullAddress);
       testOk = !!(result && result.status >= 200 && result.status < 300);
@@ -353,7 +367,10 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       console.warn('⚠️ [Verificación POS Ubi] Error en test de conexión:', err);
+      // Podríamos diferenciar por tipo de error si es posible, pero generalmente si falla el test es conexión
+      isServerError = false; // Asumimos conexión por defecto
     }
+
     this.ngZone.run(() => {
       this.verifyingPosUbi = false;
       if (testOk) {
@@ -364,6 +381,12 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       } else {
         this.posUbiConnectionFailed = true;
+        // Diferenciar estados
+        if (isServerError) {
+          this.posGuardStatus = 'SERVER_ERROR';
+        } else {
+          this.posGuardStatus = 'CONNECTION_ERROR';
+        }
       }
       this.cdr.detectChanges();
     });
@@ -425,6 +448,15 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.showAdCarousel && !this.isInWelcomeView()) {
       this.showAdCarousel = false;
     }
+  }
+
+  public onPosGuardContinue(): void {
+    console.log('⚠️ [POS Guard] El usuario decidió continuar sin POS.');
+    this.posUbiConnectionFailed = false;
+    this.verifyingPosUbi = false;
+    this.posUbiConfigured = false;
+    this.localStorageService.removeItem('ubiiposHost');
+    this.cdr.detectChanges();
   }
 
   public onIdleButtonInteraction(ev: Event): void {

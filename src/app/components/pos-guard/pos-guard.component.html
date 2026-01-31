@@ -1,0 +1,53 @@
+<div class="kiosk-overlay">
+    <!-- HEADER -->
+    <app-header-form *ngIf="status !== 'LOADING'"></app-header-form>
+
+    <!-- CONTENIDO -->
+    <div [ngSwitch]="status" class="status-container">
+
+        <!-- LOADING STATE -->
+        <div *ngSwitchCase="'LOADING'" class="loading-minimal">
+            <div class="loader-ring white"></div>
+            <h2>Conectando al Punto de Venta...</h2>
+        </div>
+
+        <!-- CONNECTION ERROR STATE (Retry + Continue) -->
+        <div *ngSwitchCase="'CONNECTION_ERROR'" class="status-card">
+            <div class="icon-circle warning">
+                <i class="fa fa-exclamation-triangle"></i>
+            </div>
+            <h2>Error de Conexión</h2>
+            <p>No se encontró el Punto de Venta. Contacte a soporte técnico para resolver el problema.</p>
+
+            <button class="btn-primary-action" (click)="onContinue()">
+                <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.1;">
+                    <span>Continuar</span>
+                    <span style="font-size: 1rem; font-weight: 400; opacity: 0.7; text-transform: none;">El
+                        punto de venta no funcionará</span>
+                </div>
+                <i class="fa fa-arrow-right"></i>
+            </button>
+
+            <button class="btn-text" (click)="onRetry()">
+                Reintentar Conexión
+            </button>
+        </div>
+
+        <!-- SERVER ERROR STATE (Retry Only) -->
+        <div *ngSwitchCase="'SERVER_ERROR'" class="status-card">
+            <div class="icon-circle error">
+                <i class="fa fa-server"></i>
+            </div>
+            <h2>Error del Servidor</h2>
+            <p>Ocurrió un error al consultar el servicio de configuración.</p>
+
+            <button class="btn-primary-action" (click)="onRetry()">
+                <i class="fa fa-refresh"></i> Reintentar
+            </button>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <app-footer *ngIf="status !== 'LOADING'"></app-footer>
+</div>

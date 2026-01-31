@@ -17,31 +17,10 @@
         <app-kiosk-guard></app-kiosk-guard>
       </ng-container>
       <ng-template #kioskRegisteredBlock>
-        <div *ngIf="verifyingPosUbi" class="verifying-pos-ubi">
-          <p class="verifying-pos-ubi__message">Verificando POS Ubi</p>
-          <div class="verifying-pos-ubi__spinner" aria-hidden="true"></div>
-        </div>
-        <div *ngIf="posUbiConnectionFailed" class="pos-ubi-failed-overlay">
-          <div class="pos-ubi-failed-overlay__brand-header">
-            <img src="assets/images/fibex-logo-positive.png" alt="Fibex" class="pos-ubi-failed-overlay__logo">
-          </div>
-          <div class="pos-ubi-failed-overlay__status-container">
-            <div class="pos-ubi-failed-overlay__card">
-              <div class="pos-ubi-failed-overlay__icon-circle pos-ubi-failed-overlay__icon-circle--network">
-                <i class="fa fa-wifi" aria-hidden="true"></i>
-              </div>
-              <h2 class="pos-ubi-failed-overlay__title">No se pudo conectar al POS Ubi</h2>
-              <p class="pos-ubi-failed-overlay__detail">Verifique que el dispositivo esté encendido y en la misma red.
-                Puede reintentar la conexión.</p>
-              <button type="button" class="pos-ubi-failed-overlay__btn-retry" (click)="retryPosUbiTest()">
-                <i class="fa fa-refresh" aria-hidden="true"></i> Reintentar Conexión
-              </button>
-            </div>
-          </div>
-          <div class="pos-ubi-failed-overlay__footer">
-            <small>Fibex AutoPago v1.0.0</small>
-          </div>
-        </div>
+        <ng-container *ngIf="verifyingPosUbi || posUbiConnectionFailed">
+          <app-pos-guard [status]="posGuardStatus" (retry)="retryPosUbiTest()" (continue)="onPosGuardContinue()">
+          </app-pos-guard>
+        </ng-container>
         <!-- [@routeAnimations]="prepareRoute(outlet)" -->
         <div *ngIf="!verifyingPosUbi && !posUbiConnectionFailed" class="flex-container-column animated fadeInUp">
           <router-outlet #outlet="outlet"></router-outlet>
@@ -78,7 +57,7 @@
   <!-- OLD NG IF VALIDATION TOO:
    posUbiConfigured && !verifyingPosUbi && !posUbiConnectionFailed -->
   <div class="idle-page-button-zone"
-    *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED'"
+    *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED' && !verifyingPosUbi && !posUbiConnectionFailed"
     [class.idle-page-button-zone--hidden]="!showGlobalButton" (click)="handleGlobalStart()"
     (touchstart)="handleGlobalStart()">
     <div class="idle-page-chevron" aria-hidden="true">

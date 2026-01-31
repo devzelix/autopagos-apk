@@ -142,6 +142,9 @@ export const environment = {
     /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
     adminRif: 'J3081825169',
 
+    /** URL de la API del POS Ubi */
+    posUbiApiUrl: 'https://pos-ubi.solocodebase.com/api',
+
     is_login_kiosk: true
 };
 

@@ -1761,7 +1761,6 @@ export class FormComponent implements OnInit {
                   this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
                   this.nameClient = this.listContratos[0].cliente;
                   console.error('ERROR NO PASA POR AQUI')
-                  console.log('EL DNI MENORRR', this.subscription);
 
                   this.setGreeting(this.nameClient)
                   this.name?.setValue(res[0].cliente);
@@ -1852,7 +1851,6 @@ export class FormComponent implements OnInit {
 
               this.dni?.setValue(dni_);
               // this.searchInfoEquipos(dni_);
-              console.log('EL DNI MENORRR', dni_);
 
               this.nameClient = String(dni_);
               this.setGreeting(this.nameClient)
