@@ -9,39 +9,52 @@
 
   // Fondo transparente para que se vea el fondo de app.component
   background: transparent;
-  backdrop-filter: none; 
+  backdrop-filter: none;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; // Cambiado de center a flex-start para controlar mejor con flex-grow
   align-items: center;
   font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: white;
-  padding: 1rem;
-  gap: 3rem;
+  padding: 0; // Eliminamos padding general para que el header toque el borde si es necesario
+  gap: 0; // Controlaremos el espaciado con márgenes o flex
 
   >* {
     position: relative;
     z-index: 10;
+    width: 100%; // Asegurar que los hijos tomen el ancho completo
   }
 
-  .brand-header {
-    text-align: center;
-    margin: 0;
-    animation: fadeIn 0.8s ease-in;
-
-    .logo-overlay {
-      height: 90px;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-      margin: 0;
-    }
-  }
-
-  .status-container {
+  // Wrapper del Header
+  app-header-form {
     width: 100%;
+    margin-top: 1rem; // Un poco de espacio superior
+  }
+
+  // Contenedor Central (Status)
+  .status-container {
+    flex: 1; // Toma el espacio disponible
     display: flex;
     justify-content: center;
+    align-items: center; // Centra verticalmente la tarjeta
+    width: 100%;
+    padding: 1rem;
+    // Agregamos padding inferior extra para compensar la altura del header 
+    // y lograr un centrado visual "respecto a la pantalla" más preciso
+    padding-bottom: 8rem;
+    box-sizing: border-box;
   }
+
+  // Footer
+  app-footer {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+
+
+
 
   .loading-minimal {
     text-align: center;
@@ -74,26 +87,31 @@
   .status-card {
     background: #ffffff;
     width: 100%;
-    max-width: 520px;
-    padding: 3rem 2.5rem;
-    border-radius: 24px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+    // Ancho aumentado considerablemente
+    max-width: 900px;
+    // Padding aumentado mucho para mayor altura
+    padding: 6rem 5rem;
+    border-radius: 16px;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
     text-align: center;
     color: #333;
-    margin: 0;
+    margin: 0 1rem; // Margen lateral para pantallas pequeñas
 
     animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
     .icon-circle {
-      width: 90px;
-      height: 90px;
+      width: 120px;
+      height: 120px;
+      // Bordes un poco menos circulares si se desea, o mantener circulo. 
+      // La imagen muestra botones cuadrados redondeados, pero un icono suele ser circular.
+      // Mantendremos círculo para el icono pero ajustamos el margen.
       border-radius: 50%;
       background: #f0f4f8;
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 0 auto 2rem;
-      font-size: 3rem;
+      font-size: 5rem;
 
       &.warning {
         color: #215288;
@@ -117,19 +135,25 @@
     }
 
     h2 {
-      font-size: 1.8rem;
-      color: #215288;
-      margin-bottom: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: -0.5px;
+      // Título GIGANTE
+      font-size: 4rem;
+      color: #0d2846;
+      margin-bottom: 1rem;
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: -2px;
+      line-height: 1;
+      font-family: 'Poppins', sans-serif;
     }
 
     p {
-      color: #666;
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
-      font-size: 1.05rem;
+      color: #718096;
+      line-height: 1.4;
+      margin-bottom: 3rem;
+      // Subtítulo
+      font-size: 1.8rem;
+      font-weight: 500;
+      letter-spacing: -0.5px;
     }
 
     .tech-details {
@@ -146,7 +170,7 @@
         small {
           display: block;
           color: #999;
-          font-size: 0.75rem;
+          font-size: 0.9rem;
           font-weight: 600;
           text-transform: uppercase;
           margin-bottom: 0.5rem;
@@ -156,7 +180,7 @@
         code {
           color: #333;
           font-family: 'Consolas', 'Monaco', monospace;
-          font-size: 1.3rem;
+          font-size: 1.6rem;
           font-weight: bold;
           word-break: break-all;
           display: block;
@@ -168,56 +192,55 @@
       background: linear-gradient(135deg, #215288 0%, #2d7bc2 100%);
       color: white;
       border: none;
-      padding: 1rem 2rem;
-      border-radius: 16px;
-      font-size: 1rem;
-      font-weight: 600;
+      padding: 1.6rem 2.5rem;
+      border-radius: 12px;
+      // Botón GIGANTE
+      font-size: 2.2rem;
+      font-weight: 800;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 14px rgba(33, 82, 136, 0.4);
+      // SIN SOMBRA (Flat style)
+      box-shadow: none;
       text-transform: uppercase;
       letter-spacing: 1px;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
-      transition: all 0.3s ease;
+      gap: 1rem;
+      transition: all 0.2s ease;
+      margin-top: 1.5rem;
 
       i {
-        font-size: 1.1rem;
+        font-size: 2.4rem;
       }
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(33, 82, 136, 0.5);
+        // Sin sombra al hover tampoco, solo brillo/gradiente
+        box-shadow: none;
         background: linear-gradient(135deg, #1a426d 0%, #2566a3 100%);
+        opacity: 0.95;
       }
 
       &:active {
-        transform: translateY(0);
+        transform: scale(0.98);
+        box-shadow: none;
       }
     }
 
     .btn-text {
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       background: none;
       border: none;
-      color: #7f8c8d;
+      color: #718096;
       text-decoration: underline;
       cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
     }
   }
 
-  .footer-info {
-    margin: 0;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    animation: fadeIn 1s ease-in;
-  }
+
 
   .loader-ring {
     display: inline-block;

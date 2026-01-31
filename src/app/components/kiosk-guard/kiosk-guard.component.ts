@@ -27,4 +27,10 @@ export class KioskGuardComponent implements OnInit {
       this.kioskAuth.initAuth();
     }, 1000);
   }
+
+  goHome() {
+    // Cuando hacen tap en el logo (header), reintentamos auth o recargamos
+    console.log('🔄 Reiniciando desde logo header...');
+    window.location.reload();
+  }
 }
