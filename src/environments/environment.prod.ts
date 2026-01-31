@@ -137,7 +137,7 @@ export const environment = {
   kioskApiUrl: 'https://paygo-backend.solocodebase.com/api',
   
   // URL_IDLE_PAGE: 'https://xl2fw0mw-4200.use2.devtunnels.ms/',
-  URL_IDLE_PAGE: 'https://mock-ads.solocodebase.com/',
+  URL_IDLE_PAGE: 'https://shell-ads.solocodebase.com/',
 
   /** RIF de la empresa que al ingresarlo en el panel de verificación abre el panel de administración (sin guiones). */
   adminRif: 'J3081825169',

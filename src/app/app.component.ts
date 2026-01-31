@@ -254,6 +254,11 @@ export class AppComponent implements OnInit, OnDestroy {
       const prevRoute = this.currentRoute;
       this.currentRoute = event.urlAfterRedirects;
       
+      // ============================================
+      // REINICIAR ANIMACIÓN CSS EN CADA CAMBIO DE RUTA
+      // ============================================
+      this.triggerRouteAnimation();
+      
       // FIX IFRAME: Solo volvemos al modo horizontal si regresamos a la Home
       if (this.currentRoute === '/') {
         this.isGoingToPay = false; 
@@ -469,6 +474,30 @@ export class AppComponent implements OnInit, OnDestroy {
   public scrollToTop = () => {
     const scrollElement: HTMLElement | null = document.getElementById('content-scrollable')
     scrollElement?.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  /**
+   * Reinicia la animación CSS fadeInUp del contenedor flex-container-column
+   * Esto se ejecuta cada vez que cambia la ruta para mostrar la transición
+   */
+  private triggerRouteAnimation(): void {
+    // Usamos requestAnimationFrame para asegurar que el DOM esté listo
+    requestAnimationFrame(() => {
+      const containers = document.querySelectorAll('.flex-container-column');
+      
+      containers.forEach((container) => {
+        const element = container as HTMLElement;
+        
+        // Removemos las clases de animación temporalmente
+        element.classList.remove('animated', 'fadeInUp');
+        
+        // Forzamos un reflow para que el navegador registre el cambio
+        void element.offsetHeight;
+        
+        // Restauramos las clases de animación
+        element.classList.add('animated', 'fadeInUp');
+      });
+    });
   }
 
   public closeAdminPanel(): void {

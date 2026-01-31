@@ -64,7 +64,7 @@ import { KioskGuardComponent } from './components/kiosk-guard/kiosk-guard.compon
 import { IdlePlaceholderComponent } from './components/idle-placeholder/idle-placeholder.component';
 
 const routes: Routes = [
-  { path: '', component: WelcomeViewComponent, data: { animation: 'WelcomePage' } },
+  { path: '', component: environment.is_login_kiosk ? WelcomeViewComponent : FormComponent, data: { animation: 'WelcomePage' } },
   { path: 'pay', component: FormComponent, data: { animation: 'PayPage' } },
   { path: 'idle', component: IdlePlaceholderComponent, data: { animation: 'IdlePage' } },
   // { path: 'serial', component: SerialComponent },

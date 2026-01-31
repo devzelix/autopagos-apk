@@ -3,9 +3,10 @@
 <div id="content-scrollable" class="container">
   
   <!-- Sin modo kiosk: contenido principal -->
+  <!-- [@routeAnimations]="prepareRoute(outlet)" -->
   <div *ngIf="!isLoginKiosk"
-       class="flex-container-column"
-       [@routeAnimations]="prepareRoute(outlet)">
+       class="flex-container-column animated fadeInUp"
+       >
     <router-outlet #outlet="outlet"></router-outlet>
     <app-footer *ngIf="!helper.view"></app-footer>
     <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
@@ -41,9 +42,11 @@
           <small>Fibex AutoPago v1.0.0</small>
         </div>
       </div>
+      <!-- [@routeAnimations]="prepareRoute(outlet)" -->
       <div *ngIf="!verifyingPosUbi && !posUbiConnectionFailed"
-           class="flex-container-column"
-           [@routeAnimations]="prepareRoute(outlet)">
+           class="flex-container-column animated fadeInUp"
+           
+           >
         <router-outlet #outlet="outlet"></router-outlet>
         <app-footer *ngIf="!helper.view"></app-footer>
         <app-administrative-module *ngIf="adminPanelOpen$ | async" (closeModal)="closeAdminPanel()"></app-administrative-module>
