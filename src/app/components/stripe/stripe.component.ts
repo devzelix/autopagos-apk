@@ -71,7 +71,7 @@ export class StripeComponent implements OnInit {
       }
     }
   };
-  
+
   get validForm() {
     return this.stripeCardValid;
   }
@@ -125,7 +125,7 @@ export class StripeComponent implements OnInit {
       // this.saldoUSD = "1";
       // this.cantidadStripe?.setValue('1');
       this.ValidoPagoStripe = true;
-      
+
     } else {
       //this.MountNegative = true;
       this.cantidadStripe?.setValue(this.MontoCancelar);
@@ -146,7 +146,7 @@ export class StripeComponent implements OnInit {
   }
 
   Clear() {
-    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : null;
+    this._helper.dniToReload = this._seguridadDatos.decrypt(localStorage.getItem("dni")!) ? this._seguridadDatos.decrypt(localStorage.getItem("dni")!) : '';
     localStorage.clear();
     this.router.navigate(['']);
 
@@ -159,11 +159,11 @@ export class StripeComponent implements OnInit {
 
       next: (value) => {
 
-        if(value <= 0){
+        if (value <= 0) {
           this.AmountMinin = false;
           return;
         }
-        
+
         if (value) {
           if (Number(value) > Number(this.saldoUSD) && Number(value) > Number(this.subscription) * 3) {
             this.ValidoPagoStripe = true;
@@ -202,40 +202,40 @@ export class StripeComponent implements OnInit {
     this.stripeService
       .createToken(this.card.getCard(), { name: this.paymentForm.value.name })
       .subscribe(result => {
-        resultTok=result.token
-            let data={
-              abonado: this.nroContrato,
-              token:result?.token?.id,
-              amount:this.GetMontoNetoRecibir()*100,
-              paquete: this.paquete
+        resultTok = result.token
+        let data = {
+          abonado: this.nroContrato,
+          token: result?.token?.id,
+          amount: this.GetMontoNetoRecibir() * 100,
+          paquete: this.paquete
+        }
+        //Aqui
+        this._ApiMercantil.getStripePayment(data)
+          .then((res: any) => {
+            if (res.pago) {
+              let client_secret = res.pago.client_secret
+              this.stripeService.confirmCardPayment(client_secret,
+                {
+                  payment_method: { card: this.card.getCard() },
+                }).subscribe((result: any) => {
+                  if (result.error) {
+                    this.paymentReject('Ocurrió un error con tu pago', result.error.message);
+                  }
+                  else {
+                    this.paymentAproved('Exitoso', 'Pago exitoso')
+                    this.showReceipt = true;
+                    result.paymentIntent.neto = this.saldoUSD
+                    this.PostData(result.paymentIntent);
+                  }
+
+                })
+            } else {
+              this.paymentReject('Ocurrió un error con tu pago', 'Intenta de nuevo en otro momento');
             }
-            //Aqui
-            this._ApiMercantil.getStripePayment(data)
-            .then((res:any)=>{
-                if(res.pago){
-                    let client_secret=res.pago.client_secret
-                    this.stripeService.confirmCardPayment(client_secret, 
-                      {
-                        payment_method: { card: this.card.getCard() },
-                      }).subscribe((result:any) =>{
-                      if(result.error){
-                        this.paymentReject('Ocurrió un error con tu pago',result.error.message);
-                      }
-                      else{
-                        this.paymentAproved('Exitoso','Pago exitoso')
-                        this.showReceipt = true;
-                        result.paymentIntent.neto=this.saldoUSD
-                        this.PostData(result.paymentIntent);
-                      }
-                        
-                    })
-              }else{
-                this.paymentReject('Ocurrió un error con tu pago','Intenta de nuevo en otro momento');
-              }
-            })
-            .catch((error:any)=>{
-              console.log(error);
-            })
+          })
+          .catch((error: any) => {
+            console.log(error);
+          })
       });
   }
 

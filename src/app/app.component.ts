@@ -455,6 +455,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.posUbiConnectionFailed = false;
     this.verifyingPosUbi = false;
     this.posUbiConfigured = false;
+    this.localStorageService.set('continueWithoutPos', true);
     this.localStorageService.removeItem('ubiiposHost');
     this.cdr.detectChanges();
   }

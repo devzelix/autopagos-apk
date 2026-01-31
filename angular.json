@@ -26,13 +26,23 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "crypto-js",
+              "sweetalert2",
+              "angularx-qrcode",
+              "@cordobo/qrcode"
+            ],
             "outputPath": "dist/form-pay-fibex",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets", "src/assets/sass"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/assets/sass"
+            ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/assets/sass/main.scss",
@@ -52,8 +62,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "25kb"
+                  "maximumWarning": "40kb",
+                  "maximumError": "60kb"
                 }
               ],
               "fileReplacements": [
@@ -116,7 +126,11 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets", "src/assets/sass"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/assets/sass"
+            ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/assets/sass/main.scss"
