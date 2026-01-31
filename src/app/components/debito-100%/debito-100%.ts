@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Ano, Month, TypeAccount } from '../form/camposSubscription/camposSuscription';
-import { ApiBNCService } from 'src/app/services/ApiBNC';
 import Swal from 'sweetalert2';
 import { Api100x100Service } from 'src/app/services/Api100x100Banco';
 import { SeguridadDatos } from 'src/app/services/bscript.service';
@@ -31,7 +30,7 @@ export class Debit100x100 implements OnInit {
   invalidAmount: any;
   saldoBs: any;
   ListBank: any;
-  NameBank:string = ''
+  NameBank: string = ''
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -51,9 +50,9 @@ export class Debit100x100 implements OnInit {
       identifierTransaction: ['']
     })
     this._Api100x100.ListBank()
-    .then((resp: any) => {
-      this.ListBank = resp
-    }).catch((error: any) => console.error(error))
+      .then((resp: any) => {
+        this.ListBank = resp
+      }).catch((error: any) => console.error(error))
 
     this.Debito100x100.get('pref_ci')?.setValue('V')
     this.Debito100x100.get('CI')?.setValue(this.DNI)
@@ -67,7 +66,7 @@ export class Debit100x100 implements OnInit {
   get Amount() { return this.Debito100x100.get('Amount'); }
   get CountNumber() { return this.Debito100x100.get('CountNumber'); }
 
-  ButtonGetAuthC2P(title:string,text:string,bank:string) {
+  ButtonGetAuthC2P(title: string, text: string, bank: string) {
 
     Swal.fire({
       title: "Pin de autorización",
@@ -106,26 +105,26 @@ export class Debit100x100 implements OnInit {
   PagoDebito100x100() {
     this.alertFind("Procesando su pago", "Por favor espere")
     //Desencripto el localstorage para obtenerel nombre del usuario
-    let name_user = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!): "";
+    let name_user = this._seguridadDatos.decrypt(localStorage.getItem("Name")!) ? this._seguridadDatos.decrypt(localStorage.getItem("Name")!) : "";
     //Esta lógica identifica si es número de telfono o nro de cuenta ya que en backend se lleva por este numero para identifcar el tipo
     let ValueIdentifier = this.CountNumber?.value.length == 11 || this.CountNumber?.value.length == 12 ? "202" : "222"
     this.Debito100x100.controls['identifierTransaction'].setValue(ValueIdentifier);
 
-    this._Api100x100.CompraDebito({...this.Debito100x100.value,Abonado: this.Abonado,Contrato: this.Contrato,name_user: name_user})
-    .then((resp: any) => {
-        if (resp.hasOwnProperty('status')){
+    this._Api100x100.CompraDebito({ ...this.Debito100x100.value, Abonado: this.Abonado, Contrato: this.Contrato, name_user: name_user })
+      .then((resp: any) => {
+        if (resp.hasOwnProperty('status')) {
           if (resp.status == true) {
             this.OutputResponse.emit({
               Tipo: "Pago Realizado",
               Monto: this.Debito100x100.get('Amount')?.value
             })
-          }else {
-            this.invalidForm(`Hubo un problema`,`${resp.description}`);
+          } else {
+            this.invalidForm(`Hubo un problema`, `${resp.description}`);
           }
-        }else{
-          this.invalidForm("Error",`${resp.error}`)
+        } else {
+          this.invalidForm("Error", `${resp.error}`)
         }
-  }).catch((error: any) => console.error(error))
+      }).catch((error: any) => console.error(error))
   }
 
   warnignFormGeneral(text: string, html: string, ButtonCancel: string, ButtonConfirm: string, NameMetodo: string) {
@@ -141,7 +140,7 @@ export class Debit100x100 implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         //Metodo que voy a llamar
-            eval(NameMetodo);
+        eval(NameMetodo);
       }
     })
       .catch((error: any) => {
@@ -196,7 +195,7 @@ export class Debit100x100 implements OnInit {
 
   ResetForm() {
     this.Debito100x100.reset()
-    console.log("entre aqui 2",this.OutputResponse)
+    console.log("entre aqui 2", this.OutputResponse)
     this.OutputResponse.emit({
       Tipo: "Regresar"
     })

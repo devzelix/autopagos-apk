@@ -20,10 +20,10 @@ import { routeAnimations } from './route-animations';
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private viewCheckInterval: any;
-  
+
   // 🚩 FLAG: Cambiar a true para habilitar el carrusel de publicidad
   private readonly ENABLE_AD_CAROUSEL = false;
-  
+
   public showAdCarousel = false;
   // Tiempo sin actividad para mostrar la pantalla de inactividad (iframe + botón Empezar)
   private readonly INACTIVITY_TIME = 120000; // 2 minutos
@@ -58,9 +58,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Ruta actual para controlar la visibilidad del botón global
   public currentRoute: string = '';
-  
+
   // Estado actual del kiosco para lógica interna
   private currentKioskStatus: string = 'LOADING';
+  // Estado del guard POS
+  public posGuardStatus: 'LOADING' | 'CONNECTION_ERROR' | 'SERVER_ERROR' = 'LOADING';
 
   // CONTROL DE VISIBILIDAD DEL BOTÓN CON TIMING
   public showGlobalButton = false;
@@ -75,12 +77,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Verificamos si el mensaje viene con la etiqueta que acordamos
     if (event.data && event.data.type === 'IDLE_CONTENT_INFO') {
-      
+
       // IMPORTANTE: Ejecutar dentro de Angular Zone para que la UI se actualice
       this.ngZone.run(() => {
         this.iframeContentType = event.data.contentType;
         console.log('✅ Iframe reportó listo. Tipo:', this.iframeContentType);
-        
+
         // Detener reintentos porque ya respondió
         this.stopIframeRetry();
 
@@ -107,7 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (!this.showGlobalButton) return;
 
     console.log('🔘 Botón Global START presionado - Desapareciendo botón');
-    
+
     // 1. Desaparecer botón de inmediato para que no estorbe la animación vertical
     this.showGlobalButton = false;
     this.cdr.detectChanges();
@@ -130,11 +132,11 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.minDisplayTimeout) return; // Ya hay una activación programada
 
     console.log(`⏳ Iframe listo. Esperando ${this.MIN_DISPLAY_DELAY_MS}ms para transición suave...`);
-    
+
     this.minDisplayTimeout = setTimeout(() => {
       // IMPORTANTE: Limpiar la variable del timeout una vez que se ejecuta
       this.minDisplayTimeout = null;
-      
+
       console.log('⏰ Timeout cumplido. Verificando condiciones para activar Idle...');
 
       // Verificar de nuevo por seguridad (Ruta, Estado y POS Ubi configurado)
@@ -144,7 +146,7 @@ export class AppComponent implements OnInit, OnDestroy {
          // Mantenemos el botón encendido para que no parpadee durante el carrusel lateral
          this.activateIdleMode();
       } else {
-         console.warn('⚠️ Condiciones no cumplidas tras timeout (Ruta o Estado cambiaron). Cancelando.');
+        console.warn('⚠️ Condiciones no cumplidas tras timeout (Ruta o Estado cambiaron). Cancelando.');
       }
     }, this.MIN_DISPLAY_DELAY_MS);
   }
@@ -160,11 +162,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     if (this.isMonitoringIframe) return; // Ya estamos monitoreando
-    
+
     console.log('📡 Iniciando monitoreo de Iframe (Welcome View detectado)');
     this.isMonitoringIframe = true;
     this.isIframeReady = false;
-    
+
     // Carga inicial
     this.reloadIframe();
 
@@ -184,7 +186,7 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log('🛑 Deteniendo monitoreo y limpiando Iframe');
     this.isMonitoringIframe = false;
     this.stopIframeRetry();
-    
+
     if (this.minDisplayTimeout) {
       clearTimeout(this.minDisplayTimeout);
       this.minDisplayTimeout = null;
@@ -211,8 +213,8 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   private activateIdleMode(): void {
     this.isMonitoringIframe = false;
-    this.stopIframeRetry(); 
-    
+    this.stopIframeRetry();
+
     this.ngZone.run(() => {
       this.showIdlePage = true;
       this.router.navigate(['/idle']); // <--- AHORRO DE RAM: Destruye WelcomeView
@@ -239,7 +241,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private adminPanelStateService: AdminPanelStateService,
     private router: Router
-  ) { }
+  ) {
+    this.idlePageUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+  }
 
   ngOnInit(): void {
     this.posUbiConfigured = !!this.localStorageService.get<string>('ubiiposHost');
@@ -253,15 +257,15 @@ export class AppComponent implements OnInit, OnDestroy {
     ).subscribe((event: NavigationEnd) => {
       const prevRoute = this.currentRoute;
       this.currentRoute = event.urlAfterRedirects;
-      
+
       // ============================================
       // REINICIAR ANIMACIÓN CSS EN CADA CAMBIO DE RUTA
       // ============================================
       this.triggerRouteAnimation();
-      
+
       // FIX IFRAME: Solo volvemos al modo horizontal si regresamos a la Home
       if (this.currentRoute === '/') {
-        this.isGoingToPay = false; 
+        this.isGoingToPay = false;
       }
 
       // --- LÓGICA DE VISIBILIDAD DEL BOTÓN (CON DELAY TRAS RENDERIZADO) ---
@@ -278,7 +282,7 @@ export class AppComponent implements OnInit, OnDestroy {
             });
           }
         }, 400); // Casi inmediato
-      } 
+      }
       this.cdr.detectChanges();
 
       // Si llegamos al Welcome View ('/') y POS Ubi ya está configurado, iniciamos la maquinaria del iframe
@@ -301,25 +305,25 @@ export class AppComponent implements OnInit, OnDestroy {
     this.kioskStatus$.pipe(
       takeUntil(this.destroy$)
     ).subscribe((status) => {
-       console.log('🔄 Estado del Kiosco actualizado:', status);
-       this.currentKioskStatus = status;
+      console.log('🔄 Estado del Kiosco actualizado:', status);
+      this.currentKioskStatus = status;
 
-       if (status === 'REGISTERED') {
-         this.verifyingPosUbi = true;
-         this.cdr.detectChanges();
-         this.runPosUbiVerificationAndTest();
-       } else {
-         this.verifyingPosUbi = false;
-         this.posUbiConnectionFailed = false;
-         this.stopIframeMonitoring();
-       }
+      if (status === 'REGISTERED') {
+        this.verifyingPosUbi = true;
+        this.cdr.detectChanges();
+        this.runPosUbiVerificationAndTest();
+      } else {
+        this.verifyingPosUbi = false;
+        this.posUbiConnectionFailed = false;
+        this.stopIframeMonitoring();
+      }
     });
 
     // Forzamos visualización de carga al inicio
     this.kioskAuth.setLoadingState();
     setTimeout(() => {
       this.kioskAuth.initAuth();
-    }, 1000); 
+    }, 1000);
   }
 
   /**
@@ -327,20 +331,29 @@ export class AppComponent implements OnInit, OnDestroy {
    * ejecuta test de conexión a la API de Ubi (testUbiipos) para verificar sincronía, y luego habilita el contenido.
    */
   private async runPosUbiVerificationAndTest(): Promise<void> {
+    // 1. Iniciar estado LOADING
+    this.ngZone.run(() => {
+      this.posGuardStatus = 'LOADING';
+      this.cdr.detectChanges();
+    });
+
     const posUbi = this.kioskAuth.getFirstPosUbi();
     
     // Si no hay POS Ubi, marcamos como fallido pero PERMITIMOS que el resto (iframe) funcione
     if (!posUbi?.ip) {
       console.warn('⚠️ [POS Ubi] No hay IP configurada. Se continuará sin POS.');
-      this.ngZone.run(() => {
-        this.verifyingPosUbi = false;
-        this.posUbiConnectionFailed = false; // No mostramos error bloquante, solo seguimos
-        
-        // IMPORTANTE: Iniciar iframe aunque no haya POS
+      this.ngZone.run(() => {        
+        // Si no hay configuración de POS en el backend, ¿qué hacemos?
+        // Asumiremos que es un error de configuración del servidor/kiosco
+        this.posGuardStatus = 'SERVER_ERROR'; // O simplemente no mostrar nada si no es obligatorio
+        this.verifyingPosUbi = true;
+        this.posUbiConnectionFailed = true;
+
+         // IMPORTANTE: Iniciar iframe aunque no haya POS
         if (this.currentRoute === '/' || this.router.url === '/') {
           this.startIframeMonitoring();
         }
-        
+
         this.cdr.detectChanges();
       });
       return;
@@ -348,7 +361,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const fullAddress = `http://${posUbi.ip}:${posUbi.port}`;
     this.localStorageService.set('ubiiposHost', fullAddress);
+
     let testOk = false;
+    let isServerError = false;
+
     try {
       const result = await this.ubiiposService.testUbiipos(fullAddress);
       testOk = !!(result && result.status >= 200 && result.status < 300);
@@ -357,17 +373,23 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     } catch (err) {
       console.warn('⚠️ [Verificación POS Ubi] Error en test de conexión:', err);
+      // Podríamos diferenciar por tipo de error si es posible, pero generalmente si falla el test es conexión
+      isServerError = false; // Asumimos conexión por defecto
     }
+
     this.ngZone.run(() => {
       this.verifyingPosUbi = false;
       if (testOk) {
         this.posUbiConnectionFailed = false;
         this.posUbiConfigured = true;
       } else {
-        // Si hay POS configurado pero falla, ¿queremos bloquear o dejar pasar?
-        // El código original bloqueaba mostrando la pantalla de error.
-        // Si quieres que el IDLE salga igual, descomenta la siguiente línea y comenta el else actual.
-        // this.posUbiConnectionFailed = true; 
+        this.posUbiConnectionFailed = true;
+        // Diferenciar estados
+        if (isServerError) {
+          this.posGuardStatus = 'SERVER_ERROR';
+        } else {
+          this.posGuardStatus = 'CONNECTION_ERROR';
+        }
       }
       
       // SIEMPRE intentamos iniciar el iframe si estamos en home, haya o no POS conectado
@@ -401,7 +423,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Recarga el iframe para forzar un nuevo evento de carga/mensaje
    */
   private reloadIframe(): void {
-    this.isIframeReady = false; 
+    this.isIframeReady = false;
     if (this.idlePageUrl) {
       const separator = this.idlePageUrl.includes('?') ? '&' : '?';
       const urlWithTimestamp = `${this.idlePageUrl}${separator}t=${Date.now()}`;
@@ -415,7 +437,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Verifica si estamos en la vista de inicio (welcome-view)
    */
   private isInWelcomeView(): boolean {
-    if (this.helper.view) return false; 
+    if (this.helper.view) return false;
     const welcomeView = document.querySelector('app-welcome-view');
     const formView = document.querySelector('form.form-login');
     return welcomeView !== null && formView === null;
@@ -439,6 +461,16 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.showAdCarousel && !this.isInWelcomeView()) {
       this.showAdCarousel = false;
     }
+  }
+
+  public onPosGuardContinue(): void {
+    console.log('⚠️ [POS Guard] El usuario decidió continuar sin POS.');
+    this.posUbiConnectionFailed = false;
+    this.verifyingPosUbi = false;
+    this.posUbiConfigured = false;
+    this.localStorageService.set('continueWithoutPos', true);
+    this.localStorageService.removeItem('ubiiposHost');
+    this.cdr.detectChanges();
   }
 
   public onIdleButtonInteraction(ev: Event): void {
@@ -473,7 +505,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public scrollToTop = () => {
     const scrollElement: HTMLElement | null = document.getElementById('content-scrollable')
-    scrollElement?.scrollTo({top: 0, behavior: 'smooth'});
+    scrollElement?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   /**
@@ -484,16 +516,16 @@ export class AppComponent implements OnInit, OnDestroy {
     // Usamos requestAnimationFrame para asegurar que el DOM esté listo
     requestAnimationFrame(() => {
       const containers = document.querySelectorAll('.flex-container-column');
-      
+
       containers.forEach((container) => {
         const element = container as HTMLElement;
-        
+
         // Removemos las clases de animación temporalmente
         element.classList.remove('animated', 'fadeInUp');
-        
+
         // Forzamos un reflow para que el navegador registre el cambio
         void element.offsetHeight;
-        
+
         // Restauramos las clases de animación
         element.classList.add('animated', 'fadeInUp');
       });

@@ -60,6 +60,7 @@ import { AdvancePaymentModalComponent } from './components/modals/advance-paymen
 import { EditAmountModalComponent } from './components/modals/edit-amount-modal/edit-amount-modal.component';
 import { CustomSelectComponent } from './components/custom-select/custom-select.component';
 import { KioskGuardComponent } from './components/kiosk-guard/kiosk-guard.component';
+import { PosGuardComponent } from './components/pos-guard/pos-guard.component';
 
 import { IdlePlaceholderComponent } from './components/idle-placeholder/idle-placeholder.component';
 
@@ -118,7 +119,8 @@ const routes: Routes = [
     EditAmountModalComponent,
     CustomSelectComponent,
     KioskGuardComponent,
-    IdlePlaceholderComponent
+    IdlePlaceholderComponent,
+    PosGuardComponent
   ],
   imports: [
     BrowserModule,
@@ -157,4 +159,4 @@ const routes: Routes = [
   // schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

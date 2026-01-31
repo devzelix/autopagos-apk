@@ -154,11 +154,9 @@ $shadow-elegant: 0 25px 50px -12px rgba(33, 82, 136, 0.25);
   &:focus,
   &:active {
     // background-color: $app-dark-blue !important;
-    background: linear-gradient(
-      36deg,
-      $app-dark-blue 18%,
-      $app-light-blue 100%
-    ) !important;
+    background: linear-gradient(36deg,
+        $app-dark-blue 18%,
+        $app-light-blue 100%) !important;
   }
 
   h3 {
@@ -502,11 +500,9 @@ label.form-control-label {
 }
 
 .form-control-btn {
-  background: linear-gradient(
-    135deg,
-    #215288 0%,
-    #2d7bc2 100%
-  ); // Fibex Gradient
+  background: linear-gradient(135deg,
+      #215288 0%,
+      #2d7bc2 100%); // Fibex Gradient
   padding: 1.2rem 2rem;
   color: white;
   border-radius: 50px; // Pill button
@@ -745,16 +741,103 @@ label.form-control-label {
   }
 }
 
-.user-list-select-content {
+// Clase aplicada al contenedor principal .form-login__group
+.contract-selection-mode {
+  width: 840px !important; // Ancho identico al login vertical
+  height: 100% !important; // Altura identica al login vertical de kiosko
+  max-width: 95vw !important;
+  max-height: 90vh !important; // No exceder la pantalla
+  padding: 80px 40px !important; // Reducido el padding lateral (de 80px a 40px)
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important; // FORZAR QUE HIJOS SE ESTIREN
+  transition: all 0.4s ease;
+  overflow: hidden !important;
+
+  // Forzar que el contenedor de pasos ocupe todo el ancho
+  .section-step-container,
+  .section-step-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .user-list-select-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-grow: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important; // ESTIRAR HIJOS
+  }
+
   .user-list-select-grid {
-    // display: grid;
-    // grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-    display: flex;
+    display: grid !important;
+    grid-template-columns: 1fr !important; // UNA SOLA COLUMNA
+    gap: 3rem;
+    width: 100% !important; // Ocupar todo el ancho disponible
+    height: 100%;
+    max-height: 1100px;
+    overflow-y: auto;
+    padding: 2rem 0 !important; // Quitar padding lateral del grid para ganar espacio
+    box-sizing: border-box;
+
+    // Scrollbar personalizado para Fibex
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(33, 82, 136, 0.4);
+      border-radius: 10px;
+
+      &:hover {
+        background: rgba(33, 82, 136, 0.6);
+      }
+    }
+
+    // Asegurar que las tarjetas dentro del grid se expandan al máximo
+    app-user-item-card {
+      width: 100% !important;
+      display: block !important;
+    }
+  }
+
+  // Ajustar el botón de atrás para que esté arriba como en el login
+  .links-nav-btns-container {
+    margin-bottom: 40px !important;
     width: 100%;
-    justify-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex !important;
+    justify-content: flex-start !important;
+  }
+}
+
+.user-list-select-content {
+  width: 100%;
+
+  .user-list-select-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    width: 100%;
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+    box-sizing: border-box;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
   }
 }
 
@@ -983,6 +1066,7 @@ label.form-control-label {
     }
   }
 }
+
 // ==========================================
 // NEW CONTRACT INFO PANEL STYLES (PREMIUM DESIGN)
 // ==========================================
@@ -1218,6 +1302,7 @@ label.form-control-label {
     .lbl {
       color: #63b3ed;
     }
+
     .val {
       color: #2c5282;
     }
@@ -1300,6 +1385,7 @@ label.form-control-label {
 // ==========================================
 
 @media only screen and (max-width: 480px) {
+
   // 1. Slender Input Container
   .form-control-input {
     margin-bottom: 1rem !important;

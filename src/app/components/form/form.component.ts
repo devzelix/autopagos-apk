@@ -59,7 +59,6 @@ import { UplaodImageService } from '../../services/uplaod-image.service';
 import { BankEmisorS } from '../../interfaces/bankList';
 import { TasaService } from '../../services/tasa.service';
 import { DataBankService } from '../../services/data-bank.service';
-import { UploadPHPService } from '../../services/UploadPHP.service';
 import { ApiBNCService } from 'src/app/services/ApiBNC';
 
 //Modal
@@ -318,6 +317,7 @@ export class FormComponent implements OnInit {
   // false = mostrar login, true = ocultar login (mostrar contenido principal)
   // Inicializado en null para no mostrar nada hasta validar sesión
   public isAdminLogged: boolean | null = true; // Forzar true para el flujo automático
+  public isSearchingClient: boolean = false;
 
   // Custom Dropdown State
   public showDniDropdown: boolean = false;
@@ -349,30 +349,20 @@ export class FormComponent implements OnInit {
   constructor(
     public registerPayService: RegisterPayService,
     private fb: UntypedFormBuilder,
-    private uplaodImageService: UplaodImageService,
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private tasaService: TasaService,
     private dataBankService: DataBankService,
-    private _snackBar: MatSnackBar,
-    private _helperModal: HelperModalsService,
     private _Consultas: ConsultasService,
-    private miceService: MiscelaneosService,
-    private _Cloudinary: CloudynariService,
-    private _UploadPHP: UploadPHPService,
     private _ApiMercantil: ApiMercantilService,
-    private _Api100x100: Api100x100Service,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
     public captchaService: CaptchaThomasService,
-    private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
-    private _helper: HelperService,
     private cacheService: ClearCacheService,
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    private _localStorageService: LocalstorageService,
     private _checkoutSessionService: CheckoutSessionService,
     private cdr: ChangeDetectorRef,
     private adminPanelStateService: AdminPanelStateService
@@ -816,10 +806,10 @@ export class FormComponent implements OnInit {
       // Inicia el contador final: si no toca "Continuar", enviar al inicio (borrando todo)
       this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
         console.log("Timeout final alcanzado. Limpiando y volviendo al inicio.");
-        
+
         // 1. Cerramos el modal de inmediato
         this.closeInactivitySwal();
-        
+
         // 2. Esperamos un brevísimo instante a que el DOM se libere del modal
         setTimeout(() => {
           this.goHome(); // 3. Ahora sí, navegamos tranquilos
@@ -1590,13 +1580,10 @@ export class FormComponent implements OnInit {
 
       this.dniConsulted = false;
       if (this.hasMinimumDigits(dni_)) {
-        this.alertFindDniMercantil(
-          'Buscando información del cliente',
-          'Por favor espere...'
-        );
+        this.isSearchingClient = true;
         //Busco el tipo de cliente
         this.registerPayService.getTypeClient(dni_).then((result: any) => {
-          if (result.length > 0 && result[0].TipoCliente != 'NATURAL') {
+          if (result && result.length > 0 && result[0].TipoCliente != 'NATURAL') {
             this.possibleWithholdingAgent = true;
           }
         });
@@ -1606,7 +1593,8 @@ export class FormComponent implements OnInit {
         this.registerPayService.getSaldoByDni(dni_).then((res: IUserSaldo[]) => {
           console.log('RES USER 2', res)
           this.lastDni = dni_;
-          this.closeAlert();
+          this.isSearchingClient = false;
+          // this.closeAlert(); // Removed as we are not using Swal anymore
 
           try {
             if (
@@ -1772,7 +1760,6 @@ export class FormComponent implements OnInit {
                   this.subscription = parseFloat(this.listContratos[0].subscription).toFixed(2);
                   this.nameClient = this.listContratos[0].cliente;
                   console.error('ERROR NO PASA POR AQUI')
-                  console.log('EL DNI MENORRR', this.subscription);
 
                   this.setGreeting(this.nameClient)
                   this.name?.setValue(res[0].cliente);
@@ -1863,7 +1850,6 @@ export class FormComponent implements OnInit {
 
               this.dni?.setValue(dni_);
               // this.searchInfoEquipos(dni_);
-              console.log('EL DNI MENORRR', dni_);
 
               this.nameClient = String(dni_);
               this.setGreeting(this.nameClient)
@@ -1946,6 +1932,11 @@ export class FormComponent implements OnInit {
               reject()
             }
           }
+        }).catch((err) => {
+          console.error("Error searching client:", err);
+          this.isSearchingClient = false;
+          this.invalidForm("Error de conexión al buscar cliente");
+          reject();
         });
       } else {
         // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida
