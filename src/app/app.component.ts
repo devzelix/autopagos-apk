@@ -158,10 +158,10 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('⛔ Kiosco no registrado. Iframe en pausa.');
       return;
     }
-    if (!this.posUbiConfigured) {
-      console.log('⛔ POS Ubi no configurado. Iframe en pausa.');
-      return;
-    }
+    // if (!this.posUbiConfigured) {
+    //   console.log('⛔ POS Ubi no configurado. Iframe en pausa.');
+    //   return;
+    // }
 
     if (this.isMonitoringIframe) return; // Ya estamos monitoreando
     
