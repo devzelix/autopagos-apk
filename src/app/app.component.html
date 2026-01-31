@@ -78,7 +78,6 @@
   </div>
 
   <!-- BOTÓN GLOBAL INMORTAL (Visible solo en WelcomeView '/' y en IdlePage '/idle', cuando kiosk y POS Ubi están configurados; no mostrar durante Verificando POS Ubi ni en pantalla de fallo de conexión) -->
-  <!-- posUbiConfigured && !verifyingPosUbi && !posUbiConnectionFailed -->
   <div class="idle-page-button-zone" 
        *ngIf="(currentRoute === '/' || currentRoute === '/idle') && !(adminPanelOpen$ | async) && (kioskStatus$ | async) === 'REGISTERED'"
        [class.idle-page-button-zone--hidden]="!showGlobalButton"

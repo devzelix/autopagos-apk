@@ -323,14 +323,24 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   private async runPosUbiVerificationAndTest(): Promise<void> {
     const posUbi = this.kioskAuth.getFirstPosUbi();
+    
+    // Si no hay POS Ubi, marcamos como fallido pero PERMITIMOS que el resto (iframe) funcione
     if (!posUbi?.ip) {
+      console.warn('⚠️ [POS Ubi] No hay IP configurada. Se continuará sin POS.');
       this.ngZone.run(() => {
         this.verifyingPosUbi = false;
-        this.posUbiConnectionFailed = false;
+        this.posUbiConnectionFailed = false; // No mostramos error bloquante, solo seguimos
+        
+        // IMPORTANTE: Iniciar iframe aunque no haya POS
+        if (this.currentRoute === '/' || this.router.url === '/') {
+          this.startIframeMonitoring();
+        }
+        
         this.cdr.detectChanges();
       });
       return;
     }
+
     const fullAddress = `http://${posUbi.ip}:${posUbi.port}`;
     this.localStorageService.set('ubiiposHost', fullAddress);
     let testOk = false;
@@ -348,12 +358,22 @@ export class AppComponent implements OnInit, OnDestroy {
       if (testOk) {
         this.posUbiConnectionFailed = false;
         this.posUbiConfigured = true;
-        if (this.currentRoute === '/' || this.router.url === '/') {
-          this.startIframeMonitoring();
-        }
       } else {
-        this.posUbiConnectionFailed = true;
+        // Si hay POS configurado pero falla, ¿queremos bloquear o dejar pasar?
+        // El código original bloqueaba mostrando la pantalla de error.
+        // Si quieres que el IDLE salga igual, descomenta la siguiente línea y comenta el else actual.
+        // this.posUbiConnectionFailed = true; 
       }
+      
+      // SIEMPRE intentamos iniciar el iframe si estamos en home, haya o no POS conectado
+      if (this.currentRoute === '/' || this.router.url === '/') {
+          this.startIframeMonitoring();
+      }
+
+      if (!testOk) {
+         this.posUbiConnectionFailed = true; // Mantenemos aviso de error si falló conexión explícita
+      }
+      
       this.cdr.detectChanges();
     });
   }
