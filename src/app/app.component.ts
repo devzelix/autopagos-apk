@@ -85,7 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.stopIframeRetry();
 
         // Iniciar transición con delay mínimo (si estamos en WelcomeView, Kiosco y POS Ubi configurados)
-        if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED' && this.posUbiConfigured) {
+        if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
           this.scheduleIdleActivation();
         }
       });
@@ -138,7 +138,7 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('⏰ Timeout cumplido. Verificando condiciones para activar Idle...');
 
       // Verificar de nuevo por seguridad (Ruta, Estado y POS Ubi configurado)
-      if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED' && this.posUbiConfigured) {
+      if (this.router.url === '/' && this.currentKioskStatus === 'REGISTERED') {
          console.log('🚀 Condiciones OK. Ejecutando transición a Idle Mode.');
          
          // Mantenemos el botón encendido para que no parpadee durante el carrusel lateral
@@ -158,10 +158,6 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('⛔ Kiosco no registrado. Iframe en pausa.');
       return;
     }
-    // if (!this.posUbiConfigured) {
-    //   console.log('⛔ POS Ubi no configurado. Iframe en pausa.');
-    //   return;
-    // }
 
     if (this.isMonitoringIframe) return; // Ya estamos monitoreando
     
@@ -282,7 +278,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       // Si llegamos al Welcome View ('/') y POS Ubi ya está configurado, iniciamos la maquinaria del iframe
       if (this.currentRoute === '/' || this.currentRoute === '/idle') {
-        if (this.currentRoute === '/' && this.posUbiConfigured) this.startIframeMonitoring();
+        if (this.currentRoute === '/') this.startIframeMonitoring();
       } else {
         this.stopIframeMonitoring();
       }
