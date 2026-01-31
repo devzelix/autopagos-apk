@@ -12,7 +12,7 @@ export class PrinterService {
     'x-tkn': environment.API_PRINTER_TOKEN,
   };
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @description: Funcion para imprimir un ticket
@@ -66,17 +66,6 @@ export class PrinterService {
    * @returns `string`
    */
   getMacAddress(): Promise<string> {
-    // return new Promise<string>((resolve, reject) => {
-    //   const url = environment.API_Printer + '/divice-info/mac';
-    //   axios
-    //     .get(url, { headers: this.headersReq })
-    //     .then((res) => {
-    //       resolve(res.data.data);
-    //     })
-    //     .catch((err) => {
-    //       reject(err);
-    //     });
-    // });
     return new Promise<string>((resolve, _reject) => {
       resolve('50:9a:4c:50:df:4e')
     });

@@ -317,6 +317,7 @@ export class FormComponent implements OnInit {
   // false = mostrar login, true = ocultar login (mostrar contenido principal)
   // Inicializado en null para no mostrar nada hasta validar sesión
   public isAdminLogged: boolean | null = true; // Forzar true para el flujo automático
+  public isSearchingClient: boolean = false;
 
   // Custom Dropdown State
   public showDniDropdown: boolean = false;
@@ -1579,10 +1580,7 @@ export class FormComponent implements OnInit {
 
       this.dniConsulted = false;
       if (this.hasMinimumDigits(dni_)) {
-        this.alertFindDniMercantil(
-          'Buscando información del cliente',
-          'Por favor espere...'
-        );
+        this.isSearchingClient = true;
         //Busco el tipo de cliente
         this.registerPayService.getTypeClient(dni_).then((result: any) => {
           if (result && result.length > 0 && result[0].TipoCliente != 'NATURAL') {
@@ -1595,7 +1593,8 @@ export class FormComponent implements OnInit {
         this.registerPayService.getSaldoByDni(dni_).then((res: IUserSaldo[]) => {
           console.log('RES USER 2', res)
           this.lastDni = dni_;
-          this.closeAlert();
+          this.isSearchingClient = false;
+          // this.closeAlert(); // Removed as we are not using Swal anymore
 
           try {
             if (
@@ -1933,6 +1932,11 @@ export class FormComponent implements OnInit {
               reject()
             }
           }
+        }).catch((err) => {
+          console.error("Error searching client:", err);
+          this.isSearchingClient = false;
+          this.invalidForm("Error de conexión al buscar cliente");
+          reject();
         });
       } else {
         // Esto lo hago porque el cliente ente busca una cedula valida y luego coloca una invalida

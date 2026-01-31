@@ -9,6 +9,7 @@ import { ITypeDNI } from 'src/app/interfaces/payment-opt';
 export class LoginFormComponent implements OnInit {
   @Input() loginTypeSelectValue: string = 'V';
   @Input() dniValue: string = '';
+  @Input() isLoading: boolean = false;
 
   @Output() onLogin = new EventEmitter<{ type: string; dni: string }>();
   @Output() onTypeChange = new EventEmitter<ITypeDNI>();
@@ -18,9 +19,9 @@ export class LoginFormComponent implements OnInit {
   public showDniDropdown: boolean = false;
   public dniOptions: ITypeDNI[] = ['V', 'J', 'E'];
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   toggleDniDropdown() {
     this.showDniDropdown = !this.showDniDropdown;

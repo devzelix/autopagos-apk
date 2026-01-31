@@ -6,6 +6,7 @@ import { LocalstorageService } from '../localstorage.service';
 import { LogService } from '../log.service';
 import { ILog } from 'src/app/interfaces/log.interface';
 import { handleApiError } from 'src/app/utils/api-tools';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -76,6 +77,7 @@ export class UbiiposService {
           amount: '100', // String
           operation: 'PAYMENT',
         },
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -237,6 +239,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: body,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -394,6 +397,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: bodyPrint,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -523,6 +527,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: bodyClose,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST
@@ -734,6 +739,7 @@ export class UbiiposService {
           'Content-Type': 'application/json',
         },
         data: body,
+        timeout: environment.API_TIMEOUT_STANDARD,
       };
 
       // 📋 LOG COMPLETO DEL REQUEST

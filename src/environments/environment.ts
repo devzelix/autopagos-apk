@@ -145,7 +145,8 @@ export const environment = {
     /** URL de la API del POS Ubi */
     posUbiApiUrl: 'https://pos-ubi.solocodebase.com/api',
 
-    is_login_kiosk: true
+    is_login_kiosk: true,
+    API_TIMEOUT_STANDARD: 10000,
 };
 
 /*

@@ -10,96 +10,62 @@
 <div *ngIf="isAdminLogged === true">
   <!-- Vista de pago: tarjeta con usuario, monto, botón PAGAR -->
   <ng-container>
-  <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable">
-    <app-header-form (goHomeEmitter)="goHome()"></app-header-form>
+    <form class="form-login w-full" id="form-offer" *ngIf="!showStateTable">
+      <app-header-form (goHomeEmitter)="goHome()"></app-header-form>
 
-    <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
-    <div
-      class="form-login__group fancy_shadow"
-      [ngClass]="{
+      <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
+      <div class="form-login__group fancy_shadow" [ngClass]="{
         'form-login__group2': nameClient,
         'login-mode-container': navActive === ENUM_NAV.LOGIN
-      }"
-    >
-      <!-- Mensajes de alerta -->
-      <div>
-        <h3
-          class="message-succes"
-          *ngIf="payReported && !playDuplicated"
-          (click)="payReported = !payReported"
-        >
-          Gracias por su pago, el mismo se encuentra en proceso de conciliación
-          el cual dura entre 24 a 48 horas ({{ Contar }})
-        </h3>
-        <h3
-          class="message-succes"
-          *ngIf="CuentaAnulada && !playDuplicated"
-          (click)="CuentaAnulada = !CuentaAnulada"
-        >
-          No es posible registrar su pago porque se cuenta está ANULADA o
-          RETIRADA ({{ Contar }})
-        </h3>
-        <h3
-          class="message-warning"
-          *ngIf="playDuplicated && !payReported"
-          (click)="playDuplicated = !playDuplicated"
-        >
-          No es posible registrar el mismo pago dos veces ({{ Contar }})
-        </h3>
-        <h3 class="message-warning" *ngIf="ErrorRegistrando">
-          {{ MessageErrorRegistrado }} ({{ Contar }})
-        </h3>
-      </div>
-      <!-- Mensajes de alerta -->
+      }">
+        <!-- Mensajes de alerta -->
+        <div>
+          <h3 class="message-succes" *ngIf="payReported && !playDuplicated" (click)="payReported = !payReported">
+            Gracias por su pago, el mismo se encuentra en proceso de conciliación
+            el cual dura entre 24 a 48 horas ({{ Contar }})
+          </h3>
+          <h3 class="message-succes" *ngIf="CuentaAnulada && !playDuplicated" (click)="CuentaAnulada = !CuentaAnulada">
+            No es posible registrar su pago porque se cuenta está ANULADA o
+            RETIRADA ({{ Contar }})
+          </h3>
+          <h3 class="message-warning" *ngIf="playDuplicated && !payReported" (click)="playDuplicated = !playDuplicated">
+            No es posible registrar el mismo pago dos veces ({{ Contar }})
+          </h3>
+          <h3 class="message-warning" *ngIf="ErrorRegistrando">
+            {{ MessageErrorRegistrado }} ({{ Contar }})
+          </h3>
+        </div>
+        <!-- Mensajes de alerta -->
 
-      <div
-        *ngIf="
+        <div *ngIf="
           !payReported ||
           (CuentaAnulada && !playDuplicated) ||
           ErrorRegistrando ||
           (playDuplicated && !payReported)
-        "
-        class="section-step-container"
-      >
-        <div *ngIf="AppFibex" class="links-nav-btns-container">
-          <button
-            type="button"
-            *ngIf="AppFibex && navActive !== ENUM_NAV.LOGIN"
-            (click)="goStepBack()"
-            class="links-btn-navigation nav-back"
-          >
-            <svg
-              class="text-3xl"
-              xmlns="http://www.w3.org/2000/svg"
-              width="1em"
-              height="1em"
-              viewBox="0 0 48 48"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="4"
-                d="M31 36L19 24l12-12"
-              />
-            </svg>
-            <p>
-              {{
+        " class="section-step-container">
+          <div *ngIf="AppFibex" class="links-nav-btns-container">
+            <button type="button" *ngIf="AppFibex && navActive !== ENUM_NAV.LOGIN" (click)="goStepBack()"
+              class="links-btn-navigation nav-back">
+              <svg class="text-3xl" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"
+                  d="M31 36L19 24l12-12" />
+              </svg>
+              <p>
+                {{
                 navActive === ENUM_NAV.PAYMENT_CARDS &&
                 userSelectList.length > 1
-                  ? "Ver usuarios"
-                  : "Atrás"
-              }}
-            </p>
-          </button>
+                ? "Ver usuarios"
+                : "Atrás"
+                }}
+              </p>
+            </button>
 
-        </div>
+          </div>
 
-        <!-- ============================================ -->
-        <!-- OLD DESIGN (COMMENTED OUT - DO NOT DELETE) -->
-        <!-- ============================================ -->
-        <!-- 
+          <!-- ============================================ -->
+          <!-- OLD DESIGN (COMMENTED OUT - DO NOT DELETE) -->
+          <!-- ============================================ -->
+          <!-- 
         <div
           *ngIf="AppFibex && userGreeting"
           class="contract-info-panel fancy_shadow_sm compact-panel"
@@ -141,69 +107,53 @@
           </div>
         </div>
         -->
-        <!-- End Old Contract Info Design -->
+          <!-- End Old Contract Info Design -->
 
-        <!-- ============================================ -->
-        <!-- NEW DESIGN (MATCHING PROVIDED IMAGE) -->
-        <!-- ============================================ -->
-        <div
-          *ngIf="AppFibex && userGreeting"
-          class="new-payment-card-container"
-        >
-          <!-- User Info Section -->
-          <div class="new-user-info-section">
-            <div class="new-user-avatar">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
-                />
-              </svg>
+          <!-- ============================================ -->
+          <!-- NEW DESIGN (MATCHING PROVIDED IMAGE) -->
+          <!-- ============================================ -->
+          <div *ngIf="AppFibex && userGreeting" class="new-payment-card-container">
+            <!-- User Info Section -->
+            <div class="new-user-info-section">
+              <div class="new-user-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4" />
+                </svg>
+              </div>
+              <div class="new-user-details">
+                <h2 class="new-user-greeting">{{ userGreeting | titlecase }}</h2>
+                <p class="new-user-role">TITULAR DEL CONTRATO ASOCIADO</p>
+              </div>
             </div>
-            <div class="new-user-details">
-              <h2 class="new-user-greeting">{{ userGreeting | titlecase }}</h2>
-              <p class="new-user-role">TITULAR DEL CONTRATO ASOCIADO</p>
-            </div>
-          </div>
 
-          <!-- Contract Details Section -->
-          <div
-            *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT"
-            class="new-contract-details-section"
-          >
-            <div class="new-detail-item">
-              <span class="new-detail-label">CONTRATO:</span>
-              <span class="new-detail-value">{{ nroContrato?.value }}</span>
+            <!-- Contract Details Section -->
+            <div *ngIf="navActive !== ENUM_NAV.USER_LIST_SELECT" class="new-contract-details-section">
+              <div class="new-detail-item">
+                <span class="new-detail-label">CONTRATO:</span>
+                <span class="new-detail-value">{{ nroContrato?.value }}</span>
+              </div>
+              <div class="new-detail-item highlight-blue">
+                <span class="new-detail-label">SUSCRIPCIÓN:</span>
+                <span class="new-detail-value">{{ this.subscription }} USD</span>
+              </div>
             </div>
-            <div class="new-detail-item highlight-blue">
-              <span class="new-detail-label">SUSCRIPCIÓN:</span>
-              <span class="new-detail-value">{{ this.subscription }} USD</span>
+
+            <!-- Balance Section -->
+            <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="new-balance-section">
+              <p class="new-balance-text">
+                {{ saldoUSD | negativeAmount }} USD | {{ saldoBs | negativeAmount }} Bs
+                <strong>{{ saldoText }}</strong>
+              </p>
             </div>
           </div>
+          <!-- End New Design -->
 
-          <!-- Balance Section -->
-          <div
-            *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
-            class="new-balance-section"
-          >
-            <p class="new-balance-text">
-              {{ saldoUSD | negativeAmount }} USD | {{ saldoBs | negativeAmount }} Bs
-              <strong>{{ saldoText }}</strong>
-            </p>
-          </div>
-        </div>
-        <!-- End New Design -->
+          <!-- ============================================ -->
+          <!-- CONTENT SECTIONS (KEPT AS IS) -->
+          <!-- ============================================ -->
 
-        <!-- ============================================ -->
-        <!-- CONTENT SECTIONS (KEPT AS IS) -->
-        <!-- ============================================ -->
-        
-        <!-- 
+          <!-- 
         <span *ngIf="mainTitle && !AppFibex" class="title-info-container">
           <h4>
             {{ mainTitle }}
@@ -211,63 +161,37 @@
         </span>
         -->
 
-        <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
-        <!-- showDniForm && !AppFibex -->
-        <div
-          *ngIf="navActive === ENUM_NAV.LOGIN"
-          class="section-step-item w-full flex justify-center items-center"
-        >
-          <app-login-form
-            [loginTypeSelectValue]="loginTypeSelectValue"
-            [dniValue]="firstFormFibex.get('dni')?.value || ''"
-            (onTypeChange)="onLoginTypeChange($event)"
-            (onKeyStroke)="onTecladoInput($event)"
-            (onDelete)="deleteLastCharacter()"
-            (onLogin)="goToPayment()"
-          >
-          </app-login-form>
-        </div>
+          <!-- Menú ppal si la ruta no tiene la cedula del cliente -->
+          <!-- showDniForm && !AppFibex -->
+          <div *ngIf="navActive === ENUM_NAV.LOGIN" class="section-step-item w-full flex justify-center items-center">
+            <app-login-form [loginTypeSelectValue]="loginTypeSelectValue"
+              [dniValue]="firstFormFibex.get('dni')?.value || ''" [isLoading]="isSearchingClient"
+              (onTypeChange)="onLoginTypeChange($event)" (onKeyStroke)="onTecladoInput($event)"
+              (onDelete)="deleteLastCharacter()" (onLogin)="goToPayment()">
+            </app-login-form>
+          </div>
 
-        <div
-          *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT"
-          class="section-step-item"
-        >
-          <div
-            class="user-list-select-content w-full flex justify-center txt-dark flex-col"
-          >
-            <div class="user-list-select-grid">
-              <app-user-item-card
-                *ngFor="let user of userSelectList; trackBy: trackByUserId"
-                [userItem]="user"
-                (onUserSelected)="onUserSelected($event)"
-              >
-              </app-user-item-card>
+          <div *ngIf="navActive === ENUM_NAV.USER_LIST_SELECT" class="section-step-item">
+            <div class="user-list-select-content w-full flex justify-center txt-dark flex-col">
+              <div class="user-list-select-grid">
+                <app-user-item-card *ngFor="let user of userSelectList; trackBy: trackByUserId" [userItem]="user"
+                  (onUserSelected)="onUserSelected($event)">
+                </app-user-item-card>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- PAYMENT CARDS STEP -->
-        <div
-          *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS"
-          class="section-step-item"
-        >
+          <!-- PAYMENT CARDS STEP -->
+          <div *ngIf="navActive === ENUM_NAV.PAYMENT_CARDS" class="section-step-item">
 
-          <app-unique-payment
-                [tasaCambio]="tasaCambio"
-                [saldoBs]="saldoBs"
-                [saldoUSD]="saldoUSD"
-                [mountTotalMonthUSD]="mountTotalMonthUSD"
-                [mountTotalMonthBs]="mountTotalMonthBs"
-                [subscription]="subscription"
-                [monthPayCount]="monthPayCount"
-                [setTitleFn]="setMainTitle"
-                (totalBs)="mountsToPaymentBs($event)"
-                (totalUSD)="mountsToPaymentUSD($event)"
-                (onEditAmountEvent)="onEditAmountClick()"
-              ></app-unique-payment>
-          <!-- Payment Amount Display -->
+            <app-unique-payment [tasaCambio]="tasaCambio" [saldoBs]="saldoBs" [saldoUSD]="saldoUSD"
+              [mountTotalMonthUSD]="mountTotalMonthUSD" [mountTotalMonthBs]="mountTotalMonthBs"
+              [subscription]="subscription" [monthPayCount]="monthPayCount" [setTitleFn]="setMainTitle"
+              (totalBs)="mountsToPaymentBs($event)" (totalUSD)="mountsToPaymentUSD($event)"
+              (onEditAmountEvent)="onEditAmountClick()"></app-unique-payment>
+            <!-- Payment Amount Display -->
 
-          <!-- 
+            <!-- 
           <div
             class="payment-menu-content w-full flex justify-center txt-dark flex-col"
           >
@@ -295,59 +219,30 @@
           </div>
           -->
 
-          <!-- Payment Button -->
-          <button
-            class="new-payment-btn"
-            type="button"
-            role="button"
-            (click)="handleShowTransactionModal(true)"
-          >
-            PAGAR
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z"
-              />
-            </svg>
-          </button>
+            <!-- Payment Button -->
+            <button class="new-payment-btn" type="button" role="button" (click)="handleShowTransactionModal(true)">
+              PAGAR
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                  d="M16.06 10.94a1.5 1.5 0 0 1 0 2.12l-5.656 5.658a1.5 1.5 0 1 1-2.121-2.122L12.879 12L8.283 7.404a1.5 1.5 0 0 1 2.12-2.122l5.658 5.657Z" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </form>
+    </form>
 
-  <app-info-pay
-    *ngIf="showStateTable"
-    [stateTableData]="stateTableData"
-    [showStateTable]="showStateTable"
-    [saldoUser]="saldoMounted"
-    (closeEvent)="showStateTable = false"
-  >
-  </app-info-pay>
+    <app-info-pay *ngIf="showStateTable" [stateTableData]="stateTableData" [showStateTable]="showStateTable"
+      [saldoUser]="saldoMounted" (closeEvent)="showStateTable = false">
+    </app-info-pay>
 
-  <!-- MODAL DE TRANSACCION DEL PAGO -->
-  <app-modal-payment
-    *ngIf="showTransactionModal || showAnulationModal"
-    [paymentType]="selectedPaymentType"
-    [dniValue]="this.dni?.value"
-    [nroAbonado]="this.nroContrato?.value"
-    [nroContrato]="idContrato"
-    [inputType]="
+    <!-- MODAL DE TRANSACCION DEL PAGO -->
+    <app-modal-payment *ngIf="showTransactionModal || showAnulationModal" [paymentType]="selectedPaymentType"
+      [dniValue]="this.dni?.value" [nroAbonado]="this.nroContrato?.value" [nroContrato]="idContrato" [inputType]="
       showAnulationModal ? 'reference' : showTransactionModal ? 'mount' : ''
-    "
-    [saldoBs]="saldoBs"
-    [tasaCambio]="tasaCambio"
-    [subscription]="subscription"
-    [mountValue]="mountTotalMonthBs"
-    [activeInputFocus]="activeTransactionInputFocus"
-    [viewAdmin]="false"
-    (closeEmmit)="handleShowTransactionModal(false)"
-    (onSubmitPayForm)="resetAllForms()"
-  >
-  </app-modal-payment>
+    " [saldoBs]="saldoBs" [tasaCambio]="tasaCambio" [subscription]="subscription" [mountValue]="mountTotalMonthBs"
+      [activeInputFocus]="activeTransactionInputFocus" [viewAdmin]="false"
+      (closeEmmit)="handleShowTransactionModal(false)" (onSubmitPayForm)="resetAllForms()">
+    </app-modal-payment>
   </ng-container>
 </div>
