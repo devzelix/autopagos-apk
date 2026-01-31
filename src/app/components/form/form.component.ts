@@ -59,7 +59,6 @@ import { UplaodImageService } from '../../services/uplaod-image.service';
 import { BankEmisorS } from '../../interfaces/bankList';
 import { TasaService } from '../../services/tasa.service';
 import { DataBankService } from '../../services/data-bank.service';
-import { UploadPHPService } from '../../services/UploadPHP.service';
 import { ApiBNCService } from 'src/app/services/ApiBNC';
 
 //Modal
@@ -349,30 +348,20 @@ export class FormComponent implements OnInit {
   constructor(
     public registerPayService: RegisterPayService,
     private fb: UntypedFormBuilder,
-    private uplaodImageService: UplaodImageService,
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private tasaService: TasaService,
     private dataBankService: DataBankService,
-    private _snackBar: MatSnackBar,
-    private _helperModal: HelperModalsService,
     private _Consultas: ConsultasService,
-    private miceService: MiscelaneosService,
-    private _Cloudinary: CloudynariService,
-    private _UploadPHP: UploadPHPService,
     private _ApiMercantil: ApiMercantilService,
-    private _Api100x100: Api100x100Service,
     private _TypeBrowserService: TypeBrowserService,
     public router: Router,
     public captchaService: CaptchaThomasService,
-    private clipboard: Clipboard,
     private _seguridadDatos: SeguridadDatos,
-    private _helper: HelperService,
     private cacheService: ClearCacheService,
     public dialogTemplate: MatDialog,
     public helper: HelperService,
     public _ApiBNC: ApiBNCService,
-    private _localStorageService: LocalstorageService,
     private _checkoutSessionService: CheckoutSessionService,
     private cdr: ChangeDetectorRef,
     private adminPanelStateService: AdminPanelStateService
@@ -816,10 +805,10 @@ export class FormComponent implements OnInit {
       // Inicia el contador final: si no toca "Continuar", enviar al inicio (borrando todo)
       this.logoutSubscription = timer(TIME_FOR_LOGOUT).subscribe(() => {
         console.log("Timeout final alcanzado. Limpiando y volviendo al inicio.");
-        
+
         // 1. Cerramos el modal de inmediato
         this.closeInactivitySwal();
-        
+
         // 2. Esperamos un brevísimo instante a que el DOM se libere del modal
         setTimeout(() => {
           this.goHome(); // 3. Ahora sí, navegamos tranquilos
@@ -1596,7 +1585,7 @@ export class FormComponent implements OnInit {
         );
         //Busco el tipo de cliente
         this.registerPayService.getTypeClient(dni_).then((result: any) => {
-          if (result.length > 0 && result[0].TipoCliente != 'NATURAL') {
+          if (result && result.length > 0 && result[0].TipoCliente != 'NATURAL') {
             this.possibleWithholdingAgent = true;
           }
         });
