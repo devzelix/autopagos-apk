@@ -16,7 +16,8 @@
       <!-- [className]="nameClient ? 'form-login__group2 fancy_shadow' : 'form-login__group fancy_shadow'" -->
       <div class="form-login__group fancy_shadow" [ngClass]="{
         'form-login__group2': nameClient,
-        'login-mode-container': navActive === ENUM_NAV.LOGIN
+        'login-mode-container': navActive === ENUM_NAV.LOGIN,
+        'contract-selection-mode': navActive === ENUM_NAV.USER_LIST_SELECT
       }">
         <!-- Mensajes de alerta -->
         <div>
